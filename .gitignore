@@ -1,0 +1,3 @@
+.vagrant/
+.tox/
+etc/hosts.ini
