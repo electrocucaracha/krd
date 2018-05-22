@@ -1,0 +1,100 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2018
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+- hosts: ovn-central
+  pre_tasks:
+    - name: Load distribution variables
+      include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "{{ ansible_os_family }}.yml"
+  tasks:
+    - name: get Wand GPI files
+      get_url:
+        url: https://packages.wand.net.nz/keyring.gpg
+        dest: /etc/apt/trusted.gpg.d/wand.gpg
+      become: yes
+    - name: add WAND Debian Repo
+      apt_repository:
+        repo: "deb https://packages.wand.net.nz {{ ansible_lsb.codename }} main"
+        state: present
+      become: yes
+    - name: install OpenVSwitch packages
+      become: yes
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ openvswitch_pkgs }}"
+    - name: install Open Virtual Network components
+      become: yes
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ ovn_pkgs + ovn_central_pkgs }}"
+    - name: start OpenVSwitch services
+      service:
+        name: "{{ openvswitch_service }}"
+        state: started
+    - name: configure ovsdb-server to listen passive tcp connections
+      command: "ovs-appctl -t ovsdb-server ovsdb-server/add-remote ptcp:6640"
+      become: yes
+    - name: start OVN northbound database services
+      service:
+        name: "{{ ovn_central_service }}"
+        state: started
+
+- hosts: ovn-controller
+  vars:
+    ovn_central_ips: "{{ groups['ovn-central'] | map('extract', hostvars, ['ansible_eth0', 'ipv4', 'address']) | join(',') }}"
+  pre_tasks:
+    - name: Load distribution variables
+      include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "{{ ansible_os_family }}.yml"
+  tasks:
+    - name: get Wand GPI files
+      get_url:
+        url: https://packages.wand.net.nz/keyring.gpg
+        dest: /etc/apt/trusted.gpg.d/wand.gpg
+      become: yes
+    - name: add WAND Debian Repo
+      apt_repository:
+        repo: "deb https://packages.wand.net.nz {{ ansible_lsb.codename }} main"
+        state: present
+      become: yes
+    - name: install OpenVSwitch packages
+      become: yes
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ openvswitch_pkgs }}"
+    - name: install Open Virtual Network components
+      become: yes
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ ovn_pkgs }}"
+    - name: start OpenVSwitch services
+      command: "/usr/share/openvswitch/scripts/ovs-ctl start  --system-id=\"random\""
+      become: yes
+    - name: configure OpenVSwitch databases
+      command: "ovs-vsctl set open . external-ids:ovn-remote=tcp:{{ item }}:6640"
+      with_items: "{{ ovn_central_ips }}"
+      become: yes
+    - name: enable overlay network protocols
+      command: "ovs-vsctl set open . external-ids:ovn-encap-type=geneve,vxlan"
+      become: yes
+    - name: configure the overlay network local endpoint IP address.
+      command: "ovs-vsctl set open . external-ids:ovn-encap-ip={{ ansible_default_ipv4.address }}"
+      become: yes
+    - name: start the ovn-controller service
+      command: "/usr/share/openvswitch/scripts/ovn-ctl start_controller"
+      become: yes
+      ignore_errors: true

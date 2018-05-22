@@ -1,0 +1,21 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2018
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+openvswitch_service: openvswitch-switch
+openvswitch_pkgs:
+  - openvswitch-common
+  - openvswitch-switch
+  - libopenvswitch
+  - openvswitch-datapath-dkms
+ovn_central_service: ovn-central
+ovn_central_pkgs:
+  - ovn-central # <= 2.8.1-1
+ovn_pkgs:
+  - ovn-common # <= 2.8.1-1
+  - ovn-host

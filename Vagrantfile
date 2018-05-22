@@ -9,7 +9,7 @@ box = {
 nodes = [
   {
     :name   => "controller01",
-    :roles  => [ "kube-master", "etcd",],
+    :roles  => [ "kube-master", "etcd", "ovn-central"],
     :ip     => "10.10.10.3",
     :memory => 1024 * 8,
     :cpus   => 2
@@ -30,14 +30,14 @@ nodes = [
   },
   {
     :name   => "compute01",
-    :roles  => [ "kube-node",],
+    :roles  => [ "kube-node", "ovn-controller"],
     :ip     => "10.10.10.6",
     :memory => 1024 * 8,
     :cpus   => 2
   },
   {
     :name   => "compute02",
-    :roles  => [ "kube-node",],
+    :roles  => [ "kube-node", "ovn-controller"],
     :ip     => "10.10.10.7",
     :memory => 1024 * 8,
     :cpus   => 2
@@ -53,7 +53,8 @@ if ENV['no_proxy'] != nil or ENV['NO_PROXY']
     $no_proxy += "," + node[:ip]
   end
   $subnet = "192.168.121"
-  (1..255).each do |i|
+  # NOTE: This range is based on vagrant-libivirt network definition
+  (1..27).each do |i|
     $no_proxy += ",#{$subnet}.#{i}"
   end
 end
@@ -79,6 +80,18 @@ File.open("etc/hosts.ini", "w") do |inventory_file|
   inventory_file.puts("\n[etcd]")
   nodes.each do |node|
     if node[:roles].include?("etcd")
+       inventory_file.puts(node[:name])
+    end
+  end
+  inventory_file.puts("\n[ovn-central]")
+  nodes.each do |node|
+    if node[:roles].include?("ovn-central")
+       inventory_file.puts(node[:name])
+    end
+  end
+  inventory_file.puts("\n[ovn-controller]")
+  nodes.each do |node|
+    if node[:roles].include?("ovn-controller")
        inventory_file.puts(node[:name])
     end
   end
@@ -113,18 +126,23 @@ Vagrant.configure("2") do |config|
         v.nested = true
         v.cpu_mode = 'host-passthrough'
       end
-      nodeconfig.vm.provision 'shell' do |s|
-        s.path = "node.sh"
-      end
+      nodeconfig.vm.provision 'shell', path: "node.sh"
     end
+  end
+  sync_type = "virtualbox"
+  if provider == :libvirt
+    if not Vagrant.has_plugin?('vagrant-libvirt')
+      system 'vagrant plugin install vagrant-libvirt'
+      raise 'vagrant-libvirt was installed but it requires to execute again'
+    end
+    sync_type = "nfs"
   end
   config.vm.define :installer do |installer|
     installer.vm.hostname = "installer"
     installer.ssh.insert_key = false
     installer.vm.network :private_network, :ip => "10.10.10.2", :type => :static
-    installer.vm.synced_folder './etc', '/etc/kubespray/', create: true
-    installer.vm.provision 'shell' do |s|
-      s.path = "installer.sh"
-    end
+    installer.vm.synced_folder './etc', '/etc/kubespray/', create: true, type: sync_type
+    installer.vm.synced_folder './playbooks', '/opt/vagrant-k8s/playbooks', create: true, type: sync_type
+    installer.vm.provision 'shell', path: "installer.sh"
   end
 end

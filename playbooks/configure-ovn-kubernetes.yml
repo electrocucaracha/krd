@@ -1,0 +1,32 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2018
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+- hosts: all
+  vars:
+    ovn_central_ips: "{{ groups['ovn-central'] | map('extract', hostvars, ['ansible_eth0', 'ipv4', 'address']) | join(',') }}"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/local/go/bin/"
+  roles:
+    - role: andrewrothstein.go
+  tasks:
+    - name: clone ovn-kubernetes repository
+      git:
+        repo: http://github.com/openvswitch/ovn-kubernetes
+        dest: "/tmp/ovn-kubernetes"
+    - name: make ovnkube files
+      make:
+        chdir: "/tmp/ovn-kubernetes/go-controller"
+    - name: install ovnkube files
+      make:
+        chdir: "/tmp/ovn-kubernetes/go-controller"
+        target: install
+      become: yes
+    - name: start ovnkube daemon
+      shell: "daemon -- sudo ovnkube -k8s-kubeconfig /etc/kubernetes/admin.conf -net-controller -loglevel=4 -logfile=\"/var/log/openvswitch/ovnkube.log\" -init-master=\"{{ item }}\" -cluster-subnet=\"192.168.0.0/16\" -init-node=\"{{ item }}\" -service-cluster-ip-range=172.16.1.0/24  -nodeport  -k8s-token=\"test\""
+      with_items: "{{ ovn_central_ips }}"

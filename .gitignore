@@ -1,3 +1,5 @@
 .vagrant/
 .tox/
 etc/hosts.ini
+*.retry
+.*.swp
