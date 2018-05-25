@@ -1,5 +1,6 @@
 .vagrant/
 .tox/
-etc/hosts.ini
+inventory/hosts.ini
+inventory/group_vars/proxy.yml
 *.retry
 .*.swp

@@ -6,43 +6,48 @@ box = {
   :libvirt => 'elastic/ubuntu-16.04-x86_64'
 }
 
-nodes = [
-  {
-    :name   => "controller01",
-    :roles  => [ "kube-master", "etcd", "ovn-central"],
-    :ip     => "10.10.10.3",
-    :memory => 1024 * 8,
-    :cpus   => 2
-  },
-  {
-    :name   => "controller02",
-    :roles  => [ "kube-master", "etcd",],
-    :ip     => "10.10.10.4",
-    :memory => 1024 * 8,
-    :cpus   => 2
-  },
-  {
-    :name   => "controller03",
-    :roles  => [ "kube-master", "etcd",],
-    :ip     => "10.10.10.5",
-    :memory => 1024 * 8,
-    :cpus   => 2
-  },
-  {
-    :name   => "compute01",
-    :roles  => [ "kube-node", "ovn-controller"],
-    :ip     => "10.10.10.6",
-    :memory => 1024 * 8,
-    :cpus   => 2
-  },
-  {
-    :name   => "compute02",
-    :roles  => [ "kube-node", "ovn-controller"],
-    :ip     => "10.10.10.7",
-    :memory => 1024 * 8,
-    :cpus   => 2
-  },
-]
+require 'yaml'
+idf = ENV.fetch('IDF', 'config/idf.yml')
+nodes = YAML.load_file(idf)
+
+# Inventory file creation
+File.open("inventory/hosts.ini", "w") do |inventory_file|
+  inventory_file.puts("[all:vars]\nansible_connection=ssh\nansible_ssh_user=vagrant\nansible_ssh_pass=vagrant\n\n[all]")
+  nodes.each do |node|
+    inventory_file.puts("#{node['name']}\tansible_ssh_host=#{node['ip']} ansible_ssh_port=22")
+  end
+  inventory_file.puts("\n[kube-master]")
+  nodes.each do |node|
+    if node['roles'].include?("kube-master")
+       inventory_file.puts(node['name'])
+    end
+  end
+  inventory_file.puts("\n[kube-node]")
+  nodes.each do |node|
+    if node['roles'].include?("kube-node")
+       inventory_file.puts(node['name'])
+    end
+  end
+  inventory_file.puts("\n[etcd]")
+  nodes.each do |node|
+    if node['roles'].include?("etcd")
+       inventory_file.puts(node['name'])
+    end
+  end
+  inventory_file.puts("\n[ovn-central]")
+  nodes.each do |node|
+    if node['roles'].include?("ovn-central")
+       inventory_file.puts(node['name'])
+    end
+  end
+  inventory_file.puts("\n[ovn-controller]")
+  nodes.each do |node|
+    if node['roles'].include?("ovn-controller")
+       inventory_file.puts(node['name'])
+    end
+  end
+  inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
+end
 
 provider = (ENV['VAGRANT_DEFAULT_PROVIDER'] || :virtualbox).to_sym
 puts "[INFO] Provider: #{provider} "
@@ -50,7 +55,7 @@ puts "[INFO] Provider: #{provider} "
 if ENV['no_proxy'] != nil or ENV['NO_PROXY']
   $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
   nodes.each do |node|
-    $no_proxy += "," + node[:ip]
+    $no_proxy += "," + node['ip']
   end
   $subnet = "192.168.121"
   # NOTE: This range is based on vagrant-libivirt network definition
@@ -59,44 +64,6 @@ if ENV['no_proxy'] != nil or ENV['NO_PROXY']
   end
 end
 
-# Inventory file creation
-File.open("etc/hosts.ini", "w") do |inventory_file|
-  inventory_file.puts("[all:vars]\nansible_connection=ssh\nansible_ssh_user=vagrant\nansible_ssh_pass=vagrant\n\n[all]")
-  nodes.each do |node|
-    inventory_file.puts(node[:name])
-  end
-  inventory_file.puts("\n[kube-master]")
-  nodes.each do |node|
-    if node[:roles].include?("kube-master")
-       inventory_file.puts(node[:name])
-    end
-  end
-  inventory_file.puts("\n[kube-node]")
-  nodes.each do |node|
-    if node[:roles].include?("kube-node")
-       inventory_file.puts(node[:name])
-    end
-  end
-  inventory_file.puts("\n[etcd]")
-  nodes.each do |node|
-    if node[:roles].include?("etcd")
-       inventory_file.puts(node[:name])
-    end
-  end
-  inventory_file.puts("\n[ovn-central]")
-  nodes.each do |node|
-    if node[:roles].include?("ovn-central")
-       inventory_file.puts(node[:name])
-    end
-  end
-  inventory_file.puts("\n[ovn-controller]")
-  nodes.each do |node|
-    if node[:roles].include?("ovn-controller")
-       inventory_file.puts(node[:name])
-    end
-  end
-  inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
-end
 
 Vagrant.configure("2") do |config|
   config.vm.box =  box[provider]
@@ -112,21 +79,21 @@ Vagrant.configure("2") do |config|
   end
 
   nodes.each do |node|
-    config.vm.define node[:name] do |nodeconfig|
-      nodeconfig.vm.hostname = node[:name]
+    config.vm.define node['name'] do |nodeconfig|
+      nodeconfig.vm.hostname = node['name']
       nodeconfig.ssh.insert_key = false
-      nodeconfig.vm.network :private_network, :ip => node[:ip], :type => :static
+      nodeconfig.vm.network :private_network, :ip => node['ip'], :type => :static
       nodeconfig.vm.provider 'virtualbox' do |v|
-        v.customize ["modifyvm", :id, "--memory", node[:memory]]
-        v.customize ["modifyvm", :id, "--cpus", node[:cpus]]
+        v.customize ["modifyvm", :id, "--memory", node['memory']]
+        v.customize ["modifyvm", :id, "--cpus", node['cpus']]
       end
       nodeconfig.vm.provider 'libvirt' do |v|
-        v.memory = node[:memory]
-        v.cpus = node[:cpus]
+        v.memory = node['memory']
+        v.cpus = node['cpus']
         v.nested = true
         v.cpu_mode = 'host-passthrough'
       end
-      nodeconfig.vm.provision 'shell', path: "node.sh"
+      nodeconfig.vm.provision 'shell', inline: "swapoff -a"
     end
   end
   sync_type = "virtualbox"
@@ -137,12 +104,12 @@ Vagrant.configure("2") do |config|
     end
     sync_type = "nfs"
   end
-  config.vm.define :installer do |installer|
+  config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "installer"
     installer.ssh.insert_key = false
     installer.vm.network :private_network, :ip => "10.10.10.2", :type => :static
-    installer.vm.synced_folder './etc', '/etc/kubespray/', create: true, type: sync_type
+    installer.vm.synced_folder './inventory', '/opt/vagrant-k8s/inventory', create: true, type: sync_type
     installer.vm.synced_folder './playbooks', '/opt/vagrant-k8s/playbooks', create: true, type: sync_type
-    installer.vm.provision 'shell', path: "installer.sh"
+    installer.vm.provision 'shell', path: "installer"
   end
 end

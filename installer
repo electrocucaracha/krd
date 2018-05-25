@@ -1,0 +1,68 @@
+#!/bin/bash
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2018
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# Configuration values
+src_folder=/opt/kubespray
+log_folder=/var/log/vagrant-k8s
+k8s_info_file=$log_folder/k8s_info.log
+k8s_folder=/opt/vagrant-k8s
+k8s_inventory_folder=$k8s_folder/inventory
+k8s_inventory=$k8s_inventory_folder/hosts.ini
+k8s_playbooks=$k8s_folder/playbooks
+k8s_galaxy_req=/vagrant/galaxy-requirements.yml
+
+# Install dependencies
+apt-get update
+apt-get install -y git sshpass python-dev
+curl -sL https://bootstrap.pypa.io/get-pip.py | python
+pip install --upgrade pip
+
+# Configure environment
+mkdir -p $log_folder
+mkdir -p /etc/ansible/
+cat <<EOL > /etc/ansible/ansible.cfg
+[defaults]
+host_key_checking = false
+EOL
+
+# Deploy Kubernetes using kubespray tool
+git clone https://github.com/kubernetes-incubator/kubespray $src_folder
+pushd $src_folder
+pip install -r requirements.txt
+rm -f $k8s_inventory_folder/group_vars/proxy.yml
+if [ $http_proxy ]; then
+    echo "http_proxy: \"$http_proxy\"" >> $k8s_inventory_folder/group_vars/proxy.yml
+fi
+if [ $https_proxy ]; then
+    echo "https_proxy: \"$https_proxy\"" >> $k8s_inventory_folder/group_vars/proxy.yml
+fi
+ansible-playbook -vvv -i $k8s_inventory cluster.yml -b | tee $log_folder/setup-kubernetes.log
+popd
+
+pushd $HOME
+mkdir .kube
+mv admin.conf .kube/config
+
+NIC=$(ip route get 8.8.8.8 | awk '{ print $5; exit }')
+IP_ADDRESS=$(ifconfig $NIC | grep "inet addr" | tr -s ' ' | cut -d' ' -f3 | cut -d':' -f2)
+printf "Kubernetes Info\n===============\n" > $k8s_info_file
+echo "Dashboard URL: https://$IP_ADDRESS:$(./kubectl get service -n kube-system |grep kubernetes-dashboard | awk '{print $5}' |awk -F "[:/]" '{print $1}')" >> $k8s_info_file
+echo "Admin user: kube" >> $k8s_info_file
+echo "Admin password: secret" >> $k8s_info_file
+
+ansible-galaxy install -r $k8s_galaxy_req
+
+ansible-playbook -vvv -i $k8s_inventory $k8s_playbooks/configure-ovn.yml | tee $log_folder/setup-ovn.log
+ansible-playbook -vvv -i $k8s_inventory $k8s_playbooks/configure-ovn-kubernetes.yml | tee $log_folder/setup-ovn-kubernetes.log
+popd

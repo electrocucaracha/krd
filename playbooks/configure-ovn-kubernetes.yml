@@ -9,7 +9,7 @@
 ##############################################################################
 - hosts: all
   vars:
-    ovn_central_ips: "{{ groups['ovn-central'] | map('extract', hostvars, ['ansible_eth0', 'ipv4', 'address']) | join(',') }}"
+    central_node_ip: "{{ hostvars[groups['ovn-central'][0]]['ansible_ssh_host'] }}"
   environment:
     PATH: "{{ ansible_env.PATH }}:/usr/local/go/bin/"
   roles:
@@ -27,6 +27,70 @@
         chdir: "/tmp/ovn-kubernetes/go-controller"
         target: install
       become: yes
-    - name: start ovnkube daemon
-      shell: "daemon -- sudo ovnkube -k8s-kubeconfig /etc/kubernetes/admin.conf -net-controller -loglevel=4 -logfile=\"/var/log/openvswitch/ovnkube.log\" -init-master=\"{{ item }}\" -cluster-subnet=\"192.168.0.0/16\" -init-node=\"{{ item }}\" -service-cluster-ip-range=172.16.1.0/24  -nodeport  -k8s-token=\"test\""
-      with_items: "{{ ovn_central_ips }}"
+    - name: create OVN Kubernetes config file
+      become: yes
+      blockinfile:
+        path: /etc/openvswitch/ovn_k8s.conf
+        create: yes
+        block: |
+          [logging]
+          loglevel=4
+          logfile=/var/log/openvswitch/ovnkube.log
+    - name: create ovnkube logging directory
+      file:
+        path: /var/log/openvswitch
+        state: directory
+
+- hosts: kube-node
+  tasks:
+    - name: copy k8s admin.conf file
+      become: yes
+      copy:
+        src: /root/.kube/config
+        dest: /etc/kubernetes/admin.conf
+
+- hosts: ovn-controller
+  become: yes
+  vars:
+    central_node_ip: "{{ hostvars[groups['ovn-central'][0]]['ansible_ssh_host'] }}"
+  tasks:
+    - name: create ovnkube controller systemd service
+      blockinfile:
+        path: /etc/systemd/system/ovn-k8s-host.service
+        create: yes
+        block: |
+          [Unit]
+          Description=OVN Controller Daemon
+
+          [Service]
+          ExecStart=/usr/bin/ovnkube -net-controller -init-node="{{ ansible_hostname }}" -nodeport -nb-address="tcp://{{ central_node_ip }}:6641" -sb-address="tcp://{{ central_node_ip }}:6642" -service-cluster-ip-range=172.16.1.0/24 -cluster-subnet="192.168.0.0/16" -k8s-kubeconfig=/etc/kubernetes/admin.conf -k8s-token="test"
+
+          [Install]
+          WantedBy=multi-user.target
+    - name: start ovnkube controller systemd service
+      service:
+        name: ovn-k8s-host
+        state: started
+        enabled: yes
+
+- hosts: ovn-central
+  become: yes
+  tasks:
+    - name: create ovnkube central systemd service
+      blockinfile:
+        path: /etc/systemd/system/ovn-k8s-central.service
+        create: yes
+        block: |
+          [Unit]
+          Description=OVN Central Daemon
+
+          [Service]
+          ExecStart=/usr/bin/ovnkube -net-controller -init-master="{{ ansible_hostname }}" -cluster-subnet="192.168.0.0/16" -init-node="{{ ansible_hostname }}" -service-cluster-ip-range=172.16.1.0/24 -nodeport -k8s-kubeconfig=/etc/kubernetes/admin.conf -k8s-token="test"
+
+          [Install]
+          WantedBy=multi-user.target
+    - name: start ovnkube central systemd service
+      service:
+        name: ovn-k8s-central
+        state: started
+        enabled: yes

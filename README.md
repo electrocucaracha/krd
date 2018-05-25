@@ -15,6 +15,7 @@ the base deployment and installs [ovn-kubernetes][2]
     $ cd vagrant-k8s
     $ ./setup.sh -p libvirt
     $ vagrant up
+    $ vagrant up installer
 
 ## License
 
