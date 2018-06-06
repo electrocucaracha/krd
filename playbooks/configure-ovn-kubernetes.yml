@@ -63,7 +63,7 @@
           Description=OVN Controller Daemon
 
           [Service]
-          ExecStart=/usr/bin/ovnkube -net-controller -init-node="{{ ansible_hostname }}" -nodeport -nb-address="tcp://{{ central_node_ip }}:6641" -sb-address="tcp://{{ central_node_ip }}:6642" -service-cluster-ip-range=172.16.1.0/24 -cluster-subnet="192.168.0.0/16" -k8s-kubeconfig=/etc/kubernetes/admin.conf -k8s-token="test"
+          ExecStart=/usr/bin/ovnkube -init-node="{{ ansible_hostname }}" -nodeport -nb-address="tcp://{{ central_node_ip }}:6641" -sb-address="tcp://{{ central_node_ip }}:6642" -init-gateways -service-cluster-ip-range=172.16.1.0/24 -cluster-subnet="192.168.0.0/16" -k8s-kubeconfig=/etc/kubernetes/admin.conf -k8s-token="test"
 
           [Install]
           WantedBy=multi-user.target

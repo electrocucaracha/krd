@@ -40,12 +40,12 @@ EOL
 git clone https://github.com/kubernetes-incubator/kubespray $src_folder
 pushd $src_folder
 pip install -r requirements.txt
-rm -f $k8s_inventory_folder/group_vars/proxy.yml
+rm -f $k8s_inventory_folder/group_vars/all.yml
 if [ $http_proxy ]; then
-    echo "http_proxy: \"$http_proxy\"" >> $k8s_inventory_folder/group_vars/proxy.yml
+    echo "http_proxy: \"$http_proxy\"" >> $k8s_inventory_folder/group_vars/all.yml
 fi
 if [ $https_proxy ]; then
-    echo "https_proxy: \"$https_proxy\"" >> $k8s_inventory_folder/group_vars/proxy.yml
+    echo "https_proxy: \"$https_proxy\"" >> $k8s_inventory_folder/group_vars/all.yml
 fi
 ansible-playbook -vvv -i $k8s_inventory cluster.yml -b | tee $log_folder/setup-kubernetes.log
 popd
