@@ -2,7 +2,7 @@
 
 ## Summary
 
-This project offers a reference for deployment a Kubernetes cluster
+This project offers a reference for deploying a Kubernetes cluster
 that satisfies the requirements of [ONAP multicloud/k8s plugin][1]. Its
 ansible playbooks allow to provision a deployment on Bare-metal or
 Virtual Machines.
@@ -22,11 +22,22 @@ Virtual Machines.
 
 ## Deployment
 
+The [installer](installer) bash script contains the minimal
+Ubuntu instructions required for running this project.
+
 ### Virtual Machines
 
-    $ git clone http://github.com/electrocucaracha/vagrant-k8s
-    $ cd vagrant-k8s
+This project uses [Vagrant tool][8] for provisioning Virtual Machines
+automatically. The [setup.sh](setup.sh) bash script contains the
+Linux instructions to install dependencies and plugins required for
+its usage. This script supports two Virtualization technologies
+(Libvirt and VirtualBox).
+
     $ ./setup.sh -p libvirt
+
+Once Vagrant is installed, it's possible to provision a cluster using
+the following two instructions:
+
     $ vagrant up
     $ vagrant up installer
 
@@ -41,3 +52,4 @@ Apache-2.0
 [5]: https://github.com/Mirantis/virtlet
 [6]: https://github.com/Mirantis/criproxy
 [7]: https://github.com/intel/multus-cni
+[8]: https://www.vagrantup.com/
