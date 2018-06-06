@@ -1,15 +1,28 @@
 # Kubernetes Reference Deployment
 
-This project pretends to create a Kubernetes reference deployment in
-a distributed setup environment. It uses [kubespray][1] tool to make
-the base deployment and installs [ovn-kubernetes][2]
+## Summary
 
-## Requirements
+This project offers a reference for deployment a Kubernetes cluster
+that satisfies the requirements of [ONAP multicloud/k8s plugin][1]. Its
+ansible playbooks allow to provision a deployment on Bare-metal or
+Virtual Machines.
 
-  * [Vagrant][3]
-  * [VirtualBox][4] or [Libvirt][5]
+![Diagram](docs/src/img/diagram.png)
 
-## Execution
+# Components
+
+| Name           | Description                                   | Source                            | Status |
+|:--------------:|:----------------------------------------------|:----------------------------------|:------:|
+| Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Done   |
+| OVN            | Opensource Virtual Networking for OpenvSwitch | [configure-ovn.yml][3]            | Done   |
+| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][4] | Done   |
+| Virtlet        | Allows to run VMs                             | [virtlet][5]                      |        |
+| CRI Proxy      | Makes possible to run several CRIs            | [virtlet][5]                      |        |
+| Multus         | Provides Multiple Network support in a pod    | [multus-cni][7]                   |        |
+
+## Deployment
+
+### Virtual Machines
 
     $ git clone http://github.com/electrocucaracha/vagrant-k8s
     $ cd vagrant-k8s
@@ -21,8 +34,10 @@ the base deployment and installs [ovn-kubernetes][2]
 
 Apache-2.0
 
-[1]: https://github.com/kubernetes-incubator/kubespray
-[2]: https://github.com/openvswitch/ovn-kubernetes
-[3]: https://www.vagrantup.com/downloads.html
-[4]: https://www.virtualbox.org/wiki/Downloads
-[5]: http://libvirt.org/downloads.html
+[1]: https://git.onap.org/multicloud/k8s
+[2]: https://github.com/kubernetes-incubator/kubespray
+[3]: playbooks/configure-ovn.yml
+[4]: playbooks/configure-ovn-kubernetes.yml
+[5]: https://github.com/Mirantis/virtlet
+[6]: https://github.com/Mirantis/criproxy
+[7]: https://github.com/intel/multus-cni
