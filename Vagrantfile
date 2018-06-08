@@ -58,7 +58,7 @@ if ENV['no_proxy'] != nil or ENV['NO_PROXY']
     $no_proxy += "," + node['ip']
   end
   $subnet = "192.168.121"
-  # NOTE: This range is based on vagrant-libivirt network definition
+  # NOTE: This range is based on vagrant-libvirt network definition
   (1..27).each do |i|
     $no_proxy += ",#{$subnet}.#{i}"
   end
@@ -105,11 +105,12 @@ Vagrant.configure("2") do |config|
     sync_type = "nfs"
   end
   config.vm.define :installer, primary: true, autostart: false do |installer|
-    installer.vm.hostname = "installer"
+    installer.vm.hostname = "multicloud"
     installer.ssh.insert_key = false
     installer.vm.network :private_network, :ip => "10.10.10.2", :type => :static
-    installer.vm.synced_folder './inventory', '/opt/vagrant-k8s/inventory', create: true, type: sync_type
-    installer.vm.synced_folder './playbooks', '/opt/vagrant-k8s/playbooks', create: true, type: sync_type
-    installer.vm.provision 'shell', path: "installer"
+    installer.vm.provision 'shell' do |sh|
+      sh.path =  "installer"
+      sh.args = ['-p', '-v', '-w', '/vagrant']
+    end
   end
 end

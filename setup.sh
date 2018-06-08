@@ -131,7 +131,15 @@ case ${ID,,} in
 esac
 
 ${INSTALLER_CMD} ${packages[@]}
+if [ $http_proxy ]; then
+    vagrant plugin install vagrant-proxyconf
+fi
 if [ $VAGRANT_DEFAULT_PROVIDER == libvirt ]; then
     vagrant plugin install vagrant-libvirt
     sudo usermod -a -G $libvirt_group $USER
+    if [ $http_proxy ]; then
+        virsh net-update default delete ip-dhcp-range "<range start='192.168.122.2' end='192.168.122.254'/>" --live --config
+        virsh net-update default add ip-dhcp-range "<range start='192.168.122.2' end='192.168.122.28'/>" --live --config
+    fi
+    sudo systemctl restart libvirtd
 fi

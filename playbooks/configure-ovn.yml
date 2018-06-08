@@ -9,13 +9,12 @@
 ##############################################################################
 - hosts: ovn-central:ovn-controller
   become: yes
-  pre_tasks:
+  tasks:
     - name: Load distribution variables
       include_vars:
         file: "{{ item }}"
       with_items:
         - "{{ ansible_os_family }}.yml"
-  tasks:
     - name: get Wand GPI files
       get_url:
         url: https://packages.wand.net.nz/keyring.gpg
@@ -41,13 +40,12 @@
 
 - hosts: ovn-central
   become: yes
-  pre_tasks:
+  tasks:
     - name: Load distribution variables
       include_vars:
         file: "{{ item }}"
       with_items:
         - "{{ ansible_os_family }}.yml"
-  tasks:
     - name: install Open Virtual Network central components
       package:
         name: "{{ item }}"
@@ -68,13 +66,12 @@
   become: yes
   vars:
     ovn_central_ips: "{{ groups['ovn-central'] | map('extract', hostvars, ['ansible_eth0', 'ipv4', 'address']) | join(',') }}"
-  pre_tasks:
+  tasks:
     - name: Load distribution variables
       include_vars:
         file: "{{ item }}"
       with_items:
         - "{{ ansible_os_family }}.yml"
-  tasks:
     - name: stop the ovn-controller service
       service:
         name: "{{ ovn_controller_service }}"

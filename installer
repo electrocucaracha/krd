@@ -12,57 +12,156 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# Configuration values
-src_folder=/opt/kubespray
-log_folder=/var/log/vagrant-k8s
-k8s_info_file=$log_folder/k8s_info.log
-k8s_folder=/opt/vagrant-k8s
-k8s_inventory_folder=$k8s_folder/inventory
-k8s_inventory=$k8s_inventory_folder/hosts.ini
-k8s_playbooks=$k8s_folder/playbooks
-k8s_galaxy_req=/vagrant/galaxy-requirements.yml
 
-# Install dependencies
-apt-get update
-apt-get install -y git sshpass python-dev
-curl -sL https://bootstrap.pypa.io/get-pip.py | python
-pip install --upgrade pip
+# usage() - Prints the usage of the program
+function usage {
+    cat <<EOF
+usage: $0 [-a addons] [-p] [-v] [-w dir ]
+Optional Argument:
+    -a List of Kubernetes AddOns to be installed ( e.g. "ovn ovn-kubernetes criproxy")
+    -p Installation of ONAP MultiCloud Kubernetes plugin
+    -v Enable verbosity
+    -w Working directory
+EOF
+}
 
-# Configure environment
-mkdir -p $log_folder
-mkdir -p /etc/ansible/
-cat <<EOL > /etc/ansible/ansible.cfg
+# _install_go() - Install GoLang package
+function _install_go {
+    if $(go version &>/dev/null); then
+        return
+    fi
+    local version=1.10.2
+    local tarball=go$version.linux-amd64.tar.gz
+
+    wget https://dl.google.com/go/$tarball
+    tar -C /usr/local -xzf $tarball
+    rm $tarball
+
+    export PATH=$PATH:/usr/local/go/bin
+    sed -i "s|^PATH=.*|PATH=\"$PATH\"|" /etc/environment
+    mkdir -p $HOME/go/bin
+    curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+}
+
+# _install_pip() - Install Python Package Manager
+function _install_pip {
+    if $(pip --version &>/dev/null); then
+        return
+    fi
+    apt-get install -y python-dev
+    curl -sL https://bootstrap.pypa.io/get-pip.py | python
+    pip install --upgrade pip
+}
+
+# _install_ansible() - Install and Configure Ansible program
+function _install_ansible {
+    mkdir -p /etc/ansible/
+    cat <<EOL > /etc/ansible/ansible.cfg
 [defaults]
 host_key_checking = false
 EOL
+    if $(ansible --version &>/dev/null); then
+        return
+    fi
+    _install_pip
+    pip install -y ansible
+}
 
-# Deploy Kubernetes using kubespray tool
-git clone https://github.com/kubernetes-incubator/kubespray $src_folder
-pushd $src_folder
-pip install -r requirements.txt
-rm -f $k8s_inventory_folder/group_vars/all.yml
-if [ $http_proxy ]; then
-    echo "http_proxy: \"$http_proxy\"" >> $k8s_inventory_folder/group_vars/all.yml
+# install_k8si() - Install Kubernetes using kubespray tool
+function install_k8s {
+    echo "Deploying kubernetes"
+    local dest_folder=/opt
+    local version=2.5.0
+    local tarball=v$version.tar.gz
+
+    apt-get install -y sshpass
+    _install_ansible
+    wget https://github.com/kubernetes-incubator/kubespray/archive/$tarball
+    tar -C $dest_folder -xzf $tarball
+    rm $tarball
+
+    pushd $dest_folder/kubespray-$version
+        pip install -r requirements.txt
+        rm -f $krd_inventory_folder/group_vars/all.yml
+        if [ $http_proxy ]; then
+            echo "http_proxy: \"$http_proxy\"" >> $krd_inventory_folder/group_vars/all.yml
+        fi
+        if [ $https_proxy ]; then
+            echo "https_proxy: \"$https_proxy\"" >> $krd_inventory_folder/group_vars/all.yml
+        fi
+        ansible-playbook $verbose -i $krd_inventory cluster.yml -b | tee $log_folder/setup-kubernetes.log
+    popd
+
+    # Configure environment
+    mkdir -p $HOME/.kube
+    mv $HOME/admin.conf $HOME/.kube/config
+
+    NIC=$(ip route get 8.8.8.8 | awk '{ print $5; exit }')
+    IP_ADDRESS=$(ifconfig $NIC | grep "inet addr" | tr -s ' ' | cut -d' ' -f3 | cut -d':' -f2)
+    printf "Kubernetes Info\n===============\n" > $k8s_info_file
+    echo "Dashboard URL: https://$IP_ADDRESS:$(./kubectl get service -n kube-system |grep kubernetes-dashboard | awk '{print $5}' |awk -F "[:/]" '{print $1}')" >> $k8s_info_file
+    echo "Admin user: kube" >> $k8s_info_file
+    echo "Admin password: secret" >> $k8s_info_file
+}
+
+# install_addons() - Install Kubenertes AddOns
+function install_addons {
+    echo "Installing Kubernetes AddOns"
+    apt-get install -y sshpass
+    _install_ansible
+    ansible-galaxy install -r $krd_folder/galaxy-requirements.yml
+
+    for addon in $addons; do
+        echo "Deploying $addon using configure-$addon.yml playbook.."
+        ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-${addon}.yml | tee $log_folder/setup-${addon}.log
+    done
+}
+
+# install_plugin() - Install ONAP Multicloud Kubernetes plugin
+function install_plugin {
+    echo "Installing multicloud/k8s plugin"
+    _install_go
+
+    go get github.com/shank7485/k8-plugin-multicloud/...
+}
+
+# Configuration values
+addons="ovn ovn-kubernetes"
+krd_folder="$(dirname "$0")"
+verbose=""
+
+while getopts "a:pvw:" opt; do
+    case $opt in
+        a)
+            addons="$OPTARG"
+            ;;
+        p)
+            plugin_enabled="True"
+            ;;
+        v)
+            verbose="-vvv"
+            ;;
+        w)
+            krd_folder="$OPTARG"
+            ;;
+        ?)
+            usage
+            exit
+            ;;
+    esac
+done
+log_folder=/var/log/krd
+krd_inventory_folder=$krd_folder/inventory
+krd_inventory=$krd_inventory_folder/hosts.ini
+krd_playbooks=$krd_folder/playbooks
+k8s_info_file=$krd_folder/k8s_info.log
+
+mkdir -p $log_folder
+
+# Install dependencies
+apt-get update
+install_k8s
+install_addons
+if [[ -n "${plugin_enabled+x}" ]]; then
+    install_plugin
 fi
-if [ $https_proxy ]; then
-    echo "https_proxy: \"$https_proxy\"" >> $k8s_inventory_folder/group_vars/all.yml
-fi
-ansible-playbook -vvv -i $k8s_inventory cluster.yml -b | tee $log_folder/setup-kubernetes.log
-popd
-
-pushd $HOME
-mkdir .kube
-mv admin.conf .kube/config
-
-NIC=$(ip route get 8.8.8.8 | awk '{ print $5; exit }')
-IP_ADDRESS=$(ifconfig $NIC | grep "inet addr" | tr -s ' ' | cut -d' ' -f3 | cut -d':' -f2)
-printf "Kubernetes Info\n===============\n" > $k8s_info_file
-echo "Dashboard URL: https://$IP_ADDRESS:$(./kubectl get service -n kube-system |grep kubernetes-dashboard | awk '{print $5}' |awk -F "[:/]" '{print $1}')" >> $k8s_info_file
-echo "Admin user: kube" >> $k8s_info_file
-echo "Admin password: secret" >> $k8s_info_file
-
-ansible-galaxy install -r $k8s_galaxy_req
-
-ansible-playbook -vvv -i $k8s_inventory $k8s_playbooks/configure-ovn.yml | tee $log_folder/setup-ovn.log
-ansible-playbook -vvv -i $k8s_inventory $k8s_playbooks/configure-ovn-kubernetes.yml | tee $log_folder/setup-ovn-kubernetes.log
-popd
