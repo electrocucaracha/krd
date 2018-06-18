@@ -137,9 +137,13 @@ fi
 if [ $VAGRANT_DEFAULT_PROVIDER == libvirt ]; then
     vagrant plugin install vagrant-libvirt
     sudo usermod -a -G $libvirt_group $USER
-    if [ $http_proxy ]; then
-        virsh net-update default delete ip-dhcp-range "<range start='192.168.122.2' end='192.168.122.254'/>" --live --config
-        virsh net-update default add ip-dhcp-range "<range start='192.168.122.2' end='192.168.122.28'/>" --live --config
+    newgrp -
+
+    default_libvirt_net="default"
+    default_libvirt_net_state=$(virsh net-list | grep $default_libvirt_net | grep active)
+    if [[ $http_proxy && $default_libvirt_net ]]; then
+        virsh net-update $default_libvirt_net delete ip-dhcp-range "<range start='192.168.122.2' end='192.168.122.254'/>" --live --config
+        virsh net-update $default_libvirt_net add ip-dhcp-range "<range start='192.168.122.2' end='192.168.122.28'/>" --live --config
     fi
     sudo systemctl restart libvirtd
 fi

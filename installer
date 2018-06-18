@@ -22,6 +22,7 @@ Optional Argument:
     -p Installation of ONAP MultiCloud Kubernetes plugin
     -v Enable verbosity
     -w Working directory
+    -t Running healthchecks
 EOF
 }
 
@@ -64,7 +65,7 @@ EOL
         return
     fi
     _install_pip
-    pip install -y ansible
+    pip install ansible
 }
 
 # install_k8si() - Install Kubernetes using kubespray tool
@@ -114,6 +115,11 @@ function install_addons {
     for addon in $addons; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
         ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-${addon}.yml | tee $log_folder/setup-${addon}.log
+        if [[ -n "${plugin_enabled+x}" ]]; then
+            pushd $krd_tests
+            bash ${addon}.sh
+            popd
+        fi
     done
 }
 
@@ -130,19 +136,22 @@ addons="ovn ovn-kubernetes"
 krd_folder="$(dirname "$0")"
 verbose=""
 
-while getopts "a:pvw:" opt; do
+while getopts "a:pvw:t" opt; do
     case $opt in
         a)
             addons="$OPTARG"
             ;;
         p)
-            plugin_enabled="True"
+            plugin_enabled="true"
             ;;
         v)
             verbose="-vvv"
             ;;
         w)
             krd_folder="$OPTARG"
+            ;;
+        t)
+            testing_enabled="true"
             ;;
         ?)
             usage
@@ -154,6 +163,7 @@ log_folder=/var/log/krd
 krd_inventory_folder=$krd_folder/inventory
 krd_inventory=$krd_inventory_folder/hosts.ini
 krd_playbooks=$krd_folder/playbooks
+krd_tests=$krd_folder/tests
 k8s_info_file=$krd_folder/k8s_info.log
 
 mkdir -p $log_folder

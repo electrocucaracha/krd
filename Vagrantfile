@@ -7,7 +7,7 @@ box = {
 }
 
 require 'yaml'
-idf = ENV.fetch('IDF', 'config/idf.yml')
+idf = ENV.fetch('IDF', 'config/pdf.yml')
 nodes = YAML.load_file(idf)
 
 # Inventory file creation
@@ -106,7 +106,7 @@ Vagrant.configure("2") do |config|
   end
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "multicloud"
-    installer.ssh.insert_key = false
+    #installer.ssh.insert_key = false
     installer.vm.network :private_network, :ip => "10.10.10.2", :type => :static
     installer.vm.provision 'shell' do |sh|
       sh.path =  "installer"
