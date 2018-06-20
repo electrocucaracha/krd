@@ -132,7 +132,7 @@ function install_plugin {
 }
 
 # Configuration values
-addons="ovn ovn-kubernetes"
+addons="ovn ovn-kubernetes multus"
 krd_folder="$(dirname "$0")"
 verbose=""
 

@@ -1,0 +1,44 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2018
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+- hosts: all
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/local/go/bin/"
+
+  tasks:
+    - name: Install Multus CNI
+      become: yes
+      shell: |-
+        /usr/bin/docker run --rm --network=host -v /opt/cni/bin/:/opt/cni/bin/ golang:1.9 \
+        bash -c \
+        "git clone https://github.com/intel/multus-cni && \
+        cd multus-cni && ./build && cp bin/multus /opt/cni/bin"
+
+    - name: Create multus config file
+      become: yes
+      blockinfile:
+        path: /etc/cni/net.d/10-multus.conf
+        create: yes
+        block: |
+          {
+              "name": "multus-network",
+              "type": "multus",
+              "kubeconfig": "/etc/kubernetes/node-kubeconfig.yaml",
+              "delegates": [{
+                  "type": "flannel",
+                  "hairpinMode": true,
+                  "masterplugin": true
+              }]
+          }
+
+    - name: Restart kubelet service
+      become: yes
+      service:
+        name: kubelet
+        state: restarted
