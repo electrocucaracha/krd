@@ -18,7 +18,7 @@ function usage {
     cat <<EOF
 usage: $0 [-a addons] [-p] [-v] [-w dir ]
 Optional Argument:
-    -a List of Kubernetes AddOns to be installed ( e.g. "ovn ovn-kubernetes criproxy")
+    -a List of Kubernetes AddOns to be installed ( e.g. "ovn ovn-kubernetes virtlet")
     -p Installation of ONAP MultiCloud Kubernetes plugin
     -v Enable verbosity
     -w Working directory
@@ -96,13 +96,6 @@ function install_k8s {
     # Configure environment
     mkdir -p $HOME/.kube
     mv $HOME/admin.conf $HOME/.kube/config
-
-    NIC=$(ip route get 8.8.8.8 | awk '{ print $5; exit }')
-    IP_ADDRESS=$(ifconfig $NIC | grep "inet addr" | tr -s ' ' | cut -d' ' -f3 | cut -d':' -f2)
-    printf "Kubernetes Info\n===============\n" > $k8s_info_file
-    echo "Dashboard URL: https://$IP_ADDRESS:$(./kubectl get service -n kube-system |grep kubernetes-dashboard | awk '{print $5}' |awk -F "[:/]" '{print $1}')" >> $k8s_info_file
-    echo "Admin user: kube" >> $k8s_info_file
-    echo "Admin password: secret" >> $k8s_info_file
 }
 
 # install_addons() - Install Kubenertes AddOns
@@ -131,8 +124,22 @@ function install_plugin {
     go get github.com/shank7485/k8-plugin-multicloud/...
 }
 
+# _print_kubernetes_info() - Prints the login Kubernetes information
+function _print_kubernetes_info {
+    if $(kubectl version &>/dev/null); then
+        return
+    fi
+    NIC=$(ip route get 8.8.8.8 | awk '{ print $5; exit }')
+    IP_ADDRESS=$(ifconfig $NIC | grep "inet addr" | tr -s ' ' | cut -d' ' -f3 | cut -d':' -f2)
+
+    printf "Kubernetes Info\n===============\n" > $k8s_info_file
+    echo "Dashboard URL: https://$IP_ADDRESS:$(kubectl get service -n kube-system |grep kubernetes-dashboard | awk '{print $5}' |awk -F "[:/]" '{print $1}')" >> $k8s_info_file
+    echo "Admin user: kube" >> $k8s_info_file
+    echo "Admin password: secret" >> $k8s_info_file
+}
+
 # Configuration values
-addons="ovn ovn-kubernetes"
+addons="virtlet ovn ovn-kubernetes"
 krd_folder="$(dirname "$0")"
 verbose=""
 
@@ -175,3 +182,4 @@ install_addons
 if [[ -n "${plugin_enabled+x}" ]]; then
     install_plugin
 fi
+_print_kubernetes_info

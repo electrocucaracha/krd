@@ -39,6 +39,7 @@
   roles:
     - kube-node
     - ovn-controller
+    - virtlet
 - name: "compute02"
   ip: "10.10.10.7"
   memory: 8192

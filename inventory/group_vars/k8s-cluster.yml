@@ -152,5 +152,8 @@ persistent_volumes_enabled: false
 # Make a copy of kubeconfig on the host that runs Ansible in GITDIR/artifacts
 kubeconfig_localhost: true
 # Download kubectl onto the host that runs Ansible in GITDIR/artifacts
-kubectl_localhost: true
+kubectl_localhost: false
 artifacts_dir: "{{ ansible_env.HOME }}"
+
+# Enable MountPropagation gate feature
+local_volumes_enabled: true

@@ -16,34 +16,12 @@ File.open("inventory/hosts.ini", "w") do |inventory_file|
   nodes.each do |node|
     inventory_file.puts("#{node['name']}\tansible_ssh_host=#{node['ip']} ansible_ssh_port=22")
   end
-  inventory_file.puts("\n[kube-master]")
-  nodes.each do |node|
-    if node['roles'].include?("kube-master")
-       inventory_file.puts(node['name'])
-    end
-  end
-  inventory_file.puts("\n[kube-node]")
-  nodes.each do |node|
-    if node['roles'].include?("kube-node")
-       inventory_file.puts(node['name'])
-    end
-  end
-  inventory_file.puts("\n[etcd]")
-  nodes.each do |node|
-    if node['roles'].include?("etcd")
-       inventory_file.puts(node['name'])
-    end
-  end
-  inventory_file.puts("\n[ovn-central]")
-  nodes.each do |node|
-    if node['roles'].include?("ovn-central")
-       inventory_file.puts(node['name'])
-    end
-  end
-  inventory_file.puts("\n[ovn-controller]")
-  nodes.each do |node|
-    if node['roles'].include?("ovn-controller")
-       inventory_file.puts(node['name'])
+  ['kube-master', 'kube-node', 'etcd', 'ovn-central', 'ovn-controller', 'virtlet'].each do|group|
+    inventory_file.puts("\n[#{group}]")
+    nodes.each do |node|
+      if node['roles'].include?("#{group}")
+        inventory_file.puts(node['name'])
+      end
     end
   end
   inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
@@ -109,7 +87,7 @@ Vagrant.configure("2") do |config|
     #installer.ssh.insert_key = false
     installer.vm.network :private_network, :ip => "10.10.10.2", :type => :static
     installer.vm.provision 'shell' do |sh|
-      sh.path =  "installer"
+      sh.path =  "installer.sh"
       sh.args = ['-p', '-v', '-w', '/vagrant']
     end
   end

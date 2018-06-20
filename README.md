@@ -16,9 +16,8 @@ Virtual Machines.
 | Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Done        |
 | OVN            | Opensource Virtual Networking for OpenvSwitch | [configure-ovn.yml][3]            | Done        |
 | ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][4] | Done        |
-| Virtlet        | Allows to run VMs                             | [virtlet][5]                      | In Progress |
-| CRI Proxy      | Makes possible to run several CRIs            | [configure-criproxy.yml][6]       | Done        |
-| Multus         | Provides Multiple Network support in a pod    | [multus-cni][7]                   |             |
+| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][5]        | Done        |
+| Multus         | Provides Multiple Network support in a pod    | [multus-cni][6]                   | In progress |
 
 ## Deployment
 
@@ -27,7 +26,7 @@ Ubuntu instructions required for running this project.
 
 ### Virtual Machines
 
-This project uses [Vagrant tool][8] for provisioning Virtual Machines
+This project uses [Vagrant tool][7] for provisioning Virtual Machines
 automatically. The [setup.sh](setup.sh) bash script contains the
 Linux instructions to install dependencies and plugins required for
 its usage. This script supports two Virtualization technologies
@@ -48,7 +47,6 @@ Apache-2.0
 [2]: https://github.com/kubernetes-incubator/kubespray
 [3]: playbooks/configure-ovn.yml
 [4]: playbooks/configure-ovn-kubernetes.yml
-[5]: https://github.com/Mirantis/virtlet
-[6]: playbooks/configure-criproxy.yml
-[7]: https://github.com/intel/multus-cni
-[8]: https://www.vagrantup.com/
+[5]: playbooks/configure-virtlet.yml
+[6]: https://github.com/intel/multus-cni
+[7]: https://www.vagrantup.com/

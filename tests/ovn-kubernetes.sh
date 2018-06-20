@@ -75,10 +75,11 @@ spec:
   type: NodePort
 APACHENS
 
-$HOME/kubectl create -f $HOME/apache-pod.yaml
-$HOME/kubectl create -f $HOME/nginx-pod.yaml
-$HOME/kubectl create -f $HOME/apache-e-w.yaml
-$HOME/kubectl create -f $HOME/apache-n-s.yaml
+if $(kubectl version &>/dev/null); then
+    kubectl create -f $HOME/apache-pod.yaml
+    kubectl create -f $HOME/nginx-pod.yaml
+    kubectl create -f $HOME/apache-e-w.yaml
+    kubectl create -f $HOME/apache-n-s.yaml
 
-# Wait for deploying resources
-
+    # kubectl get pods --all-namespaces -o wide -w
+fi
