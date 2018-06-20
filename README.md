@@ -1,4 +1,5 @@
 # Kubernetes Reference Deployment
+[![Build Status](https://travis-ci.org/electrocucaracha/krd.png)](https://travis-ci.org/electrocucaracha/krd)
 
 ## Summary
 
