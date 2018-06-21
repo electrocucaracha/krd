@@ -37,7 +37,7 @@ if ENV['no_proxy'] != nil or ENV['NO_PROXY']
   end
   $subnet = "192.168.121"
   # NOTE: This range is based on vagrant-libvirt network definition
-  (1..27).each do |i|
+  (2..28).each do |i|
     $no_proxy += ",#{$subnet}.#{i}"
   end
 end
