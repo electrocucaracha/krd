@@ -126,14 +126,17 @@ function install_plugin {
 
 # _print_kubernetes_info() - Prints the login Kubernetes information
 function _print_kubernetes_info {
-    if $(kubectl version &>/dev/null); then
+    if ! $(kubectl version &>/dev/null); then
         return
     fi
-    NIC=$(ip route get 8.8.8.8 | awk '{ print $5; exit }')
-    IP_ADDRESS=$(ifconfig $NIC | grep "inet addr" | tr -s ' ' | cut -d' ' -f3 | cut -d':' -f2)
+    # Expose Dashboard using NodePort
+    KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g\"" kubectl -n kube-system edit service kubernetes-dashboard
+
+    master_ip=$(kubectl cluster-info | grep "Kubernetes master" | awk -F ":" '{print $2}')
+    node_port=$(kubectl get service -n kube-system | grep kubernetes-dashboard | awk '{print $5}' |awk -F "[:/]" '{print $2}')
 
     printf "Kubernetes Info\n===============\n" > $k8s_info_file
-    echo "Dashboard URL: https://$IP_ADDRESS:$(kubectl get service -n kube-system |grep kubernetes-dashboard | awk '{print $5}' |awk -F "[:/]" '{print $1}')" >> $k8s_info_file
+    echo "Dashboard URL: https:$master_ip:$node_port" >> $k8s_info_file
     echo "Admin user: kube" >> $k8s_info_file
     echo "Admin password: secret" >> $k8s_info_file
 }
