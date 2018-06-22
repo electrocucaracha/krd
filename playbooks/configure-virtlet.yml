@@ -57,6 +57,7 @@
         state: stopped
         enabled: no
       when: ansible_os_family == "Debian"
+
 - hosts: localhost
   become: yes
   vars:
@@ -65,21 +66,11 @@
     virtletctl:
       dir: /opt/virtlet
       file: virtletctl
+  roles:
+    - andrewrothstein.kubectl
   tasks:
-    - name: get Google GPG files
-      get_url:
-        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
-        dest: /etc/apt/trusted.gpg.d/google.gpg
-    - name: add Kubernetes Debian Repo
-      apt_repository:
-        repo: "deb http://apt.kubernetes.io/ kubernetes-{{ ansible_lsb.codename }} main"
-        state: present
-    - name: install kubectl packages
-      package:
-        name: "kubectl"
-        state: present
     - name: apply virtlet extraRuntime label
-      command: "/usr/bin/kubectl label node {{ item }} extraRuntime=virtlet --overwrite"
+      command: "/usr/local/bin/kubectl label node {{ item }} extraRuntime=virtlet --overwrite"
       with_inventory_hostnames: virtlet
     - name: create image translations confimap file
       blockinfile:
@@ -92,7 +83,7 @@
             - name: fedora
               url: https://download.fedoraproject.org/pub/fedora/linux/releases/27/CloudImages/x86_64/images/Fedora-Cloud-Base-27-1.6.x86_64.qcow2
     - name: install image translations configmap
-      shell: "/usr/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ images_file }} --dry-run -o yaml | /usr/bin/kubectl apply -f -"
+      shell: "/usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ images_file }} --dry-run -o yaml | /usr/local/bin/kubectl apply -f -"
     - name: create Virtlet folder
       file:
         state: directory
@@ -108,4 +99,4 @@
     - name: install virtletctl as kubectl plugin
       command: "{{ virtletctl.dir }}/{{ virtletctl.file }} install"
     - name: apply Virtlet deployment
-      shell: "/usr/bin/kubectl plugin virt gen | /usr/bin/kubectl apply -f -"
+      shell: "/usr/local/bin/kubectl plugin virt gen | /usr/local/bin/kubectl apply -f -"
