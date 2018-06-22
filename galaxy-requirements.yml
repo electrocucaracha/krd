@@ -8,3 +8,4 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 - src: andrewrothstein.go
+- src: andrewrothstein.kubectl

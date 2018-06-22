@@ -1,0 +1,102 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2018
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+- hosts: virtlet
+  become: yes
+  vars:
+    criproxy_version: 0.11.0
+  tasks:
+    - name: download CRIproxy package
+      get_url:
+        url: "https://github.com/Mirantis/criproxy/releases/download/v{{ criproxy_version }}/criproxy"
+        dest: /usr/local/bin/criproxy
+    - name: set criproxy execution permissions
+      file:
+        path: /usr/local/bin/criproxy
+        mode: "+x"
+    - name: create criproxy service
+      blockinfile:
+        path: /etc/systemd/system/criproxy.service
+        create: yes
+        block: |
+          [Unit]
+          Description=CRI Proxy
+
+          [Service]
+          ExecStart=/usr/local/bin/criproxy -v 3 -logtostderr -connect /var/run/dockershim.sock,virtlet.cloud:/run/virtlet.sock -listen /run/criproxy.sock
+          Restart=always
+          StartLimitInterval=0
+          RestartSec=10
+
+          [Install]
+          WantedBy=kubelet.service
+    - name: modify KUBELET_ARGS variable
+      lineinfile:
+        dest: /etc/kubernetes/kubelet.env
+        line: "--experimental-dockershim --container-runtime=remote --container-runtime-endpoint=unix:///run/criproxy.sock --image-service-endpoint=unix:///run/criproxy.sock --enable-controller-attach-detach=false \\"
+        insertafter: '^KUBELET_ARGS=.*'
+        state: present
+    - name: restart kubelet service
+      service:
+        name: kubelet
+        state: restarted
+    - name: start criproxy service
+      service:
+        name: criproxy
+        state: started
+        enabled: yes
+    - name: disable AppArmor in all nodes
+      service:
+        name: apparmor
+        state: stopped
+        enabled: no
+      when: ansible_os_family == "Debian"
+
+- hosts: localhost
+  become: yes
+  vars:
+    images_file: /tmp/images.yaml
+    virtlet_version: 1.1.0
+    virtletctl:
+      dir: /opt/virtlet
+      file: virtletctl
+  roles:
+    - andrewrothstein.kubectl
+  tasks:
+    - name: apply virtlet extraRuntime label
+      command: "/usr/local/bin/kubectl label node {{ item }} extraRuntime=virtlet --overwrite"
+      with_inventory_hostnames: virtlet
+    - name: create image translations confimap file
+      blockinfile:
+        path: "{{ images_file }}"
+        create: yes
+        block: |
+          translations:
+            - name: cirros
+              url: https://github.com/mirantis/virtlet/releases/download/v0.9.3/cirros.img
+            - name: fedora
+              url: https://download.fedoraproject.org/pub/fedora/linux/releases/27/CloudImages/x86_64/images/Fedora-Cloud-Base-27-1.6.x86_64.qcow2
+    - name: install image translations configmap
+      shell: "/usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ images_file }} --dry-run -o yaml | /usr/local/bin/kubectl apply -f -"
+    - name: create Virtlet folder
+      file:
+        state: directory
+        path: "{{ virtletctl.dir }}"
+    - name: download virtletctl
+      get_url:
+        url: "https://github.com/Mirantis/virtlet/releases/download/v{{ virtlet_version }}/virtletctl"
+        dest: "{{ virtletctl.dir }}/{{ virtletctl.file }}"
+    - name: set virtletctl execution permissions
+      file:
+        path: "{{ virtletctl.dir }}/{{ virtletctl.file }}"
+        mode: "+x"
+    - name: install virtletctl as kubectl plugin
+      command: "{{ virtletctl.dir }}/{{ virtletctl.file }} install"
+    - name: apply Virtlet deployment
+      shell: "/usr/local/bin/kubectl plugin virt gen | /usr/local/bin/kubectl apply -f -"

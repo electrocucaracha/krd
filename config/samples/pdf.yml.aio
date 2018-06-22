@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: "controller01"
+- name: "kubernetes"
   ip: "10.10.10.3"
   memory: 8192
   cpus: 2
@@ -16,34 +16,6 @@
     - kube-master
     - etcd
     - ovn-central
-- name: "controller02"
-  ip: "10.10.10.4"
-  memory: 8192
-  cpus: 2
-  roles:
-    - kube-master
-    - etcd
-    - ovn-controller
-- name: "controller03"
-  ip: "10.10.10.5"
-  memory: 8192
-  cpus: 2
-  roles:
-    - kube-master
-    - etcd
-    - ovn-controller
-- name: "compute01"
-  ip: "10.10.10.6"
-  memory: 8192
-  cpus: 2
-  roles:
     - kube-node
     - ovn-controller
     - virtlet
-- name: "compute02"
-  ip: "10.10.10.7"
-  memory: 8192
-  cpus: 2
-  roles:
-    - kube-node
-    - ovn-controller
