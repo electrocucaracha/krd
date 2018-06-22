@@ -1,0 +1,33 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2018
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- name: "master"
+  ip: "10.10.10.3"
+  memory: 8192
+  cpus: 2
+  roles:
+    - kube-master
+    - etcd
+    - ovn-central
+- name: "worker01"
+  ip: "10.10.10.4"
+  memory: 65536
+  cpus: 16
+  roles:
+    - kube-node
+    - ovn-controller
+    - virtlet
+- name: "worker02"
+  ip: "10.10.10.5"
+  memory: 65536
+  cpus: 16
+  roles:
+    - kube-node
+    - ovn-controller
