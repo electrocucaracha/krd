@@ -36,8 +36,8 @@ if ENV['no_proxy'] != nil or ENV['NO_PROXY']
     $no_proxy += "," + node['ip']
   end
   $subnet = "192.168.121"
-  # NOTE: This range is based on vagrant-libvirt network definition
-  (2..28).each do |i|
+  # NOTE: This range is based on vagrant-libvirt network definition CIDR 192.168.121.0/27
+  (0..31).each do |i|
     $no_proxy += ",#{$subnet}.#{i}"
   end
 end
