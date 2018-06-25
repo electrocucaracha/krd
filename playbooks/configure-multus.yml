@@ -8,18 +8,30 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 - hosts: all
+  vars:
+    multus_version: 2.0
   environment:
     PATH: "{{ ansible_env.PATH }}:/usr/local/go/bin/"
-
+  roles:
+    - role: andrewrothstein.go
   tasks:
-    - name: Install Multus CNI
+    - name: download Multus tarball
+      get_url:
+        url: "https://github.com/intel/multus-cni/archive/v{{ multus_version }}.tar.gz"
+        dest: /tmp/multus.tar.gz
+    - name: extract multus source code
+      command: tar -C /tmp/ -xzf /tmp/multus.tar.gz
+    - name: build multus source code
+      command: ./build
+      args:
+        chdir: "/tmp/multus-cni-{{ multus_version }}"
+    - name: create multus binary folder
+      file:
+        state: directory
+        path: /opt/cni/bin
+    - name: copy multus binary to opt folder
       become: yes
-      shell: |-
-        /usr/bin/docker run --rm --network=host -v /opt/cni/bin/:/opt/cni/bin/ golang:1.9 \
-        bash -c \
-        "git clone https://github.com/intel/multus-cni && \
-        cd multus-cni && ./build && cp bin/multus /opt/cni/bin"
-
+      command: "mv /tmp/multus-cni-{{ multus_version }}/bin/multus /opt/cni/bin"
     - name: Create multus config file
       become: yes
       blockinfile:

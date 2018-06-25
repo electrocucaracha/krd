@@ -10,21 +10,24 @@
 - hosts: all
   vars:
     central_node_ip: "{{ hostvars[groups['ovn-central'][0]]['ansible_ssh_host'] }}"
+    ovn_kubernetes_version: 0.3.0
   environment:
     PATH: "{{ ansible_env.PATH }}:/usr/local/go/bin/"
   roles:
     - role: andrewrothstein.go
   tasks:
-    - name: clone ovn-kubernetes repository
-      git:
-        repo: http://github.com/openvswitch/ovn-kubernetes
-        dest: "/tmp/ovn-kubernetes"
+    - name: download ovn-kubernetes tarball
+      get_url:
+        url: "https://github.com/openvswitch/ovn-kubernetes/archive/v{{ ovn_kubernetes_version }}.tar.gz"
+        dest: /tmp/ovn-kubernetes.tar.gz
+    - name: extract ovn-kubernetes source code
+      command: tar -C /tmp/ -xzf /tmp/ovn-kubernetes.tar.gz
     - name: make ovnkube files
       make:
-        chdir: "/tmp/ovn-kubernetes/go-controller"
+        chdir: "/tmp/ovn-kubernetes-{{ ovn_kubernetes_version }}/go-controller"
     - name: install ovnkube files
       make:
-        chdir: "/tmp/ovn-kubernetes/go-controller"
+        chdir: "/tmp/ovn-kubernetes-{{ ovn_kubernetes_version }}/go-controller"
         target: install
       become: yes
     - name: create OVN Kubernetes config file
