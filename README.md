@@ -12,13 +12,13 @@ Virtual Machines.
 
 # Components
 
-| Name           | Description                                   | Source                            | Status      |
-|:--------------:|:----------------------------------------------|:----------------------------------|:-----------:|
-| Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Done        |
-| OVN            | Opensource Virtual Networking for OpenvSwitch | [configure-ovn.yml][3]            | Done        |
-| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][4] | Done        |
-| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][5]        | Done        |
-| Multus         | Provides Multiple Network support in a pod    | [multus-cni][6]                   | In progress |
+| Name           | Description                                   | Source                            | Status |
+|:--------------:|:----------------------------------------------|:----------------------------------|:------:|
+| Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Done   |
+| OVN            | Opensource Virtual Networking for OpenvSwitch | [configure-ovn.yml][3]            | Done   |
+| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][4] | Done   |
+| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][5]        | Done   |
+| Multus         | Provides Multiple Network support in a pod    | [configure-multus.yml][6]         | Done   |
 
 ## Deployment
 
@@ -49,5 +49,5 @@ Apache-2.0
 [3]: playbooks/configure-ovn.yml
 [4]: playbooks/configure-ovn-kubernetes.yml
 [5]: playbooks/configure-virtlet.yml
-[6]: https://github.com/intel/multus-cni
+[6]: playbooks/configure-multus.yml
 [7]: https://www.vagrantup.com/
