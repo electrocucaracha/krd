@@ -7,7 +7,7 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-- hosts: all
+- hosts: kube-node;kube-master
   vars:
     multus_version: 2.0
   environment:
@@ -32,7 +32,32 @@
     - name: copy multus binary to opt folder
       become: yes
       command: "mv /tmp/multus-cni-{{ multus_version }}/bin/multus /opt/cni/bin"
-    - name: Create multus config file
+    - name: create flannel multi-network mode folder
+      become: yes
+      file:
+        state: directory
+        path: /run/flannel/networks
+    - name: create flannel kbr0 network
+      become: yes
+      blockinfile:
+        path: /run/flannel/networks/kbr0.env
+        create: yes
+        block: |
+          FLANNEL_NETWORK=10.233.0.0/18
+          FLANNEL_SUBNET=10.233.64.1/24
+          FLANNEL_MTU=1450
+          FLANNEL_IPMASQ=true
+    - name: create flannel kbr1 network
+      become: yes
+      blockinfile:
+        path: /run/flannel/networks/kbr1.env
+        create: yes
+        block: |
+          FLANNEL_NETWORK=10.233.0.0/18
+          FLANNEL_SUBNET=10.233.65.1/24
+          FLANNEL_MTU=1450
+          FLANNEL_IPMASQ=true
+    - name: create multus config file
       become: yes
       blockinfile:
         path: /etc/cni/net.d/10-multus.conf
@@ -43,14 +68,38 @@
               "type": "multus",
               "kubeconfig": "/etc/kubernetes/node-kubeconfig.yaml",
               "delegates": [{
-                  "type": "flannel",
-                  "hairpinMode": true,
-                  "masterplugin": true
+                  {
+                      "type": "flannel",
+                      "name": "flannel.2",
+                      "subnetFile": "/run/flannel/networks/kbr1.env",
+                      "dataDir": "/var/lib/cni/flannel/kbr1",
+                      "delegate": {
+                          "bridge": "kbr1"
+                      }
+                  },
+                  {
+                      "type": "flannel",
+                      "name": "flannel.1",
+                      "subnetFile": "/run/flannel/networks/kbr0.env",
+                      "dataDir": "/var/lib/cni/flannel/kbr0",
+                      "masterplugin": true,
+                      "delegate": {
+                          "bridge": "kbr0",
+                          "isDefaultGateway": true
+                      }
+                  }
               }]
           }
-
     - name: Restart kubelet service
       become: yes
       service:
         name: kubelet
         state: restarted
+
+- hosts: localhost
+  become: yes
+  roles:
+    - andrewrothstein.kubectl
+  tasks:
+    - name: modify flannel daemon to support multi-network mode
+      shell: KUBE_EDITOR="sed -i \"/- \/opt\/bin\/flanneld/a \        - --networks=kbr0,kbr1\"" kubectl edit ds kube-flannel -n=kube-system
