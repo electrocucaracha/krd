@@ -16,7 +16,7 @@
     - kube-master
     - etcd
     - ovn-central
-- name: "worker01"
+- name: "minion01"
   ip: "10.10.10.4"
   memory: 65536
   cpus: 16
@@ -24,7 +24,7 @@
     - kube-node
     - ovn-controller
     - virtlet
-- name: "worker02"
+- name: "minion02"
   ip: "10.10.10.5"
   memory: 65536
   cpus: 16
