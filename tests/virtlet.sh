@@ -12,7 +12,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-cat << CIRROSPOD >> $HOME/cirros-pod.yaml
+cat << CIRROSPOD > $HOME/cirros-pod.yaml
 apiVersion: v1
 kind: Pod
 metadata:

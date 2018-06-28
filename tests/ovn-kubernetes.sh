@@ -12,7 +12,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-cat << APACHEPOD >> $HOME/apache-pod.yaml
+cat << APACHEPOD > $HOME/apache-pod.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -25,7 +25,7 @@ spec:
     image: fedora/apache
 APACHEPOD
 
-cat << NGINXPOD >> $HOME/nginx-pod.yaml
+cat << NGINXPOD > $HOME/nginx-pod.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -38,7 +38,7 @@ spec:
     image: nginx
 NGINXPOD
 
-cat << APACHEEW >> $HOME/apache-e-w.yaml
+cat << APACHEEW > $HOME/apache-e-w.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -56,7 +56,7 @@ spec:
     name: webserver
 APACHEEW
 
-cat << APACHENS >> $HOME/apache-n-s.yaml
+cat << APACHENS > $HOME/apache-n-s.yaml
 apiVersion: v1
 kind: Service
 metadata:
