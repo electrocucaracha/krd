@@ -12,7 +12,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-cat << MULTUSNET01 >> $HOME/flannel-network.yaml
+cat << MULTUSNET01 > $HOME/flannel-network.yaml
 apiVersion: "kubernetes.com/v1"
 kind: Network
 metadata:
@@ -20,14 +20,19 @@ metadata:
 plugin: flannel
 args: '[
         {
-                "delegate": {
-                        "isDefaultGateway": true
-                }
+            "type": "flannel",
+            "name": "flannel-conf",
+            "subnetFile": "/run/flannel/subnet.env",
+            "masterplugin": true,
+            "delegate": {
+                "bridge": "kbr0",
+                "isDefaultGateway": true
+            }
         }
 ]'
 MULTUSNET01
 
-cat << MULTUSNET02 >> $HOME/flannel-network2.yaml
+cat << MULTUSNET02 > $HOME/flannel-network2.yaml
 apiVersion: "kubernetes.com/v1"
 kind: Network
 metadata:
@@ -35,14 +40,17 @@ metadata:
 plugin: flannel
 args: '[
         {
-                "delegate": {
-                        "isDefaultGateway": true
-                }
+            "type": "flannel",
+            "name": "flannel-conf2",
+            "subnetFile": "/run/flannel/networks/flannel2-subnet.env",
+            "delegate": {
+                "bridge": "kbr1"
+            }
         }
 ]'
 MULTUSNET02
 
-cat << MULTUSPOD >> $HOME/pod-multi-network.yaml
+cat << MULTUSPOD > $HOME/pod-multi-network.yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -68,5 +76,5 @@ if $(kubectl version &>/dev/null); then
 
     #kubectl get pods --all-namespaces -o wide -w
 
-    #kubectl get pod multus-multi-net-pod
+    #kubectl exec -it multus-multi-net-pod -- ifconfig
 fi

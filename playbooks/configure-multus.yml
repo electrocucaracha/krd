@@ -7,7 +7,29 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-- hosts: kube-node;kube-master
+- hosts: kube-master
+  tasks:
+    - name: copy Flannel DaemonSet as template
+      become: yes
+      copy:
+        src: /etc/kubernetes/cni-flannel.yml
+        dest: /etc/kubernetes/cni-flannel2.yml
+        remote_src: yes
+    - name: modify the network
+      become: yes
+      replace:
+        path: /etc/kubernetes/cni-flannel2.yml
+        regexp: "{{ item.regexp }}"
+        replace: "{{ item.line }}"
+      with_items:
+        - { regexp: '"Network":.*', line: '"Network": "10.234.0.0/18", "SubnetMin": "10.234.1.0",'}
+        - { regexp: 'name: kube-flannel', line: 'name: kube-flannel2'}
+        - { regexp: 'command: \[ "/opt/bin/flanneld", "--ip-masq", .*', line: 'command: [ "/opt/bin/flanneld", "--ip-masq", "--kube-subnet-mgr", "--subnet-file=/run/flannel/networks/flannel2-subnet.env" ]'}
+    - name: create network objects
+      shell: "/usr/local/bin/kubectl create -f /etc/kubernetes/cni-flannel2.yml"
+      ignore_errors: True
+
+- hosts: kube-node:kube-master
   vars:
     multus_version: 2.0
   environment:
@@ -15,6 +37,11 @@
   roles:
     - role: andrewrothstein.go
   tasks:
+    - name: create flannel multi-network mode folder
+      become: yes
+      file:
+        state: directory
+        path: /run/flannel/networks
     - name: download Multus tarball
       get_url:
         url: "https://github.com/intel/multus-cni/archive/v{{ multus_version }}.tar.gz"
@@ -32,64 +59,6 @@
     - name: copy multus binary to opt folder
       become: yes
       command: "mv /tmp/multus-cni-{{ multus_version }}/bin/multus /opt/cni/bin"
-    - name: create flannel multi-network mode folder
-      become: yes
-      file:
-        state: directory
-        path: /run/flannel/networks
-    - name: create flannel kbr0 network
-      become: yes
-      blockinfile:
-        path: /run/flannel/networks/kbr0.env
-        create: yes
-        block: |
-          FLANNEL_NETWORK=10.233.0.0/18
-          FLANNEL_SUBNET=10.233.64.1/24
-          FLANNEL_MTU=1450
-          FLANNEL_IPMASQ=true
-    - name: create flannel kbr1 network
-      become: yes
-      blockinfile:
-        path: /run/flannel/networks/kbr1.env
-        create: yes
-        block: |
-          FLANNEL_NETWORK=10.233.0.0/18
-          FLANNEL_SUBNET=10.233.65.1/24
-          FLANNEL_MTU=1450
-          FLANNEL_IPMASQ=true
-    - name: create multus config file
-      become: yes
-      blockinfile:
-        path: /etc/cni/net.d/10-multus.conf
-        create: yes
-        block: |
-          {
-              "name": "multus-network",
-              "type": "multus",
-              "kubeconfig": "/etc/kubernetes/node-kubeconfig.yaml",
-              "delegates": [{
-                  {
-                      "type": "flannel",
-                      "name": "flannel.2",
-                      "subnetFile": "/run/flannel/networks/kbr1.env",
-                      "dataDir": "/var/lib/cni/flannel/kbr1",
-                      "delegate": {
-                          "bridge": "kbr1"
-                      }
-                  },
-                  {
-                      "type": "flannel",
-                      "name": "flannel.1",
-                      "subnetFile": "/run/flannel/networks/kbr0.env",
-                      "dataDir": "/var/lib/cni/flannel/kbr0",
-                      "masterplugin": true,
-                      "delegate": {
-                          "bridge": "kbr0",
-                          "isDefaultGateway": true
-                      }
-                  }
-              }]
-          }
     - name: Restart kubelet service
       become: yes
       service:
@@ -97,12 +66,9 @@
         state: restarted
 
 - hosts: localhost
-  become: yes
   roles:
     - andrewrothstein.kubectl
   tasks:
-    - name: modify flannel daemon to support multi-network mode
-      shell: KUBE_EDITOR="sed -i \"/- \/opt\/bin\/flanneld/a \        - --networks=kbr0,kbr1\"" kubectl edit ds kube-flannel -n=kube-system
     - name: define a CRD network object specification
       blockinfile:
         path: /tmp/crdnetwork.yaml
@@ -131,6 +97,5 @@
               shortNames:
               - net
     - name: create network objects
-      shell: "/usr/local/bin/kubectl create -f /tmp/{{ item }}.yaml"
-      with_items:
-        - crdnetwork
+      shell: "/usr/local/bin/kubectl create -f /tmp/crdnetwork.yaml"
+      ignore_errors: True
