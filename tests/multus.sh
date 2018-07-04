@@ -12,43 +12,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-cat << MULTUSNET01 > $HOME/flannel-network.yaml
-apiVersion: "kubernetes.com/v1"
-kind: Network
-metadata:
-  name: flannel-conf
-plugin: flannel
-args: '[
-        {
-            "type": "flannel",
-            "name": "flannel-conf",
-            "subnetFile": "/run/flannel/subnet.env",
-            "masterplugin": true,
-            "delegate": {
-                "bridge": "kbr0",
-                "isDefaultGateway": true
-            }
-        }
-]'
-MULTUSNET01
-
-cat << MULTUSNET02 > $HOME/flannel-network2.yaml
-apiVersion: "kubernetes.com/v1"
-kind: Network
-metadata:
-  name: flannel-conf2
-plugin: flannel
-args: '[
-        {
-            "type": "flannel",
-            "name": "flannel-conf2",
-            "subnetFile": "/run/flannel/networks/flannel2-subnet.env",
-            "delegate": {
-                "bridge": "kbr1"
-            }
-        }
-]'
-MULTUSNET02
+rm -f $HOME/*.yaml
 
 cat << MULTUSPOD > $HOME/pod-multi-network.yaml
 apiVersion: v1
@@ -58,7 +22,7 @@ metadata:
   annotations:
     networks: '[
         { "name": "flannel-conf" },
-        { "name": "flannel-conf2" },
+        { "name": "bridge-conf" }
     ]'
 spec:  # specification of the pod's contents
   containers:
@@ -70,11 +34,19 @@ spec:  # specification of the pod's contents
 MULTUSPOD
 
 if $(kubectl version &>/dev/null); then
-    kubectl create -f $HOME/flannel-network.yaml
-    kubectl create -f $HOME/flannel-network2.yaml
+    pod_name=multus-multi-net-pod
+    kubectl delete pod $pod_name --ignore-not-found=true --now
+    sleep 10
     kubectl create -f $HOME/pod-multi-network.yaml
 
-    #kubectl get pods --all-namespaces -o wide -w
+    status_phase=""
+    while [[ $status_phase != "Running" ]]; do
+        status_phase=$(kubectl get pods $pod_name -o jsonpath --template={.status.phase})
+        sleep 1
+    done
 
-    #kubectl exec -it multus-multi-net-pod -- ifconfig
+    multus_nic=$(kubectl exec -it $pod_name -- ifconfig | grep "net0")
+    if [ -z "$multus_nic" ]; then
+        exit 1
+    fi
 fi

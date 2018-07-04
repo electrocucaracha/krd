@@ -68,7 +68,7 @@ EOL
     pip install ansible
 }
 
-# install_k8si() - Install Kubernetes using kubespray tool
+# install_k8s() - Install Kubernetes using kubespray tool
 function install_k8s {
     echo "Deploying kubernetes"
     local dest_folder=/opt
@@ -84,10 +84,13 @@ function install_k8s {
     pushd $dest_folder/kubespray-$version
         pip install -r requirements.txt
         rm -f $krd_inventory_folder/group_vars/all.yml
-        if [ $http_proxy ]; then
+        if [[ -n "${verbose+x}" ]]; then
+            echo "kube_log_level: 5" >> $krd_inventory_folder/group_vars/all.yml
+        fi
+        if [[ -n "${http_proxy+x}" ]]; then
             echo "http_proxy: \"$http_proxy\"" >> $krd_inventory_folder/group_vars/all.yml
         fi
-        if [ $https_proxy ]; then
+        if [[ -n "${https_proxy+x}" ]]; then
             echo "https_proxy: \"$https_proxy\"" >> $krd_inventory_folder/group_vars/all.yml
         fi
         ansible-playbook $verbose -i $krd_inventory cluster.yml -b | tee $log_folder/setup-kubernetes.log
@@ -103,12 +106,13 @@ function install_addons {
     echo "Installing Kubernetes AddOns"
     apt-get install -y sshpass
     _install_ansible
-    ansible-galaxy install -r $krd_folder/galaxy-requirements.yml
+    ansible-galaxy install -r $krd_folder/galaxy-requirements.yml --ignore-errors
+    sed -i "s/alpine-glibc-shim/alpine_glibc_shim/g" /root/.ansible/roles/andrewrothstein.go/meta/main.yml
 
     for addon in $addons; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
         ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-${addon}.yml | tee $log_folder/setup-${addon}.log
-        if [[ -n "${plugin_enabled+x}" ]]; then
+        if [[ -n "${testing_enabled+x}" ]]; then
             pushd $krd_tests
             bash ${addon}.sh
             popd

@@ -12,23 +12,23 @@ Virtual Machines.
 
 # Components
 
-| Name           | Description                                   | Source                            | Status |
-|:--------------:|:----------------------------------------------|:----------------------------------|:------:|
-| Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Done   |
-| OVN            | Opensource Virtual Networking for OpenvSwitch | [configure-ovn.yml][3]            | Done   |
-| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][4] | Done   |
-| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][5]        | Done   |
-| Multus         | Provides Multiple Network support in a pod    | [configure-multus.yml][6]         | Done   |
+| Name           | Description                                   | Source                            | Status      |
+|:--------------:|:----------------------------------------------|:----------------------------------|:-----------:|
+| Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Implemented |
+| OVN            | Opensource Virtual Networking for OpenvSwitch | [configure-ovn.yml][3]            | Implemented |
+| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][4] | Implemented |
+| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][5]        | Implemented |
+| Multus         | Provides Multiple Network support in a pod    | [configure-multus.yml][6]         | Tested      |
 
 ## Deployment
 
-The [installer](installer) bash script contains the minimal
+The [installer](installer.sh) bash script contains the minimal
 Ubuntu instructions required for running this project.
 
 ### Virtual Machines
 
 This project uses [Vagrant tool][7] for provisioning Virtual Machines
-automatically. The [setup.sh](setup.sh) bash script contains the
+automatically. The [setup](setup.sh) bash script contains the
 Linux instructions to install dependencies and plugins required for
 its usage. This script supports two Virtualization technologies
 (Libvirt and VirtualBox).

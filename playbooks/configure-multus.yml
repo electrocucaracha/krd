@@ -9,25 +9,11 @@
 ##############################################################################
 - hosts: kube-master
   tasks:
-    - name: copy Flannel DaemonSet as template
-      become: yes
-      copy:
+    - name: make local copy of daemon and configmap flannel objects
+      fetch:
         src: /etc/kubernetes/cni-flannel.yml
-        dest: /etc/kubernetes/cni-flannel2.yml
-        remote_src: yes
-    - name: modify the network
-      become: yes
-      replace:
-        path: /etc/kubernetes/cni-flannel2.yml
-        regexp: "{{ item.regexp }}"
-        replace: "{{ item.line }}"
-      with_items:
-        - { regexp: '"Network":.*', line: '"Network": "10.234.0.0/18", "SubnetMin": "10.234.1.0",'}
-        - { regexp: 'name: kube-flannel', line: 'name: kube-flannel2'}
-        - { regexp: 'command: \[ "/opt/bin/flanneld", "--ip-masq", .*', line: 'command: [ "/opt/bin/flanneld", "--ip-masq", "--kube-subnet-mgr", "--subnet-file=/run/flannel/networks/flannel2-subnet.env" ]'}
-    - name: create network objects
-      shell: "/usr/local/bin/kubectl create -f /etc/kubernetes/cni-flannel2.yml"
-      ignore_errors: True
+        dest: /tmp/cni-flannel.yml
+        flat: yes
 
 - hosts: kube-node:kube-master
   vars:
@@ -37,11 +23,6 @@
   roles:
     - role: andrewrothstein.go
   tasks:
-    - name: create flannel multi-network mode folder
-      become: yes
-      file:
-        state: directory
-        path: /run/flannel/networks
     - name: download Multus tarball
       get_url:
         url: "https://github.com/intel/multus-cni/archive/v{{ multus_version }}.tar.gz"
@@ -59,19 +40,54 @@
     - name: copy multus binary to opt folder
       become: yes
       command: "mv /tmp/multus-cni-{{ multus_version }}/bin/multus /opt/cni/bin"
-    - name: Restart kubelet service
-      become: yes
-      service:
-        name: kubelet
-        state: restarted
 
 - hosts: localhost
   roles:
     - andrewrothstein.kubectl
   tasks:
+    - name: replace CNI flannel configuration
+      replace:
+        path: /tmp/cni-flannel.yml
+        before: 'net-conf.json:.*'
+        regexp: '\ *\"plugins\":\[((.|\n)*)\]'
+        replace: |2
+                "plugins": [
+                  {
+                    "type": "multus",
+                    "kubeconfig": "/etc/kubernetes/node-kubeconfig.yaml",
+                    "delegates": [
+                      {
+                        "type": "flannel",
+                        "masterplugin": true,
+                        "delegate": {
+                          "isDefaultGateway": true
+                        }
+                      },
+                      {
+                        "name": "mynet",
+                        "type": "bridge",
+                        "bridge": "mynet0",
+                        "isDefaultGateway": true,
+                        "forceAddress": false,
+                        "ipMasq": true,
+                        "hairpinMode": true,
+                        "ipam": {
+                          "type": "host-local",
+                          "subnet": "10.10.0.0/16"
+                        }
+                      }
+                    ]
+                  }
+                ]
+    - name: delete ConfigMap and DaemonSet Flannel objects
+      shell: "/usr/local/bin/kubectl delete {{ item.type }} {{ item.name }} -n=kube-system"
+      ignore_errors: True
+      with_items:
+      - { type: "configmap", name: "kube-flannel-cfg" }
+      - { type: "daemonset", name: "kube-flannel" }
     - name: define a CRD network object specification
       blockinfile:
-        path: /tmp/crdnetwork.yaml
+        path: /tmp/crdnetwork.yml
         create: yes
         block: |
           apiVersion: apiextensions.k8s.io/v1beta1
@@ -96,6 +112,24 @@
               # shortNames allow shorter string to match your resource on the CLI
               shortNames:
               - net
+    - name: define network objects
+      blockinfile:
+        path: "/tmp/{{ item }}-network.yml"
+        create: yes
+        block: |
+          apiVersion: "kubernetes.com/v1"
+          kind: Network
+          metadata:
+            name: "{{ item }}-conf"
+          plugin: "{{ item }}"
+      with_items:
+      - flannel
+      - bridge
     - name: create network objects
-      shell: "/usr/local/bin/kubectl create -f /tmp/crdnetwork.yaml"
+      shell: "/usr/local/bin/kubectl create -f /tmp/{{ item }}.yml"
       ignore_errors: True
+      with_items:
+      - crdnetwork
+      - cni-flannel
+      - flannel-network
+      - bridge-network
