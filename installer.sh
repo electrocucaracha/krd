@@ -107,7 +107,6 @@ function install_addons {
     apt-get install -y sshpass
     _install_ansible
     ansible-galaxy install -r $krd_folder/galaxy-requirements.yml --ignore-errors
-    sed -i "s/alpine-glibc-shim/alpine_glibc_shim/g" /root/.ansible/roles/andrewrothstein.go/meta/main.yml
 
     for addon in $addons; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
@@ -126,6 +125,20 @@ function install_plugin {
     _install_go
 
     go get github.com/shank7485/k8-plugin-multicloud/...
+}
+
+# install_crictl() - Install Container Runtime Interface (CRI) CLI
+function install_crictl {
+    local version="v1.0.0-beta.1"
+
+    wget https://github.com/kubernetes-incubator/cri-tools/releases/download/$version/crictl-$version-linux-amd64.tar.gz
+    tar zxvf crictl-$version-linux-amd64.tar.gz -C /usr/local/bin
+    rm -f crictl-$version-linux-amd64.tar.gz
+
+    cat << EOL > /etc/crictl.yaml
+runtime-endpoint: unix:///run/criproxy.sock
+image-endpoint: unix:///run/criproxy.sock
+EOL
 }
 
 # _print_kubernetes_info() - Prints the login Kubernetes information
