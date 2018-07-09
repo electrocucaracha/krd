@@ -59,7 +59,6 @@ Vagrant.configure("2") do |config|
   nodes.each do |node|
     config.vm.define node['name'] do |nodeconfig|
       nodeconfig.vm.hostname = node['name']
-      nodeconfig.ssh.insert_key = false
       nodeconfig.vm.network :private_network, :ip => node['ip'], :type => :static
       nodeconfig.vm.provider 'virtualbox' do |v|
         v.customize ["modifyvm", :id, "--memory", node['memory']]
@@ -84,7 +83,6 @@ Vagrant.configure("2") do |config|
   end
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "multicloud"
-    #installer.ssh.insert_key = false
     installer.vm.network :private_network, :ip => "10.10.10.2", :type => :static
     installer.vm.provision 'shell' do |sh|
       sh.path =  "installer.sh"
