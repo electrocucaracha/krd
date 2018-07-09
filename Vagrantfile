@@ -63,7 +63,7 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.network :private_network, :ip => node['ip'], :type => :static
       nodeconfig.ssh.username = "vagrant"
       nodeconfig.ssh.password = "vagrant"
-      nodeconfig.ssh.host = node['ip']
+      #nodeconfig.ssh.host = node['ip']
       nodeconfig.ssh.port = 22
       nodeconfig.vm.provider 'virtualbox' do |v|
         v.customize ["modifyvm", :id, "--memory", node['memory']]

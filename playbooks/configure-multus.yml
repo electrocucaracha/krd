@@ -16,6 +16,7 @@
         flat: yes
 
 - hosts: kube-node:kube-master
+  become: yes
   vars:
     multus_version: 2.0
   environment:
@@ -38,7 +39,6 @@
         state: directory
         path: /opt/cni/bin
     - name: copy multus binary to opt folder
-      become: yes
       command: "mv /tmp/multus-cni-{{ multus_version }}/bin/multus /opt/cni/bin"
 
 - hosts: localhost
