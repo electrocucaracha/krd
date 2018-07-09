@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 box = {
-  :virtualbox => { :name => 'ubuntu/xenial64', :version => '20180706.0.0' },
+  :virtualbox => { :name => 'elastic/ubuntu-16.04-x86_64', :version => '20180708.0.0' },
   :libvirt => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0'}
 }
 
@@ -61,6 +61,10 @@ Vagrant.configure("2") do |config|
     config.vm.define node['name'] do |nodeconfig|
       nodeconfig.vm.hostname = node['name']
       nodeconfig.vm.network :private_network, :ip => node['ip'], :type => :static
+      nodeconfig.ssh.username = "vagrant"
+      nodeconfig.ssh.password = "vagrant"
+      nodeconfig.ssh.host = node['ip']
+      nodeconfig.ssh.port = 22
       nodeconfig.vm.provider 'virtualbox' do |v|
         v.customize ["modifyvm", :id, "--memory", node['memory']]
         v.customize ["modifyvm", :id, "--cpus", node['cpus']]
