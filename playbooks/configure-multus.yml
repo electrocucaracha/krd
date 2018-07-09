@@ -80,6 +80,7 @@
                   }
                 ]
     - name: delete ConfigMap and DaemonSet Flannel objects
+      become: yes
       shell: "/usr/local/bin/kubectl delete {{ item.type }} {{ item.name }} -n=kube-system"
       ignore_errors: True
       with_items:
