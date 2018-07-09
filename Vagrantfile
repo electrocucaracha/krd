@@ -3,7 +3,7 @@
 
 box = {
   :virtualbox => { :name => 'ubuntu/xenial64', :version => '20180706.0.0' },
-  :libvirt => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180708.0.0'}
+  :libvirt => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0'}
 }
 
 require 'yaml'
