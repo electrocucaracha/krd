@@ -12,6 +12,8 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+rm -f $HOME/*.yaml
+
 cat << CIRROSPOD > $HOME/cirros-pod.yaml
 apiVersion: v1
 kind: Pod
@@ -44,7 +46,7 @@ spec:
     # This specifies the image to use.
     # virtlet.cloud/ prefix is used by CRI proxy, the remaining part
     # of the image name is prepended with https:// and used to download the image
-    image: virtlet.cloud/cirros
+    image: virtlet.cloud/cirros/0.3.5
     imagePullPolicy: IfNotPresent
     # tty and stdin required for "kubectl attach -t" to work
     tty: true
@@ -56,8 +58,22 @@ spec:
 CIRROSPOD
 
 if $(kubectl version &>/dev/null); then
+    pod_name=cirros-vm
+    kubectl delete pod $pod_name --ignore-not-found=true --now
+    while kubectl get pod $pod_name &>/dev/null; do
+        sleep 5
+    done
     kubectl create -f $HOME/cirros-pod.yaml
 
-    #kubectl get pods --all-namespaces -o wide -w
+    status_phase=""
+    while [[ $status_phase != "Running" ]]; do
+        new_phase=$(kubectl get pods $pod_name | awk 'NR==2{print $3}')
+        if [[ $new_phase != $status_phase ]]; then
+            echo "$(date +%H:%M:%S) - $new_phase"
+            status_phase=$new_phase
+        fi
+        if [[ $new_phase == "Err"* ]]; then
+            exit 1
+        fi
+    done
 fi
-

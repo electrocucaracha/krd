@@ -17,3 +17,4 @@ ovn_controller_service: ovn-host
 ovn_pkgs:
   - ovn-common # <= 2.8.1-1
   - ovn-host
+libvirt_service: libvirt

@@ -55,6 +55,7 @@ Vagrant.configure("2") do |config|
     config.proxy.http     = ENV['http_proxy'] || ENV['HTTP_PROXY'] || ""
     config.proxy.https    = ENV['https_proxy'] || ENV['HTTPS_PROXY'] || ""
     config.proxy.no_proxy = $no_proxy
+    config.proxy.enabled = { docker: false }
   end
 
   nodes.each do |node|
@@ -68,14 +69,34 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.provider 'virtualbox' do |v|
         v.customize ["modifyvm", :id, "--memory", node['memory']]
         v.customize ["modifyvm", :id, "--cpus", node['cpus']]
+        if node.has_key? "volumes"
+          node['volumes'].each do |volume|
+            $volume_file = "#{node['name']}-#{volume['name']}.vdi"
+            unless File.exist?($volume_file)
+              v.customize ['createmedium', 'disk', '--filename', $volume_file, '--size', volume['size']]
+            end
+            v.customize ['storageattach', :id, '--storagectl', 'SATAController', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', $volume_file]
+          end
+        end
       end
       nodeconfig.vm.provider 'libvirt' do |v|
         v.memory = node['memory']
         v.cpus = node['cpus']
         v.nested = true
         v.cpu_mode = 'host-passthrough'
+        nodeconfig.vm.provision 'shell' do |sh|
+          sh.path =  "node.sh"
+          if node.has_key? "volumes"
+            $volume_mounts_dict = ''
+            node['volumes'].each do |volume|
+              $volume_mounts_dict += "#{volume['name']}=#{volume['mount']},"
+              $volume_file = "./#{node['name']}-#{volume['name']}.qcow2"
+              v.storage :file, :bus => 'sata', :device => volume['name'], :size => volume['size']
+            end
+            sh.args = ['-v', $volume_mounts_dict[0...-1]]
+          end
+        end
       end
-      nodeconfig.vm.provision 'shell', inline: "swapoff -a"
     end
   end
   sync_type = "virtualbox"

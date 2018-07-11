@@ -11,4 +11,3 @@
   version: v2.1.7
 - src: andrewrothstein.kubectl
   version: v1.1.12
-- src: andrewrothstein.alpine_glibc_shim

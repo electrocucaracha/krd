@@ -12,7 +12,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-
 # usage() - Prints the usage of the program
 function usage {
     cat <<EOF
@@ -172,6 +171,7 @@ while getopts "a:pvw:t" opt; do
             plugin_enabled="true"
             ;;
         v)
+            set -o xtrace
             verbose="-vvv"
             ;;
         w)
