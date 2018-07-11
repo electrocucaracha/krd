@@ -36,13 +36,21 @@ MULTUSPOD
 if $(kubectl version &>/dev/null); then
     pod_name=multus-multi-net-pod
     kubectl delete pod $pod_name --ignore-not-found=true --now
-    sleep 10
+    while kubectl get pod $pod_name &>/dev/null; do
+        sleep 5
+    done
     kubectl create -f $HOME/pod-multi-network.yaml
 
     status_phase=""
     while [[ $status_phase != "Running" ]]; do
-        status_phase=$(kubectl get pods $pod_name -o jsonpath --template={.status.phase})
-        sleep 1
+        new_phase=$(kubectl get pods $pod_name | awk 'NR==2{print $3}')
+        if [[ $new_phase != $status_phase ]]; then
+            echo "$(date +%H:%M:%S) - $new_phase"
+            status_phase=$new_phase
+        fi
+        if [[ $new_phase == "Err"* ]]; then
+            exit 1
+        fi
     done
 
     multus_nic=$(kubectl exec -it $pod_name -- ifconfig | grep "net0")
