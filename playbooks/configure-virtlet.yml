@@ -7,21 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-- hosts: virtlet
-  become: yes
-  tasks:
-    - name: Load distribution variables
-      include_vars:
-        file: "{{ item }}"
-      with_items:
-        - "{{ ansible_os_family }}.yml"
-    - name: disable AppArmor in all nodes
-      service:
-        name: apparmor
-        state: stopped
-        enabled: no
-      when: ansible_os_family == "Debian"
-
 - hosts: localhost
   become: yes
   vars:
@@ -34,14 +19,20 @@
     - andrewrothstein.kubectl
   tasks:
     - name: apply virtlet extraRuntime label
-      command: "/usr/local/bin/kubectl label node {{ item }} extraRuntime=virtlet"
+      command: "/usr/local/bin/kubectl label node {{ item }} extraRuntime=virtlet --overwrite"
       with_inventory_hostnames: virtlet
     - name: create image translations confimap file
       blockinfile:
         path: "{{ images_file }}"
         create: yes
         block: |
-          translations:
+          apiVersion: "virtlet.k8s/v1"
+          kind: VirtletImageMapping
+          metadata:
+            name: primary
+            namespace: kube-system
+          spec:
+            translations:
             - name: ubuntu/16.04
               url: https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
             - regexp: 'cirros/(\d\.\d\.\d)'
@@ -51,13 +42,10 @@
             - name: fedora
               url: https://download.fedoraproject.org/pub/fedora/linux/releases/27/CloudImages/x86_64/images/Fedora-Cloud-Base-27-1.6.x86_64.qcow2
           {% if lookup('env','http_proxy') != "" %}
-          transports:
-            "":
-              proxy: "{{ lookup('env','http_proxy') }}"
+            transports:
+              "":
+                proxy: "{{ lookup('env','http_proxy') }}"
           {% endif %}
-    - name: install image translations configmap
-      shell: "/usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ images_file }} --dry-run -o yaml | /usr/local/bin/kubectl apply -f -"
-      ignore_errors: True
     - name: create Virtlet folder
       file:
         state: directory
@@ -75,6 +63,9 @@
     - name: create Virtlet k8s objects
       shell: "/usr/local/bin/kubectl plugin virt gen | /usr/local/bin/kubectl apply -f -"
       ignore_errors: True
+    - name: install image translations configmap
+      shell: "/usr/local/bin/kubectl apply -f {{ images_file }}"
+      ignore_errors: True
     - name: wait for Virtlet daemonset
       shell: "/usr/local/bin/kubectl get ds virtlet -n=kube-system -o=jsonpath --template={.status.numberReady}"
       register: daemonset
@@ -88,6 +79,53 @@
   vars:
     criproxy_version: 0.11.0
   tasks:
+    - name: Load distribution variables
+      include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "{{ ansible_os_family }}.yml"
+    - name: disable AppArmor in all nodes
+      service:
+        name: apparmor
+        state: stopped
+        enabled: no
+      when: ansible_os_family == "Debian"
+    - name: modify args for kubelet service
+      lineinfile:
+        dest: /etc/systemd/system/kubelet.service
+        line: "                --container-runtime=remote --container-runtime-endpoint=unix:///run/criproxy.sock --image-service-endpoint=unix:///run/criproxy.sock --enable-controller-attach-detach=false \\"
+        insertafter: '^ExecStart=/usr/local/bin/kubelet *'
+        state: present
+    - name: create dockershim service
+      blockinfile:
+        path: /etc/systemd/system/dockershim.service
+        create: yes
+        block: |
+          [Unit]
+          Description=dockershim for criproxy
+
+          [Service]
+          EnvironmentFile=-/etc/kubernetes/kubelet.env
+          ExecStartPre=-/bin/mkdir -p /var/lib/kubelet/volume-plugins
+          ExecStart=/usr/local/bin/kubelet --experimental-dockershim --port 11250 \
+                $KUBE_LOGTOSTDERR \
+                $KUBE_LOG_LEVEL \
+                $KUBELET_API_SERVER \
+                $KUBELET_ADDRESS \
+                $KUBELET_PORT \
+                $KUBELET_HOSTNAME \
+                $KUBE_ALLOW_PRIV \
+                $KUBELET_ARGS \
+                $DOCKER_SOCKET \
+                $KUBELET_NETWORK_PLUGIN \
+                $KUBELET_VOLUME_PLUGIN \
+                $KUBELET_CLOUDPROVIDER
+          Restart=always
+          StartLimitInterval=0
+          RestartSec=10
+
+          [Install]
+          RequiredBy=criproxy.service
     - name: download CRIproxy package
       get_url:
         url: "https://github.com/Mirantis/criproxy/releases/download/v{{ criproxy_version }}/criproxy"
@@ -112,8 +150,15 @@
 
           [Install]
           WantedBy=kubelet.service
-    - name: start criproxy service
+    - name: restart kubelet services
       service:
-        name: criproxy
+        name: kubelet
+        state: restarted
+    - name: start criproxy and dockershim services
+      service:
+        name: "{{ item }}"
         state: started
         enabled: yes
+      with_items:
+      - criproxy
+      - dockershim

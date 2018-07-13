@@ -75,5 +75,6 @@ if $(kubectl version &>/dev/null); then
         if [[ $new_phase == "Err"* ]]; then
             exit 1
         fi
+        kubectl plugin virt virsh list
     done
 fi
