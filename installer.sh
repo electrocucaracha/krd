@@ -128,7 +128,7 @@ function install_plugin {
 
 # install_crictl() - Install Container Runtime Interface (CRI) CLI
 function install_crictl {
-    local version="v1.0.0-beta.1"
+    local version="v1.0.0-alpha.0" # More info: https://github.com/kubernetes-incubator/cri-tools#current-status
 
     wget https://github.com/kubernetes-incubator/cri-tools/releases/download/$version/crictl-$version-linux-amd64.tar.gz
     tar zxvf crictl-$version-linux-amd64.tar.gz -C /usr/local/bin
