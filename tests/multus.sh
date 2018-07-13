@@ -14,15 +14,45 @@ set -o pipefail
 
 rm -f $HOME/*.yaml
 
+cat << MULTUSNET01 >> $HOME/flannel-network.yaml
+apiVersion: "kubernetes.cni.cncf.io/v1"
+kind: Network
+metadata:
+  name: flannel-conf
+plugin: flannel
+spec:
+  config: '{
+    "delegate": {
+        "isDefaultGateway": true
+    }
+}'
+MULTUSNET01
+
+cat << MULTUSNET02 >> $HOME/bridge-network.yaml
+apiVersion: "kubernetes.cni.cncf.io/v1"
+kind: Network
+metadata:
+  name: bridge-conf
+spec:
+  config: '{
+    "name": "mynet",
+    "type": "bridge",
+    "ipam": {
+        "type": "host-local",
+        "subnet": "10.10.0.0/16"
+    }
+}'
+MULTUSNET02
+
 cat << MULTUSPOD > $HOME/pod-multi-network.yaml
 apiVersion: v1
 kind: Pod
 metadata:
   name: multus-multi-net-pod
   annotations:
-    networks: '[
-        { "name": "flannel-conf" },
-        { "name": "bridge-conf" }
+    kubernetes.v1.cni.cncf.io/networks: '[
+        { "name": "bridge-conf", "interfaceRequest": "eth1" },
+        { "name": "bridge-conf", "interfaceRequest": "eth2" }
     ]'
 spec:  # specification of the pod's contents
   containers:
@@ -34,6 +64,9 @@ spec:  # specification of the pod's contents
 MULTUSPOD
 
 if $(kubectl version &>/dev/null); then
+    kubectl apply -f $HOME/flannel-network.yaml
+    kubectl apply -f $HOME/bridge-network.yaml
+
     pod_name=multus-multi-net-pod
     kubectl delete pod $pod_name --ignore-not-found=true --now
     while kubectl get pod $pod_name &>/dev/null; do
@@ -53,7 +86,8 @@ if $(kubectl version &>/dev/null); then
         fi
     done
 
-    multus_nic=$(kubectl exec -it $pod_name -- ifconfig | grep "net0")
+    kubectl exec -it $pod_name -- ip a
+    multus_nic=$(kubectl exec -it $pod_name -- ifconfig | grep "eth1")
     if [ -z "$multus_nic" ]; then
         exit 1
     fi
