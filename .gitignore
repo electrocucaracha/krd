@@ -5,3 +5,4 @@ inventory/group_vars/all.yml
 *.retry
 .*.swp
 *.log
+config/pdf.yml

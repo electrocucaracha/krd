@@ -7,8 +7,11 @@ box = {
 }
 
 require 'yaml'
-idf = ENV.fetch('IDF', 'config/pdf.yml')
-nodes = YAML.load_file(idf)
+pdf = 'config/default.yml'
+if File.exist?('config/pdf.yml')
+  pdf = 'config/pdf.yml'
+end
+nodes = YAML.load_file(pdf)
 
 # Inventory file creation
 File.open("inventory/hosts.ini", "w") do |inventory_file|
