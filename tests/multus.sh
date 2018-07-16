@@ -14,21 +14,7 @@ set -o pipefail
 
 rm -f $HOME/*.yaml
 
-cat << MULTUSNET01 >> $HOME/flannel-network.yaml
-apiVersion: "kubernetes.cni.cncf.io/v1"
-kind: Network
-metadata:
-  name: flannel-conf
-plugin: flannel
-spec:
-  config: '{
-    "delegate": {
-        "isDefaultGateway": true
-    }
-}'
-MULTUSNET01
-
-cat << MULTUSNET02 >> $HOME/bridge-network.yaml
+cat << MULTUSNET01 >> $HOME/bridge-network.yaml
 apiVersion: "kubernetes.cni.cncf.io/v1"
 kind: Network
 metadata:
@@ -42,7 +28,7 @@ spec:
         "subnet": "10.10.0.0/16"
     }
 }'
-MULTUSNET02
+MULTUSNET01
 
 cat << MULTUSPOD > $HOME/pod-multi-network.yaml
 apiVersion: v1
@@ -64,7 +50,6 @@ spec:  # specification of the pod's contents
 MULTUSPOD
 
 if $(kubectl version &>/dev/null); then
-    kubectl apply -f $HOME/flannel-network.yaml
     kubectl apply -f $HOME/bridge-network.yaml
 
     pod_name=multus-multi-net-pod
