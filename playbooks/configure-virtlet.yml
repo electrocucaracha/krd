@@ -26,26 +26,21 @@
         path: "{{ images_file }}"
         create: yes
         block: |
-          apiVersion: "virtlet.k8s/v1"
-          kind: VirtletImageMapping
-          metadata:
-            name: primary
-            namespace: kube-system
-          spec:
-            translations:
+          translations:
             - name: ubuntu/16.04
               url: https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
-            - regexp: 'cirros/(\d\.\d\.\d)'
-              url: 'https://download.cirros-cloud.net/$1/cirros-$1-x86_64-disk.img'
             - regexp: 'centos/(\d+)-(\d+)'
               url: 'https://cloud.centos.org/centos/$1/images/CentOS-$1-x86_64-GenericCloud-$2.qcow2'
             - name: fedora
               url: https://download.fedoraproject.org/pub/fedora/linux/releases/27/CloudImages/x86_64/images/Fedora-Cloud-Base-27-1.6.x86_64.qcow2
           {% if lookup('env','http_proxy') != "" %}
-            transports:
-              "":
-                proxy: "{{ lookup('env','http_proxy') }}"
+          transports:
+            "":
+              proxy: "{{ lookup('env','http_proxy') }}"
           {% endif %}
+    - name: install image translations configmap
+      shell: "/usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ images_file }} --dry-run -o yaml | /usr/local/bin/kubectl apply -f -"
+      ignore_errors: True
     - name: create Virtlet folder
       file:
         state: directory
@@ -63,9 +58,6 @@
     - name: create Virtlet k8s objects
       shell: "/usr/local/bin/kubectl plugin virt gen | /usr/local/bin/kubectl apply -f -"
       ignore_errors: True
-    - name: install image translations configmap
-      shell: "/usr/local/bin/kubectl apply -f {{ images_file }}"
-      ignore_errors: True
     - name: wait for Virtlet daemonset
       shell: "/usr/local/bin/kubectl get ds virtlet -n=kube-system -o=jsonpath --template={.status.numberReady}"
       register: daemonset
@@ -79,11 +71,6 @@
   vars:
     criproxy_version: 0.11.0
   tasks:
-    - name: Load distribution variables
-      include_vars:
-        file: "{{ item }}"
-      with_items:
-        - "{{ ansible_os_family }}.yml"
     - name: disable AppArmor in all nodes
       service:
         name: apparmor
@@ -150,15 +137,15 @@
 
           [Install]
           WantedBy=kubelet.service
-    - name: restart kubelet services
-      service:
-        name: kubelet
-        state: restarted
     - name: start criproxy and dockershim services
       service:
         name: "{{ item }}"
         state: started
         enabled: yes
       with_items:
-      - criproxy
       - dockershim
+      - criproxy
+    - name: restart kubelet services
+      service:
+        name: kubelet
+        state: restarted

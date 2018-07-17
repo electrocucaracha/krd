@@ -46,7 +46,7 @@ spec:
     # This specifies the image to use.
     # virtlet.cloud/ prefix is used by CRI proxy, the remaining part
     # of the image name is prepended with https:// and used to download the image
-    image: virtlet.cloud/cirros/0.3.5
+    image: virtlet.cloud/fedora
     imagePullPolicy: IfNotPresent
     # tty and stdin required for "kubectl attach -t" to work
     tty: true
@@ -57,7 +57,29 @@ spec:
         memory: 160Mi
 CIRROSPOD
 
+cat << CIRROSIMAGE > $HOME/cirros-image.yaml
+apiVersion: "virtlet.k8s/v1"
+kind: VirtletImageMapping
+metadata:
+  name: cirros
+  namespace: kube-system
+spec:
+  translations:
+  - name: cirros
+    url: https://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
+CIRROSIMAGE
+
+if [[ -n "${http_proxy+x}" ]]; then
+    cat << CIRROSIMAGE >> $HOME/cirros-image.yaml
+  transports:
+    "":
+      proxy: "$http_proxy"
+CIRROSIMAGE
+fi
+
 if $(kubectl version &>/dev/null); then
+    kubectl apply -f $HOME/cirros-image.yaml
+
     pod_name=cirros-vm
     kubectl delete pod $pod_name --ignore-not-found=true --now
     while kubectl get pod $pod_name &>/dev/null; do
@@ -75,6 +97,11 @@ if $(kubectl version &>/dev/null); then
         if [[ $new_phase == "Err"* ]]; then
             exit 1
         fi
-        kubectl plugin virt virsh list
     done
+
+    kubectl plugin virt virsh list
+    virsh_image=$(kubectl plugin virt virsh list | grep "virtlet-.*-$pod_name")
+    if [ -z "$virsh_image" ]; then
+        exit 1
+    fi
 fi
