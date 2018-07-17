@@ -8,7 +8,6 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-set -o errexit
 set -o nounset
 set -o pipefail
 set -o xtrace
@@ -27,13 +26,13 @@ function mount_external_partition {
     local dev_name="/dev/$1"
     local mount_dir=$2
 
-    sfdisk $dev_name << EOF
+    sfdisk $dev_name --no-reread << EOF
 ;
 EOF
     mkfs -t ext4 ${dev_name}1
     mkdir -p $mount_dir
     mount ${dev_name}1 $mount_dir
-    echo "${dev_name}1  $mount_dir           ext4    errors=remount-ro,noatime,barrier=0 0       1" >> /etc/fstab
+    echo "${dev_name}1 $mount_dir           ext4    errors=remount-ro,noatime,barrier=0 0       1" >> /etc/fstab
 }
 
 while getopts "h?v:" opt; do

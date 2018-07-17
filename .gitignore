@@ -6,3 +6,4 @@ inventory/group_vars/all.yml
 .*.swp
 *.log
 config/pdf.yml
+*.vdi

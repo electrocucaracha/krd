@@ -65,10 +65,6 @@ Vagrant.configure("2") do |config|
     config.vm.define node['name'] do |nodeconfig|
       nodeconfig.vm.hostname = node['name']
       nodeconfig.vm.network :private_network, :ip => node['ip'], :type => :static
-      nodeconfig.ssh.username = "vagrant"
-      nodeconfig.ssh.password = "vagrant"
-      #nodeconfig.ssh.host = node['ip']
-      nodeconfig.ssh.port = 22
       nodeconfig.vm.provider 'virtualbox' do |v|
         v.customize ["modifyvm", :id, "--memory", node['memory']]
         v.customize ["modifyvm", :id, "--cpus", node['cpus']]
@@ -78,7 +74,7 @@ Vagrant.configure("2") do |config|
             unless File.exist?($volume_file)
               v.customize ['createmedium', 'disk', '--filename', $volume_file, '--size', volume['size']]
             end
-            v.customize ['storageattach', :id, '--storagectl', 'SATAController', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', $volume_file]
+            v.customize ['storageattach', :id, '--storagectl', 'IDE Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', $volume_file]
           end
         end
       end
