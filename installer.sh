@@ -30,7 +30,7 @@ function _install_go {
     if $(go version &>/dev/null); then
         return
     fi
-    local version=1.10.2
+    local version=1.10.3
     local tarball=go$version.linux-amd64.tar.gz
 
     wget https://dl.google.com/go/$tarball
@@ -65,6 +65,46 @@ EOL
     fi
     _install_pip
     pip install ansible
+}
+
+# _install_docker() - Download and install docker-engine
+function _install_docker {
+    local max_concurrent_downloads=${1:-3}
+
+    if $(docker version &>/dev/null); then
+        return
+    fi
+    apt-get install -y software-properties-common linux-image-extra-$(uname -r) linux-image-extra-virtual apt-transport-https ca-certificates curl
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    apt-get update
+    apt-get install -y docker-ce
+
+    mkdir -p /etc/systemd/system/docker.service.d
+    if [ $http_proxy ]; then
+        cat <<EOL > /etc/systemd/system/docker.service.d/http-proxy.conf
+[Service]
+Environment="HTTP_PROXY=$http_proxy"
+EOL
+    fi
+    if [ $https_proxy ]; then
+        cat <<EOL > /etc/systemd/system/docker.service.d/https-proxy.conf
+[Service]
+Environment="HTTPS_PROXY=$https_proxy"
+EOL
+    fi
+    if [ $no_proxy ]; then
+        cat <<EOL > /etc/systemd/system/docker.service.d/no-proxy.conf
+[Service]
+Environment="NO_PROXY=$no_proxy"
+EOL
+    fi
+    systemctl daemon-reload
+    echo "DOCKER_OPTS=\"-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --max-concurrent-downloads $max_concurrent_downloads \"" >> /etc/default/docker
+    usermod -aG docker $USER
+
+    systemctl restart docker
+    sleep 10
 }
 
 # install_k8s() - Install Kubernetes using kubespray tool
@@ -122,12 +162,19 @@ function install_addons {
 function install_plugin {
     echo "Installing multicloud/k8s plugin"
     _install_go
+    _install_docker
 
     go get github.com/shank7485/k8-plugin-multicloud/...
+    export GOPATH=$HOME/go
+    pushd $HOME/go/src/github.com/shank7485/k8-plugin-multicloud/deployments
+    ./build.sh
+    popd
+
+    docker run -d -v $HOME/.kube:/root/.kube/ nexus3.onap.org:10003/onap/multicloud/k8plugin
 }
 
-# install_crictl() - Install Container Runtime Interface (CRI) CLI
-function install_crictl {
+# _install_crictl() - Install Container Runtime Interface (CRI) CLI
+function _install_crictl {
     local version="v1.0.0-alpha.0" # More info: https://github.com/kubernetes-incubator/cri-tools#current-status
 
     wget https://github.com/kubernetes-incubator/cri-tools/releases/download/$version/crictl-$version-linux-amd64.tar.gz
