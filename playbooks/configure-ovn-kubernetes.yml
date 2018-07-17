@@ -10,12 +10,14 @@
 - hosts: all
   vars:
     central_node_ip: "{{ hostvars[groups['ovn-central'][0]]['ansible_ssh_host'] }}"
-    ovn_kubernetes_version: 0.3.0
   environment:
     PATH: "{{ ansible_env.PATH }}:/usr/local/go/bin/"
   roles:
     - role: andrewrothstein.go
   tasks:
+    - name: Load krd variables
+      include_vars:
+        file: pinned_versions.yml
     - name: download ovn-kubernetes tarball
       get_url:
         url: "https://github.com/openvswitch/ovn-kubernetes/archive/v{{ ovn_kubernetes_version }}.tar.gz"

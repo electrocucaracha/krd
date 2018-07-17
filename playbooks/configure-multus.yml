@@ -9,13 +9,14 @@
 ##############################################################################
 - hosts: kube-node
   become: yes
-  vars:
-    multus_version: 2.0
   environment:
     PATH: "{{ ansible_env.PATH }}:/usr/local/go/bin/"
   roles:
     - role: andrewrothstein.go
   tasks:
+    - name: Load krd variables
+      include_vars:
+        file: pinned_versions.yml
     - name: download Multus tarball
       get_url:
         url: "https://github.com/intel/multus-cni/archive/v{{ multus_version }}.tar.gz"
