@@ -17,7 +17,7 @@ Virtual Machines.
 | Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Implemented |
 | OVN            | Opensource Virtual Networking for OpenvSwitch | [configure-ovn.yml][3]            | Implemented |
 | ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][4] | Implemented |
-| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][5]        | Implemented |
+| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][5]        | Tested      |
 | Multus         | Provides Multiple Network support in a pod    | [configure-multus.yml][6]         | Tested      |
 
 ## Deployment
