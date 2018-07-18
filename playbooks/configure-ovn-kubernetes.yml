@@ -46,14 +46,6 @@
         path: /var/log/openvswitch
         state: directory
 
-- hosts: kube-node
-  tasks:
-    - name: copy k8s admin.conf file
-      become: yes
-      copy:
-        src: /root/.kube/config
-        dest: /etc/kubernetes/admin.conf
-
 - hosts: ovn-controller
   become: yes
   vars:

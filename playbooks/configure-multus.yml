@@ -33,10 +33,6 @@
         path: /opt/cni/bin
     - name: copy multus binary to opt folder
       command: "mv /tmp/multus-cni-{{ multus_version }}/bin/multus /opt/cni/bin"
-    - name: copy admin.conf file to kube-nodes
-      copy:
-        src: "{{ ansible_env.HOME}}/.kube/config"
-        dest: "/etc/kubernetes/admin.conf"
     - name: create multus configuration file
       blockinfile:
         marker: ""
