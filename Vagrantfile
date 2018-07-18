@@ -39,12 +39,14 @@ if ENV['no_proxy'] != nil or ENV['NO_PROXY']
     $no_proxy += "," + node['ip']
   end
   $subnet = "192.168.121"
+  if provider == :virtualbox
+    $subnet = "10.0.2"
+  end
   # NOTE: This range is based on vagrant-libvirt network definition CIDR 192.168.121.0/27
   (0..31).each do |i|
     $no_proxy += ",#{$subnet}.#{i}"
   end
 end
-
 
 Vagrant.configure("2") do |config|
   config.vm.box =  box[provider][:name]
