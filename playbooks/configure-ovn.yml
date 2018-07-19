@@ -65,7 +65,7 @@
 - hosts: ovn-controller
   become: yes
   vars:
-    ovn_central_ips: "{{ groups['ovn-central'] | map('extract', hostvars, ['ansible_eth0', 'ipv4', 'address']) | join(',') }}"
+    ovn_central_ips: "{{ groups['ovn-central'] | map('extract', hostvars, ['ansible_ssh_host']) | join(',') }}"
   tasks:
     - name: Load distribution variables
       include_vars:
@@ -102,3 +102,8 @@
       service:
         name: "{{ ovn_controller_service }}"
         state: started
+    - name: ensuring that br-int bridge exists
+      openvswitch_bridge:
+        bridge: br-int
+        state: present
+        fail_mode: secure
