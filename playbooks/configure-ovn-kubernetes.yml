@@ -25,7 +25,10 @@
         url: "https://github.com/openvswitch/ovn-kubernetes/archive/v{{ ovn_kubernetes_version }}.tar.gz"
         dest: /tmp/ovn-kubernetes.tar.gz
     - name: extract ovn-kubernetes source code
-      command: tar -C /tmp/ -xzf /tmp/ovn-kubernetes.tar.gz
+      unarchive:
+        src: /tmp/ovn-kubernetes.tar.gz
+        dest: /tmp/
+        remote_src: yes
     - name: make ovnkube files
       make:
         chdir: "/tmp/ovn-kubernetes-{{ ovn_kubernetes_version }}/go-controller"

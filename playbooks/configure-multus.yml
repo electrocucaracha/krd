@@ -22,7 +22,10 @@
         url: "https://github.com/intel/multus-cni/archive/v{{ multus_version }}.tar.gz"
         dest: /tmp/multus.tar.gz
     - name: extract multus source code
-      command: tar -C /tmp/ -xzf /tmp/multus.tar.gz
+      unarchive:
+        src: /tmp/multus.tar.gz
+        dest: /tmp
+        remote_src: yes
     - name: build multus source code
       command: ./build
       args:
