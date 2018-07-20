@@ -171,7 +171,7 @@ function install_plugin {
     ./build.sh
     popd
 
-    docker run -d -v $HOME/.kube:/root/.kube/ nexus3.onap.org:10003/onap/multicloud/k8plugin
+    docker run -d -v $HOME/.kube:/root/.kube/ -p 8081:8081 nexus3.onap.org:10003/onap/multicloud/k8plugin
 }
 
 # _install_crictl() - Install Container Runtime Interface (CRI) CLI
@@ -206,7 +206,7 @@ function _print_kubernetes_info {
 }
 
 # Configuration values
-addons="virtlet ovn ovn-kubernetes multus"
+addons="virtlet ovn-kubernetes multus"
 krd_folder="$(dirname "$0")"
 verbose=""
 
