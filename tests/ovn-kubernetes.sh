@@ -76,10 +76,44 @@ spec:
 APACHENS
 
 if $(kubectl version &>/dev/null); then
+    kubectl apply -f $HOME/apache-e-w.yaml
+    kubectl apply -f $HOME/apache-n-s.yaml
+
+    apache_pod_name=apachetwin
+    nginx_pod_name=nginxtwin
+    kubectl delete pod $apache_pod_name --ignore-not-found=true --now
+    kubectl delete pod $nginx_pod_name --ignore-not-found=true --now
+    while kubectl get pod $apache_pod_name &>/dev/null; do
+        sleep 5
+    done
+    while kubectl get pod $nginx_pod_name &>/dev/null; do
+        sleep 5
+    done
     kubectl create -f $HOME/apache-pod.yaml
     kubectl create -f $HOME/nginx-pod.yaml
-    kubectl create -f $HOME/apache-e-w.yaml
-    kubectl create -f $HOME/apache-n-s.yaml
 
-    # kubectl get pods --all-namespaces -o wide -w
+    status_phase=""
+    while [[ $status_phase != "Running" ]]; do
+        new_phase=$(kubectl get pods $apache_pod_name | awk 'NR==2{print $3}')
+        if [[ $new_phase != $status_phase ]]; then
+            echo "$(date +%H:%M:%S) - $new_phase"
+            status_phase=$new_phase
+        fi
+        if [[ $new_phase == "Err"* ]]; then
+            exit 1
+        fi
+    done
+    status_phase=""
+    while [[ $status_phase != "Running" ]]; do
+        new_phase=$(kubectl get pods $nginx_pod_name | awk 'NR==2{print $3}')
+        if [[ $new_phase != $status_phase ]]; then
+            echo "$(date +%H:%M:%S) - $new_phase"
+            status_phase=$new_phase
+        fi
+        if [[ $new_phase == "Err"* ]]; then
+            exit 1
+        fi
+    done
+    apache_ovn=$(kubectl get pod $apache_pod_name -o jsonpath="{.metadata.annotations.ovn}")
+    nginx_ovn=$(kubectl get pod $nginx_pod_name -o jsonpath="{.metadata.annotations.ovn}")
 fi

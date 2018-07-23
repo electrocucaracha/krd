@@ -173,7 +173,12 @@ function install_plugin {
     ./build.sh
     popd
 
-    docker run -d -v $HOME/.kube:/root/.kube/ -p 8081:8081 nexus3.onap.org:10003/onap/multicloud/k8plugin
+    docker run -d -v $HOME/.kube:/root/.kube/ -p 8081:8081 --name k8s_plugin nexus3.onap.org:10003/onap/multicloud/k8plugin
+    if [[ -n "${testing_enabled+x}" ]]; then
+        pushd $krd_tests
+        bash plugin.sh
+        popd
+    fi
 }
 
 # _install_crictl() - Install Container Runtime Interface (CRI) CLI
