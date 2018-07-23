@@ -7,3 +7,4 @@ inventory/group_vars/all.yml
 *.log
 config/pdf.yml
 *.vdi
+docs/build/
