@@ -125,6 +125,8 @@ function install_k8s {
         rm -f $krd_inventory_folder/group_vars/all.yml
         if [[ -n "${verbose+x}" ]]; then
             echo "kube_log_level: 5" >> $krd_inventory_folder/group_vars/all.yml
+        else
+            echo "kube_log_level: 2" >> $krd_inventory_folder/group_vars/all.yml
         fi
         if [[ -n "${http_proxy+x}" ]]; then
             echo "http_proxy: \"$http_proxy\"" >> $krd_inventory_folder/group_vars/all.yml

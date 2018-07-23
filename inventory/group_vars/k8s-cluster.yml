@@ -51,9 +51,6 @@ retry_stagger: 5
 # cert files to. Not really changable...
 kube_cert_group: kube-cert
 
-# Cluster Loglevel configuration
-kube_log_level: 2
-
 # Users to create for basic auth in Kubernetes API via HTTP
 # Optionally add groups for user
 kube_api_pwd: "secret"
