@@ -11,31 +11,25 @@
   become: yes
   environment:
     PATH: "{{ ansible_env.PATH }}:/usr/local/go/bin/"
-  roles:
-    - role: andrewrothstein.go
   tasks:
     - name: Load krd variables
       include_vars:
         file: pinned_versions.yml
     - name: download Multus tarball
       get_url:
-        url: "https://github.com/intel/multus-cni/archive/v{{ multus_version }}.tar.gz"
+        url: "https://github.com/intel/multus-cni/releases/download/v{{ multus_version }}/multus-cni_v{{ multus_version }}_linux_amd64.tar.gz"
         dest: /tmp/multus.tar.gz
     - name: extract multus source code
       unarchive:
         src: /tmp/multus.tar.gz
         dest: /tmp
         remote_src: yes
-    - name: build multus source code
-      command: ./build
-      args:
-        chdir: "/tmp/multus-cni-{{ multus_version }}"
     - name: create multus binary folder
       file:
         state: directory
         path: /opt/cni/bin
     - name: copy multus binary to opt folder
-      command: "mv /tmp/multus-cni-{{ multus_version }}/bin/multus /opt/cni/bin"
+      command: "mv /tmp/multus-cni_v{{ multus_version }}_linux_amd64/multus-cni /opt/cni/bin/multus"
     - name: create multus configuration file
       blockinfile:
         marker: ""
