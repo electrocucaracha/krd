@@ -14,11 +14,13 @@ set -o pipefail
 
 rm -f $HOME/*.yaml
 
+pod_name=cirros-vm
+
 cat << CIRROSPOD > $HOME/cirros-pod.yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: cirros-vm
+  name: $pod_name
   annotations:
     # This tells CRI Proxy that this pod belongs to Virtlet runtime
     kubernetes.io/target-runtime: virtlet.cloud
@@ -80,7 +82,6 @@ fi
 if $(kubectl version &>/dev/null); then
     kubectl apply -f $HOME/cirros-image.yaml
 
-    pod_name=cirros-vm
     kubectl delete pod $pod_name --ignore-not-found=true --now
     while kubectl get pod $pod_name &>/dev/null; do
         sleep 5

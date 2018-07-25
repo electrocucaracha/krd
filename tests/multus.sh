@@ -14,6 +14,8 @@ set -o pipefail
 
 rm -f $HOME/*.yaml
 
+pod_name=multus-multi-net-pod
+
 cat << MULTUSNET01 >> $HOME/bridge-network.yaml
 apiVersion: "kubernetes.cni.cncf.io/v1"
 kind: Network
@@ -34,7 +36,7 @@ cat << MULTUSPOD > $HOME/pod-multi-network.yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: multus-multi-net-pod
+  name: $pod_name
   annotations:
     kubernetes.v1.cni.cncf.io/networks: '[
         { "name": "bridge-conf", "interfaceRequest": "eth1" },
@@ -52,7 +54,6 @@ MULTUSPOD
 if $(kubectl version &>/dev/null); then
     kubectl apply -f $HOME/bridge-network.yaml
 
-    pod_name=multus-multi-net-pod
     kubectl delete pod $pod_name --ignore-not-found=true --now
     while kubectl get pod $pod_name &>/dev/null; do
         sleep 5
