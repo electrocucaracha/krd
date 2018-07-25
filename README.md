@@ -12,12 +12,12 @@ Virtual Machines.
 
 # Components
 
-| Name           | Description                                   | Source                            | Status      |
-|:--------------:|:----------------------------------------------|:----------------------------------|:-----------:|
-| Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Done        |
-| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][3] | Implemented |
-| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][4]        | Tested      |
-| Multus         | Provides Multiple Network support in a pod    | [configure-multus.yml][5]         | Tested      |
+| Name           | Description                                   | Source                            | Status |
+|:--------------:|:----------------------------------------------|:----------------------------------|:------:|
+| Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Done   |
+| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][3] | Tested |
+| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][4]        | Tested |
+| Multus         | Provides Multiple Network support in a pod    | [configure-multus.yml][5]         | Tested |
 
 ## Deployment
 

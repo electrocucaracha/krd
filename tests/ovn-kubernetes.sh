@@ -12,30 +12,39 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+apache_pod_name=apachetwin
+nginx_pod_name=nginxtwin
+
 cat << APACHEPOD > $HOME/apache-pod.yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: apachetwin
+  name: $apache_pod_name
   labels:
     name: webserver
 spec:
   containers:
   - name: apachetwin
-    image: fedora/apache
+    image: "busybox"
+    command: ["top"]
+    stdin: true
+    tty: true
 APACHEPOD
 
 cat << NGINXPOD > $HOME/nginx-pod.yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginxtwin
+  name: $nginx_pod_name
   labels:
     name: webserver
 spec:
   containers:
   - name: nginxtwin
-    image: nginx
+    image: "busybox"
+    command: ["top"]
+    stdin: true
+    tty: true
 NGINXPOD
 
 cat << APACHEEW > $HOME/apache-e-w.yaml
@@ -79,8 +88,6 @@ if $(kubectl version &>/dev/null); then
     kubectl apply -f $HOME/apache-e-w.yaml
     kubectl apply -f $HOME/apache-n-s.yaml
 
-    apache_pod_name=apachetwin
-    nginx_pod_name=nginxtwin
     kubectl delete pod $apache_pod_name --ignore-not-found=true --now
     kubectl delete pod $nginx_pod_name --ignore-not-found=true --now
     while kubectl get pod $apache_pod_name &>/dev/null; do
@@ -116,4 +123,14 @@ if $(kubectl version &>/dev/null); then
     done
     apache_ovn=$(kubectl get pod $apache_pod_name -o jsonpath="{.metadata.annotations.ovn}")
     nginx_ovn=$(kubectl get pod $nginx_pod_name -o jsonpath="{.metadata.annotations.ovn}")
+
+    echo $apache_ovn
+    if [[ $apache_ovn == *"\"ip_address\":\"11.11."* ]]; then
+        exit 1
+    fi
+
+    echo $nginx_ovn
+    if [[ $nginx_ovn == *"\"ip_address\":\"11.11."* ]]; then
+        exit 1
+    fi
 fi
