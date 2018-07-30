@@ -14,7 +14,7 @@ set -o pipefail
 
 rm -f $HOME/*.yaml
 
-pod_name=cirros-vm
+pod_name=virtlet-vm
 
 cat << CIRROSPOD > $HOME/cirros-pod.yaml
 apiVersion: v1
@@ -24,11 +24,9 @@ metadata:
   annotations:
     # This tells CRI Proxy that this pod belongs to Virtlet runtime
     kubernetes.io/target-runtime: virtlet.cloud
-    # CirrOS doesn't load nocloud data from SCSI CD-ROM for some reason
-    VirtletDiskDriver: virtio
-    # inject ssh keys via cloud-init
-    VirtletSSHKeys: |
-      ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCaJEcFDXEK2ZbX0ZLS1EIYFZRbDAcRfuVjpstSc0De8+sV1aiu+dePxdkuDRwqFtCyk6dEZkssjOkBXtri00MECLkir6FcH3kKOJtbJ6vy3uaJc9w1ERo+wyl6SkAh/+JTJkp7QRXj8oylW5E20LsbnA/dIwWzAF51PPwF7A7FtNg9DnwPqMkxFo1Th/buOMKbP5ZA1mmNNtmzbMpMfJATvVyiv3ccsSJKOiyQr6UG+j7sc/7jMVz5Xk34Vd0l8GwcB0334MchHckmqDB142h/NCWTr8oLakDNvkfC1YneAfAO41hDkUbxPtVBG5M/o7P4fxoqiHEX+ZLfRxDtHB53 me@localhost
+    VirtletCloudInitUserDataScript: |
+      #!/bin/sh
+      echo hello world
 spec:
   # This nodeAffinity specification tells Kubernetes to run this
   # pod only on the nodes that have extraRuntime=virtlet label.
@@ -59,29 +57,7 @@ spec:
         memory: 160Mi
 CIRROSPOD
 
-cat << CIRROSIMAGE > $HOME/cirros-image.yaml
-apiVersion: "virtlet.k8s/v1"
-kind: VirtletImageMapping
-metadata:
-  name: cirros
-  namespace: kube-system
-spec:
-  translations:
-  - name: cirros
-    url: https://download.cirros-cloud.net/0.4.0/cirros-0.4.0-x86_64-disk.img
-CIRROSIMAGE
-
-if [[ -n "${http_proxy+x}" ]]; then
-    cat << CIRROSIMAGE >> $HOME/cirros-image.yaml
-  transports:
-    "":
-      proxy: "$http_proxy"
-CIRROSIMAGE
-fi
-
 if $(kubectl version &>/dev/null); then
-    kubectl apply -f $HOME/cirros-image.yaml
-
     kubectl delete pod $pod_name --ignore-not-found=true --now
     while kubectl get pod $pod_name &>/dev/null; do
         sleep 5
