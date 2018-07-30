@@ -13,36 +13,104 @@ set -o nounset
 set -o pipefail
 
 rm -f $HOME/*.yaml
-pod_name=vfirewall-pod
+packetgen_pod_name=packetgen
+sink_pod_name=sink
+firewall_pod_name=firewall
+image_name=virtlet.cloud/ubuntu/16.04
 
-cat << NET >> $HOME/ovn-network.yaml
+if [[ ! -f $HOME/.ssh/id_rsa.pub ]]; then
+    echo -e "\n\n\n" | ssh-keygen -t rsa -N ""
+fi
+ssh_key=$(cat $HOME/.ssh/id_rsa.pub)
+
+cat << NET >> $HOME/unprotected-private-net-cidr-network.yaml
 apiVersion: "kubernetes.cni.cncf.io/v1"
 kind: Network
 metadata:
-  name: ovn-conf
+  name: unprotected-private-net-cidr
 spec:
   config: '{
-    "name":"ovn-kubernetes",
-    "type":"ovn-k8s-cni-overlay",
+    "name": "unprotected",
+    "type": "bridge",
     "ipam": {
-        "subnet": "10.11.0.0/16"
+        "type": "host-local",
+        "subnet": "192.168.10.0/24"
     }
 }'
 NET
 
-cat << POD > $HOME/vFirewall.yaml
+cat << NET >> $HOME/protected-private-net-cidr-network.yaml
+apiVersion: "kubernetes.cni.cncf.io/v1"
+kind: Network
+metadata:
+  name: protected-private-net-cidr
+spec:
+  config: '{
+    "name": "protected",
+    "type": "bridge",
+    "ipam": {
+        "type": "host-local",
+        "subnet": "192.168.20.0/24"
+    }
+}'
+NET
+
+cat << NET >> $HOME/onap-private-net-cidr-network.yaml
+apiVersion: "kubernetes.cni.cncf.io/v1"
+kind: Network
+metadata:
+  name: onap-private-net-cidr
+spec:
+  config: '{
+    "name": "onap",
+    "type": "bridge",
+    "ipam": {
+        "type": "host-local",
+        "subnet": "10.10.0.0/16"
+    }
+}'
+NET
+
+proxy="#!/bin/bash"
+if [[ -n "${http_proxy+x}" ]]; then
+    proxy+="
+        export http_proxy=$http_proxy
+        echo \"Acquire::http::Proxy \\\"$http_proxy\\\";\" | sudo tee --append /etc/apt/apt.conf.d/01proxy
+"
+fi
+if [[ -n "${https_proxy+x}" ]]; then
+    proxy+="
+        export https_proxy=$https_proxy
+        echo \"Acquire::https::Proxy \\\"$https_proxy\\\";\" | sudo tee --append /etc/apt/apt.conf.d/01proxy
+"
+fi
+if [[ -n "${no_proxy+x}" ]]; then
+    proxy+="
+        export no_proxy=$no_proxy"
+fi
+
+cat << POD > $HOME/$packetgen_pod_name.yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: $pod_name
+  name: $packetgen_pod_name
   annotations:
+    VirtletCloudInitUserData: |
+      users:
+      - name: admin
+        gecos: Administrator User
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        ssh_authorized_keys:
+          - $ssh_key
     VirtletCloudInitUserDataScript: |
-      #!/bin/sh
-      echo hello world
+        $proxy
+
+        wget -O - https://raw.githubusercontent.com/electrocucaracha/vFW-demo/master/$packetgen_pod_name | sudo -E bash
     kubernetes.v1.cni.cncf.io/networks: '[
-        { "name": "bridge-conf", "interfaceRequest": "eth1" }
+        { "name": "unprotected-private-net-cidr", "interfaceRequest": "eth1" },
+        { "name": "onap-private-net-cidr", "interfaceRequest": "eth2" }
     ]'
-#    kubernetes.io/target-runtime: virtlet.cloud
+    kubernetes.io/target-runtime: virtlet.cloud
 spec:
   affinity:
     nodeAffinity:
@@ -53,44 +121,135 @@ spec:
             operator: In
             values:
             - virtlet
-spec:  # specification of the pod's contents
   containers:
-  - name: packetgen
-    #image: virtlet.cloud/ubuntu/16.04
-    image: "busybox"
+  - name: $packetgen_pod_name
+    image: $image_name
     imagePullPolicy: IfNotPresent
     tty: true
     stdin: true
     resources:
       limits:
-        # This memory limit is applied to the libvirt domain definition
+        memory: 160Mi
+POD
+
+cat << POD > $HOME/$firewall_pod_name.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: $firewall_pod_name
+  annotations:
+    VirtletCloudInitUserData: |
+      users:
+      - name: admin
+        gecos: Administrator User
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        ssh_authorized_keys:
+          - $ssh_key
+    VirtletCloudInitUserDataScript: |
+        $proxy
+
+        wget -O - https://raw.githubusercontent.com/electrocucaracha/vFW-demo/master/$firewall_pod_name | sudo -E bash
+    kubernetes.v1.cni.cncf.io/networks: '[
+        { "name": "unprotected-private-net-cidr", "interfaceRequest": "eth1" },
+        { "name": "protected-private-net-cidr", "interfaceRequest": "eth2" },
+        { "name": "onap-private-net-cidr", "interfaceRequest": "eth3" }
+    ]'
+    kubernetes.io/target-runtime: virtlet.cloud
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: extraRuntime
+            operator: In
+            values:
+            - virtlet
+  containers:
+  - name: $firewall_pod_name
+    image: $image_name
+    imagePullPolicy: IfNotPresent
+    tty: true
+    stdin: true
+    resources:
+      limits:
+        memory: 160Mi
+POD
+
+cat << POD > $HOME/$sink_pod_name.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: $sink_pod_name
+  annotations:
+    VirtletCloudInitUserData: |
+      users:
+      - name: admin
+        gecos: Administrator User
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        ssh_authorized_keys:
+          - $ssh_key
+    VirtletCloudInitUserDataScript: |
+        $proxy
+
+        wget -O - https://raw.githubusercontent.com/electrocucaracha/vFW-demo/master/$sink_pod_name | sudo -E bash
+    kubernetes.v1.cni.cncf.io/networks: '[
+        { "name": "protected-private-net-cidr", "interfaceRequest": "eth1" },
+        { "name": "onap-private-net-cidr", "interfaceRequest": "eth2" }
+    ]'
+    kubernetes.io/target-runtime: virtlet.cloud
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: extraRuntime
+            operator: In
+            values:
+            - virtlet
+  containers:
+  - name: $sink_pod_name
+    image: $image_name
+    imagePullPolicy: IfNotPresent
+    tty: true
+    stdin: true
+    resources:
+      limits:
         memory: 160Mi
 POD
 
 if $(kubectl version &>/dev/null); then
-    kubectl apply -f $HOME/ovn-network.yaml
+    kubectl apply -f $HOME/unprotected-private-net-cidr-network.yaml
+    kubectl apply -f $HOME/protected-private-net-cidr-network.yaml
+    kubectl apply -f $HOME/onap-private-net-cidr-network.yaml
 
-    kubectl delete pod $pod_name --ignore-not-found=true --now
-    while kubectl get pod $pod_name &>/dev/null; do
-        sleep 5
-    done
-    kubectl create -f $HOME/vFirewall.yaml
-
-    status_phase=""
-    while [[ $status_phase != "Running" ]]; do
-        new_phase=$(kubectl get pods $pod_name | awk 'NR==2{print $3}')
-        if [[ $new_phase != $status_phase ]]; then
-            echo "$(date +%H:%M:%S) - $new_phase"
-            status_phase=$new_phase
-        fi
-        if [[ $new_phase == "Err"* ]]; then
-            exit 1
-        fi
+    for pod_name in $packetgen_pod_name $firewall_pod_name $sink_pod_name; do
+        kubectl delete pod $pod_name --ignore-not-found=true --now
+        while kubectl get pod $pod_name &>/dev/null; do
+            sleep 5
+        done
+        kubectl create -f $HOME/$pod_name.yaml
     done
 
-    kubectl exec -it $pod_name -- ip a
-    multus_nic=$(kubectl exec -it $pod_name -- ifconfig | grep "eth1")
-    if [ -z "$multus_nic" ]; then
-        exit 1
-    fi
+    for pod_name in $packetgen_pod_name $firewall_pod_name $sink_pod_name; do
+        status_phase=""
+        while [[ $status_phase != "Running" ]]; do
+            new_phase=$(kubectl get pods $pod_name | awk 'NR==2{print $3}')
+            if [[ $new_phase != $status_phase ]]; then
+                echo "$(date +%H:%M:%S) - $pod_name : $new_phase"
+                status_phase=$new_phase
+            fi
+            if [[ $new_phase == "Err"* ]]; then
+                exit 1
+            fi
+        done
+    done
+    for pod_name in $packetgen_pod_name $firewall_pod_name $sink_pod_name; do
+        vm=$(kubectl plugin virt virsh list | grep ".*$pod_name"  | awk '{print $2}')
+        echo "Pod name: $pod_name Virsh domain: $vm"
+        echo "ssh -i ~/.ssh/id_rsa.pub admin@$(kubectl get pods $pod_name -o jsonpath="{.status.podIP}")"
+        echo "=== Virtlet details ===="
+        echo "$(kubectl plugin virt virsh dumpxml $vm | grep VIRTLET_)\n"
+    done
 fi
