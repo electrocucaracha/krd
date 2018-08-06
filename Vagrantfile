@@ -43,7 +43,7 @@ if ENV['no_proxy'] != nil or ENV['NO_PROXY']
     $subnet = "10.0.2"
   end
   # NOTE: This range is based on vagrant-libvirt network definition CIDR 192.168.121.0/27
-  (0..31).each do |i|
+  (1..31).each do |i|
     $no_proxy += ",#{$subnet}.#{i}"
   end
 end
@@ -53,14 +53,12 @@ Vagrant.configure("2") do |config|
   config.vm.box_version = box[provider][:version]
 
   if ENV['http_proxy'] != nil and ENV['https_proxy'] != nil
-    if not Vagrant.has_plugin?('vagrant-proxyconf')
-      system 'vagrant plugin install vagrant-proxyconf'
-      raise 'vagrant-proxyconf was installed but it requires to execute again'
+    if Vagrant.has_plugin?('vagrant-proxyconf')
+      config.proxy.http     = ENV['http_proxy'] || ENV['HTTP_PROXY'] || ""
+      config.proxy.https    = ENV['https_proxy'] || ENV['HTTPS_PROXY'] || ""
+      config.proxy.no_proxy = $no_proxy
+      config.proxy.enabled = { docker: false }
     end
-    config.proxy.http     = ENV['http_proxy'] || ENV['HTTP_PROXY'] || ""
-    config.proxy.https    = ENV['https_proxy'] || ENV['HTTPS_PROXY'] || ""
-    config.proxy.no_proxy = $no_proxy
-    config.proxy.enabled = { docker: false }
   end
 
   nodes.each do |node|
@@ -85,6 +83,7 @@ Vagrant.configure("2") do |config|
         v.cpus = node['cpus']
         v.nested = true
         v.cpu_mode = 'host-passthrough'
+        v.management_network_address = "192.168.121.0/27"
         nodeconfig.vm.provision 'shell' do |sh|
           sh.path =  "node.sh"
           if node.has_key? "volumes"
@@ -102,10 +101,6 @@ Vagrant.configure("2") do |config|
   end
   sync_type = "virtualbox"
   if provider == :libvirt
-    if not Vagrant.has_plugin?('vagrant-libvirt')
-      system 'vagrant plugin install vagrant-libvirt'
-      raise 'vagrant-libvirt was installed but it requires to execute again'
-    end
     sync_type = "nfs"
   end
   config.vm.define :installer, primary: true, autostart: false do |installer|

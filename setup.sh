@@ -8,7 +8,17 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
+set -o nounset
+set -o pipefail
+
 vagrant_version=2.1.2
+if ! $(vagrant version &>/dev/null); then
+    enable_vagrant_install=true
+else
+    if [[ "$vagrant_version" != "$(vagrant version | awk 'NR==1{print $3}')" ]]; then
+        enable_vagrant_install=true
+    fi
+fi
 
 function usage {
     cat <<EOF
@@ -31,6 +41,10 @@ while getopts ":p:" OPTION; do
         ;;
     esac
 done
+if [[ -z "${provider+x}" ]]; then
+    usage
+    exit 1
+fi
 
 case $provider in
     "virtualbox" | "libvirt" )
@@ -49,15 +63,17 @@ case ${ID,,} in
     INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends"
 
     # Vagrant installation
-    vagrant_pgp="pgp_keys.asc"
-    wget -q https://keybase.io/hashicorp/$vagrant_pgp
-    wget -q https://releases.hashicorp.com/vagrant/$vagrant_version/vagrant_${vagrant_version}_x86_64.rpm
-    gpg --quiet --with-fingerprint $vagrant_pgp
-    sudo rpm --import $vagrant_pgp
-    sudo rpm --checksig vagrant_${vagrant_version}_x86_64.rpm
-    sudo rpm --install vagrant_${vagrant_version}_x86_64.rpm
-    rm vagrant_${vagrant_version}_x86_64.rpm
-    rm $vagrant_pgp
+    if [[ "${enable_vagrant_install+x}" ]]; then
+        vagrant_pgp="pgp_keys.asc"
+        wget -q https://keybase.io/hashicorp/$vagrant_pgp
+        wget -q https://releases.hashicorp.com/vagrant/$vagrant_version/vagrant_${vagrant_version}_x86_64.rpm
+        gpg --quiet --with-fingerprint $vagrant_pgp
+        sudo rpm --import $vagrant_pgp
+        sudo rpm --checksig vagrant_${vagrant_version}_x86_64.rpm
+        sudo rpm --install vagrant_${vagrant_version}_x86_64.rpm
+        rm vagrant_${vagrant_version}_x86_64.rpm
+        rm $vagrant_pgp
+    fi
 
     case $VAGRANT_DEFAULT_PROVIDER in
         virtualbox)
@@ -81,9 +97,11 @@ case ${ID,,} in
     INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install"
 
     # Vagrant installation
-    wget -q https://releases.hashicorp.com/vagrant/$vagrant_version/vagrant_${vagrant_version}_x86_64.deb
-    sudo dpkg -i vagrant_${vagrant_version}_x86_64.deb
-    rm vagrant_${vagrant_version}_x86_64.deb
+    if [[ "${enable_vagrant_install+x}" ]]; then
+        wget -q https://releases.hashicorp.com/vagrant/$vagrant_version/vagrant_${vagrant_version}_x86_64.deb
+        sudo dpkg -i vagrant_${vagrant_version}_x86_64.deb
+        rm vagrant_${vagrant_version}_x86_64.deb
+    fi
 
     case $VAGRANT_DEFAULT_PROVIDER in
         virtualbox)
@@ -108,9 +126,11 @@ case ${ID,,} in
     INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install"
 
     # Vagrant installation
-    wget -q https://releases.hashicorp.com/vagrant/$vagrant_version/vagrant_${vagrant_version}_x86_64.rpm
-    $INSTALLER_CMD vagrant_${vagrant_version}_x86_64.rpm
-    rm vagrant_${vagrant_version}_x86_64.rpm
+    if [[ "${enable_vagrant_install+x}" ]]; then
+        wget -q https://releases.hashicorp.com/vagrant/$vagrant_version/vagrant_${vagrant_version}_x86_64.rpm
+        $INSTALLER_CMD vagrant_${vagrant_version}_x86_64.rpm
+        rm vagrant_${vagrant_version}_x86_64.rpm
+    fi
 
     case $VAGRANT_DEFAULT_PROVIDER in
         virtualbox)
@@ -130,20 +150,18 @@ case ${ID,,} in
 
 esac
 
+if ! which pip; then
+    curl -sL https://bootstrap.pypa.io/get-pip.py | sudo python
+fi
+sudo pip install --upgrade pip
+sudo pip install tox
+
 ${INSTALLER_CMD} ${packages[@]}
-if [ $http_proxy ]; then
+if [[ ${http_proxy+x} ]]; then
     vagrant plugin install vagrant-proxyconf
 fi
 if [ $VAGRANT_DEFAULT_PROVIDER == libvirt ]; then
     vagrant plugin install vagrant-libvirt
-    sudo usermod -a -G $libvirt_group $USER
-    newgrp -
-
-    libvirt_net="vagrant-libvirt"
-    libvirt_net_state=$(virsh net-list | grep $libvirt_net | grep active)
-    if [[ $http_proxy && $default_libvirt_net ]]; then
-        virsh net-update $libvirt_net delete ip-dhcp-range "<range start='192.168.121.2' end='192.168.121.254'/>" --live --config
-        virsh net-update $libvirt_net add ip-dhcp-range "<range start='192.168.121.0' end='192.168.121.31'/>" --live --config
-    fi
+    sudo usermod -a -G $libvirt_group $USER # This might require to reload user's group assigments
     sudo systemctl restart libvirtd
 fi
