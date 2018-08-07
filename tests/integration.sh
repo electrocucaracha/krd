@@ -97,9 +97,11 @@ metadata:
   annotations:
     VirtletCloudInitUserData: |
       users:
+      - default
       - name: admin
-        gecos: Administrator User
         sudo: ALL=(ALL) NOPASSWD:ALL
+        plain_text_passwd: secret
+        groups: sudo
         ssh_authorized_keys:
           - $ssh_key
     VirtletCloudInitUserDataScript: |
@@ -129,7 +131,7 @@ spec:
     stdin: true
     resources:
       limits:
-        memory: 160Mi
+        memory: 256Mi
 POD
 
 cat << POD > $HOME/$firewall_pod_name.yaml
@@ -140,6 +142,7 @@ metadata:
   annotations:
     VirtletCloudInitUserData: |
       users:
+      - default
       - name: admin
         gecos: Administrator User
         sudo: ALL=(ALL) NOPASSWD:ALL
@@ -184,6 +187,7 @@ metadata:
   annotations:
     VirtletCloudInitUserData: |
       users:
+      - default
       - name: admin
         gecos: Administrator User
         sudo: ALL=(ALL) NOPASSWD:ALL
