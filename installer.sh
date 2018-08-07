@@ -17,7 +17,7 @@ function usage {
     cat <<EOF
 usage: $0 [-a addons] [-p] [-v] [-w dir ]
 Optional Argument:
-    -a List of Kubernetes AddOns to be installed ( e.g. "ovn ovn-kubernetes virtlet")
+    -a List of Kubernetes AddOns to be installed ( e.g. "ovn-kubernetes virtlet multus")
     -p Installation of ONAP MultiCloud Kubernetes plugin
     -v Enable verbosity
     -w Working directory
