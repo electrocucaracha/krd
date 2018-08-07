@@ -16,7 +16,7 @@ rm -f $HOME/*.yaml
 
 pod_name=multus-multi-net-pod
 
-cat << MULTUSNET01 >> $HOME/bridge-network.yaml
+cat << MULTUSNET01 > $HOME/bridge-network.yaml
 apiVersion: "kubernetes.cni.cncf.io/v1"
 kind: Network
 metadata:
