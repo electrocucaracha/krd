@@ -172,7 +172,7 @@ if $(kubectl version &>/dev/null); then
 
     for deployment_name in $packetgen_deployment_name $firewall_deployment_name $sink_deployment_name; do
         kubectl delete deployment $deployment_name --ignore-not-found=true --now
-        while kubectl get pod $deployment_name &>/dev/null; do
+        while kubectl get deployment $deployment_name &>/dev/null; do
             sleep 5
         done
         kubectl create -f $HOME/$deployment_name.yaml
