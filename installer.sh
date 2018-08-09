@@ -27,7 +27,7 @@ EOF
 
 # _install_go() - Install GoLang package
 function _install_go {
-    local version=$(grep "go_version" ${krd_playbooks}/pinned_versions.yml | awk -F ': ' '{print $2}')
+    version=$(grep "go_version" ${krd_playbooks}/pinned_versions.yml | awk -F ': ' '{print $2}')
     local tarball=go$version.linux-amd64.tar.gz
 
     if $(go version &>/dev/null); then
@@ -112,7 +112,7 @@ EOL
 function install_k8s {
     echo "Deploying kubernetes"
     local dest_folder=/opt
-    local version=$(grep "kubespray_version" ${krd_playbooks}/pinned_versions.yml | awk -F ': ' '{print $2}')
+    version=$(grep "kubespray_version" ${krd_playbooks}/pinned_versions.yml | awk -F ': ' '{print $2}')
     local tarball=v$version.tar.gz
 
     apt-get install -y sshpass
@@ -167,14 +167,16 @@ function install_plugin {
     echo "Installing multicloud/k8s plugin"
     _install_go
     _install_docker
+    pip install docker-compose
+    mkdir -p /opt/{csar,kubeconfig,consul/config}
 
     go get github.com/shank7485/k8-plugin-multicloud/...
     export GOPATH=$HOME/go
     pushd $HOME/go/src/github.com/shank7485/k8-plugin-multicloud/deployments
     ./build.sh
+    docker-compose up -d
     popd
 
-    docker run -d -v $HOME/.kube:/root/.kube/ -p 8081:8081 --name k8s_plugin nexus3.onap.org:10003/onap/multicloud/k8plugin
     if [[ -n "${testing_enabled+x}" ]]; then
         pushd $krd_tests
         bash plugin.sh
