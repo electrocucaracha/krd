@@ -151,3 +151,6 @@ artifacts_dir: "{{ ansible_env.HOME }}"
 
 # Enable MountPropagation gate feature
 local_volumes_enabled: true
+
+## Change this to use another Kubernetes version, e.g. a current beta release
+kube_version: v1.11.2
