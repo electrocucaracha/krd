@@ -125,12 +125,12 @@ if $(kubectl version &>/dev/null); then
     nginx_ovn=$(kubectl get pod $nginx_pod_name -o jsonpath="{.metadata.annotations.ovn}")
 
     echo $apache_ovn
-    if [[ $apache_ovn == *"\"ip_address\":\"11.11."* ]]; then
+    if [[ $apache_ovn != *"\"ip_address\":\"11.11."* ]]; then
         exit 1
     fi
 
     echo $nginx_ovn
-    if [[ $nginx_ovn == *"\"ip_address\":\"11.11."* ]]; then
+    if [[ $nginx_ovn != *"\"ip_address\":\"11.11."* ]]; then
         exit 1
     fi
 fi
