@@ -12,5 +12,5 @@ virtlet_version: 1.1.2
 multus_version: 2.0
 ovn_kubernetes_version: 0.3.0
 go_version: 1.10.3
-kubespray_version: 2.5.0
+kubespray_version: 2.6.0
 nfd_version: 175305b1ad73be7301ac94add475cec6fef797a9
