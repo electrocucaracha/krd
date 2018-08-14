@@ -1,0 +1,43 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2018
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- hosts: kube-master[0]
+  become: yes
+  vars:
+    - nfd_directory: "/tmp/node-feature-discovery"
+  tasks:
+    - name: Load krd variables
+      include_vars:
+        file: pinned_versions.yml
+    - name: clone NFD repo
+      git:
+        repo: "https://github.com/kubernetes-incubator/node-feature-discovery"
+        dest: "{{ nfd_directory }}"
+        version: "{{ nfd_version }}"
+        force: yes
+    - name: build NFD image
+      make:
+        chdir: "{{ nfd_directory }}"
+    - name: get NDF image name
+      shell: "docker images | grep kubernetes_incubator | awk '{printf(\"%s:%s\\n\", $1,$2)}'"
+      register: nfd_image
+    - name: replace NFD image name
+      lineinfile:
+        path: "{{ nfd_directory }}/node-feature-discovery-{{ item }}.json.template"
+        regexp: "\"image\": \"quay.io/kubernetes_incubator.*i"
+        line: "\"image\": \"{{ nfd_image.stdout }}\","
+      with_items:
+        - daemonset
+        - job
+    - name: create service accounts
+      command: "/usr/local/bin/kubectl apply -f {{ nfd_directory }}/{{ item }}"
+      with_items:
+        - rbac.yaml
+        - node-feature-discovery-daemonset.json.template

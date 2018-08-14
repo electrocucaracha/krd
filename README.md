@@ -18,6 +18,7 @@ Virtual Machines.
 | ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][3] | Tested |
 | Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][4]        | Tested |
 | Multus         | Provides Multiple Network support in a pod    | [configure-multus.yml][5]         | Tested |
+| NFD            | Node feature discovery                        | [configure-nfd.yml][7]            | In progress |
 
 ## Deployment
 
@@ -49,3 +50,4 @@ Apache-2.0
 [4]: playbooks/configure-virtlet.yml
 [5]: playbooks/configure-multus.yml
 [6]: https://www.vagrantup.com/
+[7]: playbooks/configure-nfd.yml
