@@ -8,8 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- hosts: kube-master[0]
-  become: yes
+- hosts: kube-node
   vars:
     - nfd_directory: "/tmp/node-feature-discovery"
   tasks:
@@ -23,9 +22,11 @@
         version: "{{ nfd_version }}"
         force: yes
     - name: build NFD image
+      become: yes
       make:
         chdir: "{{ nfd_directory }}"
     - name: get NDF image name
+      become: yes
       shell: "docker images | grep kubernetes_incubator | awk '{printf(\"%s:%s\\n\", $1,$2)}'"
       register: nfd_image
     - name: replace NFD image name
@@ -36,8 +37,20 @@
       with_items:
         - daemonset
         - job
+    - name: copying rbac and daemonset files
+      fetch:
+        src: "{{ nfd_directory }}/{{ item }}"
+        dest: "/tmp/"
+        flat: yes
+      with_items:
+        - rbac.yaml
+        - node-feature-discovery-daemonset.json.template
+
+- hosts: localhost
+  become: yes
+  tasks:
     - name: create service accounts
-      command: "/usr/local/bin/kubectl apply -f {{ nfd_directory }}/{{ item }}"
+      command: "/usr/local/bin/kubectl apply -f /tmp/{{ item }}"
       with_items:
         - rbac.yaml
         - node-feature-discovery-daemonset.json.template

@@ -36,7 +36,7 @@ if $(kubectl version &>/dev/null); then
     labels=$(kubectl get nodes -o json | jq .items[].metadata.labels)
 
     echo $labels
-    if [ "$labels" != *"node.alpha.kubernetes-incubator.io"* ]; then
+    if [[ $labels != *"node.alpha.kubernetes-incubator.io"* ]]; then
         exit 1
     fi
 
@@ -44,7 +44,7 @@ if $(kubectl version &>/dev/null); then
     while kubectl get pod $pod_name &>/dev/null; do
         sleep 5
     done
-    kubectl create -f $HOME/$pod_name.yaml
+    kubectl create -f $HOME/$pod_name.yaml --validate=false
 
     for pod in $pod_name; do
         status_phase=""

@@ -226,7 +226,7 @@ function _print_kubernetes_info {
 }
 
 # Configuration values
-addons="virtlet ovn-kubernetes multus"
+addons="virtlet ovn-kubernetes multus nfd"
 krd_folder="$(dirname "$0")"
 verbose=""
 
