@@ -7,14 +7,14 @@ box = {
 }
 
 require 'yaml'
-pdf = 'config/default.yml'
-if File.exist?('config/pdf.yml')
-  pdf = 'config/pdf.yml'
+pdf = File.dirname(__FILE__) + '/config/default.yml'
+if File.exist?(File.dirname(__FILE__) + '/config/pdf.yml')
+  pdf = File.dirname(__FILE__) + '/config/pdf.yml'
 end
 nodes = YAML.load_file(pdf)
 
 # Inventory file creation
-File.open("inventory/hosts.ini", "w") do |inventory_file|
+File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_file|
   inventory_file.puts("[all:vars]\nansible_connection=ssh\nansible_ssh_user=vagrant\nansible_ssh_pass=vagrant\n\n[all]")
   nodes.each do |node|
     inventory_file.puts("#{node['name']}\tansible_ssh_host=#{node['ip']} ansible_ssh_port=22")
@@ -108,7 +108,7 @@ Vagrant.configure("2") do |config|
     installer.vm.network :private_network, :ip => "10.10.10.2", :type => :static
     installer.vm.provision 'shell' do |sh|
       sh.path =  "installer.sh"
-      sh.args = ['-p', '-v', '-w', '/vagrant']
+      sh.args = ['-a', 'ovn-kubernetes', '-t', '-w', '/vagrant']
     end
   end
 end
