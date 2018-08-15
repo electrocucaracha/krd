@@ -19,7 +19,7 @@
   tasks:
     - name: Load krd variables
       include_vars:
-        file: pinned_versions.yml
+        file: krd-config.yml
     - name: download ovn-kubernetes tarball
       get_url:
         url: "https://github.com/openvswitch/ovn-kubernetes/archive/v{{ ovn_kubernetes_version }}.tar.gz"

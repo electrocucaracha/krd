@@ -110,12 +110,12 @@ playbooks/configure-krd.yml
 This ansible playbook collects the common actions among all the
 Kubernetes AddOns offered by the KRD.
 
-playbooks/pinned_versions.yml
-*****************************
+playbooks/krd-config.yml
+************************
 
-This file centralizes the version numbers used for different
-components offered by the KRD. Bumping a version requires extensive
-testing to ensure compatibility.
+This file centralizes the version numbers and source URLs used for
+different components offered by the KRD. Bumping a version requires
+extensive testing to ensure compatibility.
 
 setup.sh
 ########

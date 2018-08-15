@@ -27,7 +27,7 @@ EOF
 
 # _install_go() - Install GoLang package
 function _install_go {
-    version=$(grep "go_version" ${krd_playbooks}/pinned_versions.yml | awk -F ': ' '{print $2}')
+    version=$(grep "go_version" ${krd_playbooks}/krd-config.yml | awk -F ': ' '{print $2}')
     local tarball=go$version.linux-amd64.tar.gz
 
     if $(go version &>/dev/null); then
@@ -112,7 +112,7 @@ EOL
 function install_k8s {
     echo "Deploying kubernetes"
     local dest_folder=/opt
-    version=$(grep "kubespray_version" ${krd_playbooks}/pinned_versions.yml | awk -F ': ' '{print $2}')
+    version=$(grep "kubespray_version" ${krd_playbooks}/krd-config.yml | awk -F ': ' '{print $2}')
     local tarball=v$version.tar.gz
 
     apt-get install -y sshpass

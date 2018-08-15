@@ -19,7 +19,7 @@
   tasks:
     - name: Load krd variables
       include_vars:
-        file: pinned_versions.yml
+        file: krd-config.yml
     - name: apply virtlet extraRuntime label
       command: "/usr/local/bin/kubectl label node {{ item }} extraRuntime=virtlet --overwrite"
       with_inventory_hostnames: virtlet
@@ -73,7 +73,7 @@
   tasks:
     - name: Load krd variables
       include_vars:
-        file: pinned_versions.yml
+        file: krd-config.yml
     - name: disable AppArmor in all nodes
       service:
         name: apparmor

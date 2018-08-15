@@ -14,7 +14,7 @@
   tasks:
     - name: Load krd variables
       include_vars:
-        file: pinned_versions.yml
+        file: krd-config.yml
     - name: clone NFD repo
       git:
         repo: "https://github.com/kubernetes-incubator/node-feature-discovery"
