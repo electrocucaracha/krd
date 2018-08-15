@@ -108,7 +108,7 @@ Vagrant.configure("2") do |config|
     installer.vm.network :private_network, :ip => "10.10.10.2", :type => :static
     installer.vm.provision 'shell' do |sh|
       sh.path =  "installer.sh"
-      sh.args = ['-a', 'ovn-kubernetes', '-t', '-w', '/vagrant']
+      sh.args = ['-p', '-v', '-w', '/vagrant']
     end
   end
 end
