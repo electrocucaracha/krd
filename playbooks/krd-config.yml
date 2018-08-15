@@ -16,10 +16,16 @@ multus_url: "https://github.com/intel/multus-cni/releases/download/v{{ multus_ve
 #multus_version: def72938cd2fb272eb3a6f64a8162b1049404357
 #multus_url: "https://github.com/intel/multus-cni"
 
+ovn_kubernetes_dest: /tmp/ovn-kubernetes
+ovn_kubernetes_source_type: "tarball"
+ovn_kubernetes_version: 0.3.0
+ovn_kubernetes_url: "https://github.com/openvswitch/ovn-kubernetes/archive/v{{ ovn_kubernetes_version }}.tar.gz"
+#ovn_kubernetes_source_type: "source"
+#ovn_kubernetes_version: 456a0857956988f968bb08644c650ba826592ec1
+#ovn_kubernetes_url: "https://github.com/openvswitch/ovn-kubernetes"
 
 criproxy_version: 0.12.0
 virtlet_version: 1.1.2
-ovn_kubernetes_version: 0.3.0
 go_version: 1.10.3
 kubespray_version: 2.6.0
 nfd_version: 175305b1ad73be7301ac94add475cec6fef797a9
