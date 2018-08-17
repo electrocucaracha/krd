@@ -9,29 +9,28 @@
 ##############################################################################
 
 - hosts: kube-node
-  vars:
-    - nfd_directory: "/tmp/node-feature-discovery"
   tasks:
     - name: Load krd variables
       include_vars:
         file: krd-vars.yml
     - name: clone NFD repo
       git:
-        repo: "https://github.com/kubernetes-incubator/node-feature-discovery"
-        dest: "{{ nfd_directory }}"
+        repo: "{{ nfd_url }}"
+        dest: "{{ nfd_dest }}"
         version: "{{ nfd_version }}"
         force: yes
+      when: nfd_source_type == "source"
     - name: build NFD image
       become: yes
       make:
-        chdir: "{{ nfd_directory }}"
+        chdir: "{{ nfd_dest }}"
     - name: get NDF image name
       become: yes
       shell: "docker images | grep kubernetes_incubator | awk '{printf(\"%s:%s\\n\", $1,$2)}'"
       register: nfd_image
     - name: replace NFD image name
       lineinfile:
-        path: "{{ nfd_directory }}/node-feature-discovery-{{ item }}.json.template"
+        path: "{{ nfd_dest }}/node-feature-discovery-{{ item }}.json.template"
         regexp: "\"image\": \"quay.io/kubernetes_incubator.*i"
         line: "\"image\": \"{{ nfd_image.stdout }}\","
       with_items:
@@ -39,7 +38,7 @@
         - job
     - name: copying rbac and daemonset files
       fetch:
-        src: "{{ nfd_directory }}/{{ item }}"
+        src: "{{ nfd_dest }}/{{ item }}"
         dest: "/tmp/"
         flat: yes
       with_items:
@@ -48,6 +47,8 @@
 
 - hosts: localhost
   become: yes
+  roles:
+    - andrewrothstein.kubectl
   tasks:
     - name: create service accounts
       command: "/usr/local/bin/kubectl apply -f /tmp/{{ item }}"
