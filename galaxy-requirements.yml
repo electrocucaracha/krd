@@ -11,3 +11,5 @@
   version: v2.1.7
 - src: andrewrothstein.kubectl
   version: v1.1.12
+- src: geerlingguy.docker
+  version: 2.5.1

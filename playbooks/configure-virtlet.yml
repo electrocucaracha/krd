@@ -11,15 +11,18 @@
   become: yes
   vars:
     images_file: /tmp/images.yaml
-    virtletctl:
-      dir: /opt/virtlet
-      file: virtletctl
-  roles:
-    - andrewrothstein.kubectl
-  tasks:
+  pre_tasks:
     - name: Load krd variables
       include_vars:
         file: krd-config.yml
+  roles:
+    - andrewrothstein.kubectl
+    - { role: geerlingguy.docker, when: virtlet_source_type == "source" }
+  tasks:
+    - name: create Virtlet binary folder
+      file:
+        state: directory
+        path: "{{ virtlet_dest }}"
     - name: apply virtlet extraRuntime label
       command: "/usr/local/bin/kubectl label node {{ item }} extraRuntime=virtlet --overwrite"
       with_inventory_hostnames: virtlet
@@ -46,17 +49,75 @@
     - name: create Virtlet folder
       file:
         state: directory
-        path: "{{ virtletctl.dir }}"
+        path: "{{ virtlet_dest }}"
+    - name: getting source code
+      block:
+      - name: clone Virtlet repo
+        git:
+          repo: "{{ virtlet_url }}"
+          dest: "{{ virtlet_dest }}"
+          version: "{{ virtlet_version }}"
+          force: yes
+      - name: configure proxy values for docker service
+        block:
+        - name: create docker config folder
+          file:
+            state: directory
+            path: "/etc/systemd/system/docker.service.d"
+        - name: Configure docker service to use http_proxy env value
+          blockinfile:
+            dest: "/etc/systemd/system/docker.service.d/http-proxy.conf"
+            create: yes
+            block: |
+              [Service]
+              Environment="HTTP_PROXY={{ lookup('env','http_proxy') }}"
+          when:
+            - lookup('env','http_proxy') != "fooproxy"
+        - name: Configure docker service to use https_proxy env value
+          blockinfile:
+            dest: "/etc/systemd/system/docker.service.d/https-proxy.conf"
+            create: yes
+            block: |
+              [Service]
+              Environment="HTTPS_PROXY={{ lookup('env','https_proxy') }}"
+          when:
+            - lookup('env','https_proxy') != "fooproxy"
+        - name: Configure docker service to use no_proxy env value
+          blockinfile:
+            dest: "/etc/systemd/system/docker.service.d/no-proxy.conf"
+            create: yes
+            block: |
+              [Service]
+              Environment="NO_PROXY={{ lookup('env','no_proxy') }}"
+          when:
+            - lookup('env','no_proxy') != "fooproxy"
+        - name: reload systemd
+          command: systemctl daemon-reload
+        - name: restart docker service
+          service:
+            name: docker
+            state: restarted
+        when: lookup('env','http_proxy') != "fooproxy" or lookup('env','https_proxy') != "fooproxy" or lookup('env','no_proxy') != "fooproxy"
+      - name: build virtlet source code
+        command: ./cmd.sh build
+        args:
+          chdir: "{{ virtlet_dest }}/build"
+        environment:
+          http_proxy: "{{ lookup('env','http_proxy') }}"
+          https_proxy: "{{ lookup('env','https_proxy') }}"
+          no_proxy: "{{ lookup('env','no_proxy') }}"
+      when: virtlet_source_type == "source"
     - name: download virtletctl
       get_url:
-        url: "https://github.com/Mirantis/virtlet/releases/download/v{{ virtlet_version }}/virtletctl"
-        dest: "{{ virtletctl.dir }}/{{ virtletctl.file }}"
+        url: "{{ virtlet_url }}"
+        dest: "{{ virtlet_dest }}/virtletctl"
+      when: virtlet_source_type == "binary"
     - name: set virtletctl execution permissions
       file:
-        path: "{{ virtletctl.dir }}/{{ virtletctl.file }}"
+        path: "{{ virtlet_dest }}/virtletctl"
         mode: "+x"
     - name: install virtletctl as kubectl plugin
-      command: "{{ virtletctl.dir }}/{{ virtletctl.file }} install"
+      command: "{{ virtlet_dest }}/virtletctl install"
     - name: create Virtlet k8s objects
       shell: "/usr/local/bin/kubectl plugin virt gen | /usr/local/bin/kubectl apply -f -"
       ignore_errors: True
@@ -74,6 +135,10 @@
     - name: Load krd variables
       include_vars:
         file: krd-config.yml
+    - name: create CRIProxy binary folder
+      file:
+        state: directory
+        path: "{{ criproxy_dest }}"
     - name: disable AppArmor in all nodes
       service:
         name: apparmor
@@ -116,13 +181,27 @@
 
           [Install]
           RequiredBy=criproxy.service
+    - name: getting source code
+      block:
+      - name: clone CRIProxy repo
+        git:
+          repo: "{{ criproxy_url }}"
+          dest: "{{ criproxy_dest }}"
+          version: "{{ criproxy_version }}"
+          force: yes
+      - name: build criproxy source code
+        command: ./build-package.sh
+        args:
+          chdir: "{{ criproxy_dest }}"
+      when: criproxy_source_type == "source"
     - name: download CRIproxy package
       get_url:
-        url: "https://github.com/Mirantis/criproxy/releases/download/v{{ criproxy_version }}/criproxy"
-        dest: /usr/local/bin/criproxy
+        url: "{{ criproxy_url }}"
+        dest: "{{ criproxy_dest }}/criproxy"
+      when: criproxy_source_type == "binary"
     - name: set criproxy execution permissions
       file:
-        path: /usr/local/bin/criproxy
+        path: "{{ criproxy_dest }}/criproxy"
         mode: "+x"
     - name: create criproxy service
       blockinfile:

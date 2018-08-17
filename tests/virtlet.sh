@@ -118,6 +118,7 @@ if $(kubectl version &>/dev/null); then
         sleep 5
     done
     kubectl create -f $HOME/$deployment_name.yaml
+    sleep 5
 
     deployment_pod=$(kubectl get pods | grep  $deployment_name | awk '{print $1}')
     for pod in $pod_name $deployment_pod; do

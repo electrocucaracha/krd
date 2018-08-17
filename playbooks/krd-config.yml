@@ -8,7 +8,9 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-multus_dest: /tmp/multus-cni
+base_dest: /tmp
+
+multus_dest: "{{ base_dest }}/multus-cni"
 multus_source_type: "tarball"
 multus_version: 2.0
 multus_url: "https://github.com/intel/multus-cni/releases/download/v{{ multus_version }}/multus-cni_v{{ multus_version }}_linux_amd64.tar.gz"
@@ -16,7 +18,7 @@ multus_url: "https://github.com/intel/multus-cni/releases/download/v{{ multus_ve
 #multus_version: def72938cd2fb272eb3a6f64a8162b1049404357
 #multus_url: "https://github.com/intel/multus-cni"
 
-ovn_kubernetes_dest: /tmp/ovn-kubernetes
+ovn_kubernetes_dest: "{{ base_dest }}/ovn-kubernetes"
 ovn_kubernetes_source_type: "tarball"
 ovn_kubernetes_version: 0.3.0
 ovn_kubernetes_url: "https://github.com/openvswitch/ovn-kubernetes/archive/v{{ ovn_kubernetes_version }}.tar.gz"
@@ -24,8 +26,21 @@ ovn_kubernetes_url: "https://github.com/openvswitch/ovn-kubernetes/archive/v{{ o
 #ovn_kubernetes_version: 456a0857956988f968bb08644c650ba826592ec1
 #ovn_kubernetes_url: "https://github.com/openvswitch/ovn-kubernetes"
 
+criproxy_dest: "{{ base_dest }}/criproxy"
+criproxy_source_type: "binary"
 criproxy_version: 0.12.0
+criproxy_url: "https://github.com/Mirantis/criproxy/releases/download/v{{ criproxy_version }}/criproxy"
+#criproxy_source_type: "source"
+#criproxy_version: b5ca5a6cec278e2054dface4f7a3e111fb9ab84b
+#criproxy_url: "https://github.com/Mirantis/criproxy"
+virtlet_dest: "{{ base_dest }}/virtlet"
+virtlet_source_type: "binary"
 virtlet_version: 1.1.2
+virtlet_url: "https://github.com/Mirantis/virtlet/releases/download/v{{ virtlet_version }}/virtletctl"
+#virtlet_source_type: "source"
+#virtlet_version: 68e11b8f1db2c78b063126899f0e60910700975d
+#virtlet_url: "https://github.com/Mirantis/virtlet"
+
 go_version: 1.10.3
 kubespray_version: 2.6.0
 nfd_version: 175305b1ad73be7301ac94add475cec6fef797a9
