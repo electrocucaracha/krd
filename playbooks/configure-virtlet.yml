@@ -14,7 +14,7 @@
   pre_tasks:
     - name: Load krd variables
       include_vars:
-        file: krd-config.yml
+        file: krd-vars.yml
   roles:
     - andrewrothstein.kubectl
     - { role: geerlingguy.docker, when: virtlet_source_type == "source" }
@@ -134,7 +134,7 @@
   tasks:
     - name: Load krd variables
       include_vars:
-        file: krd-config.yml
+        file: krd-vars.yml
     - name: create CRIProxy binary folder
       file:
         state: directory

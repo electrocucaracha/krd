@@ -12,7 +12,7 @@
   pre_tasks:
     - name: Load krd variables
       include_vars:
-        file: krd-config.yml
+        file: krd-vars.yml
   roles:
     - { role: andrewrothstein.go, when: multus_source_type == "source" }
   environment:

@@ -19,7 +19,7 @@
   tasks:
     - name: Load krd variables
       include_vars:
-        file: krd-config.yml
+        file: krd-vars.yml
     - name: clone ovn-kubernetes repo
       git:
         repo: "{{ ovn_kubernetes_url }}"

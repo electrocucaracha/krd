@@ -110,7 +110,7 @@ playbooks/configure-krd.yml
 This ansible playbook collects the common actions among all the
 Kubernetes AddOns offered by the KRD.
 
-playbooks/krd-config.yml
+playbooks/krd-vars.yml
 ************************
 
 This file centralizes the version numbers and source URLs used for
