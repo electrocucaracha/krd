@@ -173,16 +173,12 @@ function install_plugin {
     cp $HOME/.kube/config /opt/kubeconfig/krd
     export CSAR_DIR=/opt/csar
     export KUBE_CONFIG_DIR=/opt/kubeconfig
-    export DATABASE_TYPE=consul
-    export DATABASE_IP=localhost
     echo "export CSAR_DIR=${CSAR_DIR}" >> /etc/environment
     echo "export KUBE_CONFIG_DIR=${KUBE_CONFIG_DIR}" >> /etc/environment
-    echo "export DATABASE_TYPE=${DATABASE_TYPE}" >> /etc/environment
-    echo "export DATABASE_IP=${DATABASE_IP}" >> /etc/environment
 
-    go get github.com/shank7485/k8-plugin-multicloud/...
-    export GOPATH=$HOME/go
-    pushd $HOME/go/src/github.com/shank7485/k8-plugin-multicloud/deployments
+    GOPATH=$(go env GOPATH)
+    git clone https://github.com/shank7485/k8-plugin-multicloud $GOPATH/src/k8-plugin-multicloud
+    pushd $GOPATH/src/k8-plugin-multicloud/deployments
     ./build.sh
     docker-compose up -d
     popd
