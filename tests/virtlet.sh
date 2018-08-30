@@ -92,7 +92,7 @@ spec:
                 values:
                 - virtlet
       containers:
-      - name: $pod_name
+      - name: $deployment_name
         # This specifies the image to use.
         # virtlet.cloud/ prefix is used by CRI proxy, the remaining part
         # of the image name is prepended with https:// and used to download the image
@@ -136,11 +136,10 @@ if $(kubectl version &>/dev/null); then
     done
 
     kubectl plugin virt virsh list
-    for pod in $pod_name $deployment_pod; do
+    for pod in $pod_name $deployment_name; do
         virsh_image=$(kubectl plugin virt virsh list | grep "virtlet-.*-$pod")
-        if [ -z "$virsh_image" ]; then
+        if [[ -z "$virsh_image" ]]; then
             exit 1
         fi
     done
-
 fi

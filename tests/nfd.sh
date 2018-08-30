@@ -28,7 +28,7 @@ spec:
   containers:
   - name: nginx
     image: nginx
-nodeSelector:  
+nodeSelector:
   node.alpha.kubernetes-incubator.io/nfd-network-SRIOV: true
 POD
 
@@ -59,5 +59,4 @@ if $(kubectl version &>/dev/null); then
             fi
         done
     done
-
 fi
