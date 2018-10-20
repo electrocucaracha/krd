@@ -11,13 +11,21 @@
 set -o errexit
 set -o nounset
 set -o pipefail
+#set -o xtrace
+
+source _common.sh
+source _functions.sh
 
 base_url="http://localhost:8081/v1/vnf_instances/"
 cloud_region_id="krd"
 namespace="default"
 csar_id="94e414f6-9ca4-11e8-bb6a-52540067263b"
 
-if [[ -z $(docker images -q generic_sim) ]]; then
+# _build_generic_sim() - Creates a generic simulator image in case that doesn't exist
+function _build_generic_sim {
+    if [[ -n $(docker images -q generic_sim) ]]; then
+        return
+    fi
     BUILD_ARGS="--no-cache"
     if [ $HTTP_PROXY ]; then
         BUILD_ARGS+=" --build-arg HTTP_PROXY=${HTTP_PROXY}"
@@ -25,67 +33,30 @@ if [[ -z $(docker images -q generic_sim) ]]; then
     if [ $HTTPS_PROXY ]; then
         BUILD_ARGS+=" --build-arg HTTPS_PROXY=${HTTPS_PROXY}"
     fi
+
     pushd generic_simulator
+    echo "Building generic simulator image..."
     docker build ${BUILD_ARGS} -t generic_sim:latest .
     popd
-fi
+}
 
-if [[ $(docker ps -q --all --filter "name=aai") ]]; then
-    docker rm aai -f
-fi
-docker run --name aai -v $(pwd)/output:/tmp/generic_sim/ -v $(pwd)/generic_simulator/aai/:/etc/generic_sim/ -p 8443:8080 -d generic_sim
+# start_aai_service() - Starts a simulator for AAI service
+function start_aai_service {
+    _build_generic_sim
+    if [[ $(docker ps -q --all --filter "name=aai") ]]; then
+        docker rm aai -f
+    fi
+    echo "Start AAI simulator.."
+    docker run --name aai -v $(mktemp):/tmp/generic_sim/ -v $(pwd)/generic_simulator/aai/:/etc/generic_sim/ -p 8443:8080 -d generic_sim
+}
 
-vnf_id_list=$(curl -s "${base_url}${cloud_region_id}/${namespace}" | jq -r '.vnf_id_list')
+# Setup
+destroy_deployment $plugin_deployment_name
 
-mkdir -p ${CSAR_DIR}/${csar_id}
-cat << SEQ > ${CSAR_DIR}/${csar_id}/sequence.yaml
-deployment:
-  - deployment.yaml
-service:
-  - service.yaml
-SEQ
-cat << DEPLOYMENT > ${CSAR_DIR}/${csar_id}/deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: multus-deployment
-  labels:
-    app: multus
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: multus
-  template:
-    metadata:
-      labels:
-        app: multus
-      annotations:
-        kubernetes.v1.cni.cncf.io/networks: '[
-          { "name": "bridge-conf", "interfaceRequest": "eth1" },
-          { "name": "bridge-conf", "interfaceRequest": "eth2" }
-        ]'
-    spec:
-      containers:
-      - name: multus-deployment
-        image: "busybox"
-        command: ["top"]
-        stdin: true
-        tty: true
-DEPLOYMENT
-cat << SERVICE >  ${CSAR_DIR}/${csar_id}/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: sise-svc
-spec:
-  ports:
-  - port: 80
-    protocol: TCP
-  selector:
-    app: sise
-SERVICE
+#start_aai_service
+populate_CSAR_plugin $csar_id
 
+# Test
 payload_raw="
 {
     \"cloud_region_id\": \"$cloud_region_id\",
@@ -94,4 +65,33 @@ payload_raw="
 }
 "
 payload=$(echo $payload_raw | tr '\n' ' ')
-curl -v -X POST -d "$payload" "${base_url}"
+echo "Creating VNF Instance"
+vnf_id=$(curl -s -d "$payload" "${base_url}" | jq -r '.vnf_id')
+echo "=== Validating Kubernetes ==="
+kubectl get --no-headers=true --namespace=${namespace} deployment ${cloud_region_id}-${namespace}-${vnf_id}-${plugin_deployment_name}
+kubectl get --no-headers=true --namespace=${namespace} service ${cloud_region_id}-${namespace}-${vnf_id}-${plugin_service_name}
+echo "VNF Instance created succesfully with id: $vnf_id"
+
+vnf_id_list=$(curl -s -X GET "${base_url}${cloud_region_id}/${namespace}" | jq -r '.vnf_id_list')
+if [[ "$vnf_id_list" != *"${vnf_id}"* ]]; then
+    echo $vnf_id_list
+    echo "VNF Instance not stored"
+    exit 1
+fi
+
+vnf_details=$(curl -s -X GET "${base_url}${cloud_region_id}/${namespace}/${vnf_id}")
+if [[ -z "$vnf_details" ]]; then
+    echo "Cannot retrieved VNF Instance details"
+    exit 1
+fi
+echo "VNF details $vnf_details"
+
+echo "Deleting $vnf_id VNF Instance"
+curl -X DELETE "${base_url}${cloud_region_id}/${namespace}/${vnf_id}"
+if [[ -n $(curl -s -X GET "${base_url}${cloud_region_id}/${namespace}/${vnf_id}") ]]; then
+    echo "VNF Instance not deleted"
+    exit 1
+fi
+
+# Teardown
+teardown $plugin_deployment_name
