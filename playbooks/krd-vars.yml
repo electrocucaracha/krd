@@ -35,7 +35,7 @@ criproxy_url: "https://github.com/Mirantis/criproxy/releases/download/v{{ cripro
 #criproxy_url: "https://github.com/Mirantis/criproxy"
 virtlet_dest: "{{ base_dest }}/virtlet"
 virtlet_source_type: "binary"
-virtlet_version: 1.1.2
+virtlet_version: 1.4.1
 virtlet_url: "https://github.com/Mirantis/virtlet/releases/download/v{{ virtlet_version }}/virtletctl"
 #virtlet_source_type: "source"
 #virtlet_version: 68e11b8f1db2c78b063126899f0e60910700975d
@@ -47,4 +47,4 @@ nfd_version: 175305b1ad73be7301ac94add475cec6fef797a9
 nfd_url: "https://github.com/kubernetes-incubator/node-feature-discovery"
 
 go_version: 1.10.3
-kubespray_version: 2.6.0
+kubespray_version: 2.7.0
