@@ -11,7 +11,7 @@
 set -o nounset
 set -o pipefail
 
-vagrant_version=2.1.2
+vagrant_version=2.2.0
 if ! $(vagrant version &>/dev/null); then
     enable_vagrant_install=true
 else
@@ -61,6 +61,7 @@ packages=()
 case ${ID,,} in
     *suse)
     INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends"
+    packages+=(python-devel)
 
     # Vagrant installation
     if [[ "${enable_vagrant_install+x}" ]]; then
@@ -95,6 +96,7 @@ case ${ID,,} in
     ubuntu|debian)
     libvirt_group="libvirtd"
     INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install"
+    packages+=(python-dev)
 
     # Vagrant installation
     if [[ "${enable_vagrant_install+x}" ]]; then
@@ -112,7 +114,7 @@ case ${ID,,} in
         ;;
         libvirt)
         # vagrant-libvirt dependencies
-        packages+=(qemu libvirt-bin ebtables dnsmasq libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev)
+        packages+=(qemu libvirt-bin ebtables dnsmasq libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev cpu-checker)
         # NFS
         packages+=(nfs-kernel-server)
         ;;
@@ -124,6 +126,7 @@ case ${ID,,} in
     PKG_MANAGER=$(which dnf || which yum)
     sudo $PKG_MANAGER updateinfo
     INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install"
+    packages+=(python-devel)
 
     # Vagrant installation
     if [[ "${enable_vagrant_install+x}" ]]; then
@@ -150,13 +153,33 @@ case ${ID,,} in
 
 esac
 
+# Enable Nested-Virtualization
+vendor_id=$(lscpu|grep "Vendor ID")
+if [[ $vendor_id == *GenuineIntel* ]]; then
+    kvm_ok=$(cat /sys/module/kvm_intel/parameters/nested)
+    if [[ $kvm_ok == 'N' ]]; then
+        echo "Enable Intel Nested-Virtualization"
+        rmmod kvm-intel
+        echo 'options kvm-intel nested=y' >> /etc/modprobe.d/dist.conf
+        modprobe kvm-intel
+    fi
+else
+    kvm_ok=$(cat /sys/module/kvm_amd/parameters/nested)
+    if [[ $kvm_ok == '0' ]]; then
+        echo "Enable AMD Nested-Virtualization"
+        rmmod kvm-amd
+        sh -c "echo 'options kvm-amd nested=1' >> /etc/modprobe.d/dist.conf"
+        modprobe kvm-amd
+    fi
+fi
+modprobe vhost_net
+
+${INSTALLER_CMD} ${packages[@]}
 if ! which pip; then
     curl -sL https://bootstrap.pypa.io/get-pip.py | sudo python
 fi
-sudo pip install --upgrade pip
-sudo pip install tox
-
-${INSTALLER_CMD} ${packages[@]}
+sudo -H pip install --upgrade pip
+sudo -H pip install tox
 if [[ ${http_proxy+x} ]]; then
     vagrant plugin install vagrant-proxyconf
 fi
@@ -164,4 +187,5 @@ if [ $VAGRANT_DEFAULT_PROVIDER == libvirt ]; then
     vagrant plugin install vagrant-libvirt
     sudo usermod -a -G $libvirt_group $USER # This might require to reload user's group assigments
     sudo systemctl restart libvirtd
+    kvm-ok
 fi
