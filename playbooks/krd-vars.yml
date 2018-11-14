@@ -12,7 +12,7 @@ base_dest: /tmp
 
 multus_dest: "{{ base_dest }}/multus-cni"
 multus_source_type: "tarball"
-multus_version: 2.0
+multus_version: 3.1
 multus_url: "https://github.com/intel/multus-cni/releases/download/v{{ multus_version }}/multus-cni_v{{ multus_version }}_linux_amd64.tar.gz"
 #multus_source_type: "source"
 #multus_version: def72938cd2fb272eb3a6f64a8162b1049404357
@@ -46,5 +46,4 @@ nfd_source_type: "source"
 nfd_version: 175305b1ad73be7301ac94add475cec6fef797a9
 nfd_url: "https://github.com/kubernetes-incubator/node-feature-discovery"
 
-go_version: 1.10.3
 kubespray_version: 2.7.0

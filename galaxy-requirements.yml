@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 - src: andrewrothstein.go
-  version: v2.1.7
+  version: v2.1.10
 - src: andrewrothstein.kubectl
   version: v1.1.12
 - src: geerlingguy.docker

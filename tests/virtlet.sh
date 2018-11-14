@@ -18,7 +18,7 @@ source _functions.sh
 csar_id=6b54a728-b76a-11e8-a1ba-52540053ccc8
 
 # Setup
-popule_CSAR_virtlet $csar_id
+populate_CSAR_virtlet $csar_id
 
 pushd ${CSAR_DIR}/${csar_id}
 

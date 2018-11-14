@@ -58,3 +58,12 @@ local_volumes_enabled: true
 
 ## Change this to use another Kubernetes version, e.g. a current beta release
 kube_version: v1.11.3
+
+# Helm deployment
+helm_enabled: true
+
+# Kube-proxy proxyMode configuration.
+# NOTE: Ipvs is based on netfilter hook function, but uses hash table as the underlying data structure and
+# works in the kernel space
+# https://kubernetes.io/docs/concepts/services-networking/service/#proxy-mode-ipvs
+kube_proxy_mode: ipvs

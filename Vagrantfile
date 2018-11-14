@@ -38,7 +38,7 @@ File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_fi
   inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
 end
 
-provider = (ENV['VAGRANT_DEFAULT_PROVIDER'] || :virtualbox).to_sym
+provider = (ENV['VAGRANT_DEFAULT_PROVIDER'] || :libvirt).to_sym
 puts "[INFO] Provider: #{provider} "
 
 if ENV['no_proxy'] != nil or ENV['NO_PROXY']

@@ -62,10 +62,13 @@
         block: |
           {
             "type": "multus",
+            "name": "multus-cni",
+            "cniVersion": "0.3.1",
             "kubeconfig": "/etc/kubernetes/admin.conf",
             "delegates": [
               {
                 "type": "flannel",
+                "cniVersion": "0.3.1",
                 "masterplugin": true,
                 "delegate": {
                   "isDefaultGateway": true
@@ -86,25 +89,25 @@
           apiVersion: apiextensions.k8s.io/v1beta1
           kind: CustomResourceDefinition
           metadata:
-            # name must match the spec fields below, and be in the form: <plural>.<group>
-            name: networks.kubernetes.cni.cncf.io
+            name: network-attachment-definitions.k8s.cni.cncf.io
           spec:
-            # group name to use for REST API: /apis/<group>/<version>
-            group: kubernetes.cni.cncf.io
-            # version name to use for REST API: /apis/<group>/<version>
+            group: k8s.cni.cncf.io
             version: v1
-            # either Namespaced or Cluster
             scope: Namespaced
             names:
-              # plural name to be used in the URL: /apis/<group>/<version>/<plural>
-              plural: networks
-              # singular name to be used as an alias on the CLI and for display
-              singular: network
-              # kind is normally the CamelCased singular type. Your resource manifests use this.
-              kind: Network
-              # shortNames allow shorter string to match your resource on the CLI
+              plural: network-attachment-definitions
+              singular: network-attachment-definition
+              kind: NetworkAttachmentDefinition
               shortNames:
-              - net
+              - net-attach-def
+            validation:
+              openAPIV3Schema:
+                properties:
+                  spec:
+                    properties:
+                      config:
+                           type: string
+
     - name: create network objects
       shell: "/usr/local/bin/kubectl apply -f /tmp/crdnetwork.yml"
       ignore_errors: True

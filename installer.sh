@@ -18,30 +18,10 @@ function usage {
 usage: $0 [-a addons] [-p] [-v] [-w dir ]
 Optional Argument:
     -a List of Kubernetes AddOns to be installed ( e.g. "ovn-kubernetes virtlet multus")
-    -p Installation of ONAP MultiCloud Kubernetes plugin
     -v Enable verbosity
     -w Working directory
     -t Running healthchecks
 EOF
-}
-
-# _install_go() - Install GoLang package
-function _install_go {
-    version=$(grep "go_version" ${krd_playbooks}/krd-vars.yml | awk -F ': ' '{print $2}')
-    local tarball=go$version.linux-amd64.tar.gz
-
-    if $(go version &>/dev/null); then
-        return
-    fi
-
-    wget https://dl.google.com/go/$tarball
-    tar -C /usr/local -xzf $tarball
-    rm $tarball
-
-    export PATH=$PATH:/usr/local/go/bin
-    sed -i "s|^PATH=.*|PATH=\"$PATH\"|" /etc/environment
-    mkdir -p $HOME/go/bin
-    curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 }
 
 # _install_pip() - Install Python Package Manager
@@ -51,7 +31,6 @@ function _install_pip {
     fi
     apt-get install -y python-dev
     curl -sL https://bootstrap.pypa.io/get-pip.py | python
-    pip install --upgrade pip
 }
 
 # _install_ansible() - Install and Configure Ansible program
@@ -62,50 +41,11 @@ function _install_ansible {
 host_key_checking = false
 EOL
     if $(ansible --version &>/dev/null); then
-        return
+        pip install --upgrade pip
+    else
+        _install_pip
     fi
-    _install_pip
     pip install ansible
-}
-
-# _install_docker() - Download and install docker-engine
-function _install_docker {
-    local max_concurrent_downloads=${1:-3}
-
-    if $(docker version &>/dev/null); then
-        return
-    fi
-    apt-get install -y software-properties-common linux-image-extra-$(uname -r) linux-image-extra-virtual apt-transport-https ca-certificates curl
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-    apt-get update
-    apt-get install -y docker-ce
-
-    mkdir -p /etc/systemd/system/docker.service.d
-    if [ $http_proxy ]; then
-        cat <<EOL > /etc/systemd/system/docker.service.d/http-proxy.conf
-[Service]
-Environment="HTTP_PROXY=$http_proxy"
-EOL
-    fi
-    if [ $https_proxy ]; then
-        cat <<EOL > /etc/systemd/system/docker.service.d/https-proxy.conf
-[Service]
-Environment="HTTPS_PROXY=$https_proxy"
-EOL
-    fi
-    if [ $no_proxy ]; then
-        cat <<EOL > /etc/systemd/system/docker.service.d/no-proxy.conf
-[Service]
-Environment="NO_PROXY=$no_proxy"
-EOL
-    fi
-    systemctl daemon-reload
-    echo "DOCKER_OPTS=\"-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --max-concurrent-downloads $max_concurrent_downloads \"" >> /etc/default/docker
-    usermod -aG docker $USER
-
-    systemctl restart docker
-    sleep 10
 }
 
 # install_k8s() - Install Kubernetes using kubespray tool
@@ -123,7 +63,7 @@ function install_k8s {
 
     pushd $dest_folder/kubespray-$version
         pip install -r requirements.txt
-        rm -f $krd_inventory_folder/group_vars/all.yml
+        rm -f $krd_inventory_folder/group_vars/all.yml 2> /dev/null
         if [[ -n "${verbose+x}" ]]; then
             echo "kube_log_level: 5" >> $krd_inventory_folder/group_vars/all.yml
         else
@@ -140,7 +80,7 @@ function install_k8s {
 
     # Configure environment
     mkdir -p $HOME/.kube
-    mv $HOME/admin.conf $HOME/.kube/config
+    mv $krd_inventory_folder/artifacts/admin.conf $HOME/.kube/config
 }
 
 # install_addons() - Install Kubenertes AddOns
@@ -162,58 +102,17 @@ function install_addons {
     done
 }
 
-# install_plugin() - Install ONAP Multicloud Kubernetes plugin
-function install_plugin {
-    echo "Installing multicloud/k8s plugin"
-    _install_go
-    _install_docker
-    pip install docker-compose
-
-    mkdir -p /opt/{csar,kubeconfig,consul/config}
-    cp $HOME/.kube/config /opt/kubeconfig/krd
-    export CSAR_DIR=/opt/csar
-    export KUBE_CONFIG_DIR=/opt/kubeconfig
-    echo "export CSAR_DIR=${CSAR_DIR}" >> /etc/environment
-    echo "export KUBE_CONFIG_DIR=${KUBE_CONFIG_DIR}" >> /etc/environment
-
-    GOPATH=$(go env GOPATH)
-    git clone https://github.com/shank7485/k8-plugin-multicloud $GOPATH/src/k8-plugin-multicloud
-    pushd $GOPATH/src/k8-plugin-multicloud/deployments
-    ./build.sh
-    docker-compose up -d
-    popd
-
-    if [[ -n "${testing_enabled+x}" ]]; then
-        pushd $krd_tests
-        bash plugin.sh
-        popd
-    fi
-}
-
-# _install_crictl() - Install Container Runtime Interface (CRI) CLI
-function _install_crictl {
-    local version="v1.0.0-alpha.0" # More info: https://github.com/kubernetes-incubator/cri-tools#current-status
-
-    wget https://github.com/kubernetes-incubator/cri-tools/releases/download/$version/crictl-$version-linux-amd64.tar.gz
-    tar zxvf crictl-$version-linux-amd64.tar.gz -C /usr/local/bin
-    rm -f crictl-$version-linux-amd64.tar.gz
-
-    cat << EOL > /etc/crictl.yaml
-runtime-endpoint: unix:///run/criproxy.sock
-image-endpoint: unix:///run/criproxy.sock
-EOL
-}
-
 # _print_kubernetes_info() - Prints the login Kubernetes information
 function _print_kubernetes_info {
     if ! $(kubectl version &>/dev/null); then
         return
     fi
     # Expose Dashboard using NodePort
+    node_port=30080
     KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g\"" kubectl -n kube-system edit service kubernetes-dashboard
+    KUBE_EDITOR="sed -i \"s|nodePort\: .*|nodePort\: $node_port|g\"" kubectl -n kube-system edit service kubernetes-dashboard
 
     master_ip=$(kubectl cluster-info | grep "Kubernetes master" | awk -F ":" '{print $2}')
-    node_port=$(kubectl get service -n kube-system | grep kubernetes-dashboard | awk '{print $5}' |awk -F "[:/]" '{print $2}')
 
     printf "Kubernetes Info\n===============\n" > $k8s_info_file
     echo "Dashboard URL: https:$master_ip:$node_port" >> $k8s_info_file
@@ -260,10 +159,12 @@ k8s_info_file=$krd_folder/k8s_info.log
 mkdir -p $log_folder
 
 # Install dependencies
+# Setup proxy variables
+if [ -f $krd_folder/sources.list ]; then
+    mv /etc/apt/sources.list /etc/apt/sources.list.backup
+    cp $krd_folder/sources.list /etc/apt/sources.list
+fi
 apt-get update
 install_k8s
 install_addons
-if [[ -n "${plugin_enabled+x}" ]]; then
-    install_plugin
-fi
 _print_kubernetes_info

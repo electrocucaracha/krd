@@ -18,7 +18,7 @@ source _functions.sh
 csar_id=49408ca6-b75b-11e8-8076-525400feed26
 
 # Setup
-popule_CSAR_multus $csar_id
+populate_CSAR_multus $csar_id
 
 pushd ${CSAR_DIR}/${csar_id}
 kubectl apply -f bridge-network.yaml
