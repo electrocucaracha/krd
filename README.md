@@ -40,6 +40,8 @@ the following instructions:
 
     $ vagrant up && vagrant up installer
 
+![Provisioning](docs/src/img/provisioning.png)
+
 ## License
 
 Apache-2.0
