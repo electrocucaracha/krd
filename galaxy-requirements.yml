@@ -11,5 +11,7 @@
   version: v2.1.10
 - src: andrewrothstein.kubectl
   version: v1.1.12
+- src: andrewrothstein.kubernetes-helm
+  version: v1.2.9
 - src: geerlingguy.docker
   version: 2.5.1

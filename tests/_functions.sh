@@ -67,7 +67,7 @@ function setup {
     for deployment_name in $@; do
         recreate_deployment $deployment_name
     done
-
+    sleep 5
     for deployment_name in $@; do
         wait_deployment $deployment_name
     done
@@ -84,3 +84,4 @@ if ! $(kubectl version &>/dev/null); then
     echo "This funtional test requires kubectl client"
     exit 1
 fi
+test_folder=$(pwd)
