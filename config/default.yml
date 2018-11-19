@@ -9,7 +9,7 @@
 ##############################################################################
 
 - name: "controller01"
-  ip: "10.10.10.3"
+  ip: "10.10.163"
   memory: 8192
   cpus: 2
   roles:
@@ -17,7 +17,7 @@
     - etcd
     - ovn-central
 - name: "controller02"
-  ip: "10.10.10.4"
+  ip: "10.10.164"
   memory: 8192
   cpus: 2
   roles:
@@ -25,7 +25,7 @@
     - etcd
     - ovn-controller
 - name: "controller03"
-  ip: "10.10.10.5"
+  ip: "10.10.165"
   memory: 8192
   cpus: 2
   roles:
@@ -33,7 +33,7 @@
     - etcd
     - ovn-controller
 - name: "compute01"
-  ip: "10.10.10.6"
+  ip: "10.10.166"
   memory: 32768
   cpus: 16
   volumes:
@@ -45,7 +45,7 @@
     - ovn-controller
     - virtlet
 - name: "compute02"
-  ip: "10.10.10.7"
+  ip: "10.10.167"
   memory: 8192
   cpus: 4
   roles:

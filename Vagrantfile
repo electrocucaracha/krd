@@ -113,7 +113,7 @@ Vagrant.configure("2") do |config|
   end
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "multicloud"
-    installer.vm.network :private_network, :ip => "10.10.10.2", :type => :static
+    installer.vm.network :private_network, :ip => "10.10.16.2", :type => :static
     installer.vm.provision 'shell' do |sh|
       sh.path =  "installer.sh"
       sh.args = ['-p', '-v', '-w', '/vagrant']
