@@ -8,7 +8,6 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 - hosts: localhost
-  become: yes
   vars:
     images_file: /tmp/images.yaml
   pre_tasks:
@@ -16,8 +15,10 @@
       include_vars:
         file: krd-vars.yml
   roles:
-    - andrewrothstein.kubectl
-    - { role: geerlingguy.docker, when: virtlet_source_type == "source" }
+    - role: andrewrothstein.kubectl
+      kubectl_ver: "v{{ kubectl_version }}"
+    - role: geerlingguy.docker
+      when: virtlet_source_type == "source"
   tasks:
     - name: create Virtlet binary folder
       file:
@@ -65,10 +66,12 @@
       - name: configure proxy values for docker service
         block:
         - name: create docker config folder
+          become: yes
           file:
             state: directory
             path: "/etc/systemd/system/docker.service.d"
         - name: Configure docker service to use http_proxy env value
+          become: yes
           blockinfile:
             dest: "/etc/systemd/system/docker.service.d/http-proxy.conf"
             create: yes
@@ -78,6 +81,7 @@
           when:
             - lookup('env','http_proxy') != "fooproxy"
         - name: Configure docker service to use https_proxy env value
+          become: yes
           blockinfile:
             dest: "/etc/systemd/system/docker.service.d/https-proxy.conf"
             create: yes
@@ -87,6 +91,7 @@
           when:
             - lookup('env','https_proxy') != "fooproxy"
         - name: Configure docker service to use no_proxy env value
+          become: yes
           blockinfile:
             dest: "/etc/systemd/system/docker.service.d/no-proxy.conf"
             create: yes
@@ -96,8 +101,10 @@
           when:
             - lookup('env','no_proxy') != "fooproxy"
         - name: reload systemd
+          become: yes
           command: systemctl daemon-reload
         - name: restart docker service
+          become: yes
           service:
             name: docker
             state: restarted
@@ -134,7 +141,6 @@
       delay: 10
 
 - hosts: virtlet
-  become: yes
   tasks:
     - name: Load krd variables
       include_vars:
@@ -144,18 +150,21 @@
         state: directory
         path: "{{ criproxy_dest }}"
     - name: disable AppArmor in all nodes
+      become: yes
       service:
         name: apparmor
         state: stopped
         enabled: no
       when: ansible_os_family == "Debian"
     - name: modify args for kubelet service
+      become: yes
       lineinfile:
         dest: /etc/systemd/system/kubelet.service
         line: "                --container-runtime=remote --container-runtime-endpoint=unix:///run/criproxy.sock --image-service-endpoint=unix:///run/criproxy.sock --enable-controller-attach-detach=false \\"
         insertafter: '^ExecStart=/usr/local/bin/kubelet *'
         state: present
     - name: create dockershim service
+      become: yes
       blockinfile:
         path: /etc/systemd/system/dockershim.service
         create: yes
@@ -208,6 +217,7 @@
         path: "{{ criproxy_dest }}/criproxy"
         mode: "+x"
     - name: create criproxy service
+      become: yes
       blockinfile:
         path: /etc/systemd/system/criproxy.service
         create: yes
@@ -224,6 +234,7 @@
           [Install]
           WantedBy=kubelet.service
     - name: start criproxy and dockershim services
+      become: yes
       service:
         name: "{{ item }}"
         state: started
@@ -232,6 +243,7 @@
       - dockershim
       - criproxy
     - name: restart kubelet services
+      become: yes
       service:
         name: kubelet
         state: restarted

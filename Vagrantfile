@@ -114,9 +114,11 @@ Vagrant.configure("2") do |config|
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "multicloud"
     installer.vm.network :private_network, :ip => "10.10.16.2", :type => :static
-    installer.vm.provision 'shell' do |sh|
-      sh.path =  "installer.sh"
-      sh.args = ['-p', '-v', '-w', '/vagrant']
+    installer.vm.provision 'shell', privileged: false do |sh|
+      sh.env = {'KRD_PLUGIN_ENABLED': 'true'}
+      sh.inline = <<-SHELL
+        cd /vagrant/ && ./installer.sh | tee krd_installer.log
+      SHELL
     end
   end
 end

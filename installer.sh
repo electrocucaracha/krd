@@ -9,43 +9,26 @@
 ##############################################################################
 
 set -o errexit
-set -o nounset
 set -o pipefail
-
-# usage() - Prints the usage of the program
-function usage {
-    cat <<EOF
-usage: $0 [-a addons] [-p] [-v] [-w dir ]
-Optional Argument:
-    -a List of Kubernetes AddOns to be installed ( e.g. "ovn-kubernetes virtlet multus")
-    -v Enable verbosity
-    -w Working directory
-    -t Running healthchecks
-EOF
-}
 
 # _install_pip() - Install Python Package Manager
 function _install_pip {
     if $(pip --version &>/dev/null); then
-        return
+        sudo apt-get install -y python-dev
+        curl -sL https://bootstrap.pypa.io/get-pip.py | sudo python
+    else
+        sudo -E pip install --upgrade pip
     fi
-    apt-get install -y python-dev
-    curl -sL https://bootstrap.pypa.io/get-pip.py | python
 }
 
 # _install_ansible() - Install and Configure Ansible program
 function _install_ansible {
-    mkdir -p /etc/ansible/
-    cat <<EOL > /etc/ansible/ansible.cfg
-[defaults]
-host_key_checking = false
-EOL
+    sudo mkdir -p /etc/ansible/
     if $(ansible --version &>/dev/null); then
-        pip install --upgrade pip
-    else
-        _install_pip
+        return
     fi
-    pip install ansible
+    _install_pip
+    sudo -E pip install ansible
 }
 
 # install_k8s() - Install Kubernetes using kubespray tool
@@ -55,46 +38,44 @@ function install_k8s {
     version=$(grep "kubespray_version" ${krd_playbooks}/krd-vars.yml | awk -F ': ' '{print $2}')
     local tarball=v$version.tar.gz
 
-    apt-get install -y sshpass
+    sudo apt-get install -y sshpass
     _install_ansible
     wget https://github.com/kubernetes-incubator/kubespray/archive/$tarball
-    tar -C $dest_folder -xzf $tarball
+    sudo tar -C $dest_folder -xzf $tarball
+    sudo mv $dest_folder/kubespray-$version/ansible.cfg /etc/ansible/ansible.cfg
     rm $tarball
 
-    pushd $dest_folder/kubespray-$version
-        pip install -r requirements.txt
-        rm -f $krd_inventory_folder/group_vars/all.yml 2> /dev/null
-        if [[ -n "${verbose+x}" ]]; then
-            echo "kube_log_level: 5" >> $krd_inventory_folder/group_vars/all.yml
-        else
-            echo "kube_log_level: 2" >> $krd_inventory_folder/group_vars/all.yml
-        fi
-        if [[ -n "${http_proxy+x}" ]]; then
-            echo "http_proxy: \"$http_proxy\"" >> $krd_inventory_folder/group_vars/all.yml
-        fi
-        if [[ -n "${https_proxy+x}" ]]; then
-            echo "https_proxy: \"$https_proxy\"" >> $krd_inventory_folder/group_vars/all.yml
-        fi
-        ansible-playbook $verbose -i $krd_inventory cluster.yml -b | tee $log_folder/setup-kubernetes.log
-    popd
+    sudo -E pip install -r $dest_folder/kubespray-$version/requirements.txt
+    rm -f $krd_inventory_folder/group_vars/all.yml 2> /dev/null
+    if [[ -n "${verbose}" ]]; then
+        echo "kube_log_level: 5" | tee $krd_inventory_folder/group_vars/all.yml
+    else
+        echo "kube_log_level: 2" | tee $krd_inventory_folder/group_vars/all.yml
+    fi
+    if [[ -n "${http_proxy}" ]]; then
+        echo "http_proxy: \"$http_proxy\"" | tee --append $krd_inventory_folder/group_vars/all.yml
+    fi
+    if [[ -n "${https_proxy}" ]]; then
+        echo "https_proxy: \"$https_proxy\"" | tee --append $krd_inventory_folder/group_vars/all.yml
+    fi
+    ansible-playbook $verbose -i $krd_inventory $dest_folder/kubespray-$version/cluster.yml --become --become-user=root | sudo tee $log_folder/setup-kubernetes.log
 
     # Configure environment
     mkdir -p $HOME/.kube
-    mv $krd_inventory_folder/artifacts/admin.conf $HOME/.kube/config
+    cp $krd_inventory_folder/artifacts/admin.conf $HOME/.kube/config
 }
 
 # install_addons() - Install Kubenertes AddOns
 function install_addons {
     echo "Installing Kubernetes AddOns"
-    apt-get install -y sshpass
     _install_ansible
-    ansible-galaxy install -r $krd_folder/galaxy-requirements.yml --ignore-errors
+    sudo ansible-galaxy install $verbose -r $krd_folder/galaxy-requirements.yml --ignore-errors
 
-    ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-krd.yml | tee $log_folder/setup-krd.log
-    for addon in $addons; do
+    ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-krd.yml | sudo tee $log_folder/setup-krd.log
+    for addon in ${KRD_ADDONS:-ovn-kubernetes multus nfd istio}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
-        ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-${addon}.yml | tee $log_folder/setup-${addon}.log
-        if [[ -n "${testing_enabled+x}" ]]; then
+        ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-${addon}.yml | sudo tee $log_folder/setup-${addon}.log
+        if [[ "${testing_enabled}" == "true" ]]; then
             pushd $krd_tests
             bash ${addon}.sh
             popd
@@ -120,51 +101,40 @@ function _print_kubernetes_info {
     echo "Admin password: secret" >> $k8s_info_file
 }
 
-# Configuration values
-addons="virtlet ovn-kubernetes multus nfd istio"
-krd_folder="$(dirname "$0")"
-verbose=""
+if ! sudo -n "true"; then
+    echo ""
+    echo "passwordless sudo is needed for '$(id -nu)' user."
+    echo "Please fix your /etc/sudoers file. You likely want an"
+    echo "entry like the following one..."
+    echo ""
+    echo "$(id -nu) ALL=(ALL) NOPASSWD: ALL"
+    exit 1
+fi
 
-while getopts "a:pvw:t" opt; do
-    case $opt in
-        a)
-            addons="$OPTARG"
-            ;;
-        p)
-            plugin_enabled="true"
-            ;;
-        v)
-            set -o xtrace
-            verbose="-vvv"
-            ;;
-        w)
-            krd_folder="$OPTARG"
-            ;;
-        t)
-            testing_enabled="true"
-            ;;
-        ?)
-            usage
-            exit
-            ;;
-    esac
-done
+if [[ -n "${KRD_DEBUG}" ]]; then
+    set -o xtrace
+    verbose="-vvv"
+fi
+
+# Configuration values
 log_folder=/var/log/krd
-krd_inventory_folder=$krd_folder/inventory
+krd_folder=$(pwd)
+export krd_inventory_folder=$krd_folder/inventory
 krd_inventory=$krd_inventory_folder/hosts.ini
 krd_playbooks=$krd_folder/playbooks
 krd_tests=$krd_folder/tests
 k8s_info_file=$krd_folder/k8s_info.log
+testing_enabled=${KRD_ENABLE_TESTS:-false}
 
-mkdir -p $log_folder
+sudo mkdir -p $log_folder
 
 # Install dependencies
 # Setup proxy variables
 if [ -f $krd_folder/sources.list ]; then
-    mv /etc/apt/sources.list /etc/apt/sources.list.backup
-    cp $krd_folder/sources.list /etc/apt/sources.list
+    sudo mv /etc/apt/sources.list /etc/apt/sources.list.backup
+    sudo cp $krd_folder/sources.list /etc/apt/sources.list
 fi
-apt-get update
+sudo apt-get update
 install_k8s
 install_addons
 _print_kubernetes_info

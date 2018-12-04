@@ -46,9 +46,13 @@
         - node-feature-discovery-daemonset.json.template
 
 - hosts: localhost
-  become: yes
+  pre_tasks:
+    - name: Load krd variables
+      include_vars:
+        file: krd-vars.yml
   roles:
-    - andrewrothstein.kubectl
+    - role: andrewrothstein.kubectl
+      kubectl_ver: "v{{ kubectl_version }}"
   tasks:
     - name: create service accounts
       command: "/usr/local/bin/kubectl apply -f /tmp/{{ item }}"

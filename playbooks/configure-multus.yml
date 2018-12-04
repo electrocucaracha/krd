@@ -14,7 +14,9 @@
       include_vars:
         file: krd-vars.yml
   roles:
-    - { role: andrewrothstein.go, when: multus_source_type == "source" }
+    - role: andrewrothstein.go
+      go_ver: "{{ go_version }}"
+      when: multus_source_type == "source"
   environment:
     PATH: "{{ ansible_env.PATH }}:/usr/local/go/bin/"
   tasks:
@@ -78,8 +80,13 @@
           }
 
 - hosts: localhost
+  pre_tasks:
+    - name: Load krd variables
+      include_vars:
+        file: krd-vars.yml
   roles:
-    - andrewrothstein.kubectl
+    - role: andrewrothstein.kubectl
+      kubectl_ver: "v{{ kubectl_version }}"
   tasks:
     - name: define a CRD network object specification
       blockinfile:

@@ -66,4 +66,14 @@ helm_enabled: true
 # NOTE: Ipvs is based on netfilter hook function, but uses hash table as the underlying data structure and
 # works in the kernel space
 # https://kubernetes.io/docs/concepts/services-networking/service/#proxy-mode-ipvs
-kube_proxy_mode: ipvs
+#kube_proxy_mode: ipvs
+
+# Download container images only once then push to cluster nodes in
+# batches. 
+#download_run_once: True
+
+# Makes the installer node a delegate for pushing images while running
+# the deployment with ansible. This maybe the case if cluster nodes
+# cannot access each over via ssh or you want to use local docker
+# images as a cache for multiple clusters.
+#download_localhost: True
