@@ -57,7 +57,7 @@ kubeconfig_localhost: true
 local_volumes_enabled: true
 
 ## Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.11.3
+kube_version: v1.12.3
 
 # Helm deployment
 helm_enabled: true
