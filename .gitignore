@@ -8,3 +8,4 @@ inventory/group_vars/all.yml
 config/pdf.yml
 *.vdi
 docs/build/
+inventory/artifacts/admin.conf
