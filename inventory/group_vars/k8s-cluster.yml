@@ -77,3 +77,6 @@ helm_enabled: true
 # cannot access each over via ssh or you want to use local docker
 # images as a cache for multiple clusters.
 #download_localhost: True
+
+# Enable Multus
+kube_network_plugin_multus: true

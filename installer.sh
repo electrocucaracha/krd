@@ -43,6 +43,7 @@ function install_k8s {
     wget https://github.com/kubernetes-incubator/kubespray/archive/$tarball
     sudo tar -C $dest_folder -xzf $tarball
     sudo mv $dest_folder/kubespray-$version/ansible.cfg /etc/ansible/ansible.cfg
+    sudo chown -R $USER $dest_folder/kubespray-$version
     rm $tarball
 
     sudo -E pip install -r $dest_folder/kubespray-$version/requirements.txt
@@ -52,6 +53,7 @@ function install_k8s {
     else
         echo "kube_log_level: 2" | tee $krd_inventory_folder/group_vars/all.yml
     fi
+    echo "kubeadm_enabled: true" | tee --append $krd_inventory_folder/group_vars/all.yml
     if [[ -n "${http_proxy}" ]]; then
         echo "http_proxy: \"$http_proxy\"" | tee --append $krd_inventory_folder/group_vars/all.yml
     fi
@@ -72,7 +74,7 @@ function install_addons {
     sudo ansible-galaxy install $verbose -r $krd_folder/galaxy-requirements.yml --ignore-errors
 
     ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-krd.yml | sudo tee $log_folder/setup-krd.log
-    for addon in ${KRD_ADDONS:-ovn-kubernetes multus nfd istio}; do
+    for addon in ${KRD_ADDONS:-ovn-kubernetes nfd istio}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
         ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-${addon}.yml | sudo tee $log_folder/setup-${addon}.log
         if [[ "${testing_enabled}" == "true" ]]; then

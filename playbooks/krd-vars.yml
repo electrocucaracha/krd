@@ -52,6 +52,6 @@ istio_version: 1.0.3
 istio_url: "https://github.com/istio/istio/releases/download/{{ istio_version }}/istio-{{ istio_version }}-linux.tar.gz"
 
 go_version: '1.11'
-kubespray_version: 2.7.0
+kubespray_version: 2.8.0
 kubectl_version: 1.11.2
 helm_client_version: 2.9.1
