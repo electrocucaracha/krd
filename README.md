@@ -12,14 +12,15 @@ Virtual Machines.
 
 # Components
 
-| Name           | Description                                   | Source                            | Status |
-|:--------------:|:----------------------------------------------|:----------------------------------|:------:|
-| Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Done   |
-| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][3] | Tested |
-| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][4]        | Tested |
-| Multus         | Provides Multiple Network support in a pod    | [configure-multus.yml][5]         | Tested |
-| NFD            | Node feature discovery                        | [configure-nfd.yml][7]            | Tested |
-| Istio          | Service Mesh platform                         | [configure-istio.yml][8]          | Tested |
+| Name           | Description                                   | Source                            | Status      |
+|:--------------:|:----------------------------------------------|:----------------------------------|:-----------:|
+| Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Done        |
+| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][3] | Tested      |
+| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][4]        | Tested      |
+| Multus         | Provides Multiple Network support in a pod    | [configure-multus.yml][5]         | Tested      |
+| NFD            | Node feature discovery                        | [configure-nfd.yml][7]            | Tested      |
+| Istio          | Service Mesh platform                         | [configure-istio.yml][8]          | Tested      |
+| Kured          | Reboot Daemon                                 | [configure-kured.yml][9]          | Implemented |
 
 ## Deployment
 
@@ -55,3 +56,4 @@ Apache-2.0
 [6]: https://www.vagrantup.com/
 [7]: playbooks/configure-nfd.yml
 [8]: playbooks/configure-istio.yml
+[9]: playbooks/configure-kured.yml

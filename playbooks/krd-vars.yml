@@ -51,6 +51,14 @@ istio_source_type: "tarball"
 istio_version: 1.0.3
 istio_url: "https://github.com/istio/istio/releases/download/{{ istio_version }}/istio-{{ istio_version }}-linux.tar.gz"
 
+kured_dest: "{{ base_dest }}/kured"
+kured_source_type: "binary"
+kured_version: 1.1.0
+kured_url: "https://github.com/weaveworks/kured/releases/download/{{ kured_version }}/kured-{{ kured_version }}.yaml"
+#kured_source_type: "source"
+#kured_version: 114c34950b155ab351a43e99af995b6ee435cc5d
+#kured_url: "https://github.com/weaveworks/kured"
+
 go_version: '1.11'
 kubespray_version: 2.8.0
 kubectl_version: 1.11.2
