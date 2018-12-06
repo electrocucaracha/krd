@@ -23,7 +23,7 @@ nodes = YAML.load_file(pdf)
 
 # Inventory file creation
 File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_file|
-  inventory_file.puts("[all:vars]\nansible_connection=ssh\nansible_ssh_user=vagrant\nansible_ssh_pass=vagrant\n\n[all]")
+  inventory_file.puts("[all:vars]\nansible_connection=ssh\nansible_ssh_user=vagrant\n[all]")
   nodes.each do |node|
     inventory_file.puts("#{node['name']}\tansible_ssh_host=#{node['ip']} ansible_ssh_port=22")
   end
@@ -59,6 +59,7 @@ end
 Vagrant.configure("2") do |config|
   config.vm.box =  box[provider][:name]
   config.vm.box_version = box[provider][:version]
+  config.ssh.insert_key = false
 
   if ENV['http_proxy'] != nil and ENV['https_proxy'] != nil
     if Vagrant.has_plugin?('vagrant-proxyconf')
@@ -115,9 +116,13 @@ Vagrant.configure("2") do |config|
     installer.vm.hostname = "multicloud"
     installer.vm.network :private_network, :ip => "10.10.16.2", :type => :static
     installer.vm.provision 'shell', privileged: false do |sh|
-      sh.env = {'KRD_PLUGIN_ENABLED': 'true'}
+      sh.env = {'KRD_DEBUG': 'true'}
       sh.inline = <<-SHELL
-        cd /vagrant/ && ./installer.sh | tee krd_installer.log
+        cd /vagrant/
+        cp insecure_keys/key ~/.ssh/id_rsa
+        chown vagrant ~/.ssh/id_rsa
+        chmod 400 ~/.ssh/id_rsa
+        ./installer.sh | tee krd_installer.log
       SHELL
     end
   end

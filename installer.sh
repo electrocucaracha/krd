@@ -31,19 +31,56 @@ function _install_ansible {
     sudo -E pip install ansible
 }
 
+# _install_docker() - Download and install docker-engine
+function _install_docker {
+    local max_concurrent_downloads=${1:-3}
+
+    if $(docker version &>/dev/null); then
+        return
+    fi
+    sudo apt-get install -y software-properties-common linux-image-extra-$(uname -r) linux-image-extra-virtual apt-transport-https ca-certificates curl
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    sudo apt-get update
+    sudo apt-get install -y docker-ce
+
+    sudo mkdir -p /etc/systemd/system/docker.service.d
+    if [ $http_proxy ]; then
+        echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
+        echo "Environment=\"HTTP_PROXY=$http_proxy\"" | sudo tee --append /etc/systemd/system/docker.service.d/http-proxy.conf
+    fi
+    if [ $https_proxy ]; then
+        echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/https-proxy.conf
+        echo "Environment=\"HTTPS_PROXY=$https_proxy\"" | sudo tee --append /etc/systemd/system/docker.service.d/https-proxy.conf
+    fi
+    if [ $no_proxy ]; then
+        echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/no-proxy.conf
+        echo "Environment=\"NO_PROXY=$no_proxy\"" | sudo tee --append /etc/systemd/system/docker.service.d/no-proxy.conf
+    fi
+    sudo systemctl daemon-reload
+    echo "DOCKER_OPTS=\"-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --max-concurrent-downloads $max_concurrent_downloads \"" | sudo tee --append /etc/default/docker
+    sudo usermod -aG docker $USER
+
+    sudo systemctl restart docker
+    sleep 10
+}
+
 # install_k8s() - Install Kubernetes using kubespray tool
 function install_k8s {
     echo "Deploying kubernetes"
     local dest_folder=/opt
     version=$(grep "kubespray_version" ${krd_playbooks}/krd-vars.yml | awk -F ': ' '{print $2}')
+    local_release_dir=$(grep "local_release_dir" $krd_inventory_folder/group_vars/k8s-cluster.yml | awk -F "\"" '{print $2}')
     local tarball=v$version.tar.gz
 
     sudo apt-get install -y sshpass
+    _install_docker
     _install_ansible
     wget https://github.com/kubernetes-incubator/kubespray/archive/$tarball
     sudo tar -C $dest_folder -xzf $tarball
     sudo mv $dest_folder/kubespray-$version/ansible.cfg /etc/ansible/ansible.cfg
     sudo chown -R $USER $dest_folder/kubespray-$version
+    sudo mkdir -p ${local_release_dir}/containers
     rm $tarball
 
     sudo -E pip install -r $dest_folder/kubespray-$version/requirements.txt
@@ -113,7 +150,7 @@ if ! sudo -n "true"; then
     exit 1
 fi
 
-if [[ -n "${KRD_DEBUG}" ]]; then
+if [[ "${KRD_DEBUG}" == "true" ]]; then
     set -o xtrace
     verbose="-vvv"
 fi

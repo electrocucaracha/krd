@@ -68,15 +68,18 @@ helm_enabled: true
 # https://kubernetes.io/docs/concepts/services-networking/service/#proxy-mode-ipvs
 #kube_proxy_mode: ipvs
 
-# Download container images only once then push to cluster nodes in
-# batches. 
-#download_run_once: True
+# Download container images only once then push to cluster nodes in batches
+download_run_once: true
+
+# Where the binaries will be downloaded.
+# Note: ensure that you've enough disk space (about 1G)
+local_release_dir: "/tmp/releases"
 
 # Makes the installer node a delegate for pushing images while running
 # the deployment with ansible. This maybe the case if cluster nodes
 # cannot access each over via ssh or you want to use local docker
 # images as a cache for multiple clusters.
-#download_localhost: True
+download_localhost: true
 
 # Enable Multus
 kube_network_plugin_multus: true
