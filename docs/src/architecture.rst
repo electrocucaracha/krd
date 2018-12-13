@@ -87,7 +87,7 @@ inventory/group_vars/k8s-cluster.yml
 
 A preferred practice in Ansible is to not store variables in the
 main inventory file. The configuration variables required for 
-`Kubespray <https://github.com/kubernetes-incubator/kubespray>`_ are
+`Kubespray <https://github.com/kubernetes-sigs/kubespray>`_ are
 stored in this file.
 
 node.sh

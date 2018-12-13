@@ -49,7 +49,7 @@ the following instructions:
 Apache-2.0
 
 [1]: https://git.onap.org/multicloud/k8s
-[2]: https://github.com/kubernetes-incubator/kubespray
+[2]: https://github.com/kubernetes-sigs/kubespray
 [3]: playbooks/configure-ovn-kubernetes.yml
 [4]: playbooks/configure-virtlet.yml
 [5]: playbooks/configure-multus.yml

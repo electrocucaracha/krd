@@ -107,7 +107,7 @@ As part of the deployment process, this tool downloads and configures
 ansible role. Therefore is necessary to remove those instructions from
 all the ansible playbooks.
 
-.. _kubespray: https://github.com/kubernetes-incubator/kubespray
+.. _kubespray: https://github.com/kubernetes-sigs/kubespray
 
 .. code-block:: bash
 

@@ -76,7 +76,7 @@ function install_k8s {
     sudo apt-get install -y sshpass
     _install_docker
     _install_ansible
-    wget https://github.com/kubernetes-incubator/kubespray/archive/$tarball
+    wget https://github.com/kubernetes-sigs/kubespray/archive/$tarball
     sudo tar -C $dest_folder -xzf $tarball
     sudo mv $dest_folder/kubespray-$version/ansible.cfg /etc/ansible/ansible.cfg
     sudo chown -R $USER $dest_folder/kubespray-$version
