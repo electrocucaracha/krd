@@ -28,14 +28,14 @@ ovn_kubernetes_url: "https://github.com/openvswitch/ovn-kubernetes/archive/v{{ o
 
 criproxy_dest: "{{ base_dest }}/criproxy"
 criproxy_source_type: "binary"
-criproxy_version: 0.12.0
+criproxy_version: 0.14.0
 criproxy_url: "https://github.com/Mirantis/criproxy/releases/download/v{{ criproxy_version }}/criproxy"
 #criproxy_source_type: "source"
 #criproxy_version: b5ca5a6cec278e2054dface4f7a3e111fb9ab84b
 #criproxy_url: "https://github.com/Mirantis/criproxy"
 virtlet_dest: "{{ base_dest }}/virtlet"
 virtlet_source_type: "binary"
-virtlet_version: 1.4.2
+virtlet_version: 1.4.3
 virtlet_url: "https://github.com/Mirantis/virtlet/releases/download/v{{ virtlet_version }}/virtletctl"
 #virtlet_source_type: "source"
 #virtlet_version: 68e11b8f1db2c78b063126899f0e60910700975d
