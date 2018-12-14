@@ -59,7 +59,10 @@ function _install_docker {
     fi
     sudo systemctl daemon-reload
     echo "DOCKER_OPTS=\"-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --max-concurrent-downloads $max_concurrent_downloads \"" | sudo tee --append /etc/default/docker
-    sudo usermod -aG docker $USER
+    if [[ -z $(groups | grep docker) ]]; then
+        sudo usermod -aG docker $USER
+        newgrp docker
+    fi
 
     sudo systemctl restart docker
     sleep 10
