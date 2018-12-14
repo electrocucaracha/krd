@@ -119,6 +119,7 @@ Vagrant.configure("2") do |config|
       sh.env = {'KRD_DEBUG': 'true'}
       sh.inline = <<-SHELL
         cd /vagrant/
+        cp insecure_keys/key.pub ~/.ssh/id_rsa.pub
         cp insecure_keys/key ~/.ssh/id_rsa
         chown vagrant ~/.ssh/id_rsa
         chmod 400 ~/.ssh/id_rsa
