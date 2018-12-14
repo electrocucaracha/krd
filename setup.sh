@@ -177,9 +177,10 @@ modprobe vhost_net
 ${INSTALLER_CMD} ${packages[@]}
 if ! which pip; then
     curl -sL https://bootstrap.pypa.io/get-pip.py | sudo python
+else
+    sudo -H -E pip install --upgrade pip
 fi
-sudo -H pip install --upgrade pip
-sudo -H pip install tox
+sudo -H -E pip install tox
 if [[ ${http_proxy+x} ]]; then
     vagrant plugin install vagrant-proxyconf
 fi
