@@ -143,6 +143,31 @@ function _print_kubernetes_info {
     echo "Admin password: secret" >> $k8s_info_file
 }
 
+# install_rundeck() - This function deploy a Rundeck instance
+function install_rundeck {
+    _install_docker
+    _install_pip
+    sudo -E pip install docker-compose
+
+
+    echo "deb https://rundeck.bintray.com/rundeck-deb /" | sudo tee -a /etc/apt/sources.list.d/rundeck.list
+    curl 'https://bintray.com/user/downloadSubjectPublicKey?username=bintray' | sudo apt-key add -
+    sudo apt-get update
+    apt-get -y install rundeck-cli
+
+    export RD_URL=http://localhost:4440
+    export RD_USER=admin
+    export RD_PASSWORD=admin
+    echo "export RD_URL=$RD_URL" | sudo tee --append /etc/environment
+    echo "export RD_USER=$RD_URL" | sudo tee --append /etc/environment
+    echo "export RD_PASSWORD=$RD_PASSWORD" | sudo tee --append /etc/environment
+
+    pushd $krd_folder/rundeck
+    docker-compose up -d
+    rd projects create --project krd --file project.properties
+    popd
+}
+
 if ! sudo -n "true"; then
     echo ""
     echo "passwordless sudo is needed for '$(id -nu)' user."
@@ -180,3 +205,4 @@ sudo apt-get update
 install_k8s
 install_addons
 _print_kubernetes_info
+install_rundeck
