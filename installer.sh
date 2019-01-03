@@ -114,7 +114,7 @@ function install_addons {
     sudo ansible-galaxy install $verbose -r $krd_folder/galaxy-requirements.yml --ignore-errors
 
     ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-krd.yml | sudo tee $log_folder/setup-krd.log
-    for addon in ${KRD_ADDONS:-ovn-kubernetes nfd istio kured}; do
+    for addon in ${KRD_ADDONS:-ovn-kubernetes istio}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
         ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-${addon}.yml | sudo tee $log_folder/setup-${addon}.log
         if [[ "${testing_enabled}" == "true" ]]; then
@@ -145,27 +145,56 @@ function _print_kubernetes_info {
 
 # install_rundeck() - This function deploy a Rundeck instance
 function install_rundeck {
-    _install_docker
-    _install_pip
-    sudo -E pip install docker-compose
-
-
     echo "deb https://rundeck.bintray.com/rundeck-deb /" | sudo tee -a /etc/apt/sources.list.d/rundeck.list
     curl 'https://bintray.com/user/downloadSubjectPublicKey?username=bintray' | sudo apt-key add -
     sudo apt-get update
-    apt-get -y install rundeck-cli
+    sudo apt-get -y install rundeck-cli rundeck
+    sudo chown -R rundeck:rundeck /var/lib/rundeck/
+
+    sudo service rundeckd start
+    sleep 10
+    while [[ -z $(grep -E "Grails application running at" /var/log/rundeck/service.log) ]]; do
+        sleep 5
+    done
+    sudo mkdir -p /home/rundeck/.ssh
+    sudo cp $HOME/.ssh/id_rsa /home/rundeck/.ssh
+    sudo chown -R rundeck:rundeck /home/rundeck/
 
     export RD_URL=http://localhost:4440
     export RD_USER=admin
     export RD_PASSWORD=admin
     echo "export RD_URL=$RD_URL" | sudo tee --append /etc/environment
-    echo "export RD_USER=$RD_URL" | sudo tee --append /etc/environment
+    echo "export RD_USER=$RD_USER" | sudo tee --append /etc/environment
     echo "export RD_PASSWORD=$RD_PASSWORD" | sudo tee --append /etc/environment
 
     pushd $krd_folder/rundeck
-    docker-compose up -d
-    rd projects create --project krd --file project.properties
+    rd projects create --project krd --file krd.properties
+    rd jobs load --project krd --file Deploy_Kubernetes.yaml --format yaml
     popd
+}
+
+# _install_helm() - Function that installs Helm Client
+function _install_helm {
+    local helm_version=v2.8.2
+    local helm_tarball=helm-${helm_version}-linux-amd64.tar.gz
+
+    if ! $(helm version &>/dev/null); then
+        wget http://storage.googleapis.com/kubernetes-helm/$helm_tarball
+        tar -zxvf $helm_tarball -C /tmp
+        rm $helm_tarball
+        sudo mv /tmp/linux-amd64/helm /usr/local/bin/helm
+    fi
+
+    helm init
+    helm repo update
+}
+
+function install_helm_charts {
+    _install_helm
+
+    for chart in prometheus kured;do
+        helm install stable/$chart
+    done
 }
 
 if ! sudo -n "true"; then
@@ -205,4 +234,5 @@ sudo apt-get update
 install_k8s
 install_addons
 _print_kubernetes_info
+install_helm_charts
 install_rundeck
