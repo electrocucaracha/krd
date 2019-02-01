@@ -10,8 +10,16 @@
 ##############################################################################
 
 box = {
-  :virtualbox => { :name => 'elastic/ubuntu-16.04-x86_64', :version => '20180708.0.0' },
-  :libvirt => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0'}
+  :virtualbox => {
+    :ubuntu => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180708.0.0' },
+    :centos => { :name => 'centos/7', :version=> '1812.01' },
+    :opensuse => { :name => 'opensuse/openSUSE-42.1-x86_64', :version=> '1.0.1' }
+  },
+  :libvirt => {
+    :ubuntu => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0' },
+    :centos => { :name => 'centos/7', :version=> '1812.01' },
+    :opensuse => { :name => 'opensuse/openSUSE-42.1-x86_64', :version=> '1.0.0' }
+  }
 }
 
 require 'yaml'
@@ -39,7 +47,9 @@ File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_fi
 end
 
 provider = (ENV['VAGRANT_DEFAULT_PROVIDER'] || :libvirt).to_sym
+distro = (ENV['KRD_DISTRO'] || :ubuntu).to_sym
 puts "[INFO] Provider: #{provider} "
+puts "[INFO] Linux Distro: #{distro} "
 
 if ENV['no_proxy'] != nil or ENV['NO_PROXY']
   $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
@@ -57,8 +67,8 @@ if ENV['no_proxy'] != nil or ENV['NO_PROXY']
 end
 
 Vagrant.configure("2") do |config|
-  config.vm.box =  box[provider][:name]
-  config.vm.box_version = box[provider][:version]
+  config.vm.box =  box[provider][distro][:name]
+  config.vm.box_version = box[provider][distro][:version]
   config.ssh.insert_key = false
 
   if ENV['http_proxy'] != nil and ENV['https_proxy'] != nil
@@ -114,6 +124,8 @@ Vagrant.configure("2") do |config|
   end
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "multicloud"
+    installer.vm.box =  box[provider][:ubuntu][:name]
+    installer.vm.box_version = box[provider][:ubuntu][:version]
     installer.vm.network :private_network, :ip => "10.10.16.2", :type => :static
     installer.vm.provision 'shell', privileged: false do |sh|
       sh.env = {'KRD_DEBUG': 'true'}
