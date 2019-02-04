@@ -11,8 +11,8 @@
 set -o errexit
 set -o pipefail
 
-source _commons
-source _installers
+source _commons.sh
+source _installers.sh
 
 # _print_kubernetes_info() - Prints the login Kubernetes information
 function _print_kubernetes_info {

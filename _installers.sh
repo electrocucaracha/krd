@@ -11,7 +11,7 @@
 set -o errexit
 set -o pipefail
 
-source _commons
+source _commons.sh
 
 # _install_pip() - Install Python Package Manager
 function _install_pip {
