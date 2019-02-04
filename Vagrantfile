@@ -31,9 +31,9 @@ nodes = YAML.load_file(pdf)
 
 # Inventory file creation
 File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_file|
-  inventory_file.puts("[all:vars]\nansible_connection=ssh\nansible_ssh_user=vagrant\n[all]")
+  inventory_file.puts("[all]")
   nodes.each do |node|
-    inventory_file.puts("#{node['name']}\tansible_ssh_host=#{node['ip']} ansible_ssh_port=22")
+    inventory_file.puts(node['name'])
   end
   ['kube-master', 'kube-node', 'etcd', 'ovn-central', 'ovn-controller', 'virtlet'].each do|group|
     inventory_file.puts("\n[#{group}]")
@@ -126,7 +126,6 @@ Vagrant.configure("2") do |config|
     installer.vm.hostname = "multicloud"
     installer.vm.box =  box[provider][:ubuntu][:name]
     installer.vm.box_version = box[provider][:ubuntu][:version]
-    installer.vm.network :private_network, :ip => "10.10.16.2", :type => :static
     installer.vm.provision 'shell', privileged: false do |sh|
       sh.env = {'KRD_DEBUG': 'true'}
       sh.inline = <<-SHELL
