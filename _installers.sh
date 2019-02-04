@@ -139,8 +139,8 @@ function install_addons {
 
 # install_rundeck() - This function deploy a Rundeck instance
 function install_rundeck {
-    if ! $(rd version &>/dev/null); then
-        return 1
+    if $(rd version &>/dev/null); then
+        return
     fi
 
     source /etc/os-release || source /usr/lib/os-release
@@ -151,7 +151,7 @@ function install_rundeck {
             echo "deb https://rundeck.bintray.com/rundeck-deb /" | sudo tee -a /etc/apt/sources.list.d/rundeck.list
             curl 'https://bintray.com/user/downloadSubjectPublicKey?username=bintray' | sudo apt-key add -
             update_repos
-            install_package install rundeck-cli rundeck
+            install_package rundeck-cli rundeck
         ;;
         rhel|centos|fedora)
         ;;
@@ -186,8 +186,8 @@ function _install_helm {
     local helm_version=v2.8.2
     local helm_tarball=helm-${helm_version}-linux-amd64.tar.gz
 
-    if ! $(helm version &>/dev/null); then
-        return 1
+    if $(helm version &>/dev/null); then
+        return
     fi
 
     wget http://storage.googleapis.com/kubernetes-helm/$helm_tarball

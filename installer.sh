@@ -63,5 +63,5 @@ update_repos
 install_k8s
 #install_addons
 install_helm_charts
-#install_rundeck
+install_rundeck
 _print_kubernetes_info
