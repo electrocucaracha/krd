@@ -3,12 +3,9 @@
 
 ## Summary
 
-This project offers a reference for deploying a Kubernetes cluster
-that satisfies the requirements of [ONAP multicloud/k8s plugin][1]. Its
-ansible playbooks allow to provision a deployment on Bare-metal or
-Virtual Machines.
-
-![Diagram](docs/src/img/diagram.png)
+This project offers a reference for deploying a Kubernetes cluster.
+Its ansible playbooks allow to provision a deployment on Bare-metal
+or Virtual Machines.
 
 # Components
 
@@ -48,7 +45,6 @@ the following instructions:
 
 Apache-2.0
 
-[1]: https://git.onap.org/multicloud/k8s
 [2]: https://github.com/kubernetes-sigs/kubespray
 [3]: playbooks/configure-ovn-kubernetes.yml
 [4]: playbooks/configure-virtlet.yml
