@@ -199,10 +199,30 @@ function _install_helm {
     helm repo update
 }
 
+# install_helm_charts() - Function that installs additional Official Helm Charts
 function install_helm_charts {
     _install_helm
 
     for chart in prometheus kured;do
         helm install stable/$chart
     done
+}
+
+# install_openstack() - Function that install OpenStack Controller services
+function install_openstack {
+    echo "Deploying openstack"
+    local dest_folder=/opt
+    local version=5648754f505e1d6b2d546b169eb38ceec2d7f915 # 2019-02-04
+
+    _install_helm
+    _install_docker
+
+#    sudo -E git clone https://git.openstack.org/openstack/openstack-helm-infra $dest_folder/openstack-helm-infra
+    sudo -E git clone https://git.openstack.org/openstack/openstack-helm $dest_folder/openstack-helm
+    sudo -H chown -R $(id -un): $dest_folder/openstack-*
+    pushd $dest_folder/openstack-helm
+    git checkout $version
+    ./tools/deployment/multinode/010-setup-client.sh
+    ./tools/deployment/developer/common/010-deploy-k8s.sh
+    popd
 }
