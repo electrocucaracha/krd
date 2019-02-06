@@ -1,0 +1,71 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2019
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- hosts: qat-node
+  tasks:
+    - name: Load krd variables
+      include_vars:
+        file: "{{ item }}"
+      with_items:
+        - krd-vars.yml
+        - "{{ ansible_os_family }}.yml"
+    - name: retrieve QAT driver
+      get_url:
+        url: "{{ qat_driver_url }}"
+        dest: "/tmp/qat.tar.gz"
+    - name: create qat folder
+      file:
+        state: directory
+        path: "{{ qat_driver_dest }}"
+    - name: extract qat driver source code
+      unarchive:
+        src: "/tmp/qat.tar.gz"
+        dest: "{{ qat_driver_dest }}"
+        remote_src: yes
+    - name: RedHat | install build tools
+      yum:
+        name: "@Development tools"
+        state: present
+      become: yes
+      when: ansible_os_family == 'RedHat'
+    - name: install qat compilation packages
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ qat_driver_pkgs }}"
+      become: yes
+    - name: get kernel version
+      shell: "uname -r"
+      register: kernel_version
+    - name: install kernel development tools
+      become: yes
+      package:
+        name: "kernel-devel-{{ kernel_version.stdout}}"
+        state: present
+      when: ansible_os_family == 'RedHat'
+    - name: configure qat driver source code
+      command: ./configure
+      args:
+        chdir: "{{ qat_driver_dest }}"
+    - name: build qat driver
+      become: yes
+      make:
+        chdir: "{{ qat_driver_dest }}"
+    - name: install qat driver
+      become: yes
+      make:
+        chdir: "{{ qat_driver_dest }}"
+        target: install
+    - name: start qat_service service
+      become: yes 
+      service:
+        name: "qat_service"
+        state: started
+        enabled: yes 

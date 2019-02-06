@@ -19,7 +19,5 @@
   roles:
     - kube-master
     - etcd
-    - ovn-central
     - kube-node
-    - ovn-controller
-    - virtlet
+    - qat-node
