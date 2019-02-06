@@ -8,6 +8,8 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
+- import_playbook: configure-krd.yml
+
 - hosts: localhost
   pre_tasks:
     - name: Load krd variables
