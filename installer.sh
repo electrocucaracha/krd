@@ -60,8 +60,7 @@ testing_enabled=${KRD_ENABLE_TESTS:-false}
 sudo mkdir -p $log_folder
 
 update_repos
-install_k8s
-#install_addons
-install_helm_charts
-install_rundeck
+for installer in ${KRD_INSTALLERS:-k8s addons helm_charts openstack rundeck}; do
+    install_$installer
+done
 _print_kubernetes_info
