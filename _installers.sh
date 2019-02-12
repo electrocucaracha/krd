@@ -26,6 +26,7 @@ function _install_pip {
 # _install_ansible() - Install and Configure Ansible program
 function _install_ansible {
     sudo mkdir -p /etc/ansible/
+    sudo cp $krd_folder/ansible.cfg /etc/ansible/ansible.cfg
     if $(ansible --version &>/dev/null); then
         return
     fi
@@ -93,7 +94,6 @@ function install_k8s {
     _install_ansible
     wget https://github.com/kubernetes-sigs/kubespray/archive/$tarball
     sudo tar -C $dest_folder -xzf $tarball
-    sudo mv $dest_folder/kubespray-$version/ansible.cfg /etc/ansible/ansible.cfg
     sudo chown -R $USER $dest_folder/kubespray-$version
     sudo mkdir -p ${local_release_dir}/containers
     rm $tarball
