@@ -12,12 +12,12 @@
 box = {
   :virtualbox => {
     :ubuntu => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180708.0.0' },
-    :centos => { :name => 'centos/7', :version=> '1812.01' },
+    :centos => { :name => 'generic/centos7', :version=> '1.9.2' },
     :opensuse => { :name => 'opensuse/openSUSE-42.1-x86_64', :version=> '1.0.1' }
   },
   :libvirt => {
     :ubuntu => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0' },
-    :centos => { :name => 'centos/7', :version=> '1812.01' },
+    :centos => { :name => 'centos/7', :version=> '1901.01' },
     :opensuse => { :name => 'opensuse/openSUSE-42.1-x86_64', :version=> '1.0.0' }
   }
 }
@@ -46,9 +46,7 @@ File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_fi
   inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
 end
 
-provider = (ENV['VAGRANT_DEFAULT_PROVIDER'] || :libvirt).to_sym
 distro = (ENV['KRD_DISTRO'] || :ubuntu).to_sym
-puts "[INFO] Provider: #{provider} "
 puts "[INFO] Linux Distro: #{distro} "
 
 if ENV['no_proxy'] != nil or ENV['NO_PROXY']
@@ -56,19 +54,24 @@ if ENV['no_proxy'] != nil or ENV['NO_PROXY']
   nodes.each do |node|
     $no_proxy += "," + node['ip']
   end
-  $subnet = "192.168.121"
-  if provider == :virtualbox
-    $subnet = "10.0.2"
-  end
   # NOTE: This range is based on vagrant-libvirt network definition CIDR 192.168.121.0/27
   (1..31).each do |i|
-    $no_proxy += ",#{$subnet}.#{i}"
+    $no_proxy += ",192.168.121.#{i},10.0.2.#{i}"
   end
 end
 
 Vagrant.configure("2") do |config|
-  config.vm.box =  box[provider][distro][:name]
-  config.vm.box_version = box[provider][distro][:version]
+  config.vm.provider "libvirt"
+  config.vm.provider "virtualbox"
+
+  config.vm.provider 'virtualbox' do |v, override|
+    override.vm.box =  box[:virtualbox][distro][:name]
+    override.vm.box_version = box[:virtualbox][distro][:version]
+  end
+  config.vm.provider 'libvirt' do |v, override|
+    override.vm.box =  box[:libvirt][distro][:name]
+    override.vm.box_version = box[:libvirt][distro][:version]
+  end
   config.ssh.insert_key = false
 
   if ENV['http_proxy'] != nil and ENV['https_proxy'] != nil
@@ -84,7 +87,7 @@ Vagrant.configure("2") do |config|
     config.vm.define node['name'] do |nodeconfig|
       nodeconfig.vm.hostname = node['name']
       nodeconfig.vm.network :private_network, :ip => node['ip'], :type => :static
-      nodeconfig.vm.provider 'virtualbox' do |v|
+      nodeconfig.vm.provider 'virtualbox' do |v, override|
         v.customize ["modifyvm", :id, "--memory", node['memory']]
         v.customize ["modifyvm", :id, "--cpus", node['cpus']]
         if node.has_key? "volumes"
@@ -97,7 +100,7 @@ Vagrant.configure("2") do |config|
           end
         end
       end
-      nodeconfig.vm.provider 'libvirt' do |v|
+      nodeconfig.vm.provider 'libvirt' do |v, override|
         v.memory = node['memory']
         v.cpus = node['cpus']
         v.nested = true
@@ -118,16 +121,12 @@ Vagrant.configure("2") do |config|
       end
     end
   end
-  sync_type = "virtualbox"
-  if provider == :libvirt
-    sync_type = "nfs"
-  end
   config.vm.define :installer, primary: true, autostart: false do |installer|
-    installer.vm.hostname = "multicloud"
-    installer.vm.box =  box[provider][:ubuntu][:name]
-    installer.vm.box_version = box[provider][:ubuntu][:version]
+    installer.vm.hostname = "undercloud"
     installer.vm.provision 'shell', privileged: false do |sh|
-      sh.env = {'KRD_DEBUG': 'true'}
+      sh.env = {
+        'KRD_DEBUG': 'true'
+      }
       sh.inline = <<-SHELL
         cd /vagrant/
         cp insecure_keys/key.pub ~/.ssh/id_rsa.pub
