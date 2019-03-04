@@ -1,7 +1,7 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2019
+# Copyright (c) 2019 Intel Corporation
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
@@ -9,6 +9,9 @@
 ##############################################################################
 
 - hosts: qat-node
+  become: yes
+  roles:
+    - role: geerlingguy.repo-epel
   tasks:
     - name: Load krd variables
       include_vars:
@@ -33,38 +36,52 @@
       yum:
         name: "@Development tools"
         state: present
-      become: yes
       when: ansible_os_family == 'RedHat'
     - name: install qat compilation packages
       package:
         name: "{{ item }}"
         state: present
       with_items: "{{ qat_driver_pkgs }}"
-      become: yes
     - name: get kernel version
       shell: "uname -r"
       register: kernel_version
     - name: install kernel development tools
-      become: yes
       package:
         name: "kernel-devel-{{ kernel_version.stdout}}"
         state: present
       when: ansible_os_family == 'RedHat'
+    - name: stop qat_service service
+      service:
+        name: "qat_service"
+        state: stopped
+      ignore_errors: True
+    - name: get intel_qat kernel module dependencies
+      shell: lsmod | grep "^intel_qat" | awk '{print $4}'
+      register: intel_qat_deps
+    - name: remove intel_qat kernel module deps
+      shell: rmmod {{ item }}
+      with_items: "{{ intel_qat_deps.stdout.split(',')}}"
+      ignore_errors: True
+    - name: remove intel_qat kernel module
+      shell: rmmod intel_qat
+      ignore_errors: True
     - name: configure qat driver source code
-      command: ./configure
+      command: ./configure --enable-qat-uio --enable-kapi
       args:
         chdir: "{{ qat_driver_dest }}"
     - name: build qat driver
-      become: yes
       make:
         chdir: "{{ qat_driver_dest }}"
-    - name: install qat driver
-      become: yes
-      make:
-        chdir: "{{ qat_driver_dest }}"
-        target: install
+        target: "{{ item }}"
+      loop:
+        - clean
+        - uninstall
+        - install
+    - name: reload qat_service service
+      service:
+        name: "qat_service"
+        state: reloaded
     - name: start qat_service service
-      become: yes 
       service:
         name: "qat_service"
         state: started

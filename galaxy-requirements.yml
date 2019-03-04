@@ -15,3 +15,5 @@
   version: v1.2.9
 - src: geerlingguy.docker
   version: 2.5.2
+- src: geerlingguy.repo-epel
+  version: 1.2.3
