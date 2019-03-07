@@ -7,12 +7,6 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-## For some things, kubelet needs to load kernel modules.  For example, dynamic kernel services are needed
-## for mounting persistent volumes into containers.  These may not be loaded by preinstall kubernetes
-## processes.  For example, ceph and rbd backed volumes.  Set to true to allow kubelet to load kernel
-## modules.
-kubelet_load_modules: true
-
 # Kubernetes configuration dirs and system namespace.
 # Those are where all the additional config stuff goes
 # kubernetes normally puts in /srv/kubernetes.
@@ -44,17 +38,12 @@ kube_token_auth: true
 # Can also be set to 'cloud', which lets the cloud provider setup appropriate routing
 kube_network_plugin: flannel
 
-# Settings for containerized control plane
-kubelet_deployment_type: host
-
-# NGINX Ingress Controller
-ingress_nginx_enabled: true
-
 # Make a copy of kubeconfig on the host that runs Ansible in GITDIR/artifacts
 kubeconfig_localhost: true
 
 # Enable MountPropagation gate feature
 local_volumes_enabled: true
+local_volume_provisioner_enabled: true
 
 ## Change this to use another Kubernetes version, e.g. a current beta release
 kube_version: v1.12.3
@@ -66,7 +55,7 @@ helm_enabled: true
 # NOTE: Ipvs is based on netfilter hook function, but uses hash table as the underlying data structure and
 # works in the kernel space
 # https://kubernetes.io/docs/concepts/services-networking/service/#proxy-mode-ipvs
-#kube_proxy_mode: ipvs
+kube_proxy_mode: iptables
 
 # Download container images only once then push to cluster nodes in batches
 download_run_once: true
