@@ -71,6 +71,10 @@ Vagrant.configure("2") do |config|
   config.vm.provider 'libvirt' do |v, override|
     override.vm.box =  box[:libvirt][distro][:name]
     override.vm.box_version = box[:libvirt][distro][:version]
+    v.nested = true
+    v.cpu_mode = 'host-passthrough'
+    v.management_network_address = "192.168.121.0/27"
+    v.random_hostname = true
   end
   config.ssh.insert_key = false
 
@@ -103,9 +107,6 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.provider 'libvirt' do |v, override|
         v.memory = node['memory']
         v.cpus = node['cpus']
-        v.nested = true
-        v.cpu_mode = 'host-passthrough'
-        v.management_network_address = "192.168.121.0/27"
         nodeconfig.vm.provision 'shell' do |sh|
           sh.path =  "node.sh"
           if node.has_key? "volumes"
