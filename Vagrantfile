@@ -13,12 +13,14 @@ box = {
   :virtualbox => {
     :ubuntu => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180708.0.0' },
     :centos => { :name => 'generic/centos7', :version=> '1.9.2' },
-    :opensuse => { :name => 'opensuse/openSUSE-42.1-x86_64', :version=> '1.0.1' }
+    :opensuse => { :name => 'opensuse/openSUSE-42.1-x86_64', :version=> '1.0.1' },
+    :clearlinux => { :name => 'AntonioMeireles/ClearLinux', :version=> '28510' }
   },
   :libvirt => {
     :ubuntu => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0' },
     :centos => { :name => 'centos/7', :version=> '1901.01' },
-    :opensuse => { :name => 'opensuse/openSUSE-42.1-x86_64', :version=> '1.0.0' }
+    :opensuse => { :name => 'opensuse/openSUSE-42.1-x86_64', :version=> '1.0.0' },
+    :clearlinux => { :name => 'AntonioMeireles/ClearLinux', :version=> '28510' }
   }
 }
 
@@ -124,6 +126,7 @@ Vagrant.configure("2") do |config|
   end
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "undercloud"
+    installer.vm.synced_folder './', '/vagrant'
     installer.vm.provision 'shell', privileged: false do |sh|
       sh.env = {
         'KRD_DEBUG': 'true'

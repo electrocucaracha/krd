@@ -26,6 +26,9 @@ function update_repos {
         rhel|centos|fedora)
             UPDATE_CMD='yum updateinfo'
         ;;
+        clear-linux-os)
+            UPDATE_CMD='swupd update'
+        ;;
     esac
     if [[ "$KRD_DEBUG" == "true" ]]; then
         sudo ${UPDATE_CMD}

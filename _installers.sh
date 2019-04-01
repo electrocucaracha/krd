@@ -55,6 +55,10 @@ function _install_docker {
         ;;
         rhel|centos|fedora)
         ;;
+        clear-linux-os)
+            sudo -E swupd bundle-add ansible
+            sudo systemctl unmask docker.service
+        ;;
     esac
 
     sudo mkdir -p /etc/systemd/system/docker.service.d
