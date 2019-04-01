@@ -77,12 +77,8 @@ modprobe vhost_net
 echo vhost_net >> /etc/modules
 source /etc/os-release || source /usr/lib/os-release
 case ${ID,,} in
-    *suse)
-    ;;
     ubuntu|debian)
         apt-get install -y cpu-checker
         kvm-ok
-    ;;
-    rhel|centos|fedora)
     ;;
 esac
