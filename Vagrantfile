@@ -54,7 +54,11 @@ puts "[INFO] Linux Distro: #{distro} "
 if ENV['no_proxy'] != nil or ENV['NO_PROXY']
   $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
   nodes.each do |node|
-    $no_proxy += "," + node['ip']
+    if node.has_key? "networks"
+      node['networks'].each do |network|
+        $no_proxy += "," + network['ip']
+      end
+    end
   end
   # NOTE: This range is based on vagrant-libvirt network definition CIDR 192.168.121.0/27
   (1..31).each do |i|
@@ -76,6 +80,7 @@ Vagrant.configure("2") do |config|
     v.nested = true
     v.cpu_mode = 'host-passthrough'
     v.management_network_address = "192.168.121.0/27"
+    v.management_network_name = "krd-mgmt-net"
     v.random_hostname = true
   end
   config.ssh.insert_key = false
@@ -92,7 +97,12 @@ Vagrant.configure("2") do |config|
   nodes.each do |node|
     config.vm.define node['name'] do |nodeconfig|
       nodeconfig.vm.hostname = node['name']
-      nodeconfig.vm.network :private_network, :ip => node['ip'], :type => :static
+      if node.has_key? "networks"
+        node['networks'].each do |network|
+          nodeconfig.vm.network :private_network, :ip => network['ip'], :type => :static,
+            libvirt__network_name: network['name']
+        end
+      end
       nodeconfig.vm.provider 'virtualbox' do |v, override|
         v.customize ["modifyvm", :id, "--memory", node['memory']]
         v.customize ["modifyvm", :id, "--cpus", node['cpus']]
