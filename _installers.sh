@@ -129,7 +129,7 @@ function install_addons {
     _install_ansible
     sudo ansible-galaxy install $verbose -r $krd_folder/galaxy-requirements.yml --ignore-errors
 
-    for addon in ${KRD_ADDONS:-ovn-kubernetes istio}; do
+    for addon in ${KRD_ADDONS:-virtlet multus istio kured}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
         ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-${addon}.yml | sudo tee $log_folder/setup-${addon}.log
         if [[ "${testing_enabled}" == "true" ]]; then
@@ -189,14 +189,12 @@ function _install_helm {
     local helm_version=v2.8.2
     local helm_tarball=helm-${helm_version}-linux-amd64.tar.gz
 
-    if $(helm version &>/dev/null); then
-        return
+    if ! $(helm version &>/dev/null); then
+        wget http://storage.googleapis.com/kubernetes-helm/$helm_tarball
+        tar -zxvf $helm_tarball -C /tmp
+        rm $helm_tarball
+        sudo mv /tmp/linux-amd64/helm /usr/local/bin/helm
     fi
-
-    wget http://storage.googleapis.com/kubernetes-helm/$helm_tarball
-    tar -zxvf $helm_tarball -C /tmp
-    rm $helm_tarball
-    sudo mv /tmp/linux-amd64/helm /usr/local/bin/helm
 
     helm init
     helm repo update
