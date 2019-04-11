@@ -101,18 +101,6 @@ addressing those tasks to localhost.
     kube-master
     EOL
 
-KRD consumes kubespray_ for provisioning a Kubernetes base deployment.
-As part of the deployment process, this tool downloads and configures
-*kubectl* binary. This action conflicts with *andrewrothstein.kubectl*
-ansible role. Therefore is necessary to remove those instructions from
-all the ansible playbooks.
-
-.. _kubespray: https://github.com/kubernetes-sigs/kubespray
-
-.. code-block:: bash
-
-    # sed -i '/andrewrothstein.kubectl/d' playbooks/configure-*.yml
-
 Ansible uses SSH protocol for executing remote instructions. The
 following instructions create and register ssh keys which avoid the
 usage of passwords.

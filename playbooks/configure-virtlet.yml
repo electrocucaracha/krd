@@ -17,9 +17,14 @@
     - name: Load krd variables
       include_vars:
         file: krd-vars.yml
+    - name: check if kubeclt was installed
+      stat:
+        path: /usr/local/bin/kubectl
+      register: kubectl_lnk
   roles:
     - role: andrewrothstein.kubectl
       kubectl_ver: "v{{ kubectl_version }}"
+      when: kubectl_lnk.stat.exists == false
     - role: geerlingguy.docker
       when: virtlet_source_type == "source"
   tasks:
