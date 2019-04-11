@@ -9,3 +9,4 @@ config/pdf.yml
 *.vdi
 docs/build/
 inventory/artifacts/admin.conf
+roles/
