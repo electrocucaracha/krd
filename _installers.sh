@@ -27,11 +27,12 @@ function _install_pip {
 function _install_ansible {
     sudo mkdir -p /etc/ansible/
     sudo cp $krd_folder/ansible.cfg /etc/ansible/ansible.cfg
-    if $(ansible --version &>/dev/null); then
-        return
+    if ! ansible --version &>/dev/null; then
+        _install_pip
+        sudo -E pip install ansible
+    else
+        sudo pip install --upgrade pip
     fi
-    _install_pip
-    sudo -E pip install ansible
 }
 
 # _install_docker() - Download and install docker-engine
@@ -154,7 +155,7 @@ function install_rundeck {
             echo "deb https://rundeck.bintray.com/rundeck-deb /" | sudo tee -a /etc/apt/sources.list.d/rundeck.list
             curl 'https://bintray.com/user/downloadSubjectPublicKey?username=bintray' | sudo apt-key add -
             update_repos
-            install_package rundeck-cli rundeck
+            install_packages rundeck-cli rundeck
         ;;
         rhel|centos|fedora)
         ;;
@@ -186,7 +187,7 @@ function install_rundeck {
 
 # _install_helm() - Function that installs Helm Client
 function _install_helm {
-    local helm_version=v2.8.2
+    local helm_version=v2.13.1
     local helm_tarball=helm-${helm_version}-linux-amd64.tar.gz
 
     if ! $(helm version &>/dev/null); then
@@ -198,6 +199,15 @@ function _install_helm {
 
     helm init
     helm repo update
+
+    echo 'Starting helm local repo'
+    helm repo rm local
+    helm serve &
+    until curl -sSL --connect-timeout 1 http://localhost:8879 > /dev/null; do
+        echo 'Waiting for helm serve to start'
+        sleep 2
+    done
+    helm repo add local http://localhost:8879/charts
 }
 
 # install_helm_charts() - Function that installs additional Official Helm Charts
@@ -213,17 +223,33 @@ function install_helm_charts {
 function install_openstack {
     echo "Deploying openstack"
     local dest_folder=/opt
-    local version=5648754f505e1d6b2d546b169eb38ceec2d7f915 # 2019-02-04
 
     _install_helm
     _install_docker
 
-#    sudo -E git clone https://git.openstack.org/openstack/openstack-helm-infra $dest_folder/openstack-helm-infra
-    sudo -E git clone https://git.openstack.org/openstack/openstack-helm $dest_folder/openstack-helm
+    for repo in openstack-helm openstack-helm-infra; do
+        sudo -E git clone https://git.openstack.org/openstack/$repo $dest_folder/$repo
+    done
     sudo -H chown -R $(id -un): $dest_folder/openstack-*
+
+    mkdir -p $dest_folder/openstack-helm-infra/tools/gate/devel/
+    pushd $dest_folder/openstack-helm-infra/tools/gate/devel/
+    git checkout c9396e348017822fc614296a1b9ec2852637bbbd # 2019-04-11
+    echo "proxy:" | tee local-vars.yaml
+    if [[ -n "${HTTP_PROXY}" ]]; then
+        echo "  http: $HTTP_PROXY" | tee --append local-vars.yaml
+    fi
+    if [[ -n "${HTTPS_PROXY}" ]]; then
+        echo "  https: $HTTPS_PROXY" | tee --append local-vars.yaml
+    fi
+    if [[ -n "${NO_PROXY}" ]]; then
+        echo "  noproxy: $NO_PROXY,.svc.cluster.local" | tee --append local-vars.yaml
+    fi
+    popd
     pushd $dest_folder/openstack-helm
-    git checkout $version
-    ./tools/deployment/multinode/010-setup-client.sh
-    ./tools/deployment/developer/common/010-deploy-k8s.sh
+    git checkout 229db2f1552b2bfb0beece4ecd4a1b11eac690c0 # 2019-04-11
+    for script in $(find ./tools/deployment/multinode -name "??0-*.sh" | sort); do
+        $script | tee $log_folder/${script%.*}.log
+    done
     popd
 }
