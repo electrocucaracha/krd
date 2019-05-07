@@ -115,7 +115,7 @@ Vagrant.configure("2") do |config|
             v.customize ['storageattach', :id, '--storagectl', 'IDE Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', $volume_file]
           end
         end
-      end
+      end # virtualbox
       nodeconfig.vm.provider 'libvirt' do |v, override|
         v.memory = node['memory']
         v.cpus = node['cpus']
@@ -131,9 +131,10 @@ Vagrant.configure("2") do |config|
             sh.args = ['-v', $volume_mounts_dict[0...-1]]
           end
         end
-      end
-    end
-  end
+      end # libvirt
+    end 
+  end # node.each
+
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "undercloud"
     installer.vm.synced_folder './', '/vagrant'
@@ -150,5 +151,5 @@ Vagrant.configure("2") do |config|
         ./installer.sh | tee krd_installer.log
       SHELL
     end
-  end
+  end # installer
 end

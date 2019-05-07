@@ -15,14 +15,14 @@ set -o pipefail
 source _common.sh
 source _functions.sh
 
-csar_id=6b54a728-b76a-11e8-a1ba-52540053ccc8
+virtlet_deployment_name=virtlet-deployment
 
 # Setup
-populate_CSAR_virtlet $csar_id
+populate_CSAR_virtlet $virtlet_deployment_name
 
-pushd ${CSAR_DIR}/${csar_id}
+pushd /tmp/${virtlet_deployment_name}
 
-setup $virtlet_deployment_name
+setup "$virtlet_deployment_name"
 
 # Test
 deployment_pod=$(kubectl get pods | grep $virtlet_deployment_name | awk '{print $1}')
@@ -36,8 +36,8 @@ echo "Pod name: $deployment_pod Virsh domain: $vm_name"
 echo "ssh testuser@$(kubectl get pods $deployment_pod -o jsonpath="{.status.podIP}")"
 echo "kubectl attach -it $deployment_pod"
 echo "=== Virtlet details ===="
-echo "$(kubectl plugin virt virsh dumpxml $vm_name | grep VIRTLET_)\n"
+printf "$(kubectl plugin virt virsh dumpxml $vm_name | grep VIRTLET_)\n"
 popd
 
 # Teardown
-teardown $virtlet_deployment_name
+teardown "$virtlet_deployment_name"

@@ -12,18 +12,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-function _checks_args {
-    if [[ -z $1 ]]; then
-        echo "Missing CSAR ID argument"
-        exit 1
-    fi
-    if [[ -z $CSAR_DIR ]]; then
-        echo "CSAR_DIR global environment value is empty"
-        exit 1
-    fi
-    mkdir -p ${CSAR_DIR}/${1}
-}
-
 # destroy_deployment() - This function ensures that a specific deployment is
 # destroyed in Kubernetes
 function destroy_deployment {

@@ -13,25 +13,15 @@ set -o nounset
 set -o pipefail
 
 image_name=virtlet.cloud/ubuntu/16.04
-multus_deployment_name=multus-deployment
 virtlet_image=virtlet.cloud/fedora
-virtlet_deployment_name=virtlet-deployment
 
 # populate_CSAR_multus() - This function creates the content of CSAR file
 # required for testing Multus feature
 function populate_CSAR_multus {
-    local csar_id=$1
+    local multus_deployment_name=${1}
 
-    _checks_args $csar_id
-    pushd ${CSAR_DIR}/${csar_id}
-
-    cat << META > metadata.yaml
-resources:
-  network:
-    - bridge-network.yaml
-  deployment:
-    - $multus_deployment_name.yaml
-META
+    mkdir -p /tmp/${multus_deployment_name}
+    pushd /tmp/${multus_deployment_name}
 
     cat << NET > bridge-network.yaml
 apiVersion: "k8s.cni.cncf.io/v1"
@@ -85,16 +75,10 @@ DEPLOYMENT
 # populate_CSAR_virtlet() - This function creates the content of CSAR file
 # required for testing Virtlet feature
 function populate_CSAR_virtlet {
-    local csar_id=$1
+    local virtlet_deployment_name=virtlet-deployment
 
-    _checks_args $csar_id
-    pushd ${CSAR_DIR}/${csar_id}
-
-    cat << META > metadata.yaml
-resources:
-  deployment:
-    - $virtlet_deployment_name.yaml
-META
+    mkdir -p /tmp/${virtlet_deployment_name}
+    pushd /tmp/${virtlet_deployment_name}
 
     cat << DEPLOYMENT > $virtlet_deployment_name.yaml
 apiVersion: apps/v1

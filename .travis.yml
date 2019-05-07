@@ -1,7 +1,13 @@
-language: python
-install:
-  - pip install tox 
-script:
-  - tox
-env:
-  - TOXENV=bashate
+matrix:
+  include:
+    - language: python
+      install:
+        - pip install tox
+      script:
+        - tox
+      env:
+        - TOXENV=bashate
+
+    - language: shell
+      script:
+        - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'

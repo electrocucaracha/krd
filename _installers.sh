@@ -13,9 +13,14 @@ set -o pipefail
 
 source _commons.sh
 
+export krd_inventory_folder=$KRD_FOLDER/inventory
+krd_inventory=$krd_inventory_folder/hosts.ini
+krd_playbooks=$KRD_FOLDER/playbooks
+k8s_info_file=$KRD_FOLDER/k8s_info.log
+
 # _install_pip() - Install Python Package Manager
 function _install_pip {
-    if $(pip --version &>/dev/null); then
+    if pip --version &>/dev/null; then
         install_package python-dev
         curl -sL https://bootstrap.pypa.io/get-pip.py | sudo python
     else
@@ -26,7 +31,7 @@ function _install_pip {
 # _install_ansible() - Install and Configure Ansible program
 function _install_ansible {
     sudo mkdir -p /etc/ansible/
-    sudo cp $krd_folder/ansible.cfg /etc/ansible/ansible.cfg
+    sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
     if ! ansible --version &>/dev/null; then
         _install_pip
         sudo -E pip install ansible
@@ -37,9 +42,7 @@ function _install_ansible {
 
 # _install_docker() - Download and install docker-engine
 function _install_docker {
-    local max_concurrent_downloads=${1:-3}
-
-    if $(docker version &>/dev/null); then
+    if docker version &>/dev/null; then
         return
     fi
 
@@ -63,22 +66,22 @@ function _install_docker {
     esac
 
     sudo mkdir -p /etc/systemd/system/docker.service.d
-    if [ $http_proxy ]; then
+    if [ -n "$HTTP_PROXY" ]; then
         echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
-        echo "Environment=\"HTTP_PROXY=$http_proxy\"" | sudo tee --append /etc/systemd/system/docker.service.d/http-proxy.conf
+        echo "Environment=\"HTTP_PROXY=$HTTP_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/http-proxy.conf
     fi
-    if [ $https_proxy ]; then
+    if [ -n "$HTTPS_PROXY" ]; then
         echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/https-proxy.conf
-        echo "Environment=\"HTTPS_PROXY=$https_proxy\"" | sudo tee --append /etc/systemd/system/docker.service.d/https-proxy.conf
+        echo "Environment=\"HTTPS_PROXY=$HTTPS_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/https-proxy.conf
     fi
-    if [ $no_proxy ]; then
+    if [ -n "$NO_PROXY" ]; then
         echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/no-proxy.conf
-        echo "Environment=\"NO_PROXY=$no_proxy\"" | sudo tee --append /etc/systemd/system/docker.service.d/no-proxy.conf
+        echo "Environment=\"NO_PROXY=$NO_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/no-proxy.conf
     fi
     sudo systemctl daemon-reload
-    echo "DOCKER_OPTS=\"-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock --max-concurrent-downloads $max_concurrent_downloads \"" | sudo tee --append /etc/default/docker
-    if [[ -z $(groups | grep docker) ]]; then
-        sudo usermod -aG docker $USER
+    echo "DOCKER_OPTS=\"-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock \"" | sudo tee --append /etc/default/docker
+    if groups | grep -q docker; then
+        sudo usermod -aG docker "$USER"
         newgrp docker
     fi
 
@@ -90,52 +93,79 @@ function _install_docker {
 function install_k8s {
     echo "Deploying kubernetes"
     local dest_folder=/opt
-    version=$(grep "kubespray_version" ${krd_playbooks}/krd-vars.yml | awk -F ': ' '{print $2}')
-    local_release_dir=$(grep "local_release_dir" $krd_inventory_folder/group_vars/k8s-cluster.yml | awk -F "\"" '{print $2}')
-    local tarball=v$version.tar.gz
+    version=$(grep "kubespray_version" "${krd_playbooks}/krd-vars.yml" | awk -F ': ' '{print $2}')
+    local_release_dir=$(grep "local_release_dir" "$krd_inventory_folder/group_vars/k8s-cluster.yml" | awk -F "\"" '{print $2}')
+    local tarball="v$version.tar.gz"
 
     install_package sshpass
     _install_docker
     _install_ansible
-    wget https://github.com/kubernetes-sigs/kubespray/archive/$tarball
-    sudo tar -C $dest_folder -xzf $tarball
-    sudo chown -R $USER $dest_folder/kubespray-$version
-    sudo mkdir -p ${local_release_dir}/containers
-    rm $tarball
+    wget "https://github.com/kubernetes-sigs/kubespray/archive/$tarball"
+    sudo tar -C "$dest_folder" -xzf "$tarball"
+    sudo chown -R "$USER" "$dest_folder/kubespray-$version"
+    sudo mkdir -p "${local_release_dir}/containers"
+    rm "$tarball"
 
-    sudo -E pip install -r $dest_folder/kubespray-$version/requirements.txt
-    rm -f $krd_inventory_folder/group_vars/all.yml 2> /dev/null
-    if [[ -n "${verbose}" ]]; then
-        echo "kube_log_level: 5" | tee $krd_inventory_folder/group_vars/all.yml
+    sudo -E pip install -r "$dest_folder/kubespray-$version/requirements.txt"
+    rm -f "$krd_inventory_folder/group_vars/all.yml" 2> /dev/null
+    verbose=""
+    if [[ "${KRD_DEBUG}" == "true" ]]; then
+        echo "kube_log_level: 5" | tee "$krd_inventory_folder/group_vars/all.yml"
+        verbose="-vvv"
     else
-        echo "kube_log_level: 2" | tee $krd_inventory_folder/group_vars/all.yml
+        echo "kube_log_level: 2" | tee "$krd_inventory_folder/group_vars/all.yml"
     fi
-    echo "kubeadm_enabled: true" | tee --append $krd_inventory_folder/group_vars/all.yml
-    if [[ -n "${http_proxy}" ]]; then
-        echo "http_proxy: \"$http_proxy\"" | tee --append $krd_inventory_folder/group_vars/all.yml
+    echo "kubeadm_enabled: true" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+    if [[ -n "${HTTP_PROXY}" ]]; then
+        echo "http_proxy: \"$HTTP_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
     fi
-    if [[ -n "${https_proxy}" ]]; then
-        echo "https_proxy: \"$https_proxy\"" | tee --append $krd_inventory_folder/group_vars/all.yml
+    if [[ -n "${HTTPS_PROXY}" ]]; then
+        echo "https_proxy: \"$HTTPS_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
     fi
-    ansible-playbook $verbose -i $krd_inventory $dest_folder/kubespray-$version/cluster.yml --become --become-user=root | sudo tee $log_folder/setup-kubernetes.log
+    ansible-playbook "$verbose" -i "$krd_inventory" "$dest_folder/kubespray-$version/cluster.yml" --become --become-user=root | sudo tee "setup-kubernetes.log"
 
     # Configure environment
-    mkdir -p $HOME/.kube
-    cp $krd_inventory_folder/artifacts/admin.conf $HOME/.kube/config
+    mkdir -p "$HOME/.kube"
+    cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
 }
+
+# print_kubernetes_info() - Prints the login Kubernetes information
+function print_kubernetes_info {
+    if ! kubectl version &>/dev/null; then
+        return
+    fi
+    # Expose Dashboard using NodePort
+    node_port=30080
+    KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g\"" kubectl -n kube-system edit service kubernetes-dashboard
+    KUBE_EDITOR="sed -i \"s|nodePort\: .*|nodePort\: $node_port|g\"" kubectl -n kube-system edit service kubernetes-dashboard
+
+    master_ip=$(kubectl cluster-info | grep "Kubernetes master" | awk -F ":" '{print $2}')
+
+    printf "Kubernetes Info\n===============\n" > "$k8s_info_file"
+    {
+    echo "Dashboard URL: https:$master_ip:$node_port"
+    echo "Admin user: kube"
+    echo "Admin password: secret"
+    } >> "$k8s_info_file"
+}
+
 
 # install_addons() - Install Kubenertes AddOns
 function install_addons {
     echo "Installing Kubernetes AddOns"
     _install_ansible
-    sudo ansible-galaxy install $verbose -r $krd_folder/galaxy-requirements.yml --ignore-errors
+    verbose=""
+    if [[ "${KRD_DEBUG}" == "true" ]]; then
+        verbose="-vvv"
+    fi
+    sudo ansible-galaxy install "$verbose" -r "$KRD_FOLDER/galaxy-requirements.yml" --ignore-errors
 
     for addon in ${KRD_ADDONS:-virtlet multus istio kured}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
-        ansible-playbook $verbose -i $krd_inventory $krd_playbooks/configure-${addon}.yml | sudo tee $log_folder/setup-${addon}.log
-        if [[ "${testing_enabled}" == "true" ]]; then
-            pushd $krd_tests
-            bash ${addon}.sh
+        ansible-playbook "$verbose" -i "$krd_inventory" "$krd_playbooks/configure-${addon}.yml" | sudo tee "setup-${addon}.log"
+        if [[ "${KRD_ENABLE_TESTS}" == "true" ]]; then
+            pushd "$KRD_FOLDER"/tests
+            bash "${addon}".sh
             popd
         fi
     done
@@ -143,7 +173,7 @@ function install_addons {
 
 # install_rundeck() - This function deploy a Rundeck instance
 function install_rundeck {
-    if $(rd version &>/dev/null); then
+    if rd version &>/dev/null; then
         return
     fi
 
@@ -165,11 +195,11 @@ function install_rundeck {
 
     sudo service rundeckd start
     sleep 10
-    while [[ -z $(grep -E "Grails application running at" /var/log/rundeck/service.log) ]]; do
+    while ! grep -q "Grails application running at" /var/log/rundeck/service.log; do
         sleep 5
     done
     sudo mkdir -p /home/rundeck/.ssh
-    sudo cp $HOME/.ssh/id_rsa /home/rundeck/.ssh
+    sudo cp "$HOME"/.ssh/id_rsa /home/rundeck/.ssh
     sudo chown -R rundeck:rundeck /home/rundeck/
 
     export RD_URL=http://localhost:4440
@@ -179,7 +209,7 @@ function install_rundeck {
     echo "export RD_USER=$RD_USER" | sudo tee --append /etc/environment
     echo "export RD_PASSWORD=$RD_PASSWORD" | sudo tee --append /etc/environment
 
-    pushd $krd_folder/rundeck
+    pushd "$KRD_FOLDER"/rundeck
     rd projects create --project krd --file krd.properties
     rd jobs load --project krd --file Deploy_Kubernetes.yaml --format yaml
     popd
@@ -190,7 +220,7 @@ function _install_helm {
     local helm_version=v2.13.1
     local helm_tarball=helm-${helm_version}-linux-amd64.tar.gz
 
-    if ! $(helm version &>/dev/null); then
+    if ! helm version &>/dev/null; then
         wget http://storage.googleapis.com/kubernetes-helm/$helm_tarball
         tar -zxvf $helm_tarball -C /tmp
         rm $helm_tarball
@@ -210,11 +240,23 @@ function _install_helm {
     helm repo add local http://localhost:8879/charts
 }
 
+# install_prometheus() - Function that installs Prometheus operator
+function install_prometheus {
+    kubectl create -f https://coreos.com/operators/prometheus/latest/prometheus-operator.yaml
+    kubectl create -f https://coreos.com/operators/prometheus/latest/prometheus-k8s.yaml
+
+    # Deploy exporters providing metrics on cluster nodes and Kubernetes business logic
+    kubectl create -f https://coreos.com/operators/prometheus/latest/exporters.yaml
+
+    # Create the ConfigMap containing the Prometheus configuration
+    kubectl apply -f https://coreos.com/operators/prometheus/latest/prometheus-k8s-cm.yaml
+}
+
 # install_helm_charts() - Function that installs additional Official Helm Charts
 function install_helm_charts {
     _install_helm
 
-    for chart in prometheus kured;do
+    for chart in "kured";do
         helm install stable/$chart
     done
 }
@@ -230,7 +272,7 @@ function install_openstack {
     for repo in openstack-helm openstack-helm-infra; do
         sudo -E git clone https://git.openstack.org/openstack/$repo $dest_folder/$repo
     done
-    sudo -H chown -R $(id -un): $dest_folder/openstack-*
+    sudo -H chown -R "$(id -un)": "$dest_folder/openstack-*"
 
     mkdir -p $dest_folder/openstack-helm-infra/tools/gate/devel/
     pushd $dest_folder/openstack-helm-infra/tools/gate/devel/
@@ -249,7 +291,7 @@ function install_openstack {
     pushd $dest_folder/openstack-helm
     git checkout 229db2f1552b2bfb0beece4ecd4a1b11eac690c0 # 2019-04-11
     for script in $(find ./tools/deployment/multinode -name "??0-*.sh" | sort); do
-        $script | tee $log_folder/${script%.*}.log
+        $script | tee "${script%.*}.log"
     done
     popd
 }

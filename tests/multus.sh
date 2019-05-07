@@ -15,12 +15,12 @@ set -o pipefail
 source _common.sh
 source _functions.sh
 
-csar_id=49408ca6-b75b-11e8-8076-525400feed26
+multus_deployment_name=multus-deployment
 
 # Setup
-populate_CSAR_multus $csar_id
+populate_CSAR_multus $multus_deployment_name
 
-pushd ${CSAR_DIR}/${csar_id}
+pushd /tmp/${multus_deployment_name}
 kubectl apply -f bridge-network.yaml
 
 setup $multus_deployment_name

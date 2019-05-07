@@ -11,17 +11,14 @@
 # update_repos() - Function that updates linux repositories
 function update_repos {
     echo "Updating repositories list..."
-    if [ -f $krd_folder/sources.list ]; then
-        sudo mv /etc/apt/sources.list /etc/apt/sources.list.backup
-        sudo cp $krd_folder/sources.list /etc/apt/sources.list
-    fi
+    # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
         *suse)
             UPDATE_CMD='zypper -n ref'
         ;;
         ubuntu|debian)
-            UPDATE_CMD='apt-get update'
+            UPDATE_CMD='apt update'
         ;;
         rhel|centos|fedora)
             UPDATE_CMD='yum updateinfo'
@@ -31,17 +28,15 @@ function update_repos {
         ;;
     esac
     if [[ "$KRD_DEBUG" == "true" ]]; then
-        sudo ${UPDATE_CMD}
+        eval "sudo ${UPDATE_CMD}"
     else
-        sudo ${UPDATE_CMD} > /dev/null
+        eval "sudo ${UPDATE_CMD} > /dev/null"
     fi
 }
 
 # is_package_installed() - Function to tell if a package is installed
 function is_package_installed {
-    if [[ -z "$@" ]]; then
-        return 1
-    fi
+    # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
         *suse)
@@ -54,18 +49,18 @@ function is_package_installed {
             CHECK_CMD="rpm -q"
         ;;
     esac
-    sudo ${CHECK_CMD} "$@" &> /dev/null
+    sudo "${CHECK_CMD}" "$@" &> /dev/null
 }
 
 # install_packages() - Install a list of packages
 function install_packages {
-    local packages=$@
+    # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
         *suse)
         ;;
         ubuntu|debian)
-            sudo apt-get install -y -qq $packages
+            sudo apt-get install -y -qq "$@"
         ;;
         rhel|centos|fedora)
         ;;
@@ -76,24 +71,25 @@ function install_packages {
 function install_package {
     local package=$1
 
-    if ! is_package_installed $package; then
+    if ! is_package_installed "$package"; then
         echo "Installing $package..."
 
+        # shellcheck disable=SC1091
         source /etc/os-release || source /usr/lib/os-release
         case ${ID,,} in
             *suse)
-                sudo zypper install -y $package
+                sudo zypper install -y "$package"
             ;;
             ubuntu|debian)
                 if [[ "$KRD_DEBUG" == "true" ]]; then
-                    sudo apt-get install -y $package
+                    sudo apt-get install -y "$package"
                 else
-                    sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 $package
+                    sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 "$package"
                 fi
             ;;
             rhel|centos|fedora)
-                PKG_MANAGER=$(which dnf || which yum)
-                sudo ${PKG_MANAGER} -y install $package
+                PKG_MANAGER=$(command -v dnf || command -v yum)
+                sudo "$PKG_MANAGER" -y install "$package"
             ;;
         esac
     fi
@@ -101,13 +97,13 @@ function install_package {
 
 # uninstall_packages() - Uninstall a list of packages
 function uninstall_packages {
-    local packages=$@
+    # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
         *suse)
         ;;
         ubuntu|debian)
-            sudo apt-get purge -y -qq $packages
+            sudo apt-get purge -y -qq "$@"
         ;;
         rhel|centos|fedora)
         ;;
@@ -117,13 +113,15 @@ function uninstall_packages {
 # uninstall_package() - Uninstall specific package if exists
 function uninstall_package {
     local package=$1
-    if is_package_installed $package; then
+
+    # shellcheck disable=SC1091
+    if is_package_installed "$package"; then
         source /etc/os-release || source /usr/lib/os-release
         case ${ID,,} in
             *suse)
             ;;
             ubuntu|debian)
-                sudo apt-get purge -y -qq $package
+                sudo apt-get purge -y -qq "$package"
             ;;
             rhel|centos|fedora)
             ;;

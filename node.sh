@@ -25,12 +25,12 @@ function mount_external_partition {
     local dev_name="/dev/$1"
     local mount_dir=$2
 
-    sfdisk $dev_name --no-reread << EOF
+    sfdisk "$dev_name" --no-reread << EOF
 ;
 EOF
-    mkfs -t ext4 ${dev_name}1
-    mkdir -p $mount_dir
-    mount ${dev_name}1 $mount_dir
+    mkfs -t ext4 "${dev_name}1"
+    mkdir -p "$mount_dir"
+    mount "${dev_name}1" "$mount_dir"
     echo "${dev_name}1 $mount_dir           ext4    errors=remount-ro,noatime,barrier=0 0       1" >> /etc/fstab
 }
 
@@ -49,7 +49,7 @@ done
 swapoff -a
 if [[ -n "${dict_volumes+x}" ]]; then
     for kv in ${dict_volumes//,/ } ;do
-        mount_external_partition ${kv%=*} ${kv#*=}
+        mount_external_partition "${kv%=*}" "${kv#*=}"
     done
 fi
 
