@@ -132,6 +132,13 @@ Vagrant.configure("2") do |config|
           end
         end
       end # libvirt
+      nodeconfig.vm.provision 'shell' do |sh|
+        sh.inline = <<-SHELL
+          mkdir -p /root/.ssh
+          cat /vagrant/insecure_keys/key.pub | tee /root/.ssh/authorized_keys
+          chmod og-wx /root/.ssh/authorized_keys
+        SHELL
+      end
     end 
   end # node.each
 
@@ -139,15 +146,22 @@ Vagrant.configure("2") do |config|
     installer.vm.hostname = "undercloud"
     installer.vm.synced_folder './', '/vagrant'
     installer.vm.provision 'shell', privileged: false do |sh|
+      sh.inline = <<-SHELL
+        cd /vagrant
+        sudo mkdir -p /root/.ssh/
+        sudo cp insecure_keys/key /root/.ssh/id_rsa
+        cp insecure_keys/key ~/.ssh/id_rsa
+        sudo chmod 400 /root/.ssh/id_rsa
+        chown "$USER" ~/.ssh/id_rsa
+        chmod 400 ~/.ssh/id_rsa
+      SHELL
+    end
+    installer.vm.provision 'shell', privileged: false do |sh|
       sh.env = {
         'KRD_DEBUG': 'true'
       }
       sh.inline = <<-SHELL
         cd /vagrant/
-        cp insecure_keys/key.pub ~/.ssh/id_rsa.pub
-        cp insecure_keys/key ~/.ssh/id_rsa
-        chown vagrant ~/.ssh/id_rsa
-        chmod 400 ~/.ssh/id_rsa
         ./installer.sh | tee krd_installer.log
       SHELL
     end

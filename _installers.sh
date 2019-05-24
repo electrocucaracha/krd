@@ -17,10 +17,11 @@ export krd_inventory_folder=$KRD_FOLDER/inventory
 krd_inventory=$krd_inventory_folder/hosts.ini
 krd_playbooks=$KRD_FOLDER/playbooks
 k8s_info_file=$KRD_FOLDER/k8s_info.log
+kubespray_folder=/opt/kubespray
 
 # _install_pip() - Install Python Package Manager
 function _install_pip {
-    if pip --version &>/dev/null; then
+    if ! pip --version &>/dev/null; then
         install_package python-dev
         curl -sL https://bootstrap.pypa.io/get-pip.py | sudo python
     else
@@ -35,8 +36,6 @@ function _install_ansible {
     if ! ansible --version &>/dev/null; then
         _install_pip
         sudo -E pip install ansible
-    else
-        sudo pip install --upgrade pip
     fi
 }
 
@@ -48,20 +47,12 @@ function _install_docker {
 
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
-        *suse)
-        ;;
-        ubuntu|debian)
-            install_packages apt-transport-https ca-certificates curl
-            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-            sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-            update_repos
-            install_package docker-ce
-        ;;
-        rhel|centos|fedora)
-        ;;
         clear-linux-os)
             sudo -E swupd bundle-add ansible
             sudo systemctl unmask docker.service
+        ;;
+        *)
+            curl -fsSL https://get.docker.com/ | sh
         ;;
     esac
 
@@ -79,50 +70,60 @@ function _install_docker {
         echo "Environment=\"NO_PROXY=$NO_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/no-proxy.conf
     fi
     sudo systemctl daemon-reload
-    echo "DOCKER_OPTS=\"-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock \"" | sudo tee --append /etc/default/docker
-    if groups | grep -q docker; then
-        sudo usermod -aG docker "$USER"
-        newgrp docker
-    fi
-
+    sudo usermod -aG docker "$USER"
     sudo systemctl restart docker
-    sleep 10
 }
 
 # install_k8s() - Install Kubernetes using kubespray tool
 function install_k8s {
     echo "Deploying kubernetes"
-    local dest_folder=/opt
     version=$(grep "kubespray_version" "${krd_playbooks}/krd-vars.yml" | awk -F ': ' '{print $2}')
-    local_release_dir=$(grep "local_release_dir" "$krd_inventory_folder/group_vars/k8s-cluster.yml" | awk -F "\"" '{print $2}')
-    local tarball="v$version.tar.gz"
 
-    install_package sshpass
-    _install_docker
-    _install_ansible
-    wget "https://github.com/kubernetes-sigs/kubespray/archive/$tarball"
-    sudo tar -C "$dest_folder" -xzf "$tarball"
-    sudo chown -R "$USER" "$dest_folder/kubespray-$version"
-    sudo mkdir -p "${local_release_dir}/containers"
-    rm "$tarball"
+    if [[ ! -d $kubespray_folder ]]; then
+        echo "Download kubespray binaries"
 
-    sudo -E pip install -r "$dest_folder/kubespray-$version/requirements.txt"
-    rm -f "$krd_inventory_folder/group_vars/all.yml" 2> /dev/null
-    verbose=""
-    if [[ "${KRD_DEBUG}" == "true" ]]; then
-        echo "kube_log_level: 5" | tee "$krd_inventory_folder/group_vars/all.yml"
-        verbose="-vvv"
-    else
-        echo "kube_log_level: 2" | tee "$krd_inventory_folder/group_vars/all.yml"
+        # shellcheck disable=SC1091
+        source /etc/os-release || source /usr/lib/os-release
+        case ${ID,,} in
+            ubuntu|debian)
+                install_package sshpass
+            ;;
+            rhel|centos|fedora)
+                install_package git
+            ;;
+            clear-linux-os)
+                sudo swupd bundle-add git
+            ;;
+        esac
+
+        _install_docker
+        _install_ansible
+
+        sudo git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$version"
+        sudo chown -R "$USER" $kubespray_folder
+        sudo -E pip install -r $kubespray_folder/requirements.txt
+
+        rm -f "$krd_inventory_folder/group_vars/all.yml" 2> /dev/null
+        verbose=""
+        if [[ "${KRD_DEBUG}" == "true" ]]; then
+            echo "kube_log_level: 5" | tee "$krd_inventory_folder/group_vars/all.yml"
+            verbose="-vvv"
+        else
+            echo "kube_log_level: 2" | tee "$krd_inventory_folder/group_vars/all.yml"
+        fi
+        echo "kubeadm_enabled: true" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+        if [[ -n "${HTTP_PROXY}" ]]; then
+            echo "http_proxy: \"$HTTP_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+        fi
+        if [[ -n "${HTTPS_PROXY}" ]]; then
+            echo "https_proxy: \"$HTTPS_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+        fi
+        if [[ -n "${NO_PROXY}" ]]; then
+            echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+        fi
     fi
-    echo "kubeadm_enabled: true" | tee --append "$krd_inventory_folder/group_vars/all.yml"
-    if [[ -n "${HTTP_PROXY}" ]]; then
-        echo "http_proxy: \"$HTTP_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
-    fi
-    if [[ -n "${HTTPS_PROXY}" ]]; then
-        echo "https_proxy: \"$HTTPS_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
-    fi
-    ansible-playbook "$verbose" -i "$krd_inventory" "$dest_folder/kubespray-$version/cluster.yml" --become --become-user=root | sudo tee "setup-kubernetes.log"
+
+    sudo ansible-playbook "$verbose" -i "$krd_inventory" "$kubespray_folder/cluster.yml" --become | tee "setup-kubernetes.log"
 
     # Configure environment
     mkdir -p "$HOME/.kube"
@@ -162,7 +163,7 @@ function install_addons {
 
     for addon in ${KRD_ADDONS:-virtlet multus istio kured}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
-        ansible-playbook "$verbose" -i "$krd_inventory" "$krd_playbooks/configure-${addon}.yml" | sudo tee "setup-${addon}.log"
+        sudo -E ansible-playbook "$verbose" -i "$krd_inventory" "$krd_playbooks/configure-${addon}.yml" | sudo tee "setup-${addon}.log"
         if [[ "${KRD_ENABLE_TESTS}" == "true" ]]; then
             pushd "$KRD_FOLDER"/tests
             bash "${addon}".sh
