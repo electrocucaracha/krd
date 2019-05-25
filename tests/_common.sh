@@ -12,7 +12,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-image_name=virtlet.cloud/ubuntu/16.04
 virtlet_image=virtlet.cloud/fedora
 
 # populate_CSAR_multus() - This function creates the content of CSAR file
@@ -20,8 +19,8 @@ virtlet_image=virtlet.cloud/fedora
 function populate_CSAR_multus {
     local multus_deployment_name=${1}
 
-    mkdir -p /tmp/${multus_deployment_name}
-    pushd /tmp/${multus_deployment_name}
+    mkdir -p "/tmp/${multus_deployment_name}"
+    pushd "/tmp/${multus_deployment_name}"
 
     cat << NET > bridge-network.yaml
 apiVersion: "k8s.cni.cncf.io/v1"
@@ -40,7 +39,7 @@ spec:
 }'
 NET
 
-    cat << DEPLOYMENT > $multus_deployment_name.yaml
+    cat << DEPLOYMENT > "$multus_deployment_name.yaml"
 apiVersion: apps/v1
 kind: Deployment
 metadata:

@@ -75,6 +75,7 @@ else
 fi
 modprobe vhost_net
 echo vhost_net >> /etc/modules
+# shellcheck disable=SC1091
 source /etc/os-release || source /usr/lib/os-release
 case ${ID,,} in
     ubuntu|debian)

@@ -12,7 +12,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# shellcheck source=tests/_common.sh
 source _common.sh
+# shellcheck source=tests/_functions.sh
 source _functions.sh
 
 virtlet_deployment_name=virtlet-deployment
@@ -33,10 +35,9 @@ if [[ "$vm_status" != "running" ]]; then
     exit 1
 fi
 echo "Pod name: $deployment_pod Virsh domain: $vm_name"
-echo "ssh testuser@$(kubectl get pods $deployment_pod -o jsonpath="{.status.podIP}")"
+echo "ssh testuser@$(kubectl get pods "$deployment_pod" -o jsonpath="{.status.podIP}")"
 echo "kubectl attach -it $deployment_pod"
-echo "=== Virtlet details ===="
-printf "$(kubectl plugin virt virsh dumpxml $vm_name | grep VIRTLET_)\n"
+printf "=== Virtlet details ====\n%s\n" "$(kubectl plugin virt virsh dumpxml "$vm_name" | grep VIRTLET_)"
 popd
 
 # Teardown

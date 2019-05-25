@@ -45,6 +45,7 @@ function _install_docker {
         return
     fi
 
+    # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
         clear-linux-os)
@@ -178,6 +179,7 @@ function install_rundeck {
         return
     fi
 
+    # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
         *suse)

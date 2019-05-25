@@ -12,7 +12,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# shellcheck source=tests/_common.sh
 source _common.sh
+# shellcheck source=tests/_functions.sh
 source _functions.sh
 
 multus_deployment_name=multus-deployment
@@ -26,10 +28,10 @@ kubectl apply -f bridge-network.yaml
 setup $multus_deployment_name
 
 # Test
-deployment_pod=$(kubectl get pods | grep  $multus_deployment_name | awk '{print $1}')
+deployment_pod=$(kubectl get pods | grep "$multus_deployment_name" | awk '{print $1}')
 echo "===== $deployment_pod details ====="
-kubectl exec -it $deployment_pod -- ip a
-multus_nic=$(kubectl exec -it $deployment_pod -- ifconfig | grep "eth1")
+kubectl exec -it "$deployment_pod" -- ip a
+multus_nic=$(kubectl exec -it "$deployment_pod" -- ifconfig | grep "eth1")
 if [ -z "$multus_nic" ]; then
     echo "The $deployment_pod pod doesn't contain the eth1 nic"
     exit 1
