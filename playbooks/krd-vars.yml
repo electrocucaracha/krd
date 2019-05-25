@@ -59,11 +59,6 @@ kured_url: "https://github.com/weaveworks/kured/releases/download/{{ kured_versi
 #kured_version: 114c34950b155ab351a43e99af995b6ee435cc5d
 #kured_url: "https://github.com/weaveworks/kured"
 
-qat_driver_dest: "{{ base_dest }}/qat"
-qat_driver_source_type: "source"
-qat_driver_version: "1.7.l.4.3.0-00033"
-qat_driver_url: "https://01.org/sites/default/files/downloads/intelr-quickassist-technology/qat{{ qat_driver_version }}.tar.gz"
-
 go_version: '1.11'
 kubespray_version: release-2.10
 kubectl_version: 1.11.2
