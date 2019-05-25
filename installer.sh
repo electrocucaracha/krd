@@ -39,4 +39,3 @@ update_repos
 for installer in ${KRD_INSTALLERS:-k8s addons helm_charts rundeck}; do
     "install_$installer"
 done
-print_kubernetes_info
