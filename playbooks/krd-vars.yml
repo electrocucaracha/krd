@@ -10,14 +10,6 @@
 
 base_dest: /tmp
 
-multus_dest: "{{ base_dest }}/multus-cni"
-multus_source_type: "tarball"
-multus_version: 3.2
-multus_url: "https:://github.com/intel/multus-cni/releases/download/v{{ multus_version }}/multus-cni_v{{ multus_version }}_linux_amd64.tar.gz"
-#multus_source_type: "source"
-#multus_version: def72938cd2fb272eb3a6f64a8162b1049404357
-#multus_url: "https://github.com/intel/multus-cni"
-
 ovn_kubernetes_dest: "{{ base_dest }}/ovn-kubernetes"
 ovn_kubernetes_source_type: "tarball"
 ovn_kubernetes_version: 0.3.0
