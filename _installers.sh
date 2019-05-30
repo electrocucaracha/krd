@@ -141,7 +141,7 @@ function install_addons {
     fi
     sudo ansible-galaxy install "$verbose" -r "$KRD_FOLDER/galaxy-requirements.yml" --ignore-errors
 
-    for addon in ${KRD_ADDONS:-virtlet multus istio kured}; do
+    for addon in ${KRD_ADDONS:-virtlet}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
         sudo -E ansible-playbook "$verbose" -i "$krd_inventory" "$krd_playbooks/configure-${addon}.yml" | sudo tee "setup-${addon}.log"
         if [[ "${KRD_ENABLE_TESTS}" == "true" ]]; then
@@ -199,27 +199,32 @@ function install_rundeck {
 
 # _install_helm() - Function that installs Helm Client
 function _install_helm {
-    local helm_version=v2.13.1
+    local helm_version=v2.14.0
     local helm_tarball=helm-${helm_version}-linux-amd64.tar.gz
 
-    if ! helm version &>/dev/null; then
+    if ! command -v helm; then
+        # shellcheck disable=SC1091
+        source /etc/os-release || source /usr/lib/os-release
+        case ${ID,,} in
+            rhel|centos|fedora)
+                sudo yum install -y wget
+            ;;
+        esac
         wget http://storage.googleapis.com/kubernetes-helm/$helm_tarball
         tar -zxvf $helm_tarball -C /tmp
         rm $helm_tarball
         sudo mv /tmp/linux-amd64/helm /usr/local/bin/helm
+
+        kubectl create serviceaccount --namespace kube-system tiller
+        kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+        helm init
+        kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+        sleep 10
+        tiller_pod=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' -n kube-system | grep tiller)
+        kubectl wait --for=condition=Ready "pod/$tiller_pod" -n kube-system --timeout=5m
+        helm init --service-account tiller --upgrade
+        helm repo update
     fi
-
-    helm init
-    helm repo update
-
-    echo 'Starting helm local repo'
-    helm repo rm local
-    helm serve &
-    until curl -sSL --connect-timeout 1 http://localhost:8879 > /dev/null; do
-        echo 'Waiting for helm serve to start'
-        sleep 2
-    done
-    helm repo add local http://localhost:8879/charts
 }
 
 # install_prometheus() - Function that installs Prometheus operator
