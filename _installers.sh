@@ -16,7 +16,6 @@ source _commons.sh
 export krd_inventory_folder=$KRD_FOLDER/inventory
 krd_inventory=$krd_inventory_folder/hosts.ini
 krd_playbooks=$KRD_FOLDER/playbooks
-k8s_info_file=$KRD_FOLDER/k8s_info.log
 kubespray_folder=/opt/kubespray
 
 # _install_pip() - Install Python Package Manager
