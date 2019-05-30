@@ -216,11 +216,9 @@ function _install_helm {
 
         kubectl create serviceaccount --namespace kube-system tiller
         kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-        helm init
+        helm init --wait
         kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
-        sleep 10
-        tiller_pod=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' -n kube-system | grep tiller)
-        kubectl wait --for=condition=Ready "pod/$tiller_pod" -n kube-system --timeout=5m
+        kubectl rollout status deployment/tiller-deploy --timeout=5m --namespace kube-system
         helm init --service-account tiller --upgrade
         helm repo update
     fi
