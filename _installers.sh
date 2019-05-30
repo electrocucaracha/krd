@@ -253,14 +253,20 @@ function install_openstack {
     _install_helm
     _install_docker
 
-    for repo in openstack-helm openstack-helm-infra; do
-        sudo -E git clone https://git.openstack.org/openstack/$repo $dest_folder/$repo
+    kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
+    for label in openstack-control-plane=enabled openstack-compute-node=enable openstack-helm-node-class=primary openvswitch=enabled linuxbridge=enabled; do
+        kubectl label nodes "$label" --all
     done
-    sudo -H chown -R "$(id -un)": "$dest_folder/openstack-*"
+    for repo in openstack-helm openstack-helm-infra; do
+        if [[ ! -d "$dest_folder/$repo" ]]; then
+            sudo -E git clone https://git.openstack.org/openstack/$repo "$dest_folder/$repo"
+            sudo -H chown -R "$(id -un)": "$dest_folder/$repo"
+        fi
+    done
 
     mkdir -p $dest_folder/openstack-helm-infra/tools/gate/devel/
     pushd $dest_folder/openstack-helm-infra/tools/gate/devel/
-    git checkout c9396e348017822fc614296a1b9ec2852637bbbd # 2019-04-11
+    git checkout 9efb353b83c59e891b1b85dc6567044de0f5ac17 # 2019-05-28
     echo "proxy:" | tee local-vars.yaml
     if [[ -n "${HTTP_PROXY}" ]]; then
         echo "  http: $HTTP_PROXY" | tee --append local-vars.yaml
@@ -273,7 +279,7 @@ function install_openstack {
     fi
     popd
     pushd $dest_folder/openstack-helm
-    git checkout 229db2f1552b2bfb0beece4ecd4a1b11eac690c0 # 2019-04-11
+    git checkout be761f50f614485598ac8520140b37c5153f0f6c # 2019-05-29
     for script in $(find ./tools/deployment/multinode -name "??0-*.sh" | sort); do
         $script | tee "${script%.*}.log"
     done
