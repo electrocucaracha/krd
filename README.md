@@ -11,11 +11,11 @@ or Virtual Machines.
 
 | Name           | Description                                   | Source                            | Status      |
 |:--------------:|:----------------------------------------------|:----------------------------------|:-----------:|
-| Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Done        |
-| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][3] | Tested      |
-| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][4]        | Tested      |
+| Kubernetes     | Base Kubernetes deployment                    | [kubespray][1]                    | Done        |
+| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][2] | Tested      |
+| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][3]        | Tested      |
 | Multus         | Provides Multiple Network support in a pod    |                                   | Tested      |
-| NFD            | Node feature discovery                        | [configure-nfd.yml][7]            | Tested      |
+| NFD            | Node feature discovery                        | [configure-nfd.yml][4]            | Tested      |
 | Istio          | Service Mesh platform                         |                                   | Tested      |
 
 ## Deployment
@@ -25,7 +25,7 @@ Ubuntu instructions required for running this project.
 
 ### Virtual Machines
 
-This project uses [Vagrant tool][6] for provisioning Virtual Machines
+This project uses [Vagrant tool][5] for provisioning Virtual Machines
 automatically. The [setup](setup.sh) bash script contains the
 Linux instructions to install dependencies and plugins required for
 its usage. This script supports two Virtualization technologies
@@ -44,7 +44,8 @@ the following instructions:
 
 Apache-2.0
 
-[2]: https://github.com/kubernetes-sigs/kubespray
-[3]: playbooks/configure-ovn-kubernetes.yml
-[4]: playbooks/configure-virtlet.yml
-[6]: https://www.vagrantup.com/
+[1]: https://github.com/kubernetes-sigs/kubespray
+[2]: playbooks/configure-ovn-kubernetes.yml
+[3]: playbooks/configure-virtlet.yml
+[4]: playbooks/configure-nfd.yml
+[5]: https://www.vagrantup.com/
