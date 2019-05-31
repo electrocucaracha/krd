@@ -14,8 +14,9 @@ or Virtual Machines.
 | Kubernetes     | Base Kubernetes deployment                    | [kubespray][2]                    | Done        |
 | ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][3] | Tested      |
 | Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][4]        | Tested      |
+| Multus         | Provides Multiple Network support in a pod    |                                   | Tested      |
 | NFD            | Node feature discovery                        | [configure-nfd.yml][7]            | Tested      |
-| Istio          | Service Mesh platform                         | [configure-istio.yml][8]          | Tested      |
+| Istio          | Service Mesh platform                         |                                   | Tested      |
 
 ## Deployment
 
@@ -46,6 +47,4 @@ Apache-2.0
 [2]: https://github.com/kubernetes-sigs/kubespray
 [3]: playbooks/configure-ovn-kubernetes.yml
 [4]: playbooks/configure-virtlet.yml
-[5]: playbooks/configure-multus.yml
 [6]: https://www.vagrantup.com/
-[8]: playbooks/configure-istio.yml

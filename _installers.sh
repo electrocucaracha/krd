@@ -286,3 +286,32 @@ function install_openstack {
     done
     popd
 }
+
+# install_istio() - Function that installs Istio
+function install_istio {
+    istio_version=$(grep "istio_version:" "playbooks/krd-vars.yml" | awk -F ': ' '{print $2}')
+
+    if ! command -v istioctl; then
+        curl -L https://git.io/getLatestIstio | ISTIO_VERSION="$istio_version" sh -
+        pushd "./istio-$istio_version/bin"
+        chmod +x ./istioctl
+        sudo mv ./istioctl /usr/local/bin/istioctl
+        popd
+        rm -rf "./istio-$istio_version/"
+    fi
+
+    _install_helm
+
+    kubectl apply -f "https://raw.githubusercontent.com/istio/istio/$istio_version/install/kubernetes/helm/helm-service-account.yaml"
+    helm repo add istio.io "https://storage.googleapis.com/istio-release/releases/$istio_version/charts/"
+    helm repo update
+    if ! helm ls | grep -e istio-init; then
+        helm install istio.io/istio-init --name istio-init --namespace istio-system
+    fi
+    until [[ $(kubectl get crds | grep -c 'istio.io\|certmanager.k8s.io') -ge "53" ]];do
+        sleep 10
+    done
+    if ! helm ls | grep -e "istio "; then
+        helm install istio.io/istio --name istio --namespace istio-system --set global.configValidation=false
+    fi
+}

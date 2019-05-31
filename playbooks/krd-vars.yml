@@ -38,12 +38,8 @@ nfd_source_type: "source"
 nfd_version: 175305b1ad73be7301ac94add475cec6fef797a9
 nfd_url: "https://github.com/kubernetes-incubator/node-feature-discovery"
 
-istio_dest: "{{ base_dest }}/istio"
-istio_source_type: "tarball"
-istio_version: 1.1.7
-istio_url: "https://github.com/istio/istio/releases/download/{{ istio_version }}/istio-{{ istio_version }}-linux.tar.gz"
-
 go_version: '1.11'
 kubespray_version: release-2.10
 kubectl_version: 1.14.1
 helm_client_version: 2.13.1
+istio_version: 1.1.7

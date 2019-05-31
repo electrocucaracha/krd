@@ -15,18 +15,10 @@ set -o pipefail
 # shellcheck source=tests/_functions.sh
 source _functions.sh
 
-base_dest=$(grep "base_dest:" "$TEST_FOLDER/../playbooks/krd-vars.yml" | awk -F ': ' '{print $2}')
-istio_dest=$(grep "istio_dest:" "$TEST_FOLDER/../playbooks/krd-vars.yml" | awk -F ': ' '{print $2}' | sed "s|{{ base_dest }}|$base_dest|g;s|\"||g")
 istio_version=$(grep "istio_version:" "$TEST_FOLDER/../playbooks/krd-vars.yml" | awk -F ': ' '{print $2}')
 
-if ! istioctl version &>/dev/null; then
-    echo "This funtional test requires istioctl client"
-    exit 1
-fi
-
-istioctl kube-inject -f "$istio_dest/istio-$istio_version/samples/bookinfo/platform/kube/bookinfo.yaml" > bookinfo-inject.yml
-kubectl apply -f bookinfo-inject.yml
-kubectl apply -f "$istio_dest/istio-$istio_version/samples/bookinfo/networking/bookinfo-gateway.yaml"
+kubectl apply -f "https://raw.githubusercontent.com/istio/istio/$istio_version/samples/bookinfo/platform/kube/bookinfo.yaml"
+kubectl apply -f "https://raw.githubusercontent.com/istio/istio/$istio_version/samples/bookinfo/networking/bookinfo-gateway.yaml"
 
 for deployment in details-v1 productpage-v1 ratings-v1 reviews-v1 reviews-v2 reviews-v3; do
     wait_deployment $deployment
