@@ -36,6 +36,6 @@ if [[ "${KRD_DEBUG}" == "true" ]]; then
 fi
 
 update_repos
-for installer in ${KRD_INSTALLERS:-k8s addons helm_charts rundeck}; do
+for installer in ${KRD_INSTALLERS:-k8s rundeck}; do
     "install_$installer"
 done
