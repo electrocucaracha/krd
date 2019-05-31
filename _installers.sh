@@ -125,9 +125,10 @@ function install_k8s {
 
     sudo ansible-playbook "$verbose" -i "$krd_inventory" "$kubespray_folder/cluster.yml" --become | tee "setup-kubernetes.log"
 
-    # Configure environment
+    # Configure kubectl
     mkdir -p "$HOME/.kube"
     cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
+    sudo mv "$krd_inventory_folder/artifacts/kubectl" /usr/local/bin/kubectl
 }
 
 # install_addons() - Install Kubenertes AddOns

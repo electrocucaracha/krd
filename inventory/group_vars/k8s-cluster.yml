@@ -69,3 +69,6 @@ download_localhost: true
 
 # Enable Multus
 kube_network_plugin_multus: true
+
+# Download kubectl onto the host that runs Ansible in {{ bin_dir }}
+kubectl_localhost: true
