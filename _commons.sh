@@ -8,6 +8,21 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 #############################################################################
 
+# Configuration values
+KRD_FOLDER="$(pwd)"
+export KRD_FOLDER
+
+export krd_inventory_folder=$KRD_FOLDER/inventory
+export krd_inventory=$krd_inventory_folder/hosts.ini
+export kubespray_folder=/opt/kubespray
+
+verbose=""
+if [[ "${KRD_DEBUG}" == "true" ]]; then
+    set -o xtrace
+    verbose="-vvv"
+fi
+export verbose
+
 # update_repos() - Function that updates linux repositories
 function update_repos {
     echo "Updating repositories list..."

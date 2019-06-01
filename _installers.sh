@@ -13,10 +13,7 @@ set -o pipefail
 
 source _commons.sh
 
-export krd_inventory_folder=$KRD_FOLDER/inventory
-krd_inventory=$krd_inventory_folder/hosts.ini
 krd_playbooks=$KRD_FOLDER/playbooks
-kubespray_folder=/opt/kubespray
 
 # _install_pip() - Install Python Package Manager
 function _install_pip {
@@ -74,8 +71,8 @@ function _install_docker {
     sudo systemctl restart docker
 }
 
-# install_k8s() - Install Kubernetes using kubespray tool
-function install_k8s {
+# _install_kubespray() - Donwload Kubespray binaries
+function _install_kubespray {
     echo "Deploying kubernetes"
     version=$(grep "kubespray_version" "${krd_playbooks}/krd-vars.yml" | awk -F ': ' '{print $2}')
 
@@ -95,9 +92,6 @@ function install_k8s {
                 sudo swupd bundle-add git
             ;;
         esac
-
-        _install_docker
-        _install_ansible
 
         sudo git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$version"
         sudo chown -R "$USER" $kubespray_folder
@@ -122,6 +116,13 @@ function install_k8s {
             echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
         fi
     fi
+}
+
+# install_k8s() - Install Kubernetes using kubespray tool
+function install_k8s {
+    _install_docker
+    _install_ansible
+    _install_kubespray
 
     sudo ansible-playbook "$verbose" -i "$krd_inventory" "$kubespray_folder/cluster.yml" --become | tee "setup-kubernetes.log"
 

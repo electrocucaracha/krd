@@ -11,14 +11,10 @@
 set -o errexit
 set -o pipefail
 
-# Configuration values
-KRD_FOLDER="$(pwd)"
-export KRD_FOLDER
-
-# shellcheck source=_commons.sh
-source _commons.sh
 # shellcheck source=_installers.sh
 source _installers.sh
+# shellcheck source=_functions.sh
+source _functions.sh
 
 if ! sudo -n "true"; then
     echo ""
@@ -30,12 +26,29 @@ if ! sudo -n "true"; then
     exit 1
 fi
 
-if [[ "${KRD_DEBUG}" == "true" ]]; then
-    set -o xtrace
-    verbose="-vvv"
-fi
+valid_options=$(find . -maxdepth 1 -name "_*.sh" -exec grep -o "^function [a-z].*" {} + | awk '{printf "%s|", $2}')
+function usage {
+    cat <<EOF
+Usage: $0 [-a <${valid_options%?}>]
+EOF
+}
 
-update_repos
-for installer in ${KRD_INSTALLERS:-k8s rundeck}; do
-    "install_$installer"
+while getopts ":a:" OPTION; do
+    case $OPTION in
+        a)
+        eval "case \$OPTARG in
+            ${valid_options%?})
+            echo \"Running \$OPTARG...\"
+            \$OPTARG
+            ;;
+            *)
+            echo Invalid action
+            usage
+            exit 1
+        esac"
+        ;;
+        *)
+        usage
+        ;;
+    esac
 done

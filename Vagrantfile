@@ -162,7 +162,7 @@ Vagrant.configure("2") do |config|
       }
       sh.inline = <<-SHELL
         cd /vagrant/
-        ./installer.sh | tee krd_installer.log
+        ./krd_command.sh -a install_k8s  -a install_rundeck | tee vagrant_init.log
       SHELL
     end
   end # installer
