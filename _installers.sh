@@ -95,7 +95,10 @@ function _install_kubespray {
 
         sudo git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$version"
         sudo chown -R "$USER" $kubespray_folder
-        sudo -E pip install -r $kubespray_folder/requirements.txt
+        pushd $kubespray_folder
+        sudo -E pip install -r ./requirements.txt
+        make mitogen
+        popd
 
         rm -f "$krd_inventory_folder/group_vars/all.yml" 2> /dev/null
         verbose=""
