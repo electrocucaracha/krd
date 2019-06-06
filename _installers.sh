@@ -200,30 +200,41 @@ function install_rundeck {
 
 # _install_helm() - Function that installs Helm Client
 function _install_helm {
-    local helm_version=v2.14.0
-    local helm_tarball=helm-${helm_version}-linux-amd64.tar.gz
-
-    if ! command -v helm; then
-        # shellcheck disable=SC1091
-        source /etc/os-release || source /usr/lib/os-release
-        case ${ID,,} in
-            rhel|centos|fedora)
-                sudo yum install -y wget
-            ;;
-        esac
-        wget http://storage.googleapis.com/kubernetes-helm/$helm_tarball
-        tar -zxvf $helm_tarball -C /tmp
-        rm $helm_tarball
-        sudo mv /tmp/linux-amd64/helm /usr/local/bin/helm
-
-        kubectl create serviceaccount --namespace kube-system tiller
-        kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-        helm init --wait
-        kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
-        kubectl rollout status deployment/tiller-deploy --timeout=5m --namespace kube-system
-        helm init --service-account tiller --upgrade
-        helm repo update
+    if command -v helm; then
+        return
     fi
+
+    curl -L https://git.io/get_helm.sh | bash
+    sudo useradd helm
+    sudo sudo mkdir -p /home/helm/.kube
+    sudo cp ~/.kube/config /home/helm/.kube/
+    sudo chown helm -R /home/helm/
+    sudo su helm -c "helm init --wait"
+
+    sudo tee <<EOF /etc/systemd/system/helm-serve.service >/dev/null
+[Unit]
+Description=Helm Server
+After=network.target
+
+[Service]
+User=helm
+Restart=always
+ExecStart=/usr/local/bin/helm serve
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    sudo systemctl enable helm-serve
+    sudo systemctl start helm-serve
+
+    sudo su helm -c "helm repo remove local"
+    sudo su helm -c "helm repo add local http://localhost:8879/charts"
+    kubectl create serviceaccount --namespace kube-system tiller
+    kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+    kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+    kubectl rollout status deployment/tiller-deploy --timeout=5m --namespace kube-system
+    helm init --client-only
+    helm repo update
 }
 
 # install_prometheus() - Function that installs Prometheus operator
@@ -253,39 +264,46 @@ function install_openstack {
     local dest_folder=/opt
 
     _install_helm
-    _install_docker
 
     kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
     for label in openstack-control-plane=enabled openstack-compute-node=enable openstack-helm-node-class=primary openvswitch=enabled linuxbridge=enabled; do
         kubectl label nodes "$label" --all
     done
-    for repo in openstack-helm openstack-helm-infra; do
-        if [[ ! -d "$dest_folder/$repo" ]]; then
-            sudo -E git clone https://git.openstack.org/openstack/$repo "$dest_folder/$repo"
-            sudo -H chown -R "$(id -un)": "$dest_folder/$repo"
-        fi
-    done
 
-    mkdir -p $dest_folder/openstack-helm-infra/tools/gate/devel/
-    pushd $dest_folder/openstack-helm-infra/tools/gate/devel/
-    git checkout 9efb353b83c59e891b1b85dc6567044de0f5ac17 # 2019-05-28
-    echo "proxy:" | tee local-vars.yaml
-    if [[ -n "${HTTP_PROXY}" ]]; then
-        echo "  http: $HTTP_PROXY" | tee --append local-vars.yaml
+    if [[ ! -d "$dest_folder/openstack-helm-infra" ]]; then
+        sudo -E git clone https://git.openstack.org/openstack/openstack-helm-infra "$dest_folder/openstack-helm-infra"
+        sudo mkdir -p $dest_folder/openstack-helm-infra/tools/gate/devel/
+        pushd $dest_folder/openstack-helm-infra/tools/gate/devel/
+        sudo git checkout 9efb353b83c59e891b1b85dc6567044de0f5ac17 # 2019-05-28
+        echo "proxy:" | sudo tee local-vars.yaml
+        if [[ -n "${HTTP_PROXY}" ]]; then
+            echo "  http: $HTTP_PROXY" | sudo tee --append local-vars.yaml
+        fi
+        if [[ -n "${HTTPS_PROXY}" ]]; then
+            echo "  https: $HTTPS_PROXY" | sudo tee --append local-vars.yaml
+        fi
+        if [[ -n "${NO_PROXY}" ]]; then
+            echo "  noproxy: $NO_PROXY,.svc.cluster.local" | sudo tee --append local-vars.yaml
+        fi
+        popd
+        sudo -H chown -R helm: "$dest_folder/openstack-helm-infra"
+        pushd $dest_folder/openstack-helm-infra/
+        sudo su helm -c "make helm-toolkit"
+        sudo su helm -c "helm repo index /home/helm/.helm/repository/local/"
+        sudo su helm -c "make all"
+        popd
     fi
-    if [[ -n "${HTTPS_PROXY}" ]]; then
-        echo "  https: $HTTPS_PROXY" | tee --append local-vars.yaml
+
+    if [[ ! -d "$dest_folder/openstack-helm" ]]; then
+        sudo -E git clone https://git.openstack.org/openstack/openstack-helm-infra "$dest_folder/openstack-helm"
+        pushd $dest_folder/openstack-helm
+        sudo git checkout d334c5b68a082c0c09ce37116060b9efc1d45af4 # 2019-05-29
+        sudo -H chown -R helm: "$dest_folder/openstack-helm"
+        for script in $(find ./tools/deployment/multinode -name "??0-*.sh" | sort); do
+            sudo su helm -c "$script" | tee "$HOME/${script%.*}.log"
+        done
+        popd
     fi
-    if [[ -n "${NO_PROXY}" ]]; then
-        echo "  noproxy: $NO_PROXY,.svc.cluster.local" | tee --append local-vars.yaml
-    fi
-    popd
-    pushd $dest_folder/openstack-helm
-    git checkout be761f50f614485598ac8520140b37c5153f0f6c # 2019-05-29
-    for script in $(find ./tools/deployment/multinode -name "??0-*.sh" | sort); do
-        $script | tee "${script%.*}.log"
-    done
-    popd
 }
 
 # install_istio() - Function that installs Istio
