@@ -201,8 +201,8 @@ function install_rundeck {
     popd
 }
 
-# _install_helm() - Function that installs Helm Client
-function _install_helm {
+# install_helm() - Function that installs Helm Client
+function install_helm {
     if command -v helm; then
         return
     fi
@@ -254,7 +254,7 @@ function install_prometheus {
 
 # install_helm_charts() - Function that installs additional Official Helm Charts
 function install_helm_charts {
-    _install_helm
+    install_helm
 
     for chart in "kured";do
         helm install stable/$chart
@@ -266,7 +266,7 @@ function install_openstack {
     echo "Deploying openstack"
     local dest_folder=/opt
 
-    _install_helm
+    install_helm
 
     kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
     for label in openstack-control-plane=enabled openstack-compute-node=enable openstack-helm-node-class=primary openvswitch=enabled linuxbridge=enabled; do
@@ -313,16 +313,18 @@ function install_openstack {
 function install_istio {
     istio_version=$(grep "istio_version:" "playbooks/krd-vars.yml" | awk -F ': ' '{print $2}')
 
-    if ! command -v istioctl; then
-        curl -L https://git.io/getLatestIstio | ISTIO_VERSION="$istio_version" sh -
-        pushd "./istio-$istio_version/bin"
-        chmod +x ./istioctl
-        sudo mv ./istioctl /usr/local/bin/istioctl
-        popd
-        rm -rf "./istio-$istio_version/"
+    install_helm
+
+    if command -v istioctl; then
+        return
     fi
 
-    _install_helm
+    curl -L https://git.io/getLatestIstio | ISTIO_VERSION="$istio_version" sh -
+    pushd "./istio-$istio_version/bin"
+    chmod +x ./istioctl
+    sudo mv ./istioctl /usr/local/bin/istioctl
+    popd
+    rm -rf "./istio-$istio_version/"
 
     kubectl apply -f "https://raw.githubusercontent.com/istio/istio/$istio_version/install/kubernetes/helm/helm-service-account.yaml"
     helm repo add istio.io "https://storage.googleapis.com/istio-release/releases/$istio_version/charts/"
@@ -336,4 +338,26 @@ function install_istio {
     if ! helm ls | grep -e "istio "; then
         helm install istio.io/istio --name istio --namespace istio-system --set global.configValidation=false
     fi
+}
+
+# install_knative() - Function taht installs Knative and its dependencies
+function install_knative {
+    knative_version=$(grep "knative_version:" "playbooks/krd-vars.yml" | awk -F ': ' '{print $2}')
+
+    install_istio
+
+    kubectl apply --selector knative.dev/crd-install=true \
+        --filename "https://github.com/knative/serving/releases/download/v${knative_version}/serving.yaml" \
+        --filename "https://github.com/knative/build/releases/download/v${knative_version}/build.yaml" \
+        --filename "https://github.com/knative/eventing/releases/download/v${knative_version}/release.yaml" \
+        --filename "https://github.com/knative/eventing-sources/releases/download/v${knative_version}/eventing-sources.yaml" \
+        --filename "https://github.com/knative/serving/releases/download/v${knative_version}/monitoring.yaml" \
+        --filename "https://raw.githubusercontent.com/knative/serving/v${knative_version}/third_party/config/build/clusterrole.yaml"
+    sleep 30
+    kubectl apply --filename "https://github.com/knative/serving/releases/download/v${knative_version}/serving.yaml" --selector networking.knative.dev/certificate-provider!=cert-manager \
+        --filename "https://github.com/knative/build/releases/download/v${knative_version}/build.yaml" \
+        --filename "https://github.com/knative/eventing/releases/download/v${knative_version}/release.yaml" \
+        --filename "https://github.com/knative/eventing-sources/releases/download/v${knative_version}/eventing-sources.yaml" \
+        --filename "https://github.com/knative/serving/releases/download/v${knative_version}/monitoring.yaml" \
+        --filename "https://raw.githubusercontent.com/knative/serving/v${knative_version}/third_party/config/build/clusterrole.yaml"
 }
