@@ -14,10 +14,12 @@ set -o pipefail
 
 # shellcheck source=tests/_functions.sh
 source _functions.sh
+# shellcheck source=_commons.sh
+source ../_commons.sh
 
-istio_version=$(grep "istio_version:" "$TEST_FOLDER/../playbooks/krd-vars.yml" | awk -F ': ' '{print $2}')
+istio_version=$(_get_version istio)
 
-if ! $(istioctl version &>/dev/null); then
+if ! istioctl version &>/dev/null; then
     echo "This funtional test requires istioctl client"
     exit 1
 fi

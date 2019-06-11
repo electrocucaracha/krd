@@ -9,15 +9,16 @@
 #############################################################################
 
 # Configuration values
-KRD_FOLDER="$(pwd)"
+KRD_FOLDER="$(git rev-parse --show-toplevel)"
 export KRD_FOLDER
 
 export krd_inventory_folder=$KRD_FOLDER/inventory
+export krd_playbooks=$KRD_FOLDER/playbooks
 export krd_inventory=$krd_inventory_folder/hosts.ini
 export kubespray_folder=/opt/kubespray
 
 verbose=""
-if [[ "${KRD_DEBUG}" == "true" ]]; then
+if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
     set -o xtrace
     verbose="-vvv"
 fi
@@ -142,4 +143,9 @@ function uninstall_package {
             ;;
         esac
     fi
+}
+
+# _get_version() - Get the version number declared in configuration file
+function _get_version {
+    grep "${1}_version:" "$krd_playbooks/krd-vars.yml" | awk -F ': ' '{print $2}'
 }

@@ -13,8 +13,6 @@ set -o pipefail
 
 source _commons.sh
 
-krd_playbooks=$KRD_FOLDER/playbooks
-
 # _install_pip() - Install Python Package Manager
 function _install_pip {
     if ! pip --version &>/dev/null; then
@@ -74,7 +72,7 @@ function _install_docker {
 # _install_kubespray() - Donwload Kubespray binaries
 function _install_kubespray {
     echo "Deploying kubernetes"
-    version=$(grep "kubespray_version" "${krd_playbooks}/krd-vars.yml" | awk -F ': ' '{print $2}')
+    kubespray_version=$(_get_version kubespray)
 
     if [[ ! -d $kubespray_folder ]]; then
         echo "Download kubespray binaries"
@@ -93,7 +91,7 @@ function _install_kubespray {
             ;;
         esac
 
-        sudo git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$version"
+        sudo git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$kubespray_version"
         sudo chown -R "$USER" $kubespray_folder
         pushd $kubespray_folder
         sudo -E pip install -r ./requirements.txt
@@ -311,7 +309,7 @@ function install_openstack {
 
 # install_istio() - Function that installs Istio
 function install_istio {
-    istio_version=$(grep "istio_version:" "playbooks/krd-vars.yml" | awk -F ': ' '{print $2}')
+    istio_version=$(_get_version istio)
 
     install_helm
 
@@ -342,7 +340,7 @@ function install_istio {
 
 # install_knative() - Function taht installs Knative and its dependencies
 function install_knative {
-    knative_version=$(grep "knative_version:" "playbooks/krd-vars.yml" | awk -F ': ' '{print $2}')
+    knative_version=$(_get_version knative)
 
     install_istio
 
