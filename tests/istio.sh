@@ -17,7 +17,14 @@ source _functions.sh
 
 istio_version=$(grep "istio_version:" "$TEST_FOLDER/../playbooks/krd-vars.yml" | awk -F ': ' '{print $2}')
 
-kubectl apply -f "https://raw.githubusercontent.com/istio/istio/$istio_version/samples/bookinfo/platform/kube/bookinfo.yaml"
+if ! $(istioctl version &>/dev/null); then
+    echo "This funtional test requires istioctl client"
+    exit 1
+fi
+
+wget "https://raw.githubusercontent.com/istio/istio/$istio_version/samples/bookinfo/platform/kube/bookinfo.yaml" -O /tmp/bookinfo.yaml
+istioctl kube-inject -f /tmp/bookinfo.yaml | tee /tmp/bookinfo-inject.yml
+kubectl apply -f /tmp/bookinfo-inject.yml
 kubectl apply -f "https://raw.githubusercontent.com/istio/istio/$istio_version/samples/bookinfo/networking/bookinfo-gateway.yaml"
 
 for deployment in details-v1 productpage-v1 ratings-v1 reviews-v1 reviews-v2 reviews-v3; do
