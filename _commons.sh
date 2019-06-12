@@ -17,11 +17,12 @@ export krd_playbooks=$KRD_FOLDER/playbooks
 export krd_inventory=$krd_inventory_folder/hosts.ini
 export kubespray_folder=/opt/kubespray
 
-verbose=""
+ansible_cmd="sudo -E ansible-playbook --become "
 if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
     set -o xtrace
-    verbose="-vvv"
+    ansible_cmd+="-vvv "
 fi
+ansible_cmd+="-i $krd_inventory "
 export verbose
 
 # update_repos() - Function that updates linux repositories
@@ -148,4 +149,42 @@ function uninstall_package {
 # _get_version() - Get the version number declared in configuration file
 function _get_version {
     grep "${1}_version:" "$krd_playbooks/krd-vars.yml" | awk -F ': ' '{print $2}'
+}
+
+# vercmp() - Function that compares two versions
+function vercmp {
+    local v1=$1
+    local op=$2
+    local v2=$3
+    local result
+
+    # sort the two numbers with sort's "-V" argument.  Based on if v2
+    # swapped places with v1, we can determine ordering.
+    result=$(echo -e "$v1\n$v2" | sort -V | head -1)
+
+    case $op in
+        "==")
+            [ "$v1" = "$v2" ]
+            return
+            ;;
+        ">")
+            [ "$v1" != "$v2" ] && [ "$result" = "$v2" ]
+            return
+            ;;
+        "<")
+            [ "$v1" != "$v2" ] && [ "$result" = "$v1" ]
+            return
+            ;;
+        ">=")
+            [ "$result" = "$v2" ]
+            return
+            ;;
+        "<=")
+            [ "$result" = "$v1" ]
+            return
+            ;;
+        *)
+            die $LINENO "unrecognised op: $op"
+            ;;
+    esac
 }

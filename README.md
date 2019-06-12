@@ -40,6 +40,24 @@ the following instructions:
 
 ![Provisioning](docs/src/img/provisioning.png)
 
+## Day-2 Operations
+
+The functions defined in this project covers the life-cycle of a
+Kubernetes cluster. In other words, its possible to add more nodes,
+upgrade the existing deployment or remove the services.  The following
+instruction shows how to upgrade the existing version to *v1.14.3*:
+
+    $ KRD_KUBE_VERSION=v1.14.3 ./krd_command.sh -a upgrade_k8s
+
+### Environment variables
+
+| Name                  | Description                                                           |
+|:----------------------|:----------------------------------------------------------------------|
+| KRD_DEBUG             | Enables verbose execution                                             |
+| KRD_KUBE_VERSION      | Specifies the Kubernetes version to be upgraded                       |
+| KRD_KUBESPRAY_VERSION | Specifies the Kubespray version to be used during the upgrade process |
+| KRD_ENABLE_TESTS      | Enables the functional tests during the deployment process            |
+
 ## License
 
 Apache-2.0

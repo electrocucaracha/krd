@@ -125,7 +125,8 @@ function install_k8s {
     _install_ansible
     _install_kubespray
 
-    sudo ansible-playbook "$verbose" -i "$krd_inventory" "$kubespray_folder/cluster.yml" --become | tee "setup-kubernetes.log"
+    echo "$ansible_cmd $kubespray_folder/cluster.yml"
+    eval "$ansible_cmd $kubespray_folder/cluster.yml" | tee "setup-kubernetes.log"
 
     # Configure kubectl
     mkdir -p "$HOME/.kube"
@@ -145,7 +146,7 @@ function install_addons {
 
     for addon in ${KRD_ADDONS:-virtlet}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
-        sudo -E ansible-playbook "$verbose" -i "$krd_inventory" "$krd_playbooks/configure-${addon}.yml" | sudo tee "setup-${addon}.log"
+        eval "$ansible_cmd $krd_playbooks/configure-${addon}.yml" | sudo tee "setup-${addon}.log"
         if [[ "${KRD_ENABLE_TESTS}" == "true" ]]; then
             pushd "$KRD_FOLDER"/tests
             bash "${addon}".sh
