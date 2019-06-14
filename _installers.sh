@@ -360,3 +360,20 @@ function install_knative {
         --filename "https://github.com/knative/serving/releases/download/v${knative_version}/monitoring.yaml" \
         --filename "https://raw.githubusercontent.com/knative/serving/v${knative_version}/third_party/config/build/clusterrole.yaml"
 }
+
+
+# install_kiali() - Function taht installs Kiali and its dependencies
+function install_kiali {
+    kiali_version=$(_get_version kiali)
+
+    install_istio
+
+    if kubectl get deployment --all-namespaces | grep kiali-operator; then
+        return
+    fi
+    export AUTH_STRATEGY=anonymous
+    export KIALI_IMAGE_VERSION=$kiali_version
+    export ISTIO_NAMESPACE=istio-system
+
+    bash <(curl -L https://git.io/getLatestKialiOperator)
+}
