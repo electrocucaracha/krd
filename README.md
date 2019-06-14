@@ -57,6 +57,7 @@ instruction shows how to upgrade the existing version to *v1.14.3*:
 | KRD_KUBE_VERSION      | Specifies the Kubernetes version to be upgraded                       |
 | KRD_KUBESPRAY_VERSION | Specifies the Kubespray version to be used during the upgrade process |
 | KRD_ENABLE_TESTS      | Enables the functional tests during the deployment process            |
+| KRD_HELM_CHART        | Specifies the Helm chart to be installed                              |
 
 ## License
 

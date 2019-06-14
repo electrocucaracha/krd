@@ -16,7 +16,7 @@ source _commons.sh
 # _install_pip() - Install Python Package Manager
 function _install_pip {
     if ! pip --version &>/dev/null; then
-        install_package python-dev
+        _install_package python-dev
         curl -sL https://bootstrap.pypa.io/get-pip.py | sudo python
     else
         sudo -E pip install --upgrade pip
@@ -76,21 +76,7 @@ function _install_kubespray {
 
     if [[ ! -d $kubespray_folder ]]; then
         echo "Download kubespray binaries"
-
-        # shellcheck disable=SC1091
-        source /etc/os-release || source /usr/lib/os-release
-        case ${ID,,} in
-            ubuntu|debian)
-                install_package sshpass
-            ;;
-            rhel|centos|fedora)
-                install_package git
-            ;;
-            clear-linux-os)
-                sudo swupd bundle-add git
-            ;;
-        esac
-
+        _install_package git
         sudo git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$kubespray_version"
         sudo chown -R "$USER" $kubespray_folder
         pushd $kubespray_folder
@@ -170,11 +156,11 @@ function install_rundeck {
             echo "deb https://rundeck.bintray.com/rundeck-deb /" | sudo tee -a /etc/apt/sources.list.d/rundeck.list
             curl 'https://bintray.com/user/downloadSubjectPublicKey?username=bintray' | sudo apt-key add -
             update_repos
-            install_packages rundeck-cli rundeck
         ;;
         rhel|centos|fedora)
         ;;
     esac
+    _install_packages rundeck-cli rundeck
 
     sudo chown -R rundeck:rundeck /var/lib/rundeck/
 
@@ -239,25 +225,11 @@ EOF
     helm repo update
 }
 
-# install_prometheus() - Function that installs Prometheus operator
-function install_prometheus {
-    kubectl create -f https://coreos.com/operators/prometheus/latest/prometheus-operator.yaml
-    kubectl create -f https://coreos.com/operators/prometheus/latest/prometheus-k8s.yaml
-
-    # Deploy exporters providing metrics on cluster nodes and Kubernetes business logic
-    kubectl create -f https://coreos.com/operators/prometheus/latest/exporters.yaml
-
-    # Create the ConfigMap containing the Prometheus configuration
-    kubectl apply -f https://coreos.com/operators/prometheus/latest/prometheus-k8s-cm.yaml
-}
-
-# install_helm_charts() - Function that installs additional Official Helm Charts
-function install_helm_charts {
+# install_helm_chart() - Function that installs additional Official Helm Charts
+function install_helm_chart {
     install_helm
 
-    for chart in "kured";do
-        helm install stable/$chart
-    done
+    helm install "stable/$KRD_HELM_CHART"
 }
 
 # install_openstack() - Function that install OpenStack Controller services

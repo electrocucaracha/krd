@@ -51,8 +51,8 @@ function update_repos {
     fi
 }
 
-# is_package_installed() - Function to tell if a package is installed
-function is_package_installed {
+# _is_package_installed() - Function to tell if a package is installed
+function _is_package_installed {
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
@@ -69,8 +69,8 @@ function is_package_installed {
     sudo "${CHECK_CMD}" "$@" &> /dev/null
 }
 
-# install_packages() - Install a list of packages
-function install_packages {
+# _install_packages() - Install a list of packages
+function _install_packages {
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
@@ -84,11 +84,11 @@ function install_packages {
     esac
 }
 
-# install_package() - Install specific package if doesn't exist
-function install_package {
+# _install_package() - Install specific package if doesn't exist
+function _install_package {
     local package=$1
 
-    if ! is_package_installed "$package"; then
+    if ! _is_package_installed "$package"; then
         echo "Installing $package..."
 
         # shellcheck disable=SC1091
@@ -108,39 +108,8 @@ function install_package {
                 PKG_MANAGER=$(command -v dnf || command -v yum)
                 sudo "$PKG_MANAGER" -y install "$package"
             ;;
-        esac
-    fi
-}
-
-# uninstall_packages() - Uninstall a list of packages
-function uninstall_packages {
-    # shellcheck disable=SC1091
-    source /etc/os-release || source /usr/lib/os-release
-    case ${ID,,} in
-        *suse)
-        ;;
-        ubuntu|debian)
-            sudo apt-get purge -y -qq "$@"
-        ;;
-        rhel|centos|fedora)
-        ;;
-    esac
-}
-
-# uninstall_package() - Uninstall specific package if exists
-function uninstall_package {
-    local package=$1
-
-    # shellcheck disable=SC1091
-    if is_package_installed "$package"; then
-        source /etc/os-release || source /usr/lib/os-release
-        case ${ID,,} in
-            *suse)
-            ;;
-            ubuntu|debian)
-                sudo apt-get purge -y -qq "$package"
-            ;;
-            rhel|centos|fedora)
+            clear-linux-os)
+                sudo swupd bundle-add "$package"
             ;;
         esac
     fi
@@ -151,8 +120,8 @@ function _get_version {
     grep "${1}_version:" "$krd_playbooks/krd-vars.yml" | awk -F ': ' '{print $2}'
 }
 
-# vercmp() - Function that compares two versions
-function vercmp {
+# _vercmp() - Function that compares two versions
+function _vercmp {
     local v1=$1
     local op=$2
     local v2=$3

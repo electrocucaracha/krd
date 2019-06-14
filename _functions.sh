@@ -32,12 +32,12 @@ function upgrade_k8s {
     kube_version=$(kubectl version --short | grep -e "Server" | awk -F ': ' '{print $2}')
     kubespray_version=$(_get_version kubespray)
 
-    if vercmp "${kube_version#*v}" '==' "${KRD_KUBE_VERSION#*v}"; then
+    if _vercmp "${kube_version#*v}" '==' "${KRD_KUBE_VERSION#*v}"; then
         echo "The kubespray instance has been deployed using the $kube_version version"
         return
     fi
 
-    if "$KRD_KUBESPRAY_VERSION" && vercmp "${kubespray_version#*v}" '<' "${KRD_KUBESPRAY_VERSION#*v}"; then
+    if "$KRD_KUBESPRAY_VERSION" && _vercmp "${kubespray_version#*v}" '<' "${KRD_KUBESPRAY_VERSION#*v}"; then
         sed -i "s/^kubespray_version: .*\$/kubespray_version: $kubespray_version/" "$krd_playbooks/krd-vars.yml"
         rm -rf $kubespray_folder
         _install_kubespray
