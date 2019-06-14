@@ -46,6 +46,7 @@ function upgrade_k8s {
     echo "$ansible_cmd $kubespray_folder/upgrade-cluster.yml"
     eval "$ansible_cmd $kubespray_folder/upgrade-cluster.yml" | tee "upgrade-cluster-kubernetes.log"
 
-    cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
+    sudo cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
+    sudo chown "$USER" "$HOME/.kube/config"
     sudo mv "$krd_inventory_folder/artifacts/kubectl" /usr/local/bin/kubectl
 }

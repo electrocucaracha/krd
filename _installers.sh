@@ -116,7 +116,8 @@ function install_k8s {
 
     # Configure kubectl
     mkdir -p "$HOME/.kube"
-    cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
+    sudo cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
+    sudo chown "$USER" "$HOME/.kube/config"
     sudo mv "$krd_inventory_folder/artifacts/kubectl" /usr/local/bin/kubectl
 }
 
@@ -303,8 +304,10 @@ function install_istio {
     if ! helm ls | grep -e istio-init; then
         helm install istio.io/istio-init --name istio-init --namespace istio-system
     fi
+    echo "Waiting for istio-init to start..."
     until [[ $(kubectl get crds | grep -c 'istio.io\|certmanager.k8s.io') -ge "53" ]];do
-        sleep 10
+        printf '.'
+        sleep 2
     done
     if ! helm ls | grep -e "istio "; then
         helm install istio.io/istio --name istio --namespace istio-system --set global.configValidation=false
