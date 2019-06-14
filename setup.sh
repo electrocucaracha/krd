@@ -194,6 +194,13 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
     sudo systemctl enable rpc-statd
     sudo systemctl start rpc-statd
 
+    if command -v firewall-cmd; then
+        for svc in nfs rpc-bind mountd; do
+            sudo firewall-cmd --permanent --add-service="${svc}"
+        done
+        sudo firewall-cmd --reload
+    fi
+
     case ${ID,,} in
         ubuntu|debian)
         kvm-ok
