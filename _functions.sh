@@ -37,9 +37,9 @@ function upgrade_k8s {
         return
     fi
 
-    if "$KRD_KUBESPRAY_VERSION" && _vercmp "${kubespray_version#*v}" '<' "${KRD_KUBESPRAY_VERSION#*v}"; then
-        sed -i "s/^kubespray_version: .*\$/kubespray_version: $kubespray_version/" "$krd_playbooks/krd-vars.yml"
-        rm -rf $kubespray_folder
+    if [ -n "${KRD_KUBESPRAY_VERSION+x}" ] && _vercmp "${kubespray_version#*v}" '<' "${KRD_KUBESPRAY_VERSION#*v}" ; then
+        sed -i "s/^kubespray_version: .*\$/kubespray_version: $KRD_KUBESPRAY_VERSION/" "$krd_playbooks/krd-vars.yml"
+        sudo rm -rf $kubespray_folder
         _install_kubespray
     fi
     sed -i "s/^kube_version: .*\$/kube_version: $KRD_KUBE_VERSION/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
