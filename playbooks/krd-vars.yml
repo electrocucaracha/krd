@@ -39,7 +39,7 @@ nfd_version: 175305b1ad73be7301ac94add475cec6fef797a9
 nfd_url: "https://github.com/kubernetes-incubator/node-feature-discovery"
 
 go_version: '1.11'
-kubespray_version: v2.10.3
+kubespray_version: v2.10.4
 kubectl_version: 1.14.1
 helm_client_version: 2.13.1
 istio_version: 1.1.7
