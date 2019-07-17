@@ -11,7 +11,7 @@
 set -o nounset
 set -o pipefail
 
-vagrant_version=2.2.4
+vagrant_version=2.2.5
 if ! vagrant version &>/dev/null; then
     enable_vagrant_install=true
 else
@@ -129,6 +129,19 @@ case ${ID,,} in
     INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install"
     packages+=(python-devel)
 
+    if ! command -v wget; then
+        $INSTALLER_CMD wget
+    fi
+
+    # Disable IPv6
+    if grep "all.disable_ipv6" /etc/sysctl.conf; then
+        echo "net.ipv6.conf.all.disable_ipv6 = 1" | sudo tee --append /etc/sysctl.conf
+    fi
+    if grep "default.disable_ipv6" /etc/sysctl.conf; then
+        echo "net.ipv6.conf.default.disable_ipv6 = 1" | sudo tee --append /etc/sysctl.conf
+    fi
+    sudo sysctl -p
+
     # Vagrant installation
     if [[ "${enable_vagrant_install+x}" = "x"  ]]; then
         wget -q https://releases.hashicorp.com/vagrant/$vagrant_version/vagrant_${vagrant_version}_x86_64.rpm
@@ -196,8 +209,9 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
 
     if command -v firewall-cmd; then
         for svc in nfs rpc-bind mountd; do
-            sudo firewall-cmd --permanent --add-service="${svc}"
+            sudo firewall-cmd --permanent --add-service="${svc}" --zone=trusted
         done
+        sudo firewall-cmd --set-default-zone=trusted
         sudo firewall-cmd --reload
     fi
 

@@ -49,7 +49,6 @@ File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_fi
 end
 
 distro = (ENV['KRD_DISTRO'] || :ubuntu).to_sym
-sync_type = (ENV['KRD_SYNC_TYPE'] || "rsync")
 puts "[INFO] Linux Distro: #{distro}"
 
 if ENV['no_proxy'] != nil or ENV['NO_PROXY']
@@ -71,8 +70,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider "libvirt"
   config.vm.provider "virtualbox"
 
-  config.vm.synced_folder './', '/vagrant', type: "#{sync_type}",
-      rsync__args: ["--verbose", "--archive", "--delete", "-z"]
+  config.vm.synced_folder './', '/vagrant'
   config.vm.provider 'virtualbox' do |v, override|
     override.vm.box =  box[:virtualbox][distro][:name]
     override.vm.box_version = box[:virtualbox][distro][:version]
