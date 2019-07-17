@@ -10,43 +10,6 @@
 
 - import_playbook: configure-krd.yml
 
-- hosts: kube-node
-  tasks:
-    - name: Load krd variables
-      include_vars:
-        file: krd-vars.yml
-    - name: clone NFD repo
-      git:
-        repo: "{{ nfd_url }}"
-        dest: "{{ nfd_dest }}"
-        version: "{{ nfd_version }}"
-        force: yes
-      when: nfd_source_type == "source"
-    - name: build NFD image
-      become: yes
-      make:
-        chdir: "{{ nfd_dest }}"
-    - name: get NDF image name
-      become: yes
-      shell: "docker images | grep kubernetes_incubator | awk '{printf(\"%s:%s\\n\", $1,$2)}'"
-      register: nfd_image
-    - name: replace NFD image name
-      lineinfile:
-        path: "{{ nfd_dest }}/node-feature-discovery-{{ item }}.json.template"
-        regexp: "\"image\": \"quay.io/kubernetes_incubator.*i"
-        line: "\"image\": \"{{ nfd_image.stdout }}\","
-      with_items:
-        - daemonset
-        - job
-    - name: copying rbac and daemonset files
-      fetch:
-        src: "{{ nfd_dest }}/{{ item }}"
-        dest: "/tmp/"
-        flat: yes
-      with_items:
-        - rbac.yaml
-        - node-feature-discovery-daemonset.json.template
-
 - hosts: localhost
   pre_tasks:
     - name: Load krd variables
@@ -56,13 +19,34 @@
       stat:
         path: /usr/local/bin/kubectl
       register: kubectl_lnk
-   roles:
-     - role: andrewrothstein.kubectl
-       kubectl_ver: "v{{ kubectl_version }}"
-       when: kubectl_lnk.stat.exists == false
+  roles:
+    - role: andrewrothstein.kubectl
+      kubectl_ver: "v{{ kubectl_version }}"
+      when: kubectl_lnk.stat.exists == false
   tasks:
-    - name: create service accounts
-      command: "/usr/local/bin/kubectl apply -f /tmp/{{ item }}"
+    - name: clone NFD repo
+      git:
+        repo: "{{ nfd_url }}"
+        dest: "{{ nfd_dest }}"
+        version: "{{ nfd_version }}"
+        force: yes
+      when: nfd_source_type == "source"
+    - name: getting binaries
+      block:
+      - name: download nfd tarball
+        get_url:
+          url: "{{ nfd_url }}"
+          dest: /tmp/nfd.tar.gz
+      - name: extract nfd source code
+        unarchive:
+          src: /tmp/nfd.tar.gz
+          dest: /tmp/
+          remote_src: yes
+      - name: rename extracted folder
+        command: "mv /tmp/node-feature-discovery-{{ nfd_version }}/ {{ nfd_dest }}/"
+      when: nfd_source_type == "tarball"
+    - name: create NFD daemonsets
+      command: "/usr/local/bin/kubectl apply -f {{ nfd_dest }}/{{ item }}"
       with_items:
-        - rbac.yaml
-        - node-feature-discovery-daemonset.json.template
+        - nfd-master.yaml.template
+        - nfd-worker-daemonset.yaml.template

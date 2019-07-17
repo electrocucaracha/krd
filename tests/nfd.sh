@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2018
+# Copyright (c) 2019
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
@@ -12,51 +12,24 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-rm -f "$HOME/*.yaml"
+# shellcheck source=tests/_common.sh
+source _common.sh
+# shellcheck source=tests/_functions.sh
+source _functions.sh
 
-pod_name=nfd-pod
+nfd_deployment_name=nfd-deployment
 
-cat << POD > "$HOME/$pod_name.yaml"
-apiVersion:
- v1
-kind: Pod
-metadata:
-  name: $pod_name
-  labels:
-    env: test
-spec:
-  containers:
-  - name: nginx
-    image: nginx
-nodeSelector:
-  node.alpha.kubernetes-incubator.io/nfd-network-SRIOV: true
-POD
+# Setup
+populate_nfd $nfd_deployment_name
+pushd /tmp/${nfd_deployment_name}
+setup "$nfd_deployment_name"
 
-if kubectl version &>/dev/null; then
-    labels=$(kubectl get nodes -o json | jq .items[].metadata.labels)
-
-    echo "$labels"
-    if [[ $labels != *"node.alpha.kubernetes-incubator.io"* ]]; then
-        exit 1
-    fi
-
-    kubectl delete pod "$pod_name" --ignore-not-found=true --now
-    while kubectl get pod $pod_name &>/dev/null; do
-        sleep 5
-    done
-    kubectl create -f "$HOME/$pod_name.yaml" --validate=false
-
-    for pod in $pod_name; do
-        status_phase=""
-        while [[ $status_phase != "Running" ]]; do
-            new_phase=$(kubectl get pods $pod | awk 'NR==2{print $3}')
-            if [[ "$new_phase" != "$status_phase" ]]; then
-                echo "$(date +%H:%M:%S) - $pod : $new_phase"
-                status_phase=$new_phase
-            fi
-            if [[ "$new_phase" == "Err"* ]]; then
-                exit 1
-            fi
-        done
-    done
+kubectl get nodes -o json -l node-role.kubernetes.io/master!= | jq .items[].metadata.labels
+labels=$(kubectl get nodes -o jsonpath="{.items[*].metadata.labels}" -l node-role.kubernetes.io/master!=)
+if [[ $labels != *"feature.node.kubernetes.io"* ]]; then
+    echo "There is no feature discovered in any worker node"
+    exit 1
 fi
+
+# Teardown
+teardown "$nfd_deployment_name"

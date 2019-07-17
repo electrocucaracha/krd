@@ -35,8 +35,10 @@ virtlet_url: "https://github.com/Mirantis/virtlet/releases/download/v{{ virtlet_
 
 nfd_dest: "{{ base_dest }}/nfd"
 nfd_source_type: "source"
-nfd_version: 175305b1ad73be7301ac94add475cec6fef797a9
+nfd_version: v0.4.0
 nfd_url: "https://github.com/kubernetes-incubator/node-feature-discovery"
+#nfd_source_type: "tarball"
+#nfd_url: "https://github.com/kubernetes-sigs/node-feature-discovery/archive/{{ nfd_version}}.tar.gz"
 
 go_version: '1.11'
 kubespray_version: v2.10.4

@@ -141,3 +141,39 @@ spec:
 DEPLOYMENT
     popd
 }
+
+# populate_nfd() - This function creates the content required for testing NFD feature
+function populate_nfd {
+    local nfd_deployment_name=${1}
+
+    mkdir -p "/tmp/${nfd_deployment_name}"
+    pushd "/tmp/${nfd_deployment_name}"
+
+    cat << DEPLOYMENT > "$nfd_deployment_name.yaml"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $nfd_deployment_name
+  labels:
+    app: nfd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfd
+  template:
+    metadata:
+      labels:
+        app: nfd
+    spec:
+      containers:
+      - name: $nfd_deployment_name
+        image: "busybox"
+        command: ["top"]
+        stdin: true
+        tty: true
+      nodeSelector:
+        feature.node.kubernetes.io/cpu-cpuid.ADX: "true"
+DEPLOYMENT
+    popd
+}

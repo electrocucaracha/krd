@@ -125,11 +125,11 @@ function install_k8s {
 function install_addons {
     echo "Installing Kubernetes AddOns"
     _install_ansible
-    verbose=""
-    if [[ "${KRD_DEBUG}" == "true" ]]; then
-        verbose="-vvv"
+    ansible_galaxy_cmd="sudo ansible-galaxy install"
+    if [ "${KRD_DEBUG:-false}" == "true" ]; then
+        ansible_galaxy_cmd+=" -vvv"
     fi
-    sudo ansible-galaxy install "$verbose" -r "$KRD_FOLDER/galaxy-requirements.yml" --ignore-errors
+    eval "${ansible_galaxy_cmd} -r $KRD_FOLDER/galaxy-requirements.yml --ignore-errors"
 
     for addon in ${KRD_ADDONS:-virtlet}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
