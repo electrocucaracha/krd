@@ -337,7 +337,7 @@ function install_knative {
 }
 
 
-# install_kiali() - Function taht installs Kiali and its dependencies
+# install_kiali() - Function that installs Kiali and its dependencies
 function install_kiali {
     kiali_version=$(_get_version kiali)
 
@@ -351,4 +351,14 @@ function install_kiali {
     export ISTIO_NAMESPACE=istio-system
 
     bash <(curl -L https://git.io/getLatestKialiOperator)
+}
+
+# install_harbor() - Function that installs Harbor Cloud Native registry project
+function install_harbor {
+    install_helm
+
+    helm repo add harbor https://helm.goharbor.io
+    helm repo update
+
+    helm install --name harbor harbor/harbor
 }
