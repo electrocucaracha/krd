@@ -27,7 +27,7 @@ function _install_python {
             package="python-minimal"
             ;;
         esac
-        install_package "$package"
+        _install_package "$package"
     fi
 }
 
@@ -127,6 +127,7 @@ function _install_kubespray {
 function install_k8s {
     _install_docker
     _install_ansible
+    _install_package unzip
     _install_kubespray
 
     echo "$ansible_cmd $kubespray_folder/cluster.yml"
@@ -135,7 +136,7 @@ function install_k8s {
     # Configure kubectl
     mkdir -p "$HOME/.kube"
     sudo cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
-    sudo chown "$USER" "$HOME/.kube/config"
+    sudo chown -R "$USER" "$HOME/.kube/"
     sudo mv "$krd_inventory_folder/artifacts/kubectl" /usr/local/bin/kubectl
 }
 
