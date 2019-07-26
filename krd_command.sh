@@ -11,8 +11,6 @@
 set -o errexit
 set -o pipefail
 
-# shellcheck source=_installers.sh
-source _installers.sh
 # shellcheck source=_functions.sh
 source _functions.sh
 
