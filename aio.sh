@@ -26,6 +26,27 @@ if ! sudo -n "true"; then
     exit 1
 fi
 
+# shellcheck disable=SC1091
+source /etc/os-release || source /usr/lib/os-release
+case ${ID,,} in
+    *suse)
+    INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends"
+    sudo zypper -n ref
+    ;;
+
+    ubuntu|debian)
+    INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install"
+    sudo apt-get update
+    ;;
+
+    rhel|centos|fedora)
+    PKG_MANAGER=$(command -v dnf || command -v yum)
+    INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install"
+    sudo "$PKG_MANAGER" updateinfo
+    ;;
+esac
+${INSTALLER_CMD} git
+
 # Setup SSH keys
 rm -f ~/.ssh/id_rsa*
 sudo mkdir -p /root/.ssh/
