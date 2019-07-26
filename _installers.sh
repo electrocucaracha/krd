@@ -13,10 +13,28 @@ set -o pipefail
 
 source _commons.sh
 
+# _install_python() - Function that installs python
+function _install_python {
+    if ! command -v python; then
+        package=""
+        # shellcheck disable=SC1091
+        source /etc/os-release || source /usr/lib/os-release
+        case ${ID,,} in
+            ubuntu|debian)
+            package="python-minimal"
+            ;;
+            rhel|centos|fedora)
+            package="python-minimal"
+            ;;
+        esac
+        install_package "$package"
+    fi
+}
+
 # _install_pip() - Install Python Package Manager
 function _install_pip {
-    if ! pip --version &>/dev/null; then
-        _install_package python-dev
+    if ! command -v pip; then
+        _install_python
         curl -sL https://bootstrap.pypa.io/get-pip.py | sudo python
     else
         sudo -E pip install --upgrade pip
@@ -27,7 +45,7 @@ function _install_pip {
 function _install_ansible {
     sudo mkdir -p /etc/ansible/
     sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
-    if ! ansible --version &>/dev/null; then
+    if ! command -v ansible; then
         _install_pip
         sudo -E pip install ansible
     fi
@@ -35,7 +53,7 @@ function _install_ansible {
 
 # _install_docker() - Download and install docker-engine
 function _install_docker {
-    if docker version &>/dev/null; then
+    if command -v docker; then
         return
     fi
 
