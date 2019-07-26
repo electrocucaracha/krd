@@ -92,6 +92,9 @@ echo "Enabling nested-virtualization"
 sudo ./node.sh
 
 echo "Deploying KRD project"
+if [ -n "${KRD_ACTIONS_DECLARE:-}" ]; then
+    eval "${KRD_ACTIONS_DECLARE}"
+fi
 for krd_action in "${KRD_ACTIONS[@]:-install_k8s}"; do
     ./krd_command.sh -a "$krd_action" | tee "krd_${krd_action}.log"
 done
