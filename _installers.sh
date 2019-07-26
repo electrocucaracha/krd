@@ -402,3 +402,14 @@ function install_harbor {
 
     helm install --name harbor harbor/harbor
 }
+
+# install_docker_compose() - Installs docker compose python module
+function install_docker_compose {
+    if ! command -v docker-compose; then
+        echo "Installing docker-compose tool..."
+
+        _install_docker
+        _install_pip
+        sudo -E pip install docker-compose==1.24.0
+    fi
+}
