@@ -233,7 +233,7 @@ function install_helm {
         return
     fi
 
-    curl -L https://git.io/get_helm.sh | bash
+    curl -L https://git.io/get_helm.sh | HELM_INSTALL_DIR=/usr/bin bash
     sudo useradd helm
     sudo sudo mkdir -p /home/helm/.kube
     sudo cp ~/.kube/config /home/helm/.kube/
@@ -248,7 +248,7 @@ After=network.target
 [Service]
 User=helm
 Restart=always
-ExecStart=/usr/local/bin/helm serve
+ExecStart=/usr/bin/helm serve
 
 [Install]
 WantedBy=multi-user.target
