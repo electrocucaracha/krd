@@ -11,6 +11,10 @@
 set -o nounset
 set -o pipefail
 
+if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
+    set -o xtrace
+fi
+
 # usage() - Prints the usage of the program
 function usage {
     cat <<EOF
