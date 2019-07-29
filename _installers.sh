@@ -161,8 +161,8 @@ function install_k8s {
     sudo mv "$krd_inventory_folder/artifacts/kubectl" /usr/local/bin/kubectl
 }
 
-# install_addons() - Install Kubenertes AddOns
-function install_addons {
+# install_k8s_addons() - Install Kubenertes AddOns
+function install_k8s_addons {
     echo "Installing Kubernetes AddOns"
     _install_ansible
     ansible_galaxy_cmd="sudo ansible-galaxy install"

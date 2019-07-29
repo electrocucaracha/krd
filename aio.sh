@@ -15,6 +15,9 @@ set -o pipefail
 if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
     set -o xtrace
 fi
+if [ -n "${KRD_ACTIONS_DECLARE:-}" ]; then
+    eval "${KRD_ACTIONS_DECLARE}"
+fi
 
 if ! sudo -n "true"; then
     echo ""
@@ -47,46 +50,58 @@ case ${ID,,} in
 esac
 ${INSTALLER_CMD} git
 
-# Setup SSH keys
-rm -f ~/.ssh/id_rsa*
-sudo mkdir -p /root/.ssh/
-echo -e "\n\n\n" | ssh-keygen -t rsa -N ""
-sudo cp ~/.ssh/id_rsa /root/.ssh/id_rsa
-< ~/.ssh/id_rsa.pub tee --append  ~/.ssh/authorized_keys | sudo tee --append /root/.ssh/authorized_keys
-chmod og-wx ~/.ssh/authorized_keys
-
 echo "Cloning and configuring KRD project..."
 if [ ! -d "${KRD_FOLDER:-/opt/krd}" ]; then
     sudo git clone --depth 1 https://github.com/electrocucaracha/krd "${KRD_FOLDER:-/opt/krd}"
     sudo chown -R "$USER" "${KRD_FOLDER:-/opt/krd}"
 fi
 cd /opt/krd || exit
-sudo tee inventory/hosts.ini << EOL
+
+is_k8s_action="false"
+for value in "${KRD_ACTIONS[@]}"; do
+    if [[ "$value" == *k8s* ]]; then
+        is_k8s_action="true"
+        break
+    fi
+done
+
+if [ "$is_k8s_action" == "true" ]; then
+    # Setup SSH keys
+    rm -f ~/.ssh/id_rsa*
+    sudo mkdir -p /root/.ssh/
+    echo -e "\n\n\n" | ssh-keygen -t rsa -N ""
+    sudo cp ~/.ssh/id_rsa /root/.ssh/id_rsa
+    < ~/.ssh/id_rsa.pub tee --append  ~/.ssh/authorized_keys | sudo tee --append /root/.ssh/authorized_keys
+    chmod og-wx ~/.ssh/authorized_keys
+
+    hostname=$(hostname)
+    sudo tee inventory/hosts.ini << EOL
 [all]
-localhost
+$hostname
 
 [kube-master]
-localhost
+$hostname
 
 [kube-node]
-localhost
+$hostname
 
 [etcd]
-localhost
+$hostname
 
 [ovn-central]
-localhost
+$hostname
 
 [ovn-controller]
-localhost
+$hostname
 
 [virtlet]
-localhost
+$hostname
 
 [k8s-cluster:children]
 kube-node
 kube-master
 EOL
+fi
 
 if [ "${KRD_ENABLE_NESTED_VIRT:-false}" == "true" ]; then
     echo "Enabling nested-virtualization"
@@ -94,9 +109,6 @@ if [ "${KRD_ENABLE_NESTED_VIRT:-false}" == "true" ]; then
 fi
 
 echo "Deploying KRD project"
-if [ -n "${KRD_ACTIONS_DECLARE:-}" ]; then
-    eval "${KRD_ACTIONS_DECLARE}"
-fi
 for krd_action in "${KRD_ACTIONS[@]:-install_k8s}"; do
     ./krd_command.sh -a "$krd_action" | tee "krd_${krd_action}.log"
 done
