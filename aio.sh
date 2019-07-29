@@ -88,8 +88,10 @@ kube-node
 kube-master
 EOL
 
-echo "Enabling nested-virtualization"
-sudo ./node.sh
+if [ "${KRD_ENABLE_NESTED_VIRT:-false}" == "true" ]; then
+    echo "Enabling nested-virtualization"
+    sudo ./node.sh
+fi
 
 echo "Deploying KRD project"
 if [ -n "${KRD_ACTIONS_DECLARE:-}" ]; then
