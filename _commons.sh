@@ -23,7 +23,6 @@ if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
     ansible_cmd+="-vvv "
 fi
 ansible_cmd+="-i $krd_inventory "
-export verbose
 
 # update_repos() - Function that updates linux repositories
 function update_repos {
@@ -44,7 +43,7 @@ function update_repos {
             UPDATE_CMD='swupd update'
         ;;
     esac
-    if [[ "$KRD_DEBUG" == "true" ]]; then
+    if [ "${KRD_DEBUG:-false}" == "true" ]; then
         eval "sudo ${UPDATE_CMD}"
     else
         eval "sudo ${UPDATE_CMD} > /dev/null"
@@ -98,7 +97,7 @@ function _install_package {
                 sudo zypper install -y "$package"
             ;;
             ubuntu|debian)
-                if [[ "$KRD_DEBUG" == "true" ]]; then
+                if [ "${KRD_DEBUG:-false}" == "true" ]; then
                     sudo apt-get install -y "$package"
                 else
                     sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 "$package"
@@ -157,3 +156,4 @@ function _vercmp {
             ;;
     esac
 }
+

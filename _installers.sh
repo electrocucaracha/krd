@@ -124,10 +124,8 @@ function _install_kubespray {
         popd
 
         rm -f "$krd_inventory_folder/group_vars/all.yml" 2> /dev/null
-        verbose=""
-        if [[ "${KRD_DEBUG}" == "true" ]]; then
+        if [ "${KRD_DEBUG:-false}" == "true" ]; then
             echo "kube_log_level: 5" | tee "$krd_inventory_folder/group_vars/all.yml"
-            verbose="-vvv"
         else
             echo "kube_log_level: 2" | tee "$krd_inventory_folder/group_vars/all.yml"
         fi

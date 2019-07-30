@@ -12,7 +12,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
+if [ "${KRD_DEBUG:-false}" == "true" ]; then
     set -o xtrace
 fi
 if [ -n "${KRD_ACTIONS_DECLARE:-}" ]; then
