@@ -323,7 +323,6 @@ function install_openstack {
 function install_istio {
     istio_version=$(_get_version istio)
 
-    install_helm
 
     if command -v istioctl; then
         return
@@ -336,9 +335,12 @@ function install_istio {
     popd
     rm -rf "./istio-$istio_version/"
 
+    install_helm
     kubectl apply -f "https://raw.githubusercontent.com/istio/istio/$istio_version/install/kubernetes/helm/helm-service-account.yaml"
-    helm repo add istio.io "https://storage.googleapis.com/istio-release/releases/$istio_version/charts/"
-    helm repo update
+    if ! helm repo list | grep -e istio.io; then
+        helm repo add istio.io "https://storage.googleapis.com/istio-release/releases/$istio_version/charts/"
+        helm repo update
+    fi
     if ! helm ls | grep -e istio-init; then
         helm install istio.io/istio-init --name istio-init --namespace istio-system
     fi
@@ -395,10 +397,12 @@ function install_kiali {
 function install_harbor {
     install_helm
 
-    helm repo add harbor https://helm.goharbor.io
-    helm repo update
-
-    helm install --name harbor harbor/harbor
+    if ! helm repo list | grep -e harbor; then
+        helm repo add harbor https://helm.goharbor.io
+    fi
+    if ! helm ls | grep -e harbor; then
+        helm install --name harbor harbor/harbor
+    fi
 }
 
 # install_docker_compose() - Installs docker compose python module
