@@ -405,6 +405,21 @@ function install_harbor {
     fi
 }
 
+# install_rook() - Function that install Rook Ceph operator
+function install_rook {
+    install_helm
+
+    if ! helm repo list | grep -e rook-release; then
+        helm repo add rook-release https://charts.rook.io/release
+    fi
+    if ! helm ls | grep -e rook-ceph; then
+        helm install --namespace rook-ceph --name rook-ceph rook-release/rook-ceph
+        for file in common operator; do
+            kubectl apply -f "https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/$file.yaml"
+        done
+    fi
+}
+
 # install_docker_compose() - Installs docker compose python module
 function install_docker_compose {
     if ! command -v docker-compose; then
