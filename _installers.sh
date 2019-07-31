@@ -51,8 +51,8 @@ function _install_ansible {
     fi
 }
 
-# _install_docker() - Download and install docker-engine
-function _install_docker {
+# install_docker() - Download and install docker-engine
+function install_docker {
     local chameleonsocks_filename=chameleonsocks.sh
 
     if command -v docker; then
@@ -96,8 +96,6 @@ function _install_docker {
         fi
         echo "${config::-1} } } }" | tee "$HOME/.docker/config.json"
         sudo cp "$HOME/.docker/config.json" /root/.docker/config.json
-        sudo systemctl daemon-reload
-        sudo systemctl restart docker
     elif [ -n "${SOCKS_PROXY:-}" ]; then
         wget "https://raw.githubusercontent.com/crops/chameleonsocks/master/$chameleonsocks_filename"
         chmod 755 "$chameleonsocks_filename"
@@ -106,6 +104,14 @@ function _install_docker {
         sudo PROXY="${socks_tmp%:*}" PORT="${socks_tmp#*:}" ./$chameleonsocks_filename --install
         rm $chameleonsocks_filename
     fi
+    sudo systemctl daemon-reload
+    sudo systemctl restart docker
+
+    printf "Waiting for docker service..."
+    until sudo docker info; do
+        printf "."
+        sleep 2
+    done
 }
 
 # _install_kubespray() - Donwload Kubespray binaries
@@ -144,7 +150,7 @@ function _install_kubespray {
 
 # install_k8s() - Install Kubernetes using kubespray tool
 function install_k8s {
-    _install_docker
+    install_docker
     _install_ansible
     _install_package unzip
     _install_kubespray
@@ -425,7 +431,7 @@ function install_docker_compose {
     if ! command -v docker-compose; then
         echo "Installing docker-compose tool..."
 
-        _install_docker
+        install_docker
         _install_pip
         sudo -E pip install docker-compose==1.24.0
     fi
