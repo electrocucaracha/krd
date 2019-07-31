@@ -457,3 +457,48 @@ function install_docker_compose {
         sudo -E pip install docker-compose==1.24.0
     fi
 }
+
+# install_matchbox() - Install Matchbox service
+function install_matchbox {
+    local version="v0.8.0"
+    local tarball="matchbox-${version}-linux-amd64.tar.gz"
+
+    _install_package wget
+    wget "https://github.com/poseidon/matchbox/releases/download/$version/$tarball"
+    sudo tar -C /tmp -xzf "$tarball"
+    rm "$tarball"
+    sudo mv "/tmp/${tarball%.tar.gz}/contrib/systemd/matchbox-local.service" /etc/systemd/system/matchbox.service
+    sudo mv "/tmp/${tarball%.tar.gz}/matchbox" /usr/local/bin
+
+    sudo useradd -U matchbox
+    sudo mkdir -p /var/lib/matchbox/assets
+    sudo chown -R matchbox:matchbox /var/lib/matchbox
+
+    sudo systemctl enable matchbox.service
+    sudo systemctl start matchbox.service
+}
+
+function _install_terraform {
+    local version="0.12.6"
+    local tarball="terraform_${version}_linux_amd64.zip"
+
+    _install_package wget
+    wget "https://releases.hashicorp.com/terraform/$version/$tarball"
+    unzip "$tarball"
+    sudo mv terraform /usr/local/bin
+    rm "$tarball"
+    mkdir -p ~/.terraform.d/plugins
+}
+
+function _install_terraform_matchbox_provider {
+    local version="v0.2.3"
+    local prefix="terraform-provider-matchbox"
+    local tarball="${prefix}-${version}-linux-amd64.tar.gz"
+
+    _install_terraform
+    _install_package wget
+    wget "https://github.com/poseidon/$prefix/releases/download/$version/$tarball"
+    sudo tar -C /tmp -xzf "$tarball"
+    rm "$tarball"
+    sudo mv "/tmp/${tarball%.tar.gz}/$prefix" ~/.terraform.d/plugins/"${prefix}_${version}"
+}
