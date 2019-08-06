@@ -157,7 +157,10 @@ function _install_kubespray {
         else
             echo "kube_log_level: 2" | tee "$krd_inventory_folder/group_vars/all.yml"
         fi
-        echo "kubeadm_enabled: true" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+        {
+        echo "override_system_hostname: false"
+        echo "kubeadm_enabled: true"
+        } >> "$krd_inventory_folder//group_vars/all.yml"
         if [ -n "${HTTP_PROXY}" ]; then
             echo "http_proxy: \"$HTTP_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
         fi
@@ -171,7 +174,7 @@ function _install_kubespray {
             {
             echo "download_container: true"
             echo "skip_downloads: false"
-            } >> "$krd_inventory_folder/inventory/group_vars/all.yml"
+            } >> "$krd_inventory_folder/group_vars/all.yml"
             sed -i 's/^download_run_once: .*$/download_run_once: false/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^download_localhost: .*$/download_localhost: true/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^etcd_deployment_type: .*$/etcd_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
