@@ -16,6 +16,9 @@ set -o pipefail
 source _common.sh
 # shellcheck source=tests/_functions.sh
 source _functions.sh
+pushd ..
+source _installers.sh
+popd
 
 nfd_deployment_name=nfd-deployment
 
@@ -24,6 +27,8 @@ populate_nfd $nfd_deployment_name
 pushd /tmp/${nfd_deployment_name}
 setup "$nfd_deployment_name"
 
+_install_pip
+sudo -E pip install jq
 kubectl get nodes -o json -l node-role.kubernetes.io/master!= | jq .items[].metadata.labels
 labels=$(kubectl get nodes -o jsonpath="{.items[*].metadata.labels}" -l node-role.kubernetes.io/master!=)
 if [[ $labels != *"feature.node.kubernetes.io"* ]]; then
