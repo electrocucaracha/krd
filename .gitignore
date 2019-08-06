@@ -1,12 +1,10 @@
 .vagrant/
 .tox/
-inventory/hosts.ini
-inventory/group_vars/all.yml
+inventory/*
 *.retry
 .*.swp
 *.log
 config/pdf.yml
 *.vdi
 docs/build/
-inventory/artifacts/
 roles/

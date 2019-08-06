@@ -61,6 +61,7 @@ instruction shows how to upgrade the existing version to *v1.14.3*:
 | KRD_FOLDER             | /opt/krd    | KRD source code destination folder                                    |
 | KRD_ACTIONS            | install_k8s | KRD actions to be installed during the All-in-One execution           |
 | KRD_ENABLE_NESTED_VIRT | false       | Enable Nested-Virtualization for host-passthrough CPU capabilities    |
+| KRD_CONTAINER_RUNTIME  | docker      | Specifies the Container Runtime to be used for deploying kubernetes   |
 
 ## License
 

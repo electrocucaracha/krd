@@ -150,21 +150,53 @@ function _install_kubespray {
         make mitogen
         popd
 
-        rm -f "$krd_inventory_folder/group_vars/all.yml" 2> /dev/null
+        rm -R "$krd_inventory_folder"/group_vars/*
+        cp "$KRD_FOLDER/k8s-cluster.yml" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         if [ "${KRD_DEBUG:-false}" == "true" ]; then
             echo "kube_log_level: 5" | tee "$krd_inventory_folder/group_vars/all.yml"
         else
             echo "kube_log_level: 2" | tee "$krd_inventory_folder/group_vars/all.yml"
         fi
         echo "kubeadm_enabled: true" | tee --append "$krd_inventory_folder/group_vars/all.yml"
-        if [[ -n "${HTTP_PROXY}" ]]; then
+        if [ -n "${HTTP_PROXY}" ]; then
             echo "http_proxy: \"$HTTP_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
         fi
-        if [[ -n "${HTTPS_PROXY}" ]]; then
+        if [ -n "${HTTPS_PROXY}" ]; then
             echo "https_proxy: \"$HTTPS_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
         fi
-        if [[ -n "${NO_PROXY}" ]]; then
+        if [ -n "${NO_PROXY}" ]; then
             echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+        fi
+        if [ -n "${KRD_CONTAINER_RUNTIME}" ] && [ "${KRD_CONTAINER_RUNTIME}" != "docker" ]; then
+            {
+            echo "download_container: true"
+            echo "skip_downloads: false"
+            } >> "$krd_inventory_folder/inventory/group_vars/all.yml"
+            sed -i 's/^download_run_once: .*$/download_run_once: false/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            sed -i 's/^download_localhost: .*$/download_localhost: true/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            sed -i 's/^etcd_deployment_type: .*$/etcd_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            sed -i 's/^kubelet_deployment_type: .*$/kubelet_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            sed -i "s/^container_manager: .*$/container_manager: ${KRD_CONTAINER_RUNTIME}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            # TODO: https://github.com/kubernetes-sigs/kubespray/issues/4737
+            sed -i 's/^kube_version: .*$/kube_version: v1.13.5/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            if [ "${KRD_CONTAINER_RUNTIME}" == "crio" ]; then
+                _install_package wget
+                wget -O $kubespray_folder/roles/container-engine/cri-o/templates/crio.conf.j2 https://raw.githubusercontent.com/kubernetes-sigs/kubespray/2db289811261d90cdb335307a3ff43785fdca45a/roles/container-engine/cri-o/templates/crio.conf.j2
+                # (TODO): https://github.com/kubernetes-sigs/kubespray/pull/4607
+                sudo mkdir -p /etc/systemd/system/crio.service.d/
+                if [ -n "$HTTP_PROXY" ]; then
+                    echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/http-proxy.conf
+                    echo "Environment=\"HTTP_PROXY=$HTTP_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/http-proxy.conf
+                fi
+                if [ -n "$HTTPS_PROXY" ]; then
+                    echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/https-proxy.conf
+                    echo "Environment=\"HTTPS_PROXY=$HTTPS_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/https-proxy.conf
+                fi
+                if [ -n "$NO_PROXY" ]; then
+                    echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/no-proxy.conf
+                    echo "Environment=\"NO_PROXY=$NO_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/no-proxy.conf
+                fi
+            fi
         fi
     fi
 }
