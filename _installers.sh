@@ -150,7 +150,8 @@ function _install_kubespray {
         make mitogen
         popd
 
-        rm -R "$krd_inventory_folder"/group_vars/*
+        rm -rf "$krd_inventory_folder"/group_vars/
+        mkdir -p "$krd_inventory_folder/group_vars/"
         cp "$KRD_FOLDER/k8s-cluster.yml" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         if [ "${KRD_DEBUG:-false}" == "true" ]; then
             echo "kube_log_level: 5" | tee "$krd_inventory_folder/group_vars/all.yml"
