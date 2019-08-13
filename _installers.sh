@@ -538,3 +538,28 @@ function _install_terraform_matchbox_provider {
     rm "$tarball"
     sudo mv "/tmp/${tarball%.tar.gz}/$prefix" ~/.terraform.d/plugins/"${prefix}_${version}"
 }
+
+# install_octant() - Function that installs Octant which is a tool for developers to understand how applications run on a Kubernetes cluster
+function install_octant {
+    local version="0.5.1"
+    local filename="octant_${version}_Linux-64bit"
+
+    if command -v octant; then
+        return
+    fi
+
+    _install_package wget
+    # shellcheck disable=SC1091
+    source /etc/os-release || source /usr/lib/os-release
+    case ${ID,,} in
+        ubuntu|debian)
+        wget "https://github.com/vmware/octant/releases/download/v$version/$filename.deb"
+        sudo dpkg -i "$filename.deb"
+        ;;
+        rhel|centos|fedora)
+        wget "https://github.com/vmware/octant/releases/download/v$version/$filename.rpm"
+        sudo rpm -i "$filename.rpm"
+        ;;
+    esac
+    rm "$filename".*
+}
