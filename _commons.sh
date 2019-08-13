@@ -142,7 +142,9 @@ function _vercmp {
 }
 
 # Configuration values
-_install_package git
+if ! command -v git; then
+    _install_package git
+fi
 KRD_FOLDER="$(git rev-parse --show-toplevel)"
 export KRD_FOLDER
 
