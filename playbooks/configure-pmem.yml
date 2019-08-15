@@ -1,0 +1,72 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2018
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- hosts: localhost
+  pre_tasks:
+    - name: Load krd variables
+      include_vars:
+        file: krd-vars.yml
+    - name: check if kubeclt was installed
+      stat:
+        path: /usr/local/bin/kubectl
+      register: kubectl_lnk
+  roles:
+    - role: andrewrothstein.kubectl
+      kubectl_ver: "v{{ kubectl_version }}"
+      when: kubectl_lnk.stat.exists == false
+    - role: andrewrothstein.go
+      go_ver: "{{ go_version }}"
+
+- hosts: all
+  gather_facts: true
+  tasks:
+    - name: check if pmem device exists
+      stat:
+        path: /dev/pmem0
+      register: pmem_dev_check
+    - name: register PMEM server
+      command: "/usr/local/bin/kubectl label node {{ ansible_hostname }} storage=pmem --overwrite"
+      when: pmem_dev_check.stat.exists
+      delegate_to: localhost
+
+- hosts: localhost
+  tasks:
+    - name: Load distribution variables
+      include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "{{ ansible_os_family }}.yml"
+    - name: install CloudFlare's PKI/TLS toolkit
+      command: "/usr/local/go/bin/go get -u github.com/cloudflare/cfssl/cmd/..."
+    - name: move CloudFlare's PKI/TLS toolkit binaries to PATH
+      command: "mv {{ ansible_env.HOME }}/go/bin/{{ item }} /usr/local/bin/"
+      become: yes
+      with_items:
+        - cfssl
+        - cfssljson
+    - name: register PMEM server
+      shell: "curl -sL https://raw.githubusercontent.com/intel/pmem-csi/devel/test/setup-ca-kubernetes.sh  | sh"
+    - name: install JQ parser
+      package:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ jq_pkgs }}"
+      become: yes
+    - name: get kubernetes version
+      shell: kubectl version -o json | jq -r '.serverVersion| "\(.major).\(.minor)"'
+      register: kube_version
+    - name: deploy Pmem CSI controller 
+      command: "/usr/local/bin/kubectl apply -f https://raw.githubusercontent.com/intel/pmem-csi/devel/deploy/kubernetes-{{ kube_version.stdout }}/pmem-csi-lvm.yaml"
+    - name: deploy Pmem CSI controller 
+      command: "/usr/local/bin/kubectl apply -f https://raw.githubusercontent.com/intel/pmem-csi/devel/deploy/common/pmem-{{ item }}.yaml"
+      with_items:
+        - storageclass-ext4
+        - storageclass-xfs
+      ignore_errors: True

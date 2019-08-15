@@ -17,6 +17,7 @@ or Virtual Machines.
 | Multus         | Provides Multiple Network support in a pod    |                                   | Tested      |
 | NFD            | Node feature discovery                        | [configure-nfd.yml][4]            | Tested      |
 | Istio          | Service Mesh platform                         |                                   | Tested      |
+| PMEM           | Persistent Memory CSI                         | [configure-pmem.yml][6]           | Implemented |
 
 ## Deployment
 
@@ -72,3 +73,4 @@ Apache-2.0
 [3]: playbooks/configure-virtlet.yml
 [4]: playbooks/configure-nfd.yml
 [5]: https://www.vagrantup.com/
+[6]: playbooks/configure-pmem.yml

@@ -120,6 +120,16 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.provider 'libvirt' do |v, override|
         v.memory = node['memory']
         v.cpus = node['cpus']
+        if node.has_key? "pmem" and node['pmem'] == true
+          v.qemuargs :value => '-machine'
+          v.qemuargs :value => 'pc,accel=kvm,nvdimm=on'
+          v.qemuargs :value => '-m'
+          v.qemuargs :value => '2G,slots=2,maxmem=34G'
+          v.qemuargs :value => '-object'
+          v.qemuargs :value => 'memory-backend-file,id=mem1,share=on,mem-path=/dev/shm,size=32768M'
+          v.qemuargs :value => '-device'
+          v.qemuargs :value => 'nvdimm,id=nvdimm1,memdev=mem1,label-size=2097152'
+        end
         nodeconfig.vm.provision 'shell' do |sh|
           sh.path =  "node.sh"
           if node.has_key? "volumes"

@@ -43,6 +43,7 @@
     - name: public-net
       ip: "10.10.16.6"
   memory: 32768
+  pmem: true
   cpus: 16
   volumes:
     - name: sda
@@ -57,6 +58,7 @@
     - name: public-net
       ip: "10.10.16.7"
   memory: 8192
+  pmem: true
   cpus: 4
   roles:
     - kube-node

@@ -25,3 +25,5 @@ qat_driver_pkgs:
   - g++
   - pkg-config
   - libssl-dev
+jq_pkgs:
+  - jq

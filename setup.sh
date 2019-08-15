@@ -201,6 +201,10 @@ fi
 if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
     vagrant plugin install vagrant-libvirt
     sudo usermod -a -G $libvirt_group "$USER" # This might require to reload user's group assigments
+
+    # Permissions required to enable Pmem in QEMU
+    sudo sed -i "s/#security_driver .*/security_driver = \"none\"/" /etc/libvirt/qemu.conf
+    sudo sed -i "s|  /{dev,run}/shm .*|  /{dev,run}/shm rw,|"  /etc/apparmor.d/abstractions/libvirt-qemu
     sudo systemctl restart libvirtd
 
     # Start statd service to prevent NFS lock errors
