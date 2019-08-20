@@ -41,6 +41,26 @@ the following instructions:
 
 ![Provisioning](docs/src/img/provisioning.png)
 
+## Install KRD actions
+
+The [KRD command script](krd_command.sh) provides an easy way to
+install complementary Kubernetes projects to an existing cluster.
+Those projects are grouped in KRD actions and it's possible to get
+the current list of current supported actions executing the following
+instruction:
+
+    $ ./krd_command.sh -h
+
+The actions which require the execution of a distributed commands were
+implemented through the **install_k8s_addons** KRD action. This action
+uses the *KRD_ADDONS* environment variable to specify the Ansible
+playbook to be executed.
+
+    $ KRD_ADDONS=nfd ./krd_command.sh -a install_k8s_addons
+
+*Note:* Some KRD AddOns have a corresponding validation script in the
+[tests](tests) folder.
+
 ## Day-2 Operations
 
 The functions defined in this project covers the life-cycle of a
