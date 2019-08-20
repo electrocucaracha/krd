@@ -480,6 +480,7 @@ function install_rook {
         for file in common operator; do
             kubectl apply -f "https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/$file.yaml"
         done
+        kubectl apply -f https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/flex/storageclass.yaml
     fi
 }
 
