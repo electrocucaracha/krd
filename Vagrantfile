@@ -11,16 +11,16 @@
 
 box = {
   :virtualbox => {
-    :ubuntu => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180708.0.0' },
-    :centos => { :name => 'generic/centos7', :version=> '1.9.2' },
-    :opensuse => { :name => 'opensuse/openSUSE-42.1-x86_64', :version=> '1.0.1' },
-    :clearlinux => { :name => 'AntonioMeireles/ClearLinux', :version=> '28510' }
+    "ubuntu" => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180708.0.0' },
+    "centos" => { :name => 'generic/centos7', :version=> '1.9.2' },
+    "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20190815' },
+    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '28510' }
   },
   :libvirt => {
-    :ubuntu => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0' },
-    :centos => { :name => 'centos/7', :version=> '1901.01' },
-    :opensuse => { :name => 'opensuse/openSUSE-42.1-x86_64', :version=> '1.0.0' },
-    :clearlinux => { :name => 'AntonioMeireles/ClearLinux', :version=> '28510' }
+    "ubuntu" => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0' },
+    "centos" => { :name => 'centos/7', :version=> '1901.01' },
+    "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20190815' },
+    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '28510' }
   }
 }
 
@@ -48,9 +48,6 @@ File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_fi
   inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
 end
 
-distro = (ENV['KRD_DISTRO'] || :ubuntu).to_sym
-puts "[INFO] Linux Distro: #{distro}"
-
 if ENV['no_proxy'] != nil or ENV['NO_PROXY']
   $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
   nodes.each do |node|
@@ -70,21 +67,13 @@ Vagrant.configure("2") do |config|
   config.vm.provider "libvirt"
   config.vm.provider "virtualbox"
 
-  config.vm.synced_folder './', '/vagrant'
-  config.vm.provider 'virtualbox' do |v, override|
-    override.vm.box =  box[:virtualbox][distro][:name]
-    override.vm.box_version = box[:virtualbox][distro][:version]
-  end
-  config.vm.provider 'libvirt' do |v, override|
-    override.vm.box =  box[:libvirt][distro][:name]
-    override.vm.box_version = box[:libvirt][distro][:version]
-    v.nested = true
-    v.cpu_mode = 'host-passthrough'
+  config.vm.provider 'libvirt' do |v|
     v.management_network_address = "192.168.121.0/27"
     v.management_network_name = "krd-mgmt-net"
     v.random_hostname = true
   end
   config.ssh.insert_key = false
+  config.vm.synced_folder './', '/vagrant'
 
   if ENV['http_proxy'] != nil and ENV['https_proxy'] != nil
     if Vagrant.has_plugin?('vagrant-proxyconf')
@@ -104,9 +93,15 @@ Vagrant.configure("2") do |config|
             libvirt__network_name: network['name']
         end
       end
+      [:virtualbox, :libvirt].each do |provider|
+        nodeconfig.vm.provider provider do |p, override|
+          p.cpus = node['cpus']
+          p.memory = node['memory']
+        end
+      end
       nodeconfig.vm.provider 'virtualbox' do |v, override|
-        v.customize ["modifyvm", :id, "--memory", node['memory']]
-        v.customize ["modifyvm", :id, "--cpus", node['cpus']]
+        override.vm.box =  box[:virtualbox][node['os']][:name]
+        override.vm.box_version = box[:virtualbox][node['os']][:version]
         if node.has_key? "volumes"
           node['volumes'].each do |volume|
             $volume_file = "#{node['name']}-#{volume['name']}.vdi"
@@ -118,8 +113,10 @@ Vagrant.configure("2") do |config|
         end
       end # virtualbox
       nodeconfig.vm.provider 'libvirt' do |v, override|
-        v.memory = node['memory']
-        v.cpus = node['cpus']
+        override.vm.box =  box[:libvirt][node['os']][:name]
+        override.vm.box_version = box[:libvirt][node['os']][:version]
+        v.nested = true
+        v.cpu_mode = 'host-passthrough'
         if node.has_key? "pmem" and node['pmem'] == true
           v.qemuargs :value => '-machine'
           v.qemuargs :value => 'pc,accel=kvm,nvdimm=on'
@@ -155,6 +152,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "undercloud"
+    installer.vm.box =  box[:libvirt]["ubuntu"][:name]
     installer.vm.provision 'shell', privileged: false do |sh|
       sh.inline = <<-SHELL
         cd /vagrant

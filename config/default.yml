@@ -9,6 +9,7 @@
 ##############################################################################
 
 - name: "controller01"
+  os: "ubuntu"
   networks:
     - name: public-net
       ip: "10.10.16.3"
@@ -19,6 +20,7 @@
     - etcd
     - ovn-central
 - name: "controller02"
+  os: "ubuntu"
   networks:
     - name: public-net
       ip: "10.10.16.4"
@@ -29,6 +31,7 @@
     - etcd
     - ovn-controller
 - name: "controller03"
+  os: "ubuntu"
   networks:
     - name: public-net
       ip: "10.10.16.5"
@@ -39,6 +42,7 @@
     - etcd
     - ovn-controller
 - name: "compute01"
+  os: "centos"
   networks:
     - name: public-net
       ip: "10.10.16.6"
@@ -54,6 +58,7 @@
     - ovn-controller
     - virtlet
 - name: "compute02"
+  os: "centos"
   networks:
     - name: public-net
       ip: "10.10.16.7"
