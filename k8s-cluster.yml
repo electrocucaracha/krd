@@ -24,7 +24,7 @@ kube_api_anonymous_auth: true
 kube_api_pwd: "secret"
 kube_users:
   kube:
-    pass: "{{kube_api_pwd}}"
+    pass: "{{ kube_api_pwd }}"
     role: admin
     groups:
       - system:masters

@@ -24,7 +24,7 @@
   roles:
     - role: andrewrothstein.kubectl
       kubectl_ver: "v{{ kubectl_version }}"
-      when: kubectl_lnk.stat.exists == false
+      when: not kubectl_lnk.stat.exists
     - role: geerlingguy.docker
       when: virtlet_source_type == "source"
   tasks:
@@ -51,7 +51,7 @@
               url: 'https://cloud.centos.org/centos/$1/images/CentOS-$1-x86_64-GenericCloud-$2.qcow2'
             - name: fedora
               url: https://download.fedoraproject.org/pub/fedora/linux/releases/27/CloudImages/x86_64/images/Fedora-Cloud-Base-27-1.6.x86_64.qcow2
-          {% if lookup('env','http_proxy') != "" %}
+          {% if lookup('env','http_proxy') != "randomfoobarstring" %}
           transports:
             "":
               proxy: "{{ lookup('env','http_proxy') }}"

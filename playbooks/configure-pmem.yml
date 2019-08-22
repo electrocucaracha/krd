@@ -20,7 +20,7 @@
   roles:
     - role: andrewrothstein.kubectl
       kubectl_ver: "v{{ kubectl_version }}"
-      when: kubectl_lnk.stat.exists == false
+      when: not kubectl_lnk.stat.exists
     - role: andrewrothstein.go
       go_ver: "{{ go_version }}"
 
@@ -51,20 +51,18 @@
       with_items:
         - cfssl
         - cfssljson
+    - name: get setup-ca-kubernetes.sh shell script
+      get_url:
+        url: https://raw.githubusercontent.com/intel/pmem-csi/devel/test/setup-ca-kubernetes.sh
+        dest: /tmp/setup-ca-kubernetes.sh
     - name: register PMEM server
-      shell: "curl -sL https://raw.githubusercontent.com/intel/pmem-csi/devel/test/setup-ca-kubernetes.sh  | sh"
-    - name: install JQ parser
-      package:
-        name: "{{ item }}"
-        state: present
-      with_items: "{{ jq_pkgs }}"
-      become: yes
+      script: /tmp/setup-ca-kubernetes.sh
     - name: get kubernetes version
-      shell: kubectl version -o json | jq -r '.serverVersion| "\(.major).\(.minor)"'
+      command: kubectl version -o json
       register: kube_version
-    - name: deploy Pmem CSI controller 
-      command: "/usr/local/bin/kubectl apply -f https://raw.githubusercontent.com/intel/pmem-csi/devel/deploy/kubernetes-{{ kube_version.stdout }}/pmem-csi-lvm.yaml"
-    - name: deploy Pmem CSI controller 
+    - name: deploy Pmem CSI controller
+      command: /usr/local/bin/kubectl apply -f https://raw.githubusercontent.com/intel/pmem-csi/devel/deploy/kubernetes-{{ kube_version.stdout | from_json | json_query('serverVersion.major') }}.{{ kube_version.stdout | from_json | json_query('serverVersion.minor') }}/pmem-csi-lvm.yaml
+    - name: deploy Pmem CSI controller
       command: "/usr/local/bin/kubectl apply -f https://raw.githubusercontent.com/intel/pmem-csi/devel/deploy/common/pmem-{{ item }}.yaml"
       with_items:
         - storageclass-ext4

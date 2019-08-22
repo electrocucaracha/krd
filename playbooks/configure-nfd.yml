@@ -22,7 +22,7 @@
   roles:
     - role: andrewrothstein.kubectl
       kubectl_ver: "v{{ kubectl_version }}"
-      when: kubectl_lnk.stat.exists == false
+      when: not kubectl_lnk.stat.exists
   tasks:
     - name: clone NFD repo
       git:
@@ -50,3 +50,5 @@
       with_items:
         - nfd-master.yaml.template
         - nfd-worker-daemonset.yaml.template
+      register: nfd_result
+      changed_when: "'created' in nfd_result.stdout"
