@@ -174,6 +174,14 @@ spec:
         tty: true
       nodeSelector:
         feature.node.kubernetes.io/cpu-cpuid.ADX: "true"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: feature.node.kubernetes.io/kernel-version.major
+                operator: Gt
+                values: ["2"]
 DEPLOYMENT
     popd
 }
