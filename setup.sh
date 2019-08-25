@@ -8,8 +8,15 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
+set -o xtrace
 set -o nounset
 set -o pipefail
+
+# Ensure script is run as non-root
+if [ "$EUID" -eq "0" ]; then
+    echo "This script must be run as NON root."
+    exit 1
+fi
 
 vagrant_version=2.2.5
 if ! vagrant version &>/dev/null; then
@@ -125,13 +132,10 @@ case ${ID,,} in
 
     rhel|centos|fedora)
     PKG_MANAGER=$(command -v dnf || command -v yum)
-    sudo "$PKG_MANAGER" updateinfo
+    sudo -H -E "$PKG_MANAGER" updateinfo
     INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install"
     packages+=(python-devel)
-
-    if ! command -v wget; then
-        $INSTALLER_CMD wget
-    fi
+    [[ ! command -v wget ]] && $INSTALLER_CMD wget
 
     # Disable IPv6
     if grep "all.disable_ipv6" /etc/sysctl.conf; then
@@ -190,7 +194,7 @@ sudo modprobe vhost_net
 
 ${INSTALLER_CMD} "${packages[@]}"
 if ! command -v pip; then
-    curl -sL https://bootstrap.pypa.io/get-pip.py | sudo python
+    curl -sL https://bootstrap.pypa.io/get-pip.py | sudo -H -E python
 else
     sudo -H -E pip install --upgrade pip
 fi
@@ -211,7 +215,8 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
     sudo systemctl enable rpc-statd
     sudo systemctl start rpc-statd
 
-    if command -v firewall-cmd; then
+    systemctl status firewalld
+    if $? == 0; then
         for svc in nfs rpc-bind mountd; do
             sudo firewall-cmd --permanent --add-service="${svc}" --zone=trusted
         done
