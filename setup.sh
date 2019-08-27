@@ -190,7 +190,7 @@ sudo modprobe vhost_net
 
 ${INSTALLER_CMD} "${packages[@]}"
 if ! command -v pip; then
-    curl -sL https://bootstrap.pypa.io/get-pip.py | sudo python
+    curl -sL https://bootstrap.pypa.io/get-pip.py | sudo -H -E python
 else
     sudo -H -E pip install --upgrade pip
 fi
@@ -211,7 +211,7 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
     sudo systemctl enable rpc-statd
     sudo systemctl start rpc-statd
 
-    if command -v firewall-cmd; then
+    if command -v firewall-cmd && systemctl is-active --quiet firewalld; then
         for svc in nfs rpc-bind mountd; do
             sudo firewall-cmd --permanent --add-service="${svc}" --zone=trusted
         done
