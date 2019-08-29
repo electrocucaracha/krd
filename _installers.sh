@@ -62,10 +62,8 @@ function _install_pip {
     fi
 }
 
-# _install_ansible() - Install and Configure Ansible program
-function _install_ansible {
-    sudo mkdir -p /etc/ansible/
-    sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
+# install_ansible() - Install and Configure Ansible program
+function install_ansible {
     if ! command -v ansible; then
         _install_pip
         sudo -E pip install ansible
@@ -207,11 +205,15 @@ function _install_kubespray {
 
 # install_k8s() - Install Kubernetes using kubespray tool
 function install_k8s {
+    echo "Installing Kubernetes"
+
     install_docker
-    _install_ansible
+    install_ansible
     _install_package unzip
     _install_kubespray
 
+    sudo mkdir -p /etc/ansible/
+    sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
     echo "$ansible_cmd $kubespray_folder/cluster.yml"
     eval "$ansible_cmd $kubespray_folder/cluster.yml" | tee "setup-kubernetes.log"
 
@@ -225,7 +227,10 @@ function install_k8s {
 # install_k8s_addons() - Install Kubenertes AddOns
 function install_k8s_addons {
     echo "Installing Kubernetes AddOns"
-    _install_ansible
+    install_ansible
+
+    sudo mkdir -p /etc/ansible/
+    sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
     ansible_galaxy_cmd="sudo ansible-galaxy install"
     if [ "${KRD_DEBUG:-false}" == "true" ]; then
         ansible_galaxy_cmd+=" -vvv"
