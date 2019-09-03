@@ -88,3 +88,4 @@ container_manager: docker
 # Enable the RuntimeClass feature for selecting container runtime configurations.
 kube_feature_gates:
   - RuntimeClass=true
+  - NonPreemptingPriority=true
