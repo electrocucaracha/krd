@@ -57,6 +57,7 @@
     - kube-node
     - ovn-controller
     - virtlet
+    - criu
 - name: "compute02"
   os: "centos"
   networks:
@@ -68,3 +69,4 @@
   roles:
     - kube-node
     - ovn-controller
+    - criu

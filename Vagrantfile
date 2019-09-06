@@ -37,7 +37,7 @@ File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_fi
   nodes.each do |node|
     inventory_file.puts(node['name'])
   end
-  ['kube-master', 'kube-node', 'etcd', 'ovn-central', 'ovn-controller', 'virtlet', 'qat-node'].each do|group|
+  ['kube-master', 'kube-node', 'etcd', 'ovn-central', 'ovn-controller', 'virtlet', 'qat-node', 'criu'].each do|group|
     inventory_file.puts("\n[#{group}]")
     nodes.each do |node|
       if node['roles'].include?("#{group}")
