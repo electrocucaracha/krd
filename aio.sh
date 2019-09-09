@@ -29,6 +29,16 @@ if ! sudo -n "true"; then
     exit 1
 fi
 
+# Validating local IP addresses in no_proxy environment variable
+if [[ ${NO_PROXY+x} = "x" ]]; then
+    for ip in $(hostname --ip-address || hostname -i) $(ip addr | awk "/$(ip route | grep "^default" | awk '{ print $5 }')\$/ { sub(/\/[0-9]*/, \"\","' $2); print $2}'); do
+        if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$  &&  $NO_PROXY != *"$ip"* ]]; then
+            echo "The $ip IP address is not defined in NO_PROXY env"
+            exit 1
+        fi
+    done
+fi
+
 # shellcheck disable=SC1091
 source /etc/os-release || source /usr/lib/os-release
 case ${ID,,} in
