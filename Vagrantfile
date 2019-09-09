@@ -56,9 +56,9 @@ nodes.each do |node|
     end
   end
 end
-# NOTE: This range is based on vagrant-libvirt network definition CIDR 192.168.121.0/27
+# NOTE: This range is based on vagrant-libvirt network definition CIDR 192.168.125.0/27
 (1..31).each do |i|
-  $no_proxy += ",192.168.121.#{i},10.0.2.#{i}"
+  $no_proxy += ",192.168.125.#{i},10.0.2.#{i}"
 end
 
 Vagrant.configure("2") do |config|
@@ -66,7 +66,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox"
 
   config.vm.provider 'libvirt' do |v|
-    v.management_network_address = "192.168.121.0/27"
+    v.management_network_address = "192.168.125.0/27"
     v.management_network_name = "krd-mgmt-net"
     v.random_hostname = true
   end
