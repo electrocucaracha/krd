@@ -569,3 +569,26 @@ function install_octant {
     esac
     rm "$filename".*
 }
+
+function install_kubelive {
+    if command -v kubelive; then
+        return
+    fi
+
+    if ! command -v npm; then
+        curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+        _install_package nodejs
+
+        # Update NPM to latest version
+        npm config set registry http://registry.npmjs.org/
+        if [[ ${HTTP_PROXY+x} = "x"  ]]; then
+            npm config set proxy "$HTTP_PROXY"
+        fi
+        if [[ ${HTTPS_PROXY+x} = "x"  ]]; then
+            npm config set https-proxy "$HTTPS_PROXY"
+        fi
+        sudo npm install -g npm
+    fi
+
+    sudo npm install -g kubelive
+}
