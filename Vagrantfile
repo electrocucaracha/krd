@@ -48,19 +48,17 @@ File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_fi
   inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
 end
 
-if ENV['no_proxy'] != nil or ENV['NO_PROXY']
-  $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
-  nodes.each do |node|
-    if node.has_key? "networks"
-      node['networks'].each do |network|
-        $no_proxy += "," + network['ip']
-      end
+$no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
+nodes.each do |node|
+  if node.has_key? "networks"
+    node['networks'].each do |network|
+      $no_proxy += "," + network['ip']
     end
   end
-  # NOTE: This range is based on vagrant-libvirt network definition CIDR 192.168.121.0/27
-  (1..31).each do |i|
-    $no_proxy += ",192.168.121.#{i},10.0.2.#{i}"
-  end
+end
+# NOTE: This range is based on vagrant-libvirt network definition CIDR 192.168.121.0/27
+(1..31).each do |i|
+  $no_proxy += ",192.168.121.#{i},10.0.2.#{i}"
 end
 
 Vagrant.configure("2") do |config|
