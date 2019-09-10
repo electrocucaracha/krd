@@ -8,8 +8,15 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
+# set -o xtrace
 set -o nounset
 set -o pipefail
+
+# Make sure VTX is enabled
+if [ ! -c '/dev/kvm' ]; then
+    echo 'Make sure VTX bios option is enabled'
+    exit 1
+fi
 
 vagrant_version=2.2.5
 if ! vagrant version &>/dev/null; then
@@ -204,7 +211,9 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
 
     # Permissions required to enable Pmem in QEMU
     sudo sed -i "s/#security_driver .*/security_driver = \"none\"/" /etc/libvirt/qemu.conf
-    sudo sed -i "s|  /{dev,run}/shm .*|  /{dev,run}/shm rw,|"  /etc/apparmor.d/abstractions/libvirt-qemu
+    if [ -f /etc/apparmor.d/abstractions/libvirt-qemu ]; then
+        sudo sed -i "s|  /{dev,run}/shm .*|  /{dev,run}/shm rw,|"  /etc/apparmor.d/abstractions/libvirt-qemu
+    fi
     sudo systemctl restart libvirtd
 
     # Start statd service to prevent NFS lock errors
