@@ -22,18 +22,53 @@ fi
 
 function usage {
     cat <<EOF
-usage: $0 -p <PROVIDER>
+usage: $0 -p <PROVIDER> [options]
 Installation of vagrant and its dependencies in Linux OS
 
 Argument:
     -p  Vagrant provider
+
+Options:
+    -e  Enable the Input-output memory management unit technology
+        required for features like Intel QuickAssist.
+        WARNING: System files are modified. The system should be rebooted manually.
 EOF
 }
 
-while getopts ":p:" OPTION; do
+function enable_iommu {
+    iommu_support=$(sudo virt-host-validate | grep 'Checking for device assignment IOMMU support')
+    if [[ "$iommu_support" != *PASS* ]]; then
+        awk -F':' '{print $3}' <<< "$iommu_support"
+        exit 1
+    fi
+    iommu_validation=$(sudo virt-host-validate | grep 'Checking if IOMMU is enabled by kernel')
+    if [[ "$iommu_validation" == *PASS* ]]; then
+        return
+    fi
+    if [ -f /etc/default/grub ]  && [[ "$(grep GRUB_CMDLINE_LINUX /etc/default/grub)" != *iommu* ]]; then
+        sudo sed -i "s|^GRUB_CMDLINE_LINUX\(.*\)\"|GRUB_CMDLINE_LINUX\1 intel_iommu=on\"|g" /etc/default/grub
+    fi
+    if command -v grub-mkconfig; then
+        sudo grub-mkconfig -o /boot/grub/grub.cfg
+        sudo update-grub
+    elif command -v grub2-mkconfig; then
+        grub_cfg="$(sudo readlink -f /etc/grub2.cfg)"
+        if dmesg | grep EFI; then
+            grub_cfg="/boot/efi/EFI/centos/grub.cfg"
+        fi
+        sudo grub2-mkconfig -o "$grub_cfg"
+    fi
+    echo "WARN - System reboot is required"
+    exit
+}
+
+while getopts ":p:e" OPTION; do
     case $OPTION in
     p)
         provider=$OPTARG
+        ;;
+    e)
+        enable_iommu
         ;;
     \?)
         usage

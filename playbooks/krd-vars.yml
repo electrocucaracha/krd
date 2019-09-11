@@ -40,6 +40,12 @@ nfd_url: "https://github.com/kubernetes-incubator/node-feature-discovery"
 #nfd_source_type: "tarball"
 #nfd_url: "https://github.com/kubernetes-sigs/node-feature-discovery/archive/{{ nfd_version}}.tar.gz"
 
+qat_version: "1.7.l.4.6.0-00025"
+qat_driver_dest: "{{ base_dest }}/qat"
+qat_driver_url: "https://01.org/sites/default/files/downloads/qat{{ qat_version }}.tar.gz"
+qat_plugin_version: "0.15.0"
+qat_plugin_url: "https://raw.githubusercontent.com/intel/intel-device-plugins-for-kubernetes/master/deployments/qat_plugin/"
+
 go_version: '1.12.7'
 kubespray_version: v2.11.0
 kubectl_version: 1.14.1

@@ -48,6 +48,7 @@
       ip: "10.10.16.6"
   memory: 32768
   pmem: true
+  qat: true
   cpus: 16
   volumes:
     - name: sda
@@ -58,6 +59,7 @@
     - ovn-controller
     - virtlet
     - criu
+    - qat-node
 - name: "compute02"
   os: "centos"
   networks:
