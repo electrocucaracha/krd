@@ -115,6 +115,7 @@ Vagrant.configure("2") do |config|
         override.vm.box_version = box[:libvirt][node['os']][:version]
         v.nested = true
         v.cpu_mode = 'host-passthrough'
+        # Intel Corporation Persistent Memory
         if node.has_key? "pmem" and node['pmem'] == true
           v.qemuargs :value => '-machine'
           v.qemuargs :value => 'pc,accel=kvm,nvdimm=on'
@@ -124,6 +125,16 @@ Vagrant.configure("2") do |config|
           v.qemuargs :value => 'memory-backend-file,id=mem1,share=on,mem-path=/dev/shm,size=32768M'
           v.qemuargs :value => '-device'
           v.qemuargs :value => 'nvdimm,id=nvdimm1,memdev=mem1,label-size=2097152'
+        end
+        # Intel Corporation QuickAssist Technology
+        if node.has_key? "qat" and node['qat'] == true
+          qat_devices = `for i in 0434 0435 37c8 6f54 19e2; do lspci -d 8086:$i -m; done|awk '{print $1}'`
+          qat_devices.split("\n").each do |dev|
+            bus=dev.split(':')[0]
+            slot=dev.split(':')[1].split('.')[0]
+            function=dev.split(':')[1].split('.')[1]
+            v.pci :bus => "0x#{bus}", :slot => "0x#{slot}", :function => "0x#{function}"
+          end
         end
         nodeconfig.vm.provision 'shell' do |sh|
           sh.path =  "node.sh"
