@@ -62,6 +62,44 @@ function enable_iommu {
     exit
 }
 
+# _vercmp() - Function that compares two versions
+function _vercmp {
+    local v1=$1
+    local op=$2
+    local v2=$3
+    local result
+
+    # sort the two numbers with sort's "-V" argument.  Based on if v2
+    # swapped places with v1, we can determine ordering.
+    result=$(echo -e "$v1\n$v2" | sort -V | head -1)
+
+    case $op in
+        "==")
+            [ "$v1" = "$v2" ]
+            return
+            ;;
+        ">")
+            [ "$v1" != "$v2" ] && [ "$result" = "$v2" ]
+            return
+            ;;
+        "<")
+            [ "$v1" != "$v2" ] && [ "$result" = "$v1" ]
+            return
+            ;;
+        ">=")
+            [ "$result" = "$v2" ]
+            return
+            ;;
+        "<=")
+            [ "$result" = "$v1" ]
+            return
+            ;;
+        *)
+            die $LINENO "unrecognised op: $op"
+            ;;
+    esac
+}
+
 while getopts ":p:e" OPTION; do
     case $OPTION in
     p)
@@ -237,10 +275,21 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
     vagrant plugin install vagrant-libvirt
     sudo usermod -a -G $libvirt_group "$USER" # This might require to reload user's group assigments
 
-    # Permissions required to enable Pmem in QEMU
-    sudo sed -i "s/#security_driver .*/security_driver = \"none\"/" /etc/libvirt/qemu.conf
-    sudo sed -i "s|  /{dev,run}/shm .*|  /{dev,run}/shm rw,|"  /etc/apparmor.d/abstractions/libvirt-qemu
-    sudo systemctl restart libvirtd
+    qemu_version=$(qemu-system-x86_64 --version | grep "QEMU emulator version" | awk '{ print $4}')
+    if _vercmp "${qemu_version%.*}" '>' "2.6.0"; then
+        # Permissions required to enable Pmem in QEMU
+        sudo sed -i "s/#security_driver .*/security_driver = \"none\"/" /etc/libvirt/qemu.conf
+        if [ -f /etc/apparmor.d/abstractions/libvirt-qemu ]; then
+            sudo sed -i "s|  /{dev,run}/shm .*|  /{dev,run}/shm rw,|"  /etc/apparmor.d/abstractions/libvirt-qemu
+        fi
+        sudo systemctl restart libvirtd
+    else
+        # NOTE: PMEM in QEMU (https://nvdimm.wiki.kernel.org/pmem_in_qemu)
+        echo "WARN - PMEM support in QEMU is available since 2.6.0"
+        echo "version. This host server is using the ${qemu_version%.*} version"
+        echo "For more information about QEMU in Linux go to QEMU"
+        echo "official website (https://wiki.qemu.org/Hosts/Linux)"
+    fi
 
     # Start statd service to prevent NFS lock errors
     sudo systemctl enable rpc-statd
