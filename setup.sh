@@ -12,6 +12,7 @@ set -o nounset
 set -o pipefail
 
 vagrant_version=2.2.5
+msg="Summary \n"
 if ! vagrant version &>/dev/null; then
     enable_vagrant_install=true
 else
@@ -27,27 +28,10 @@ Installation of vagrant and its dependencies in Linux OS
 
 Argument:
     -p  Vagrant provider
-
-Options:
-    -e  Enable the Input-output memory management unit technology
-        required for features like Intel QuickAssist.
-        WARNING: System files are modified. The system should be rebooted manually.
 EOF
 }
 
-function enable_iommu {
-    iommu_support=$(sudo virt-host-validate | grep 'Checking for device assignment IOMMU support')
-    if [[ "$iommu_support" != *PASS* ]]; then
-        awk -F':' '{print $3}' <<< "$iommu_support"
-        exit 1
-    fi
-    iommu_validation=$(sudo virt-host-validate | grep 'Checking if IOMMU is enabled by kernel')
-    if [[ "$iommu_validation" == *PASS* ]]; then
-        return
-    fi
-    if [ -f /etc/default/grub ]  && [[ "$(grep GRUB_CMDLINE_LINUX /etc/default/grub)" != *iommu* ]]; then
-        sudo sed -i "s|^GRUB_CMDLINE_LINUX\(.*\)\"|GRUB_CMDLINE_LINUX\1 intel_iommu=on\"|g" /etc/default/grub
-    fi
+function _reload_grub {
     if command -v grub-mkconfig; then
         sudo grub-mkconfig -o /boot/grub/grub.cfg
         sudo update-grub
@@ -58,8 +42,33 @@ function enable_iommu {
         fi
         sudo grub2-mkconfig -o "$grub_cfg"
     fi
-    echo "WARN - System reboot is required"
-    exit
+}
+
+function enable_iommu {
+    iommu_support=$(sudo virt-host-validate | grep 'Checking for device assignment IOMMU support')
+    if [[ "$iommu_support" != *PASS* ]]; then
+        echo "WARN - IOMMU support checker reported: $(awk -F':' '{print $3}' <<< "$iommu_support")"
+    fi
+    iommu_validation=$(sudo virt-host-validate | grep 'Checking if IOMMU is enabled by kernel')
+    if [[ "$iommu_validation" == *PASS* ]]; then
+        return
+    fi
+    if [ -f /etc/default/grub ]  && [[ "$(grep GRUB_CMDLINE_LINUX /etc/default/grub)" != *intel_iommu=on* ]]; then
+        sudo sed -i "s|^GRUB_CMDLINE_LINUX\(.*\)\"|GRUB_CMDLINE_LINUX\1 intel_iommu=on\"|g" /etc/default/grub
+    fi
+    _reload_grub
+    msg+="- WARN: IOMMU was enabled and requires to reboot the server to take effect\n"
+}
+
+function disable_ipv6 {
+    if [ ! -f /proc/net/if_inet6 ]; then
+        return
+    fi
+    if [ -f /etc/default/grub ]  && [[ "$(grep GRUB_CMDLINE_LINUX /etc/default/grub)" != *ipv6.disable=1* ]]; then
+        sudo sed -i "s|^GRUB_CMDLINE_LINUX\(.*\)\"|GRUB_CMDLINE_LINUX\1 ipv6.disable=1\"|g" /etc/default/grub
+    fi
+    _reload_grub
+    msg+="- WARN: IPv6 was disabled and requires to reboot the server to take effect\n"
 }
 
 # _vercmp() - Function that compares two versions
@@ -100,13 +109,10 @@ function _vercmp {
     esac
 }
 
-while getopts ":p:e" OPTION; do
+while getopts ":p:" OPTION; do
     case $OPTION in
     p)
         provider=$OPTARG
-        ;;
-    e)
-        enable_iommu
         ;;
     \?)
         usage
@@ -127,6 +133,11 @@ case $provider in
         usage
         exit 1
 esac
+echo "WARN - System files are going to be modified to enable"
+echo "Input-output memory management unit technology and to disable"
+echo "IPv6. The server may need to be restarted manually."
+sleep 10
+
 # shellcheck disable=SC1091
 source /etc/os-release || source /usr/lib/os-release
 
@@ -205,15 +216,7 @@ case ${ID,,} in
     if ! command -v wget; then
         $INSTALLER_CMD wget
     fi
-
-    # Disable IPv6
-    if grep "all.disable_ipv6" /etc/sysctl.conf; then
-        echo "net.ipv6.conf.all.disable_ipv6 = 1" | sudo tee --append /etc/sysctl.conf
-    fi
-    if grep "default.disable_ipv6" /etc/sysctl.conf; then
-        echo "net.ipv6.conf.default.disable_ipv6 = 1" | sudo tee --append /etc/sysctl.conf
-    fi
-    sudo sysctl -p
+    disable_ipv6
 
     # Vagrant installation
     if [[ "${enable_vagrant_install+x}" = "x"  ]]; then
@@ -245,7 +248,7 @@ vendor_id=$(lscpu|grep "Vendor ID")
 if [[ $vendor_id == *GenuineIntel* ]]; then
     kvm_ok=$(cat /sys/module/kvm_intel/parameters/nested)
     if [[ $kvm_ok == 'N' ]]; then
-        echo "Enable Intel Nested-Virtualization"
+        msg+="- INFO: Intel Nested-Virtualization was enabled\n"
         sudo rmmod kvm-intel
         echo 'options kvm-intel nested=y' | sudo tee --append /etc/modprobe.d/dist.conf
         sudo modprobe kvm-intel
@@ -253,13 +256,14 @@ if [[ $vendor_id == *GenuineIntel* ]]; then
 else
     kvm_ok=$(cat /sys/module/kvm_amd/parameters/nested)
     if [[ $kvm_ok == '0' ]]; then
-        echo "Enable AMD Nested-Virtualization"
+        msg+="- INFO: AMD Nested-Virtualization was enabled\n"
         sudo rmmod kvm-amd
         echo 'options kvm-amd nested=1' | sudo tee --append /etc/modprobe.d/dist.conf
         sudo modprobe kvm-amd
     fi
 fi
 sudo modprobe vhost_net
+enable_iommu
 
 ${INSTALLER_CMD} "${packages[@]}"
 if ! command -v pip; then
@@ -285,10 +289,10 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
         sudo systemctl restart libvirtd
     else
         # NOTE: PMEM in QEMU (https://nvdimm.wiki.kernel.org/pmem_in_qemu)
-        echo "WARN - PMEM support in QEMU is available since 2.6.0"
-        echo "version. This host server is using the ${qemu_version%.*} version"
-        echo "For more information about QEMU in Linux go to QEMU"
-        echo "official website (https://wiki.qemu.org/Hosts/Linux)"
+        msg+="WARN - PMEM support in QEMU is available since 2.6.0"
+        msg+=" version. This host server is using the\n"
+        msg+="${qemu_version%.*} version. For more information about"
+        msg+="QEMU in Linux go to QEMU official website (https://wiki.qemu.org/Hosts/Linux)\n"
     fi
 
     # Start statd service to prevent NFS lock errors
@@ -309,3 +313,4 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
         ;;
     esac
 fi
+echo -e "$msg"
