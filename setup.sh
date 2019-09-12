@@ -209,6 +209,9 @@ case ${ID,,} in
 
     rhel|centos|fedora)
     PKG_MANAGER=$(command -v dnf || command -v yum)
+    if ! sudo yum repolist | grep "epel/"; then
+        $INSTALLER_CMD epel-release
+    fi
     sudo "$PKG_MANAGER" updateinfo
     INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install"
     packages+=(python-devel)
@@ -279,20 +282,22 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
     vagrant plugin install vagrant-libvirt
     sudo usermod -a -G $libvirt_group "$USER" # This might require to reload user's group assigments
 
-    qemu_version=$(qemu-system-x86_64 --version | grep "QEMU emulator version" | awk '{ print $4}')
-    if _vercmp "${qemu_version%.*}" '>' "2.6.0"; then
-        # Permissions required to enable Pmem in QEMU
-        sudo sed -i "s/#security_driver .*/security_driver = \"none\"/" /etc/libvirt/qemu.conf
-        if [ -f /etc/apparmor.d/abstractions/libvirt-qemu ]; then
-            sudo sed -i "s|  /{dev,run}/shm .*|  /{dev,run}/shm rw,|"  /etc/apparmor.d/abstractions/libvirt-qemu
+    if command -v qemu-system-x86_64; then
+        qemu_version=$(qemu-system-x86_64 --version | grep "QEMU emulator version" | awk '{ print $4}')
+        if _vercmp "${qemu_version%.*}" '>' "2.6.0"; then
+            # Permissions required to enable Pmem in QEMU
+            sudo sed -i "s/#security_driver .*/security_driver = \"none\"/" /etc/libvirt/qemu.conf
+            if [ -f /etc/apparmor.d/abstractions/libvirt-qemu ]; then
+                sudo sed -i "s|  /{dev,run}/shm .*|  /{dev,run}/shm rw,|"  /etc/apparmor.d/abstractions/libvirt-qemu
+            fi
+            sudo systemctl restart libvirtd
+        else
+            # NOTE: PMEM in QEMU (https://nvdimm.wiki.kernel.org/pmem_in_qemu)
+            msg+="WARN - PMEM support in QEMU is available since 2.6.0"
+            msg+=" version. This host server is using the\n"
+            msg+=" ${qemu_version%.*} version. For more information about"
+            msg+=" QEMU in Linux go to QEMU official website (https://wiki.qemu.org/Hosts/Linux)\n"
         fi
-        sudo systemctl restart libvirtd
-    else
-        # NOTE: PMEM in QEMU (https://nvdimm.wiki.kernel.org/pmem_in_qemu)
-        msg+="WARN - PMEM support in QEMU is available since 2.6.0"
-        msg+=" version. This host server is using the\n"
-        msg+="${qemu_version%.*} version. For more information about"
-        msg+="QEMU in Linux go to QEMU official website (https://wiki.qemu.org/Hosts/Linux)\n"
     fi
 
     # Start statd service to prevent NFS lock errors
