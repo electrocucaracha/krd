@@ -79,26 +79,33 @@ else
 fi
 modprobe vhost_net
 echo vhost_net >> /etc/modules
+common_pkgs=(hwloc ndctl)
 # shellcheck disable=SC1091
 source /etc/os-release || source /usr/lib/os-release
 case ${ID,,} in
     *suse)
-        INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends"
-        packages+=(hwloc)
+        INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends ${common_pkgs[*]}"
     ;;
     ubuntu|debian)
-        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install"
-        packages+=(cpu-checker hwloc)
+        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install ${common_pkgs[*]} cpu-checker"
         kvm-ok
     ;;
     rhel|centos|fedora)
         PKG_MANAGER=$(command -v dnf || command -v yum)
-        INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install"
-        packages+=(hwloc)
+        INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install ${common_pkgs[*]}"
+#        if ! sudo yum repolist | grep "epel/"; then
+#            $INSTALLER_CMD epel-release
+#        fi
+#        sudo "$PKG_MANAGER" updateinfo
     ;;
 esac
 
-${INSTALLER_CMD} "${packages[@]}"
+${INSTALLER_CMD}
 if command -v kvm-ok; then
     kvm-ok
 fi
+#if lsblk -t | grep pmem; then
+#    for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
+#        sudo ndctl create-namespace -f -e "$namespace" --mode=memory
+#    done
+#fi
