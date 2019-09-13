@@ -47,9 +47,18 @@
     - name: public-net
       ip: "10.10.16.6"
   memory: 32768
-  pmem: true
+  pmem: false
   qat: true
   cpus: 16
+  numa_nodes: # Total memory for NUMA nodes must be equal to RAM size
+    - cpus: 0-3
+      memory: 8192
+    - cpus: 4-7
+      memory: 8192
+    - cpus: 8-11
+      memory: 8192
+    - cpus: 12-15
+      memory: 8192
   volumes:
     - name: sda
       size: 50

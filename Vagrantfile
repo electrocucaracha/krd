@@ -136,6 +136,15 @@ Vagrant.configure("2") do |config|
             v.pci :bus => "0x#{bus}", :slot => "0x#{slot}", :function => "0x#{function}"
           end
         end
+        # Non-Uniform Memory Access (NUMA)
+        if node.has_key? "numa_nodes"
+          $numa_nodes = []
+          node['numa_nodes'].each do |numa_node|
+            numa_node['cpus'].strip!
+            $numa_nodes << {:cpus=>numa_node['cpus'], :memory=>"#{numa_node['memory']}"}
+          end
+          v.numa_nodes = $numa_nodes
+        end
         nodeconfig.vm.provision 'shell' do |sh|
           sh.path =  "node.sh"
           if node.has_key? "volumes"

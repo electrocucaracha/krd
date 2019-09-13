@@ -82,8 +82,23 @@ echo vhost_net >> /etc/modules
 # shellcheck disable=SC1091
 source /etc/os-release || source /usr/lib/os-release
 case ${ID,,} in
+    *suse)
+        INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends"
+        packages+=(hwloc)
+    ;;
     ubuntu|debian)
-        apt-get install -y cpu-checker
+        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install"
+        packages+=(cpu-checker hwloc)
         kvm-ok
     ;;
+    rhel|centos|fedora)
+        PKG_MANAGER=$(command -v dnf || command -v yum)
+        INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install"
+        packages+=(hwloc)
+    ;;
 esac
+
+${INSTALLER_CMD} "${packages[@]}"
+if command -v kvm-ok; then
+    kvm-ok
+fi
