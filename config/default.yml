@@ -47,7 +47,6 @@
     - name: public-net
       ip: "10.10.16.6"
   memory: 32768
-  pmem: false
   qat: true
   cpus: 16
   numa_nodes: # Total memory for NUMA nodes must be equal to RAM size
@@ -75,7 +74,21 @@
     - name: public-net
       ip: "10.10.16.7"
   memory: 8192
-  pmem: true
+  pmem:
+    size: 8G # This value may affect the currentMemory libvirt tag
+    slots: 4
+    max_size: 32G
+    vNVDIMMs:
+      - mem_id: mem0
+        id: nv0
+        share: "on"
+        path: /dev/shm
+        size: 4G
+      - mem_id: mem1
+        id: nv1
+        share: "on"
+        path: /dev/shm
+        size: 4G
   cpus: 4
   roles:
     - kube-node

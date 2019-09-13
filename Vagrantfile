@@ -116,15 +116,20 @@ Vagrant.configure("2") do |config|
         v.nested = true
         v.cpu_mode = 'host-passthrough'
         # Intel Corporation Persistent Memory
-        if node.has_key? "pmem" and node['pmem'] == true
-          v.qemuargs :value => '-machine'
-          v.qemuargs :value => 'pc,accel=kvm,nvdimm=on'
-          v.qemuargs :value => '-m'
-          v.qemuargs :value => '2G,slots=2,maxmem=34G'
-          v.qemuargs :value => '-object'
-          v.qemuargs :value => 'memory-backend-file,id=mem1,share=on,mem-path=/dev/shm,size=32768M'
-          v.qemuargs :value => '-device'
-          v.qemuargs :value => 'nvdimm,id=nvdimm1,memdev=mem1,label-size=2097152'
+        qemu_version = `qemu-system-x86_64 --version | perl -pe '($_)=/([0-9]+([.][0-9]+)+)/'`
+        if Gem::Version.new(qemu_version) > Gem::Version.new('2.6.0')
+          if node.has_key? "pmem"
+            v.qemuargs :value => '-machine'
+            v.qemuargs :value => 'pc,accel=kvm,nvdimm=on'
+            v.qemuargs :value => '-m'
+            v.qemuargs :value => "#{node['pmem']['size']},slots=#{node['pmem']['slots']},maxmem=#{node['pmem']['max_size']}"
+            node['pmem']['vNVDIMMs'].each do |vNVDIMM|
+              v.qemuargs :value => '-object'
+              v.qemuargs :value => "memory-backend-file,id=#{vNVDIMM['mem_id']},share=#{vNVDIMM['share']},mem-path=#{vNVDIMM['path']},size=#{vNVDIMM['size']}"
+              v.qemuargs :value => '-device'
+              v.qemuargs :value => "nvdimm,id=#{vNVDIMM['id']},memdev=#{vNVDIMM['mem_id']},label-size=2M"
+          end
+          end
         end
         # Intel Corporation QuickAssist Technology
         if node.has_key? "qat" and node['qat'] == true

@@ -283,8 +283,8 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
     sudo usermod -a -G $libvirt_group "$USER" # This might require to reload user's group assigments
 
     if command -v qemu-system-x86_64; then
-        qemu_version=$(qemu-system-x86_64 --version | grep "QEMU emulator version" | awk '{ print $4}')
-        if _vercmp "${qemu_version%.*}" '>' "2.6.0"; then
+        qemu_version=$(qemu-system-x86_64 --version | perl -pe '($_)=/([0-9]+([.][0-9]+)+)/')
+        if _vercmp "${qemu_version}" '>' "2.6.0"; then
             # Permissions required to enable Pmem in QEMU
             sudo sed -i "s/#security_driver .*/security_driver = \"none\"/" /etc/libvirt/qemu.conf
             if [ -f /etc/apparmor.d/abstractions/libvirt-qemu ]; then
@@ -295,7 +295,7 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
             # NOTE: PMEM in QEMU (https://nvdimm.wiki.kernel.org/pmem_in_qemu)
             msg+="WARN - PMEM support in QEMU is available since 2.6.0"
             msg+=" version. This host server is using the\n"
-            msg+=" ${qemu_version%.*} version. For more information about"
+            msg+=" ${qemu_version} version. For more information about"
             msg+=" QEMU in Linux go to QEMU official website (https://wiki.qemu.org/Hosts/Linux)\n"
         fi
     fi
