@@ -49,6 +49,15 @@
   memory: 32768
   qat_dev:
     - "3d:00.0"
+  sriov_dev:
+    - "41:02.0"
+    - "41:02.1"
+    - "41:02.2"
+    - "41:02.3"
+    - "41:02.4"
+    - "41:02.5"
+    - "41:02.6"
+    - "41:02.7"
   cpus: 16
   numa_nodes: # Total memory for NUMA nodes must be equal to RAM size
     - cpus: 0-3
