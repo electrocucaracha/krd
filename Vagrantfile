@@ -132,13 +132,15 @@ Vagrant.configure("2") do |config|
           end
         end
         # Intel Corporation QuickAssist Technology
-        if node.has_key? "qat" and node['qat'] == true
+        if node.has_key? "qat_dev"
           qat_devices = `for i in 0434 0435 37c8 6f54 19e2; do lspci -d 8086:$i -m; done|awk '{print $1}'`
-          qat_devices.split("\n").each do |dev|
-            bus=dev.split(':')[0]
-            slot=dev.split(':')[1].split('.')[0]
-            function=dev.split(':')[1].split('.')[1]
-            v.pci :bus => "0x#{bus}", :slot => "0x#{slot}", :function => "0x#{function}"
+          node['qat_dev'].each do |dev|
+            if qat_devices.include? dev.to_s
+              bus=dev.split(':')[0]
+              slot=dev.split(':')[1].split('.')[0]
+              function=dev.split(':')[1].split('.')[1]
+              v.pci :bus => "0x#{bus}", :slot => "0x#{slot}", :function => "0x#{function}"
+            end
           end
         end
         # Non-Uniform Memory Access (NUMA)

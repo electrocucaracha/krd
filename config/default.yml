@@ -47,7 +47,8 @@
     - name: public-net
       ip: "10.10.16.6"
   memory: 32768
-  qat: true
+  qat_dev:
+    - "3d:00.0"
   cpus: 16
   numa_nodes: # Total memory for NUMA nodes must be equal to RAM size
     - cpus: 0-3
