@@ -152,6 +152,18 @@ Vagrant.configure("2") do |config|
           end
           v.numa_nodes = $numa_nodes
         end
+        # Single Root I/O Virtualization (SR-IOV)
+        if node.has_key? "sriov_dev"
+          sriov_devices = `lspci | grep "Ethernet .* Virtual Function"|awk '{print $1}'`
+          node['sriov_dev'].each do |dev|
+            if sriov_devices.include? dev.to_s
+              bus=dev.split(':')[0]
+              slot=dev.split(':')[1].split('.')[0]
+              function=dev.split(':')[1].split('.')[1]
+              v.pci :bus => "0x#{bus}", :slot => "0x#{slot}", :function => "0x#{function}"
+            end
+          end
+        end
         nodeconfig.vm.provision 'shell' do |sh|
           sh.path =  "node.sh"
           if node.has_key? "volumes"

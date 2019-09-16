@@ -268,6 +268,16 @@ fi
 sudo modprobe vhost_net
 enable_iommu
 
+# Create Virtual Functions
+for nic in $(sudo lshw -C network -short | grep Connection | awk '{ print $2 }'); do
+    if [ -e "/sys/class/net/$nic/device/sriov_numvfs" ]  && grep -e up "/sys/class/net/$nic/operstate" > /dev/null ; then
+        sriov_numvfs=$(cat "/sys/class/net/$nic/device/sriov_totalvfs")
+        echo 0 | sudo tee "/sys/class/net/$nic/device/sriov_numvfs"
+        echo "$sriov_numvfs" | sudo tee "/sys/class/net/$nic/device/sriov_numvfs"
+        msg+="INFO - $sriov_numvfs SR-IOV Virtual Functions enabled on $nic"
+    fi
+done
+
 ${INSTALLER_CMD} "${packages[@]}"
 if ! command -v pip; then
     curl -sL https://bootstrap.pypa.io/get-pip.py | sudo -H -E python
