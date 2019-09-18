@@ -47,7 +47,7 @@ function _reload_grub {
 function enable_iommu {
     iommu_support=$(sudo virt-host-validate | grep 'Checking for device assignment IOMMU support')
     if [[ "$iommu_support" != *PASS* ]]; then
-        echo "WARN - IOMMU support checker reported: $(awk -F':' '{print $3}' <<< "$iommu_support")"
+        echo "- WARN - IOMMU support checker reported: $(awk -F':' '{print $3}' <<< "$iommu_support")"
     fi
     iommu_validation=$(sudo virt-host-validate | grep 'Checking if IOMMU is enabled by kernel')
     if [[ "$iommu_validation" == *PASS* ]]; then
@@ -274,7 +274,7 @@ for nic in $(sudo lshw -C network -short | grep Connection | awk '{ print $2 }')
         sriov_numvfs=$(cat "/sys/class/net/$nic/device/sriov_totalvfs")
         echo 0 | sudo tee "/sys/class/net/$nic/device/sriov_numvfs"
         echo "$sriov_numvfs" | sudo tee "/sys/class/net/$nic/device/sriov_numvfs"
-        msg+="INFO - $sriov_numvfs SR-IOV Virtual Functions enabled on $nic"
+        msg+="- INFO: $sriov_numvfs SR-IOV Virtual Functions enabled on $nic"
     fi
 done
 
@@ -303,10 +303,11 @@ if [ "$VAGRANT_DEFAULT_PROVIDER" == libvirt ]; then
             sudo systemctl restart libvirtd
         else
             # NOTE: PMEM in QEMU (https://nvdimm.wiki.kernel.org/pmem_in_qemu)
-            msg+="WARN - PMEM support in QEMU is available since 2.6.0"
+            msg+="- WARN: PMEM support in QEMU is available since 2.6.0"
             msg+=" version. This host server is using the\n"
             msg+=" ${qemu_version} version. For more information about"
             msg+=" QEMU in Linux go to QEMU official website (https://wiki.qemu.org/Hosts/Linux)\n"
+            msg+=" or use the bootstrap-qemu.sh script provided by this project"
         fi
     fi
 
