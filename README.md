@@ -27,12 +27,12 @@ Ubuntu instructions required for running this project.
 ### Virtual Machines
 
 This project uses [Vagrant tool][5] for provisioning Virtual Machines
-automatically. The [setup](setup.sh) bash script contains the
-Linux instructions to install dependencies and plugins required for
-its usage. This script supports two Virtualization technologies
-(Libvirt and VirtualBox).
+automatically. The *setup.sh* script of the
+[bootstrap-vagrant project][7] contains the Linux instructions to
+install dependencies and plugins required for its usage. This script
+supports two Virtualization technologies (Libvirt and VirtualBox).
 
-    $ ./setup.sh -p libvirt
+    $ curl -fsSL https://raw.githubusercontent.com/electrocucaracha/bootstrap-vagrant/master/setup.sh | PROVIDER=libvirt bash
 
 Once Vagrant is installed, it's possible to provision a cluster using
 the following instructions:
@@ -95,3 +95,4 @@ Apache-2.0
 [4]: playbooks/configure-nfd.yml
 [5]: https://www.vagrantup.com/
 [6]: playbooks/configure-pmem.yml
+[7]: https://github.com/electrocucaracha/bootstrap-vagrant
