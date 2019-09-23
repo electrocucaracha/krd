@@ -51,7 +51,7 @@ while getopts "h?v:" opt; do
 done
 
 swapoff -a
-if [[ -n "${dict_volumes+x}" ]]; then
+if [ -n "${dict_volumes:-}" ]; then
     for kv in ${dict_volumes//,/ } ;do
         mount_external_partition "${kv%=*}" "${kv#*=}"
     done
@@ -88,7 +88,6 @@ case ${ID,,} in
     ;;
     ubuntu|debian)
         INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install ${common_pkgs[*]} cpu-checker"
-        kvm-ok
     ;;
     rhel|centos|fedora)
         PKG_MANAGER=$(command -v dnf || command -v yum)
