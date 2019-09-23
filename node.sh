@@ -79,7 +79,8 @@ else
 fi
 modprobe vhost_net
 echo vhost_net >> /etc/modules
-common_pkgs=(hwloc ndctl)
+#common_pkgs=(hwloc ndctl)
+common_pkgs=(hwloc)
 # shellcheck disable=SC1091
 source /etc/os-release || source /usr/lib/os-release
 case ${ID,,} in
