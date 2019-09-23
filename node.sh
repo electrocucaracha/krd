@@ -79,8 +79,7 @@ else
 fi
 modprobe vhost_net
 echo vhost_net >> /etc/modules
-#common_pkgs=(hwloc ndctl)
-common_pkgs=(hwloc)
+common_pkgs=(hwloc wget)
 # shellcheck disable=SC1091
 source /etc/os-release || source /usr/lib/os-release
 case ${ID,,} in
@@ -93,10 +92,6 @@ case ${ID,,} in
     rhel|centos|fedora)
         PKG_MANAGER=$(command -v dnf || command -v yum)
         INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install ${common_pkgs[*]}"
-#        if ! sudo yum repolist | grep "epel/"; then
-#            $INSTALLER_CMD epel-release
-#        fi
-#        sudo "$PKG_MANAGER" updateinfo
     ;;
 esac
 
@@ -104,8 +99,25 @@ ${INSTALLER_CMD}
 if command -v kvm-ok; then
     kvm-ok
 fi
-#if lsblk -t | grep pmem; then
-#    for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
-#        sudo ndctl create-namespace -f -e "$namespace" --mode=memory
-#    done
+if lsblk -t | grep pmem; then
+    case ${ID,,} in
+        rhel|centos|fedora)
+            for repo in ipmctl safeclib; do
+                wget -O "/etc/yum.repos.d/${repo}-epel-7.repo" "https://copr.fedorainfracloud.org/coprs/jhli/${repo}/repo/epel-7/jhli-${repo}-epel-7.repo"
+            done
+            INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install ipmctl ndctl"
+        ;;
+    esac
+    ${INSTALLER_CMD}
+    if command -v ndctl && command -v jq; then
+        for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
+            sudo ndctl create-namespace -f -e "$namespace" --mode=memory
+        done
+    fi
+fi
+
+# Enable NVDIMM mixed mode (configuration for MM:AD is set to 50:50)
+#if command -v ipmctl; then
+#    ipmctl create -goal memorymode=50 persistentmemorytype=appdirect 2>&1 /dev/null
+#    ipmctl create -goal memorymode=50 persistentmemorytype=appdirectnotinterleaved 2>&1 /dev/null
 #fi
