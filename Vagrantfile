@@ -90,7 +90,7 @@ Vagrant.configure("2") do |config|
           nodeconfig.vm.network :private_network, :ip => network['ip'], :type => :static,
             libvirt__network_name: network['name']
         end
-      end
+      end # networks
       [:virtualbox, :libvirt].each do |provider|
         nodeconfig.vm.provider provider do |p, override|
           p.cpus = node['cpus']
@@ -108,13 +108,18 @@ Vagrant.configure("2") do |config|
             end
             v.customize ['storageattach', :id, '--storagectl', 'IDE Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', $volume_file]
           end
-        end
+        end # volumes
       end # virtualbox
       nodeconfig.vm.provider 'libvirt' do |v, override|
         override.vm.box =  box[:libvirt][node['os']][:name]
         override.vm.box_version = box[:libvirt][node['os']][:version]
         v.nested = true
         v.cpu_mode = 'host-passthrough'
+        if node.has_key? "volumes"
+          node['volumes'].each do |volume|
+            v.storage :file, :bus => 'sata', :device => volume['name'], :size => volume['size']
+          end
+        end # volumes
         # Intel Corporation Persistent Memory
         qemu_version = `qemu-system-x86_64 --version | perl -pe '($_)=/([0-9]+([.][0-9]+)+)/'`
         if Gem::Version.new(qemu_version) > Gem::Version.new('2.6.0')
@@ -128,7 +133,7 @@ Vagrant.configure("2") do |config|
               v.qemuargs :value => "memory-backend-file,id=#{vNVDIMM['mem_id']},share=#{vNVDIMM['share']},mem-path=#{vNVDIMM['path']},size=#{vNVDIMM['size']}"
               v.qemuargs :value => '-device'
               v.qemuargs :value => "nvdimm,id=#{vNVDIMM['id']},memdev=#{vNVDIMM['mem_id']},label-size=2M"
-          end
+            end
           end
         end
         # Intel Corporation QuickAssist Technology
@@ -164,18 +169,6 @@ Vagrant.configure("2") do |config|
             end
           end
         end
-        nodeconfig.vm.provision 'shell' do |sh|
-          sh.path =  "node.sh"
-          if node.has_key? "volumes"
-            $volume_mounts_dict = ''
-            node['volumes'].each do |volume|
-              $volume_mounts_dict += "#{volume['name']}=#{volume['mount']},"
-              $volume_file = "./#{node['name']}-#{volume['name']}.qcow2"
-              v.storage :file, :bus => 'sata', :device => volume['name'], :size => volume['size']
-            end
-            sh.args = ['-v', $volume_mounts_dict[0...-1]]
-          end
-        end
       end # libvirt
       nodeconfig.vm.provision 'shell' do |sh|
         sh.inline = <<-SHELL
@@ -183,6 +176,16 @@ Vagrant.configure("2") do |config|
           cat /vagrant/insecure_keys/key.pub | tee /root/.ssh/authorized_keys
           chmod og-wx /root/.ssh/authorized_keys
         SHELL
+      end
+      $volume_mounts_dict = ''
+      if node.has_key? "volumes"
+        node['volumes'].each do |volume|
+          $volume_mounts_dict += "#{volume['name']}=#{volume['mount']},"
+        end
+      end
+      nodeconfig.vm.provision 'shell' do |sh|
+        sh.path =  "node.sh"
+        sh.args = ['-v', $volume_mounts_dict[0...-1]]
       end
     end 
   end # node.each
