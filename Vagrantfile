@@ -48,6 +48,7 @@ File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_fi
   inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
 end
 
+$krd_debug = (ENV['KRD_DEBUG'] || :false).to_sym
 $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
 nodes.each do |node|
   if node.has_key? "networks"
@@ -184,6 +185,9 @@ Vagrant.configure("2") do |config|
         end
       end
       nodeconfig.vm.provision 'shell' do |sh|
+        sh.env = {
+          'KRD_DEBUG': "#{$krd_debug}"
+        }
         sh.path =  "node.sh"
         sh.args = ['-v', $volume_mounts_dict[0...-1]]
       end
@@ -206,7 +210,7 @@ Vagrant.configure("2") do |config|
     end
     installer.vm.provision 'shell', privileged: false do |sh|
       sh.env = {
-        'KRD_DEBUG': 'true'
+        'KRD_DEBUG': "#{$krd_debug}"
       }
       sh.inline = <<-SHELL
         cd /vagrant/
