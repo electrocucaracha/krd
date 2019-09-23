@@ -9,15 +9,17 @@ or Virtual Machines.
 
 # Components
 
-| Name           | Description                                   | Source                            | Status      |
-|:--------------:|:----------------------------------------------|:----------------------------------|:-----------:|
-| Kubernetes     | Base Kubernetes deployment                    | [kubespray][1]                    | Done        |
-| ovn-kubernetes | Integrates Opensource Virtual Networking      | [configure-ovn-kubernetes.yml][2] | Tested      |
-| Virtlet        | Allows to run VMs                             | [configure-virtlet.yml][3]        | Tested      |
-| Multus         | Provides Multiple Network support in a pod    |                                   | Tested      |
-| NFD            | Node feature discovery                        | [configure-nfd.yml][4]            | Tested      |
-| Istio          | Service Mesh platform                         |                                   | Tested      |
-| PMEM           | Persistent Memory CSI                         | [configure-pmem.yml][6]           | Implemented |
+| Name           | Description                                    | Source                            | Status      |
+|:--------------:|:-----------------------------------------------|:----------------------------------|:-----------:|
+| Kubernetes     | Base Kubernetes deployment                     | [kubespray][1]                    | Done        |
+| ovn-kubernetes | Integrates Opensource Virtual Networking       | [configure-ovn-kubernetes.yml][2] | Tested      |
+| Virtlet        | Allows to run VMs                              | [configure-virtlet.yml][3]        | Tested      |
+| Multus         | Provides Multiple Network support in a pod     |                                   | Tested      |
+| NFD            | Node feature discovery                         | [configure-nfd.yml][4]            | Tested      |
+| Istio          | Service Mesh platform                          |                                   | Tested      |
+| PMEM           | Persistent Memory CSI                          | [configure-pmem.yml][6]           | Implemented |
+| QAT            | QuickAssist Technology Plugin                  | [configure-qat.yml][8]            | Implemented |
+| SR-IOV         | Single Root Input/Output Virtualization Plugin | [configure-sriov.yml][9]          | Implemented |
 
 ## Deployment
 
@@ -96,3 +98,5 @@ Apache-2.0
 [5]: https://www.vagrantup.com/
 [6]: playbooks/configure-pmem.yml
 [7]: https://github.com/electrocucaracha/bootstrap-vagrant
+[8]: playbooks/configure-qat.yml
+[9]: playbooks/configure-sriov.yml
