@@ -3,3 +3,5 @@ skip_list:
   - '301'
   - '305'
   - '306'
+exclude_paths:
+  - ./roles
