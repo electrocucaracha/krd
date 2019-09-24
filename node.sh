@@ -79,19 +79,22 @@ else
 fi
 modprobe vhost_net
 echo vhost_net >> /etc/modules
-common_pkgs=(hwloc wget)
 # shellcheck disable=SC1091
 source /etc/os-release || source /usr/lib/os-release
+if [[ ${ID+x} = "x"  ]]; then
+    id_os="export $(grep "^ID=" /etc/os-release)"
+    eval "$id_os"
+fi
 case ${ID,,} in
-    *suse)
-        INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends ${common_pkgs[*]}"
+    opensuse*)
+        INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends lshw"
     ;;
     ubuntu|debian)
-        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install ${common_pkgs[*]} cpu-checker"
+        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install hwloc cpu-checker"
     ;;
     rhel|centos|fedora)
         PKG_MANAGER=$(command -v dnf || command -v yum)
-        INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install ${common_pkgs[*]}"
+        INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install hwloc wget"
     ;;
 esac
 
