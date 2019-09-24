@@ -50,3 +50,16 @@ function upgrade_k8s {
     sudo chown "$USER" "$HOME/.kube/config"
     sudo mv "$krd_inventory_folder/artifacts/kubectl" /usr/local/bin/kubectl
 }
+
+# run_k8s_iperf() - Function that execute networking benchmark
+function run_k8s_iperf {
+    local ipef_folder=/opt/kubernetes-iperf3
+
+    if [ ! -d "$ipef_folder" ]; then
+        sudo git clone --depth 1 https://github.com/Pharb/kubernetes-iperf3.git "$ipef_folder"
+        sudo chown -R "$USER" "$ipef_folder"
+    fi
+    pushd "$ipef_folder"
+        ./iperf3.sh | tee ~/iperf3.log
+    popd
+}
