@@ -592,3 +592,18 @@ function install_kubelive {
 
     sudo npm install -g kubelive
 }
+
+function install_cockpit {
+    if systemctl is-active --quiet cockpit; then
+        return
+    fi
+
+    _install_package cockpit
+    if command -v firewall-cmd && systemctl is-active --quiet firewalld; then
+        sudo firewall-cmd --permanent --add-service="cockpit" --zone=trusted
+        sudo firewall-cmd --set-default-zone=trusted
+        sudo firewall-cmd --reload
+    fi
+    sudo systemctl start cockpit
+    sudo systemctl enable cockpit
+}

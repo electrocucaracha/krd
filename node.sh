@@ -78,7 +78,9 @@ else
     fi
 fi
 modprobe vhost_net
-echo vhost_net >> /etc/modules
+if ! grep vhost_net /etc/modules; then
+    echo vhost_net >> /etc/modules
+fi
 # shellcheck disable=SC1091
 source /etc/os-release || source /usr/lib/os-release
 if [[ ${ID+x} = "x"  ]]; then
@@ -90,11 +92,11 @@ case ${ID,,} in
         INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends lshw"
     ;;
     ubuntu|debian)
-        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install hwloc cpu-checker"
+        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install hwloc cpu-checker cockpit cockpit-docker"
     ;;
     rhel|centos|fedora)
         PKG_MANAGER=$(command -v dnf || command -v yum)
-        INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install hwloc wget"
+        INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install hwloc wget cockpit cockpit-docker"
     ;;
 esac
 
