@@ -191,7 +191,10 @@ Vagrant.configure("2") do |config|
         sh.path =  "node.sh"
         sh.args = ['-v', $volume_mounts_dict[0...-1]]
       end
-    end 
+      if node['os'] == "centos"
+        nodeconfig.vm.provision :reload
+      end
+    end
   end # node.each
 
   config.vm.define :installer, primary: true, autostart: false do |installer|
