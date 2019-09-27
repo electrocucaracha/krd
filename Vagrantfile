@@ -114,7 +114,9 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.provider 'libvirt' do |v, override|
         override.vm.box =  box[:libvirt][node['os']][:name]
         override.vm.box_version = box[:libvirt][node['os']][:version]
-        v.nested = true
+        if node['roles'].include?("virtlet")
+          v.nested = true
+        end
         v.cpu_mode = 'host-passthrough'
         if node.has_key? "volumes"
           node['volumes'].each do |volume|
