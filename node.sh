@@ -96,7 +96,19 @@ case ${ID,,} in
     ;;
     rhel|centos|fedora)
         PKG_MANAGER=$(command -v dnf || command -v yum)
-        INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install hwloc wget cockpit cockpit-docker"
+        INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install"
+        if ! sudo "$PKG_MANAGER" repolist | grep "epel/"; then
+            $INSTALLER_CMD epel-release
+        fi
+        sudo "$PKG_MANAGER" updateinfo
+        $INSTALLER_CMD kernel
+        sudo grub2-set-default 0
+        grub_cfg="$(sudo readlink -f /etc/grub2.cfg)"
+        if dmesg | grep EFI; then
+            grub_cfg="/boot/efi/EFI/centos/grub.cfg"
+        fi
+        sudo grub2-mkconfig -o "$grub_cfg"
+        INSTALLER_CMD+=" hwloc wget cockpit cockpit-docker"
     ;;
 esac
 
