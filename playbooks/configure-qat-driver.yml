@@ -33,6 +33,12 @@
         src: "/tmp/qat.tar.gz"
         dest: "{{ qat_driver_dest }}"
         remote_src: yes
+    - name: SuSE | install build tools
+      zypper:
+        name: "pattern devel_C_C++"
+        state: present
+        type: pattern
+      when: ansible_os_family == 'Suse'
     - name: RedHat | install build tools
       yum:
         name: "@Development tools"
@@ -46,7 +52,12 @@
     - name: get kernel version
       shell: "uname -r"
       register: kernel_version
-    - name: install kernel development tools
+    - name: Debian | install kernel development tools
+      package:
+        name: "linux-headers-{{ kernel_version.stdout }}"
+        state: present
+      when: ansible_os_family == 'Debian'
+    - name: RedHat | install kernel development tools
       package:
         name: "kernel-devel-{{ kernel_version.stdout }}"
         state: present

@@ -21,9 +21,9 @@ ovn_pkgs:
   - ovn-common # <= 2.8.1-1
   - ovn-host
 qat_driver_pkgs:
-  - pciutils-dev
-  - g++
+  - pciutils
+  - build-essential
+  - libudev-dev
   - pkg-config
-  - libssl-dev
 jq_pkgs:
   - jq
