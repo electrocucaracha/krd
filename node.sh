@@ -66,9 +66,11 @@ fi
 case ${ID,,} in
     opensuse*)
         INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends lshw"
+        sudo zypper -n ref
     ;;
     ubuntu|debian)
         INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install hwloc cpu-checker cockpit cockpit-docker"
+        sudo apt-get update
     ;;
     rhel|centos|fedora)
         PKG_MANAGER=$(command -v dnf || command -v yum)
@@ -91,6 +93,7 @@ case ${ID,,} in
         echo "module.sig_unenforce" | sudo tee /etc/kernel/cmdline.d/allow-unsigned-modules.conf
         clr-boot-manager update
         INSTALLER_CMD="sudo -H -E swupd bundle-add hwloc cockpit"
+        sudo swupd update
 esac
 
 ${INSTALLER_CMD}
