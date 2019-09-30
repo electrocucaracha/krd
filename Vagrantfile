@@ -14,13 +14,13 @@ box = {
     "ubuntu" => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180708.0.0' },
     "centos" => { :name => 'generic/centos7', :version=> '1.9.2' },
     "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20190921' },
-    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '28510' }
+    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '31130' }
   },
   :libvirt => {
     "ubuntu" => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0' },
     "centos" => { :name => 'centos/7', :version=> '1901.01' },
     "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20190921' },
-    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '28510' }
+    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '31130' }
   }
 }
 
@@ -46,6 +46,11 @@ File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_fi
     end
   end
   inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
+end
+
+File.exists?("/usr/share/qemu/OVMF.fd") ? loader = "/usr/share/qemu/OVMF.fd" : loader = File.join(File.dirname(__FILE__), "OVMF.fd")
+if not File.exists?(loader)
+  system('curl -O https://download.clearlinux.org/image/OVMF.fd')
 end
 
 $krd_debug = (ENV['KRD_DEBUG'] || :false).to_sym
@@ -117,6 +122,9 @@ Vagrant.configure("2") do |config|
         if node['roles'].include?("virtlet")
           v.nested = true
         end
+        if node['os'] == "clearlinux"
+          v.loader = loader
+        end
         v.cpu_mode = 'host-passthrough'
         if node.has_key? "volumes"
           node['volumes'].each do |volume|
@@ -173,13 +181,6 @@ Vagrant.configure("2") do |config|
           end
         end
       end # libvirt
-      if node['os'] == "clearlinux"
-        nodeconfig.vm.provision "shell", inline: <<-SHELL
-          sudo mkdir -p /etc/systemd/resolved.conf.d
-          printf "[Resolve]\nDNSSEC=false" | sudo tee /etc/systemd/resolved.conf.d/dnssec.conf
-        SHELL
-        nodeconfig.vm.provision :reload
-      end
       nodeconfig.vm.provision 'shell' do |sh|
         sh.inline = <<-SHELL
           mkdir -p /root/.ssh

@@ -1,0 +1,24 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2019
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+openvswitch_service:
+openvswitch_pkgs:
+  - openvswitch
+ovn_central_service: ovn-central
+ovn_central_pkgs:
+  - openvswitch # <= 2.8.1-1
+ovn_controller_service: ovn-host
+ovn_pkgs:
+  - openvswitch # <= 2.8.1-1
+qat_driver_pkgs:
+  - linux-lts2018-dev
+  - make
+  - c-basic
+  - dev-utils
+  - devpkg-systemd
