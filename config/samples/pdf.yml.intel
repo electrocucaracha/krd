@@ -1,0 +1,140 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2019
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- name: "controller01"
+  os: "clearlinux"
+  networks:
+    - name: public-net
+      ip: "10.10.16.3"
+  memory: 8192
+  cpus: 2
+  roles:
+    - kube-master
+    - etcd
+- name: "compute01"
+  os: "clearlinux"
+  networks:
+    - name: public-net
+      ip: "10.10.16.6"
+  memory: 8192
+  qat_dev:
+    - "3d:01.0"
+    - "3d:01.1"
+    - "3d:01.2"
+    - "3d:01.3"
+    - "3d:01.4"
+    - "3d:01.5"
+    - "3d:01.6"
+    - "3d:01.7"
+    - "3d:02.0"
+    - "3d:02.1"
+    - "3d:02.2"
+    - "3d:02.3"
+    - "3d:02.4"
+    - "3d:02.5"
+    - "3d:02.6"
+    - "3d:02.7"
+  sriov_dev:
+    - "41:02.0"
+    - "41:02.1"
+    - "41:02.2"
+    - "41:02.3"
+    - "41:02.4"
+    - "41:02.5"
+    - "41:02.6"
+    - "41:02.7"
+  cpus: 8
+  volumes:
+    - name: sda
+      size: 50
+      mount: /var/lib/docker/
+  roles:
+    - kube-node
+    - qat-node
+- name: "compute02"
+  os: "clearlinux"
+  networks:
+    - name: public-net
+      ip: "10.10.16.7"
+  memory: 8192
+  qat_dev:
+    - "3f:01.0"
+    - "3f:01.1"
+    - "3f:01.2"
+    - "3f:01.3"
+    - "3f:01.4"
+    - "3f:01.5"
+    - "3f:01.6"
+    - "3f:01.7"
+    - "3f:02.0"
+    - "3f:02.1"
+    - "3f:02.2"
+    - "3f:02.3"
+    - "3f:02.4"
+    - "3f:02.5"
+    - "3f:02.6"
+    - "3f:02.7"
+  sriov_dev:
+    - "41:03.0"
+    - "41:03.1"
+    - "41:03.2"
+    - "41:03.3"
+    - "41:03.4"
+    - "41:03.5"
+    - "41:03.6"
+    - "41:03.7"
+  cpus: 8
+  volumes:
+    - name: sda
+      size: 50
+      mount: /var/lib/docker/
+  roles:
+    - kube-node
+    - qat-node
+- name: "compute03"
+  os: "clearlinux"
+  networks:
+    - name: public-net
+      ip: "10.10.16.8"
+  memory: 8192
+  qat_dev:
+    - "da:01.0"
+    - "da:01.1"
+    - "da:01.2"
+    - "da:01.3"
+    - "da:01.4"
+    - "da:01.5"
+    - "da:01.6"
+    - "da:01.7"
+    - "da:02.0"
+    - "da:02.1"
+    - "da:02.2"
+    - "da:02.3"
+    - "da:02.4"
+    - "da:02.5"
+    - "da:02.6"
+    - "da:02.7"
+  sriov_dev:
+    - "41:04.0"
+    - "41:04.1"
+    - "41:04.2"
+    - "41:04.3"
+    - "41:04.4"
+    - "41:04.5"
+    - "41:04.6"
+    - "41:04.7"
+  cpus: 8
+  volumes:
+    - name: sda
+      size: 50
+      mount: /var/lib/docker/
+  roles:
+    - kube-node
+    - qat-node

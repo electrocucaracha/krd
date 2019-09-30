@@ -86,6 +86,11 @@ case ${ID,,} in
         sudo grub2-mkconfig -o "$grub_cfg"
         INSTALLER_CMD+=" hwloc wget cockpit cockpit-docker"
     ;;
+    clear-linux-os)
+        mkdir -p /etc/kernel/cmdline.d
+        echo "module.sig_unenforce" | sudo tee /etc/kernel/cmdline.d/allow-unsigned-modules.conf
+        clr-boot-manager update
+        INSTALLER_CMD="sudo -H -E swupd bundle-add hwloc cockpit"
 esac
 
 ${INSTALLER_CMD}
