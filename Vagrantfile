@@ -141,7 +141,7 @@ Vagrant.configure("2") do |config|
         end
         # Intel Corporation QuickAssist Technology
         if node.has_key? "qat_dev"
-          qat_devices = `for i in 0434 0435 37c8 6f54 19e2; do lspci -d 8086:$i -m; done|awk '{print $1}'`
+          qat_devices = `for i in 0442 0443 37c9 19e3; do lspci -d 8086:$i -m; done|awk '{print $1}'`
           node['qat_dev'].each do |dev|
             if qat_devices.include? dev.to_s
               bus=dev.split(':')[0]
@@ -173,6 +173,13 @@ Vagrant.configure("2") do |config|
           end
         end
       end # libvirt
+      if node['os'] == "clearlinux"
+        nodeconfig.vm.provision "shell", inline: <<-SHELL
+          sudo mkdir -p /etc/systemd/resolved.conf.d
+          printf "[Resolve]\nDNSSEC=false" | sudo tee /etc/systemd/resolved.conf.d/dnssec.conf
+        SHELL
+        nodeconfig.vm.provision :reload
+      end
       nodeconfig.vm.provision 'shell' do |sh|
         sh.inline = <<-SHELL
           mkdir -p /root/.ssh
