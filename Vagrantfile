@@ -181,13 +181,6 @@ Vagrant.configure("2") do |config|
           end
         end
       end # libvirt
-      if node['os'] == "clearlinux"
-        nodeconfig.vm.provision "shell", inline: <<-SHELL
-          sudo mkdir -p /etc/systemd/resolved.conf.d
-          printf "[Resolve]\nDNSSEC=false" | sudo tee /etc/systemd/resolved.conf.d/dnssec.conf
-        SHELL
-        nodeconfig.vm.provision :reload
-      end
       nodeconfig.vm.provision 'shell' do |sh|
         sh.inline = <<-SHELL
           mkdir -p /root/.ssh
