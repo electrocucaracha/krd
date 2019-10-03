@@ -56,7 +56,7 @@ function _install_python {
 function _install_pip {
     if ! command -v pip; then
         _install_python
-        curl -sL https://bootstrap.pypa.io/get-pip.py | sudo python
+        curl -sL https://bootstrap.pypa.io/get-pip.py | sudo -E python
     else
         sudo -E pip install --upgrade pip
     fi
@@ -141,7 +141,7 @@ function _install_kubespray {
     if [[ ! -d $kubespray_folder ]]; then
         echo "Download kubespray binaries"
         _install_package git
-        sudo git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$kubespray_version"
+        sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$kubespray_version"
         sudo chown -R "$USER" $kubespray_folder
         pushd $kubespray_folder
         sudo -E pip install -r ./requirements.txt
