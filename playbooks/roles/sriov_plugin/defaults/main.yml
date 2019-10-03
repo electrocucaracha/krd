@@ -8,20 +8,9 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- include: cleanup.yml
-
-- name: ensure destination folder exists
-  file:
-    state: directory
-    path: "{{ sriov_template_folder }}"
-
-- name: generate SR-IOV k8s resources based on templates
-  template:
-    src: "{{ item }}.yaml.j2"
-    dest: "{{ sriov_template_folder }}/{{ item }}.yml"
-  with_items:
-    - configMap
-    - sriovdp-daemonset
-
-- name: create SR-IOV k8s resources
-  command: "/usr/local/bin/kubectl apply -f {{ sriov_template_folder }}"
+sriov_template_folder: /tmp/sriov_k8s
+sriov_devices:
+  - 37cd
+sriov_drivers:
+  - i40evf
+sriov_plugin_version: v3.0.0

@@ -238,7 +238,7 @@ function install_k8s_addons {
     fi
     eval "${ansible_galaxy_cmd} -p /tmp/galaxy-roles -r $KRD_FOLDER/galaxy-requirements.yml --ignore-errors"
 
-    for addon in ${KRD_ADDONS:-virtlet}; do
+    for addon in ${KRD_ADDONS:-addons}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
         eval "ANSIBLE_ROLES_PATH=/tmp/galaxy-roles $ansible_cmd $krd_playbooks/configure-${addon}.yml" | sudo tee "setup-${addon}.log"
         if [[ "${KRD_ENABLE_TESTS}" == "true" ]]; then

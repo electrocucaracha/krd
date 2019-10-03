@@ -19,7 +19,7 @@ or Virtual Machines.
 | Istio          | Service Mesh platform                          |                                   | Tested      |
 | PMEM           | Persistent Memory CSI                          | [configure-pmem.yml][6]           | Implemented |
 | QAT            | QuickAssist Technology Plugin                  | [configure-qat.yml][8]            | Implemented |
-| SR-IOV         | Single Root Input/Output Virtualization Plugin | [configure-sriov.yml][9]          | Implemented |
+| SR-IOV         | Single Root Input/Output Virtualization Plugin | [sriov_plugin role][9]            | Implemented |
 
 ## Deployment
 
@@ -98,4 +98,4 @@ Apache-2.0
 [6]: playbooks/configure-pmem.yml
 [7]: https://github.com/electrocucaracha/bootstrap-vagrant
 [8]: playbooks/configure-qat.yml
-[9]: playbooks/configure-sriov.yml
+[9]: playbooks/roles/sriov_plugin
