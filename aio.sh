@@ -58,8 +58,16 @@ case ${ID,,} in
     sudo "$PKG_MANAGER" updateinfo
     ;;
 esac
-${INSTALLER_CMD} git
 
+if ! command -v wget; then
+    ${INSTALLER_CMD} wget
+fi
+echo "Sync server's clock"
+sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+
+if ! command -v git; then
+    ${INSTALLER_CMD} git
+fi
 echo "Cloning and configuring KRD project..."
 if [ ! -d "${KRD_FOLDER:-/opt/krd}" ]; then
     sudo -E git clone --depth 1 https://github.com/electrocucaracha/krd "${KRD_FOLDER:-/opt/krd}"
