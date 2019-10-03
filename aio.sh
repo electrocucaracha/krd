@@ -62,7 +62,7 @@ ${INSTALLER_CMD} git
 
 echo "Cloning and configuring KRD project..."
 if [ ! -d "${KRD_FOLDER:-/opt/krd}" ]; then
-    sudo git clone --depth 1 https://github.com/electrocucaracha/krd "${KRD_FOLDER:-/opt/krd}"
+    sudo -E git clone --depth 1 https://github.com/electrocucaracha/krd "${KRD_FOLDER:-/opt/krd}"
     sudo chown -R "$USER" "${KRD_FOLDER:-/opt/krd}"
 fi
 cd /opt/krd || exit
@@ -115,7 +115,7 @@ fi
 
 if [ "${KRD_ENABLE_NESTED_VIRT:-false}" == "true" ]; then
     echo "Enabling nested-virtualization"
-    sudo ./node.sh
+    sudo -E ./node.sh
 fi
 
 echo "Deploying KRD project"
