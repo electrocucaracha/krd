@@ -84,7 +84,6 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_HELM_CHART         |             | Specifies the Helm chart to be installed                              |
 | KRD_FOLDER             | /opt/krd    | KRD source code destination folder                                    |
 | KRD_ACTIONS            | install_k8s | KRD actions to be installed during the All-in-One execution           |
-| KRD_ENABLE_NESTED_VIRT | false       | Enable Nested-Virtualization for host-passthrough CPU capabilities    |
 | KRD_CONTAINER_RUNTIME  | docker      | Specifies the Container Runtime to be used for deploying kubernetes   |
 
 ## License
