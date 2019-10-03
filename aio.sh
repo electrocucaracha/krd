@@ -80,7 +80,10 @@ if [ "$is_k8s_action" == "true" ]; then
     rm -f ~/.ssh/id_rsa*
     sudo mkdir -p /root/.ssh/
     echo -e "\n\n\n" | ssh-keygen -t rsa -N ""
-    sudo cp ~/.ssh/id_rsa /root/.ssh/id_rsa
+    if [ "$EUID" -ne "0" ]; then
+        # Attempt to copy file when non root else cmd fails with 'same file' message
+        sudo cp ~/.ssh/id_rsa /root/.ssh/id_rsa
+    fi
     < ~/.ssh/id_rsa.pub tee --append  ~/.ssh/authorized_keys | sudo tee --append /root/.ssh/authorized_keys
     chmod og-wx ~/.ssh/authorized_keys
 
