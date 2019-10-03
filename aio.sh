@@ -68,7 +68,7 @@ fi
 cd /opt/krd || exit
 
 is_k8s_action="false"
-for value in "${KRD_ACTIONS[@]}"; do
+for value in "${KRD_ACTIONS[@]:-install_k8s}"; do
     if [[ "$value" == *k8s* ]]; then
         is_k8s_action="true"
         break
