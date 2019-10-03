@@ -7,5 +7,4 @@ inventory/*
 config/pdf.yml
 *.vdi
 docs/build/
-roles/
 OVMF.fd

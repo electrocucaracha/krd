@@ -230,16 +230,17 @@ function install_k8s_addons {
     install_ansible
 
     sudo mkdir -p /etc/ansible/
+    sudo mkdir -p /tmp/galaxy-roles
     sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
     ansible_galaxy_cmd="sudo ansible-galaxy install"
     if [ "${KRD_DEBUG:-false}" == "true" ]; then
         ansible_galaxy_cmd+=" -vvv"
     fi
-    eval "${ansible_galaxy_cmd} -r $KRD_FOLDER/galaxy-requirements.yml --ignore-errors"
+    eval "${ansible_galaxy_cmd} -p /tmp/galaxy-roles -r $KRD_FOLDER/galaxy-requirements.yml --ignore-errors"
 
     for addon in ${KRD_ADDONS:-virtlet}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
-        eval "$ansible_cmd $krd_playbooks/configure-${addon}.yml" | sudo tee "setup-${addon}.log"
+        eval "ANSIBLE_ROLES_PATH=/tmp/galaxy-roles $ansible_cmd $krd_playbooks/configure-${addon}.yml" | sudo tee "setup-${addon}.log"
         if [[ "${KRD_ENABLE_TESTS}" == "true" ]]; then
             pushd "$KRD_FOLDER"/tests
             bash "${addon}".sh
