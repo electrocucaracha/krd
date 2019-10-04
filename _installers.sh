@@ -200,6 +200,7 @@ function _install_kubespray {
                 fi
             fi
         fi
+        sed -i "s/^kube_network_plugin: .*$/kube_network_plugin: ${KRD_NETWORK_PLUGIN:-flannel}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
     fi
 }
 
