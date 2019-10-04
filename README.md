@@ -16,7 +16,7 @@ or Virtual Machines.
 | Multus         | Provides Multiple Network support in a pod     |                                   | Tested      |
 | NFD            | Node feature discovery                         | [nfd role][4]                     | Tested      |
 | Istio          | Service Mesh platform                          |                                   | Tested      |
-| PMEM           | Persistent Memory CSI                          | [configure-pmem.yml][6]           | Implemented |
+| PMEM           | Persistent Memory CSI                          | [pmem role][6]                    | Implemented |
 | QAT            | QuickAssist Technology Plugin                  | [configure-qat.yml][8]            | Implemented |
 | SR-IOV         | Single Root Input/Output Virtualization Plugin | [sriov_plugin role][9]            | Implemented |
 
@@ -93,7 +93,7 @@ Apache-2.0
 [3]: playbooks/configure-virtlet.yml
 [4]: playbooks/roles/nfd
 [5]: https://www.vagrantup.com/
-[6]: playbooks/configure-pmem.yml
+[6]: playbooks/roles/pmem
 [7]: https://github.com/electrocucaracha/bootstrap-vagrant
 [8]: playbooks/configure-qat.yml
 [9]: playbooks/roles/sriov_plugin

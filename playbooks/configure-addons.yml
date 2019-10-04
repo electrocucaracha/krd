@@ -33,3 +33,28 @@
   tags: nfd
   roles:
     - nfd
+
+- name: label worker nodes with pmem devices
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: check if pmem device exists
+      stat:
+        path: /dev/pmem0
+      register: pmem_dev_check
+    - name: register PMEM server
+      command: "/usr/local/bin/kubectl label node {{ ansible_hostname }} storage=pmem --overwrite"
+      when: pmem_dev_check.stat.exists
+      delegate_to: localhost
+
+- name: install Persistent Memory add-on
+  hosts: localhost
+  pre_tasks:
+    - name: Load krd variables
+      include_vars:
+        file: krd-vars.yml
+  tags: pmem
+  roles:
+    - role: andrewrothstein.go
+      go_ver: "{{ go_version }}"
+    - pmem
