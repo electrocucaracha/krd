@@ -12,7 +12,6 @@ or Virtual Machines.
 | Name           | Description                                    | Source                            | Status      |
 |:--------------:|:-----------------------------------------------|:----------------------------------|:-----------:|
 | Kubernetes     | Base Kubernetes deployment                     | [kubespray][1]                    | Done        |
-| ovn-kubernetes | Integrates Opensource Virtual Networking       | [configure-ovn-kubernetes.yml][2] | Tested      |
 | Virtlet        | Allows to run VMs                              | [configure-virtlet.yml][3]        | Tested      |
 | Multus         | Provides Multiple Network support in a pod     |                                   | Tested      |
 | NFD            | Node feature discovery                         | [configure-nfd.yml][4]            | Tested      |
@@ -91,7 +90,6 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 Apache-2.0
 
 [1]: https://github.com/kubernetes-sigs/kubespray
-[2]: playbooks/configure-ovn-kubernetes.yml
 [3]: playbooks/configure-virtlet.yml
 [4]: playbooks/configure-nfd.yml
 [5]: https://www.vagrantup.com/

@@ -101,8 +101,7 @@ playbooks/
 ##########
 
 This folder contains a set of Ansible playbooks which performs the
-tasks required for configuring services like Multus, Virtlet and/or
-OVN.
+tasks required for configuring services and Kubernetes Device plugins.
 
 playbooks/configure-krd.yml
 ***************************

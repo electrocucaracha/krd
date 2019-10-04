@@ -87,12 +87,6 @@ addressing those tasks to localhost.
     [etcd]
     localhost
 
-    [ovn-central]
-    localhost
-
-    [ovn-controller]
-    localhost
-
     [virtlet]
     localhost
 

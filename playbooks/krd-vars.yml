@@ -10,14 +10,6 @@
 
 base_dest: /tmp
 
-ovn_kubernetes_dest: "{{ base_dest }}/ovn-kubernetes"
-ovn_kubernetes_source_type: "tarball"
-ovn_kubernetes_version: 0.3.0
-ovn_kubernetes_url: "https://github.com/openvswitch/ovn-kubernetes/archive/v{{ ovn_kubernetes_version }}.tar.gz"
-#ovn_kubernetes_source_type: "source"
-#ovn_kubernetes_version: 456a0857956988f968bb08644c650ba826592ec1
-#ovn_kubernetes_url: "https://github.com/openvswitch/ovn-kubernetes"
-
 criproxy_dest: "{{ base_dest }}/criproxy"
 criproxy_source_type: "binary"
 criproxy_version: 0.14.0

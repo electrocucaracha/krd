@@ -16,7 +16,6 @@
   roles:
     - kube-master
     - etcd
-    - ovn-central
 - name: "minion01"
   os: "centos"
   ip: "10.10.16.4"
@@ -24,7 +23,6 @@
   cpus: 16
   roles:
     - kube-node
-    - ovn-controller
     - virtlet
 - name: "minion02"
   os: "centos"
@@ -33,4 +31,3 @@
   cpus: 16
   roles:
     - kube-node
-    - ovn-controller

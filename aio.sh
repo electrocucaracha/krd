@@ -109,12 +109,6 @@ $hostname
 [etcd]
 $hostname
 
-[ovn-central]
-$hostname
-
-[ovn-controller]
-$hostname
-
 [virtlet]
 $hostname
 
