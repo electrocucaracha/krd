@@ -8,9 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-base_dest: /tmp
-
-criproxy_dest: "{{ base_dest }}/criproxy"
+criproxy_dest: "/tmp/criproxy"
 criproxy_source_type: "binary"
 criproxy_version: 0.14.0
 criproxy_url: "https://github.com/Mirantis/criproxy/releases/download/v{{ criproxy_version }}/criproxy"
@@ -24,12 +22,6 @@ virtlet_url: "https://github.com/Mirantis/virtlet/releases/download/v{{ virtlet_
 #virtlet_source_type: "source"
 #virtlet_version: 68e11b8f1db2c78b063126899f0e60910700975d
 #virtlet_url: "https://github.com/Mirantis/virtlet"
-
-qat_version: "1.7.l.4.6.0-00025"
-qat_driver_dest: "{{ base_dest }}/qat"
-qat_driver_url: "https://01.org/sites/default/files/downloads/qat{{ qat_version }}.tar.gz"
-qat_plugin_version: "0.15.0"
-qat_plugin_url: "https://raw.githubusercontent.com/intel/intel-device-plugins-for-kubernetes/master/deployments/qat_plugin/"
 
 go_version: '1.12.7'
 kubespray_version: v2.11.0

@@ -1,0 +1,29 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2019
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- include: cleanup.yml
+
+- name: ensure destination folder exists
+  file:
+    state: directory
+    path: "{{ qat_template_folder }}"
+
+- name: generate QAT k8s resources based on templates
+  template:
+    src: qat_plugin.yaml.j2
+    dest: "{{ qat_template_folder }}/qat_plugin.yml"
+
+- name: get QAT configmap files
+  copy:
+    src: qat_plugin_default_configmap.yaml
+    dest: "{{ qat_template_folder }}/qat_plugin_default_configmap.yml"
+
+- name: create QAT k8s resources
+  command: "/usr/local/bin/kubectl apply -f {{ qat_template_folder }}"

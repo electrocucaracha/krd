@@ -58,3 +58,22 @@
     - role: andrewrothstein.go
       go_ver: "{{ go_version }}"
     - pmem
+
+- name: install QuickAssist drivers
+  hosts: qat-node
+  become: yes
+  tags:
+    - qat
+    - qat-driver
+  roles:
+    - role: geerlingguy.repo-epel
+      when: ansible_os_family == 'RedHat'
+    - qat_driver
+
+- name: install QuickAssist Plugin
+  hosts: localhost
+  tags:
+    - qat
+    - qat-plugin
+  roles:
+    - qat_plugin

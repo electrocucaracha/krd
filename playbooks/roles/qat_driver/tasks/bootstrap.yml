@@ -1,0 +1,48 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2019 Intel Corporation
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- name: bootstrap - SuSE | install build tools
+  zypper:
+    name: "pattern devel_C_C++"
+    state: present
+    type: pattern
+  when: ansible_os_family == 'Suse'
+
+- name: bootstrap - RedHat | install build tools
+  yum:
+    name: "@Development tools"
+    state: present
+  when: ansible_os_family == 'RedHat'
+
+- name: Load krd variables
+  include_vars:
+    file: "{{ ansible_os_family }}.yml"
+
+- name: bootstrap | install qat compilation packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ qat_driver_pkgs }}"
+
+- name: bootstrap | get kernel version
+  shell: "uname -r"
+  register: kernel_version
+
+- name: bootstrap - Debian | install kernel development tools
+  package:
+    name: "linux-headers-{{ kernel_version.stdout }}"
+    state: present
+  when: ansible_os_family == 'Debian'
+
+- name: bootstrap - RedHat | install kernel development tools
+  package:
+    name: "kernel-devel-{{ kernel_version.stdout }}"
+    state: present
+  when: ansible_os_family == 'RedHat'
