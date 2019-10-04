@@ -63,6 +63,8 @@ function _install_packages {
             sudo apt-get install -y -qq "$@"
         ;;
         rhel|centos|fedora)
+            PKG_MANAGER=$(command -v dnf || command -v yum)
+            sudo $PKG_MANAGER install -y -q "$@"
         ;;
     esac
 }
