@@ -64,7 +64,7 @@ function _install_packages {
         ;;
         rhel|centos|fedora)
             PKG_MANAGER=$(command -v dnf || command -v yum)
-            sudo $PKG_MANAGER install -y -q "$@"
+            sudo "$PKG_MANAGER" install -y -q "$@"
         ;;
     esac
 }

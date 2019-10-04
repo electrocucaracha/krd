@@ -266,7 +266,10 @@ function install_rundeck {
             update_repos
         ;;
         rhel|centos|fedora)
-            _install_packages java-1.8.0-openjdk java-1.8.0-openjdk-devel
+            local java_version=1.8.0
+            if ! command -v java; then
+                _install_packages java-${java_version}-openjdk java-${java_version}-openjdk-devel
+            fi
             sudo -E rpm -Uvh http://repo.rundeck.org/latest.rpm
         ;;
     esac
