@@ -25,13 +25,6 @@ virtlet_url: "https://github.com/Mirantis/virtlet/releases/download/v{{ virtlet_
 #virtlet_version: 68e11b8f1db2c78b063126899f0e60910700975d
 #virtlet_url: "https://github.com/Mirantis/virtlet"
 
-nfd_dest: "{{ base_dest }}/nfd"
-nfd_source_type: "source"
-nfd_version: v0.4.0
-nfd_url: "https://github.com/kubernetes-incubator/node-feature-discovery"
-#nfd_source_type: "tarball"
-#nfd_url: "https://github.com/kubernetes-sigs/node-feature-discovery/archive/{{ nfd_version}}.tar.gz"
-
 qat_version: "1.7.l.4.6.0-00025"
 qat_driver_dest: "{{ base_dest }}/qat"
 qat_driver_url: "https://01.org/sites/default/files/downloads/qat{{ qat_version }}.tar.gz"

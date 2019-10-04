@@ -1,0 +1,24 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2019
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- name: cleanup | get nfd pod names
+  shell: /usr/local/bin/kubectl get pods -n node-feature-discovery | grep nfd-worker | awk '{print $1}'
+  register: nfd_pods
+
+- name: cleanup | delete nfd daemonset
+  command: "/usr/local/bin/kubectl delete ds/nfd-worker -n node-feature-discovery --now --force"
+  ignore_errors: True
+
+- name: cleanup | wait for destroying nfd daemonset
+  shell: "/usr/local/bin/kubectl get pods {{ item }} -n node-feature-discovery"
+  register: get_pod_result
+  until: get_pod_result.rc == 0
+  ignore_errors: True
+  with_items: '{{ nfd_pods.stdout_lines }}'

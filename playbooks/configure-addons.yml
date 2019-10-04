@@ -27,3 +27,9 @@
   tags: sriov-plugin
   roles:
     - sriov_plugin
+
+- name: install Node Feature Discovery add-on
+  hosts: localhost
+  tags: nfd
+  roles:
+    - nfd

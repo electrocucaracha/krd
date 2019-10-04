@@ -14,7 +14,7 @@ or Virtual Machines.
 | Kubernetes     | Base Kubernetes deployment                     | [kubespray][1]                    | Done        |
 | Virtlet        | Allows to run VMs                              | [configure-virtlet.yml][3]        | Tested      |
 | Multus         | Provides Multiple Network support in a pod     |                                   | Tested      |
-| NFD            | Node feature discovery                         | [configure-nfd.yml][4]            | Tested      |
+| NFD            | Node feature discovery                         | [nfd role][4]                     | Tested      |
 | Istio          | Service Mesh platform                          |                                   | Tested      |
 | PMEM           | Persistent Memory CSI                          | [configure-pmem.yml][6]           | Implemented |
 | QAT            | QuickAssist Technology Plugin                  | [configure-qat.yml][8]            | Implemented |
@@ -91,7 +91,7 @@ Apache-2.0
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [3]: playbooks/configure-virtlet.yml
-[4]: playbooks/configure-nfd.yml
+[4]: playbooks/roles/nfd
 [5]: https://www.vagrantup.com/
 [6]: playbooks/configure-pmem.yml
 [7]: https://github.com/electrocucaracha/bootstrap-vagrant
