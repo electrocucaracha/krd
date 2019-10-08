@@ -69,7 +69,7 @@ case ${ID,,} in
         sudo zypper -n ref
     ;;
     ubuntu|debian)
-        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install hwloc cpu-checker cockpit cockpit-docker"
+        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install hwloc cockpit cockpit-docker"
         sudo apt-get update
     ;;
     rhel|centos|fedora)
