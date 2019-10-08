@@ -204,6 +204,23 @@ function _install_kubespray {
     fi
 }
 
+function _install_krew {
+    local krew_version="v0.3.1"
+
+    if kubectl krew version &>/dev/null; then
+        return
+    fi
+
+    pushd "$(mktemp -d)"
+    curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/download/${krew_version}/krew.{tar.gz,yaml}" &&
+    tar zxvf krew.tar.gz
+    ./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" install --manifest=krew.yaml --archive=krew.tar.gz
+    export PATH="$PATH:${KREW_ROOT:-$HOME/.krew}/bin"
+    sudo sed -i "s|^PATH=.*|PATH=\"$PATH\"|" /etc/environment
+    kubectl krew update
+    popd
+}
+
 # install_k8s() - Install Kubernetes using kubespray tool
 function install_k8s {
     echo "Installing Kubernetes"
@@ -223,6 +240,7 @@ function install_k8s {
     sudo cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
     sudo chown -R "$USER" "$HOME/.kube/"
     sudo mv "$krd_inventory_folder/artifacts/kubectl" /usr/local/bin/kubectl
+    _install_krew
 }
 
 # install_k8s_addons() - Install Kubenertes AddOns
