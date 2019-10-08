@@ -1,0 +1,18 @@
+apiVersion: "k8s.cni.cncf.io/v1"
+kind: NetworkAttachmentDefinition
+metadata:
+  name: {{ sriov_network_name }}
+  annotations:
+    k8s.v1.cni.cncf.io/resourceName: intel.com/{{ sriov_resource_name }}
+spec:
+  config: '{
+    "type": "sriov",
+    "ipam": {
+            "type": "host-local",
+            "subnet": "{{ sriov_network_subnet }}",
+            "routes": [
+                    { "dst": "0.0.0.0/0" }
+            ],
+            "gateway": "{{ sriov_network_gateway }}"
+    }
+  }'

@@ -22,9 +22,19 @@
       kubectl_ver: "v{{ kubectl_version }}"
       when: not kubectl_lnk.stat.exists
 
+- name: install SR-IOV Network CNI
+  hosts: localhost
+  tags:
+    - sriov
+    - sriov-cni
+  roles:
+    - sriov_cni
+
 - name: install SR-IOV Network Device Plugin
   hosts: localhost
-  tags: sriov-plugin
+  tags:
+    - sriov
+    - sriov-plugin
   roles:
     - sriov_plugin
 
