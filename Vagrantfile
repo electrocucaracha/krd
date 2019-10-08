@@ -13,13 +13,13 @@ box = {
   :virtualbox => {
     "ubuntu" => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180708.0.0' },
     "centos" => { :name => 'generic/centos7', :version=> '1.9.2' },
-    "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20190921' },
+    "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20191004' },
     "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '31130' }
   },
   :libvirt => {
     "ubuntu" => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0' },
     "centos" => { :name => 'centos/7', :version=> '1901.01' },
-    "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20190921' },
+    "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20191004' },
     "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '31130' }
   }
 }
