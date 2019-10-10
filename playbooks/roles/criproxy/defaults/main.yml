@@ -1,17 +1,13 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2018
+# Copyright (c) 2019
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-go_version: '1.12.7'
-kubespray_version: v2.11.0
-kubectl_version: 1.14.1
-helm_client_version: 2.13.1
-istio_version: 1.1.7
-knative_version: 0.6.0
-kiali_version: v0.20
+criproxy_dest: "/tmp/criproxy"
+criproxy_version: 0.14.0
+criproxy_url: "https://github.com/Mirantis/criproxy/releases/download/v{{ criproxy_version }}/criproxy"

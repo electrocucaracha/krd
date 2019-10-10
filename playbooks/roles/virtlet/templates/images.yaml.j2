@@ -1,0 +1,16 @@
+translations:
+  - name: ubuntu/14.04
+    url: https://cloud-images.ubuntu.com/trusty/current/trusty-server-cloudimg-amd64-disk1.img
+  - name: ubuntu/16.04
+    url: https://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.img
+  - name: ubuntu/18.04
+    url: https://cloud-images.ubuntu.com/bionic/current/bionic-server-cloudimg-amd64.img
+  - regexp: 'centos/(\d+)-(\d+)'
+    url: 'https://cloud.centos.org/centos/$1/images/CentOS-$1-x86_64-GenericCloud-$2.qcow2'
+  - name: fedora
+    url: https://download.fedoraproject.org/pub/fedora/linux/releases/30/Cloud/x86_64/images/Fedora-Cloud-Base-30-1.2.x86_64.qcow2
+{% if lookup('env','http_proxy') != "randomfoobarstring" %}
+transports:
+  "": 
+    proxy: "{{ lookup('env','http_proxy') }}"
+{% endif %}
