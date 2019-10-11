@@ -9,7 +9,7 @@
 ##############################################################################
 
 - name: "controller01"
-  os: "ubuntu"
+  os: "centos"
   networks:
     - name: public-net
       ip: "10.10.16.3"
@@ -19,7 +19,7 @@
     - kube-master
     - etcd
 - name: "controller02"
-  os: "ubuntu"
+  os: "centos"
   networks:
     - name: public-net
       ip: "10.10.16.4"
@@ -29,7 +29,7 @@
     - kube-master
     - etcd
 - name: "controller03"
-  os: "ubuntu"
+  os: "centos"
   networks:
     - name: public-net
       ip: "10.10.16.5"
@@ -39,7 +39,7 @@
     - kube-master
     - etcd
 - name: "compute01"
-  os: "centos"
+  os: "ubuntu"
   networks:
     - name: public-net
       ip: "10.10.16.6"
@@ -75,7 +75,7 @@
     - criu
     - qat-node
 - name: "compute02"
-  os: "centos"
+  os: "ubuntu"
   networks:
     - name: public-net
       ip: "10.10.16.7"
