@@ -48,23 +48,29 @@ The following instruction starts the provisioning process.
 
 .. code-block:: bash
 
-    wget -O - https://raw.githubusercontent.com/electrocucaracha/krd/master/aio.sh | bash
+    KRD_ACTIONS=("install_k8s")
+    curl -fsSL https://raw.githubusercontent.com/electrocucaracha/krd/master/aio.sh | KRD_ACTIONS_DECLARE=$(declare -p KRD_ACTIONS) bash
 
-In overall, this script can be summarized in three general phases:
+In overall, this script can be summarized in the following phases:
 
-1. Cloning and configuring the KRD project.
-2. Enabiling Nested-Virtualization.
-3. Deploying KRD services.
+1. Server validation.
+2. Installation of dependencies.
+3. Configuration..
+4. Deploying KRD services.
 
-**Cloning and configuring the KRD project**
+**Server validation**
 
-KRD requires multiple files(bash scripts and ansible playbooks) to
-operate. Therefore, it's necessary to clone the
-*electrocucaracha/krds* project.
+This phase validates that the account of the user running the KRD
+scripts is passworless sudo and the IP address has been included as
+part of the NO_PROXY values.
 
-.. code-block:: bash
+**Installation of dependencies**
 
-    git clone https://github.com/electrocucaracha/krd
+KRD requires git command line to pulls its source code and also
+executes the instructions provided by the *node.sh* script which
+installs additional management tools.
+
+**Configuration**
 
 Ansible works agains multiple systems, the way for selecting them is
 through the usage of the inventory. The inventory file is a static
@@ -105,27 +111,14 @@ usage of passwords.
     # cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
     # chmod og-wx ~/.ssh/authorized_keys
 
-**Enabling Nested-Virtualization**
-
-KRD installs Virtlet_ Kubernetes CRI for running Virtual Machine
-workloads. Nested-virtualization gives the ability of running a
-Virtual Machine within another. The *node.sh* bash script contains the
-instructions for enabling Nested-Virtualization.
-
-.. _Virtlet : https://github.com/Mirantis/virtlet
-
-.. code-block:: bash
-
-    # ./node.sh
-
 **Deploying KRD services**
 
 Finally, the KRD provisioning process can be started through the use
-of *installer.sh* bash script. The output of this script is collected
-in the *krd_installer.log* file for future reference.
+of *krd_command.sh* bash script. The output of this script is
+collected in the *krd_${krd_action}.log* file for future reference.
 
 .. code-block:: bash
 
-    # ./installer.sh | tee krd_installer.log
+    # ./krd_command.sh -a "$krd_action" | tee "krd_${krd_action}.log"
 
 .. image:: ./img/installer_workflow.png
