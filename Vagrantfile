@@ -55,6 +55,7 @@ end
 
 $krd_debug = (ENV['KRD_DEBUG'] || :false).to_sym
 $krd_network_plugin = (ENV['KRD_NETWORK_PLUGIN'] || :flannel).to_sym
+$krd_enable_multus = (ENV['KRD_ENABLE_MULTUS'] || :true).to_sym
 $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
 nodes.each do |node|
   if node.has_key? "networks"
@@ -226,6 +227,7 @@ Vagrant.configure("2") do |config|
     installer.vm.provision 'shell', privileged: false do |sh|
       sh.env = {
         'KRD_DEBUG': "#{$krd_debug}",
+        'KRD_ENABLE_MULTUS': "#{$krd_enable_multus}",
         'KRD_NETWORK_PLUGIN': "#{$krd_network_plugin}"
       }
       sh.inline = <<-SHELL

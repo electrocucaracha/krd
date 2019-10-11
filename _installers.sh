@@ -201,6 +201,7 @@ function _install_kubespray {
             fi
         fi
         sed -i "s/^kube_network_plugin: .*$/kube_network_plugin: ${KRD_NETWORK_PLUGIN:-flannel}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^kube_network_plugin_multus: .*$/kube_network_plugin_multus: ${KRD_ENABLE_MULTUS:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
     fi
 }
 

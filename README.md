@@ -85,6 +85,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_ACTIONS            | install_k8s | KRD actions to be installed during the All-in-One execution           |
 | KRD_CONTAINER_RUNTIME  | docker      | Specifies the Container Runtime to be used for deploying kubernetes   |
 | KRD_NETWORK_PLUGIN     | flannel     | Choose network plugin (calico, canal, cilium, contiv, flannel weave)  |
+| KRD_ENABLE_MULTUS      | true        | Enable/Disable Kubernetes Multus CNI                                  |
 
 ## License
 
