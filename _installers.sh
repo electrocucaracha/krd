@@ -56,6 +56,7 @@ function _install_python {
 function _install_pip {
     if ! command -v pip; then
         _install_python
+        _install_package curl
         curl -sL https://bootstrap.pypa.io/get-pip.py | sudo -E python
     else
         sudo -E pip install --upgrade pip
@@ -88,6 +89,7 @@ function install_docker {
             sudo systemctl unmask docker.service
         ;;
         *)
+            _install_package curl
             curl -fsSL https://get.docker.com/ | sh
         ;;
     esac
@@ -213,6 +215,7 @@ function _install_krew {
     fi
 
     pushd "$(mktemp -d)"
+    _install_package curl
     curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/download/${krew_version}/krew.{tar.gz,yaml}" &&
     tar zxvf krew.tar.gz
     ./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" install --manifest=krew.yaml --archive=krew.tar.gz
@@ -282,6 +285,7 @@ function install_rundeck {
         ;;
         ubuntu|debian)
             echo "deb https://rundeck.bintray.com/rundeck-deb /" | sudo tee -a /etc/apt/sources.list.d/rundeck.list
+            _install_package curl
             curl 'https://bintray.com/user/downloadSubjectPublicKey?username=bintray' | sudo apt-key add -
             update_repos
         ;;
@@ -325,6 +329,7 @@ function install_helm {
         return
     fi
 
+    _install_package curl
     curl -L https://git.io/get_helm.sh | HELM_INSTALL_DIR=/usr/bin bash
     sudo useradd helm
     sudo sudo mkdir -p /home/helm/.kube
@@ -422,6 +427,7 @@ function install_istio {
         return
     fi
 
+    _install_package curl
     curl -L https://git.io/getLatestIstio | ISTIO_VERSION="$istio_version" sh -
     pushd "./istio-$istio_version/bin"
     chmod +x ./istioctl
@@ -484,6 +490,7 @@ function install_kiali {
     export KIALI_IMAGE_VERSION=$kiali_version
     export ISTIO_NAMESPACE=istio-system
 
+    _install_package curl
     bash <(curl -L https://git.io/getLatestKialiOperator)
 }
 
@@ -602,6 +609,7 @@ function install_kubelive {
     fi
 
     if ! command -v npm; then
+        _install_package curl
         curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
         _install_package nodejs
 
