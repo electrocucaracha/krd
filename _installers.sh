@@ -422,7 +422,6 @@ function install_openstack {
 function install_istio {
     istio_version=$(_get_version istio)
 
-
     if command -v istioctl; then
         return
     fi
@@ -445,7 +444,7 @@ function install_istio {
         helm install istio.io/istio-init --name istio-init --namespace istio-system
     fi
     echo "Waiting for istio-init to start..."
-    until [[ $(kubectl get crds | grep -c 'istio.io\|certmanager.k8s.io') -ge "53" ]];do
+    until [[ $(kubectl get crds | grep -c 'istio.io\|certmanager.k8s.io') -ge "23" ]];do
         printf '.'
         sleep 2
     done
