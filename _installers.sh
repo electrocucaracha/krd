@@ -161,6 +161,7 @@ function _install_kubespray {
         {
         echo "override_system_hostname: false"
         echo "kubeadm_enabled: true"
+        echo "docker_dns_servers_strict: false"
         } >> "$krd_inventory_folder//group_vars/all.yml"
         if [ -n "${HTTP_PROXY}" ]; then
             echo "http_proxy: \"$HTTP_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
