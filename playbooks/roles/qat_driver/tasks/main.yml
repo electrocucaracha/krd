@@ -29,7 +29,7 @@
     remote_src: yes
 
 - name: configure qat driver source code
-  command: ./configure --enable-icp-sriov=guest
+  command: ./configure
   args:
     chdir: "{{ qat_driver_dest }}"
 
@@ -46,6 +46,7 @@
   copy:
     src: qat_service.service
     dest: /etc/systemd/system/qat_service.service
+  when: ansible_os_family == 'ClearLinux'
 
 - name: reload qat_service service
   service:
@@ -58,25 +59,26 @@
     state: started
     enabled: yes
 
-- name: get qat devices
-  shell: /usr/local/bin/adf_ctl status | grep up | awk '{print $4 substr($1, 4)}' | tr -d ','
-  register: qat_devices
-
-- name: ensure SHIM config section
-  blockinfile:
-    dest: "/etc/{{ item }}.conf"
-    block: |
-      [SHIM]
-      NumberCyInstances = 1
-      NumberDcInstances = 0
-      NumProcesses = 2
-      LimitDevAccess = 0
-      # Crypto - User instance #0
-      Cy0Name = "UserCY0"
-      Cy0IsPolled = 1
-      # List of core affinities
-      Cy0CoreAffinity = 0
-  loop: "{{ qat_devices.stdout_lines }}"
-
-- name: restart qat services
-  command: /usr/local/bin/adf_ctl restart
+- name: configure number of processes per qat device
+  block:
+  - name: get qat devices
+    shell: /usr/local/bin/adf_ctl status | grep up | awk '{print $4 substr($1, 4)}' | tr -d ','
+    register: qat_devices
+  - name: ensure SHIM config section
+    blockinfile:
+      dest: "/etc/{{ item }}.conf"
+      block: |
+        [SHIM]
+        NumberCyInstances = 1
+        NumberDcInstances = 0
+        NumProcesses = 2
+        LimitDevAccess = 0
+        # Crypto - User instance #0
+        Cy0Name = "UserCY0"
+        Cy0IsPolled = 1
+        # List of core affinities
+        Cy0CoreAffinity = 0
+    loop: "{{ qat_devices.stdout_lines }}"
+  - name: restart qat services
+    command: /usr/local/bin/adf_ctl restart
+  when: qat_plugin_mode == "kernel"

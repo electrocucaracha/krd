@@ -56,6 +56,7 @@ end
 $krd_debug = (ENV['KRD_DEBUG'] || :false).to_sym
 $krd_network_plugin = (ENV['KRD_NETWORK_PLUGIN'] || :flannel).to_sym
 $krd_enable_multus = (ENV['KRD_ENABLE_MULTUS'] || :true).to_sym
+$krd_qat_plugin_mode = (ENV['KRD_QAT_PLUGIN_MODE'] || :dpdk).to_sym
 $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
 nodes.each do |node|
   if node.has_key? "networks"
@@ -151,7 +152,11 @@ Vagrant.configure("2") do |config|
         end
         # Intel Corporation QuickAssist Technology
         if node.has_key? "qat_dev"
-          qat_devices = `for i in 0442 0443 37c9 19e3; do lspci -d 8086:$i -m; done|awk '{print $1}'`
+          if $krd_qat_plugin_mode == "kernel"
+            qat_devices = `for i in 0434 0435 37c8 6f54 19e2; do lspci -d 8086:$i -m; done|awk '{print $1}'`
+          else
+            qat_devices = `for i in 0442 0443 37c9 19e3; do lspci -d 8086:$i -m; done|awk '{print $1}'`
+          end
           node['qat_dev'].each do |dev|
             if qat_devices.include? dev.to_s
               bus=dev.split(':')[0]
@@ -228,9 +233,11 @@ Vagrant.configure("2") do |config|
       sh.env = {
         'KRD_DEBUG': "#{$krd_debug}",
         'KRD_ENABLE_MULTUS': "#{$krd_enable_multus}",
+        'KRD_QAT_PLUGIN_MODE': "#{$krd_qat_plugin_mode}",
         'KRD_NETWORK_PLUGIN': "#{$krd_network_plugin}"
       }
       sh.inline = <<-SHELL
+        for krd_var in $(printenv | grep KRD_); do echo "export $krd_var" | sudo tee --append /etc/environment ; done
         cd /vagrant/
         ./krd_command.sh -a install_k8s -a install_rundeck -a install_cockpit | tee vagrant_init.log
       SHELL

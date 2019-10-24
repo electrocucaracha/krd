@@ -15,10 +15,17 @@
     state: directory
     path: "{{ qat_template_folder }}"
 
-- name: generate QAT k8s resources based on templates
+- name: generate QAT DPDK k8s resources based on templates
   template:
     src: qat_plugin.yaml.j2
     dest: "{{ qat_template_folder }}/qat_plugin.yml"
+  when: qat_plugin_mode == "dpdk"
+
+- name: generate QAT kernel k8s resources based on templates
+  template:
+    src: qat_plugin_kernel_mode.yaml.j2
+    dest: "{{ qat_template_folder }}/qat_plugin.yml"
+  when: qat_plugin_mode == "kernel"
 
 - name: get QAT configmap files
   copy:

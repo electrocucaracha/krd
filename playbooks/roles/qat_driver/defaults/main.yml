@@ -11,3 +11,4 @@
 qat_version: "1.7.l.4.6.0-00025"
 qat_driver_dest: "/tmp/qat_driver"
 qat_driver_url: "https://01.org/sites/default/files/downloads/qat{{ qat_version }}.tar.gz"
+qat_plugin_mode: dpdk

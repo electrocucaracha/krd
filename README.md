@@ -86,6 +86,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_CONTAINER_RUNTIME  | docker      | Specifies the Container Runtime to be used for deploying kubernetes   |
 | KRD_NETWORK_PLUGIN     | flannel     | Choose network plugin (calico, canal, cilium, contiv, flannel weave)  |
 | KRD_ENABLE_MULTUS      | true        | Enable/Disable Kubernetes Multus CNI                                  |
+| KRD_QAT_PLUGIN_MODE    | dpdk        | Specifies the deployment mode for Intel QuickAssist Plugin            |
 
 ## License
 
