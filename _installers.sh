@@ -73,8 +73,6 @@ function install_ansible {
 
 # install_docker() - Download and install docker-engine
 function install_docker {
-    local chameleonsocks_filename=chameleonsocks.sh
-
     if command -v docker; then
         return
     fi
@@ -85,7 +83,7 @@ function install_docker {
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
         clear-linux-os)
-            sudo -E swupd bundle-add ansible
+            sudo -E swupd bundle-add containers-basic
             sudo systemctl unmask docker.service
         ;;
         *)
@@ -98,33 +96,42 @@ function install_docker {
     mkdir -p "$HOME/.docker/"
     sudo mkdir -p /root/.docker/
     sudo usermod -aG docker "$USER"
-    if [ -n "${HTTP_PROXY:-}" ] || [ -n "${HTTPS_PROXY:-}" ] || [ -n "${NO_PROXY:-}" ]; then
-        config="{ \"proxies\": { \"default\": { "
+    if [ -n "${SOCKS_PROXY:-}" ]; then
+        socks_tmp="${SOCKS_PROXY#*//}"
+        curl -sSL https://raw.githubusercontent.com/crops/chameleonsocks/master/chameleonsocks.sh | sudo PROXY="${socks_tmp%:*}" PORT="${socks_tmp#*:}" bash -s -- --install
+    else
         if [ -n "${HTTP_PROXY:-}" ]; then
             echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
             echo "Environment=\"HTTP_PROXY=$HTTP_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/http-proxy.conf
-            config+="\"httpProxy\": \"$HTTP_PROXY\","
         fi
         if [ -n "${HTTPS_PROXY:-}" ]; then
             echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/https-proxy.conf
             echo "Environment=\"HTTPS_PROXY=$HTTPS_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/https-proxy.conf
-            config+="\"httpsProxy\": \"$HTTPS_PROXY\","
         fi
         if [ -n "${NO_PROXY:-}" ]; then
             echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/no-proxy.conf
             echo "Environment=\"NO_PROXY=$NO_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/no-proxy.conf
+        fi
+    fi
+    if [ -n "${HTTP_PROXY:-}" ] || [ -n "${HTTPS_PROXY:-}" ] || [ -n "${NO_PROXY:-}" ]; then
+        config="{ \"proxies\": { \"default\": { "
+        if [ -n "${HTTP_PROXY:-}" ]; then
+            config+="\"httpProxy\": \"$HTTP_PROXY\","
+        fi
+        if [ -n "${HTTPS_PROXY:-}" ]; then
+            config+="\"httpsProxy\": \"$HTTPS_PROXY\","
+        fi
+        if [ -n "${NO_PROXY:-}" ]; then
             config+="\"noProxy\": \"$NO_PROXY\","
         fi
         echo "${config::-1} } } }" | tee "$HOME/.docker/config.json"
         sudo cp "$HOME/.docker/config.json" /root/.docker/config.json
-    elif [ -n "${SOCKS_PROXY:-}" ]; then
-        wget "https://raw.githubusercontent.com/crops/chameleonsocks/master/$chameleonsocks_filename"
-        chmod 755 "$chameleonsocks_filename"
-        socks_tmp="${SOCKS_PROXY#*//}"
-        sudo ./$chameleonsocks_filename --uninstall
-        sudo PROXY="${socks_tmp%:*}" PORT="${socks_tmp#*:}" ./$chameleonsocks_filename --install
-        rm $chameleonsocks_filename
     fi
+    sudo tee /etc/docker/daemon.json << EOF
+{
+  "insecure-registries" : ["0.0.0.0/0"]
+}
+EOF
     sudo systemctl daemon-reload
     sudo systemctl restart docker
 
