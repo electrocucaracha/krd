@@ -1,0 +1,50 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2019
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- hosts: kube-node
+  vars:
+    qat_envoy_dest: /tmp/kubernetes-qat-envoy
+  roles:
+    - role: geerlingguy.docker
+  become: yes
+  tasks:
+    - name: configure docker client
+      block:
+      - name: create docker config folder
+        file:
+          state: directory
+          path: /root/.docker/
+      - name: configure docker client to use proxy values
+        copy:
+          dest: "/root/.docker/config.json"
+          content: |
+            {
+              "proxies":
+              {
+                "default":
+                {
+                  "httpProxy": "{{ lookup('env','http_proxy') }}",
+                  "httpsProxy": "{{ lookup('env','https_proxy') }}",
+                  "noProxy": "{{ lookup('env','no_proxy') }}"
+                }
+              }
+            }
+      when: lookup('env','http_proxy') != "fooproxy" or lookup('env','https_proxy') != "fooproxy" or lookup('env','no_proxy') != "fooproxy"
+    - name: clone QAT envoy repo repo
+      git:
+        repo: "https://github.com/electrocucaracha/kubernetes-qat-envoy"
+        dest: "{{ qat_envoy_dest }}"
+        version: "fix_bazel_jobs"
+        force: yes
+    - name: remove old envoy docker images
+      shell: "docker images envoy-qat -q | xargs docker rmi -f"
+      ignore_errors: True
+    - name: build docker image
+      command: "docker image build -t envoy-qat:devel -f {{ qat_envoy_dest }}/Dockerfile.envoy {{ qat_envoy_dest }}/"

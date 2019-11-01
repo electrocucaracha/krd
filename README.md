@@ -17,7 +17,7 @@ or Virtual Machines.
 | NFD            | Node feature discovery                         | [nfd role][4]                     | Tested      |
 | Istio          | Service Mesh platform                          |                                   | Tested      |
 | PMEM           | Persistent Memory CSI                          | [pmem role][6]                    | Implemented |
-| QAT            | QuickAssist Technology Plugin                  | [qat_plugin role][8]              | Implemented |
+| QAT            | QuickAssist Technology Plugin                  | [qat_plugin role][8]              | Tested      |
 | SR-IOV         | Single Root Input/Output Virtualization Plugin | [sriov_plugin role][9]            | Implemented |
 
 ## Deployment
