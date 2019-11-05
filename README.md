@@ -33,7 +33,7 @@ automatically. The *setup.sh* script of the
 install dependencies and plugins required for its usage. This script
 supports two Virtualization technologies (Libvirt and VirtualBox).
 
-    $ curl -fsSL https://raw.githubusercontent.com/electrocucaracha/bootstrap-vagrant/master/setup.sh | PROVIDER=libvirt bash
+    $ curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
 
 Once Vagrant is installed, it's possible to provision a cluster using
 the following instructions:
