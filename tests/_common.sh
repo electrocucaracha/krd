@@ -12,7 +12,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-virtlet_image=virtlet.cloud/fedora
 
 # populate_CSAR_multus() - This function creates the content of CSAR file
 # required for testing Multus feature
@@ -71,15 +70,37 @@ DEPLOYMENT
     popd
 }
 
-# populate_CSAR_virtlet() - This function creates the content of CSAR file
+# populate_virtlet() - This function creates the content of CSAR file
 # required for testing Virtlet feature
-function populate_CSAR_virtlet {
-    local virtlet_deployment_name=virtlet-deployment
+function populate_virtlet {
+    local virtlet_deployment_name=$1
+    local virtlet_image="virtlet.cloud/${2:-fedora}"
 
-    mkdir -p /tmp/${virtlet_deployment_name}
-    pushd /tmp/${virtlet_deployment_name}
+    mkdir -p "/tmp/${virtlet_deployment_name}"
+    pushd "/tmp/${virtlet_deployment_name}"
 
-    cat << DEPLOYMENT > $virtlet_deployment_name.yaml
+    proxy="apt:"
+    cloud_init_proxy=""
+    if [[ -n "${HTTP_PROXY+x}" ]]; then
+        proxy+="
+            http_proxy: $HTTP_PROXY"
+        cloud_init_proxy+="
+            - export http_proxy=$HTTP_PROXY
+            - export HTTP_PROXY=$HTTP_PROXY"
+    fi
+    if [[ -n "${HTTPS_PROXY+x}" ]]; then
+        proxy+="
+            https_proxy: $HTTPS_PROXY"
+        cloud_init_proxy+="
+            - export https_proxy=$HTTPS_PROXY
+            - export HTTPS_PROXY=$HTTPS_PROXY"
+    fi
+    if [[ -n "${NO_PROXY+x}" ]]; then
+        cloud_init_proxy+="
+            - export no_proxy=$NO_PROXY
+            - export NO_PROXY=$NO_PROXY"
+    fi
+    cat << DEPLOYMENT > "$virtlet_deployment_name.yaml"
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -96,6 +117,11 @@ spec:
       labels:
         app: virtlet
       annotations:
+        # An optional annotation specifying the count of virtual CPUs.
+        # Note that annotation values must always be strings,
+        # thus numeric values need to be quoted.
+        # Defaults to "1".
+        VirtletVCPUCount: "2"
         VirtletLibvirtCPUSetting: |
           mode: host-passthrough
         # This tells CRI Proxy that this pod belongs to Virtlet runtime
@@ -103,17 +129,25 @@ spec:
         VirtletCloudInitUserData: |
           ssh_pwauth: True
           users:
-          - name: testuser
+          - name: demo
             gecos: User
             primary-group: testuser
             groups: users
             lock_passwd: false
             shell: /bin/bash
-            # the password is "testuser"
-            passwd: "\$6\$rounds=4096\$wPs4Hz4tfs\$a8ssMnlvH.3GX88yxXKF2cKMlVULsnydoOKgkuStTErTq2dzKZiIx9R/pPWWh5JLxzoZEx7lsSX5T2jW5WISi1"
+            # the password is "demo"
+            passwd: "$(mkpasswd --method=SHA-512 --rounds=4096 demo)"
             sudo: ALL=(ALL) NOPASSWD:ALL
+          $proxy
           runcmd:
-            - echo hello world
+          $cloud_init_proxy
+            - sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+            - curl -fsSL http://bit.ly/pkgInstall | PKG=stress PKG_UDPATE=true bash
+            - echo "Running - CPU stress test"
+            - uptime
+            - sudo stress --cpu 10 --timeout 60
+            - uptime
+            - echo "Completed - CPU stress test"
     spec:
       affinity:
         nodeAffinity:
@@ -137,7 +171,7 @@ spec:
         resources:
           limits:
             # This memory limit is applied to the libvirt domain definition
-            memory: 160Mi
+            memory: 1Gi
 DEPLOYMENT
     popd
 }
