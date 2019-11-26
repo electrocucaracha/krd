@@ -13,27 +13,6 @@ set -o pipefail
 
 source _commons.sh
 
-# install_go() - Install GoLang package
-function install_go {
-    if command -v go; then
-        return
-    fi
-    local version=1.12.7
-    local os=linux
-    local arch=amd64
-    local tarball=go$version.$os-$arch.tar.gz
-
-    _install_package wget
-    wget "https://dl.google.com/go/$tarball"
-    sudo tar -C /usr/local -xzf "$tarball"
-    rm "$tarball"
-
-    export PATH="$PATH:/usr/local/go/bin"
-    sudo sed -i "s|^PATH=.*|PATH=\"$PATH\"|" /etc/environment
-    sudo mkdir -p /etc/profile.d/
-    echo "export PATH=\$PATH:/usr/local/go/bin" | sudo tee /etc/profile.d/path.sh
-}
-
 # _install_python() - Function that installs python
 function _install_python {
     if ! command -v python; then
