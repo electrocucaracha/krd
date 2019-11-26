@@ -42,83 +42,22 @@ function _install_pip {
     fi
 }
 
-# install_ansible() - Install and Configure Ansible program
-function install_ansible {
-    if ! command -v ansible; then
-        _install_pip
-        sudo -E pip install ansible
+# _install_ansible() - Install and Configure Ansible program
+function _install_ansible {
+    if command -v ansible; then
+        return
     fi
+    _install_pip
+    sudo -E pip install ansible
 }
 
-# install_docker() - Download and install docker-engine
-function install_docker {
+# _install_docker() - Download and install docker-engine
+function _install_docker {
     if command -v docker; then
         return
     fi
-
-    echo "Installing docker service..."
-
-    # shellcheck disable=SC1091
-    source /etc/os-release || source /usr/lib/os-release
-    case ${ID,,} in
-        clear-linux-os)
-            sudo -E swupd bundle-add containers-basic
-            sudo systemctl unmask docker.service
-        ;;
-        *)
-            _install_package curl
-            curl -fsSL https://get.docker.com/ | sh
-        ;;
-    esac
-
-    sudo mkdir -p /etc/systemd/system/docker.service.d
-    mkdir -p "$HOME/.docker/"
-    sudo mkdir -p /root/.docker/
-    sudo usermod -aG docker "$USER"
-    if [ -n "${SOCKS_PROXY:-}" ]; then
-        socks_tmp="${SOCKS_PROXY#*//}"
-        curl -sSL https://raw.githubusercontent.com/crops/chameleonsocks/master/chameleonsocks.sh | sudo PROXY="${socks_tmp%:*}" PORT="${socks_tmp#*:}" bash -s -- --install
-    else
-        if [ -n "${HTTP_PROXY:-}" ]; then
-            echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/http-proxy.conf
-            echo "Environment=\"HTTP_PROXY=$HTTP_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/http-proxy.conf
-        fi
-        if [ -n "${HTTPS_PROXY:-}" ]; then
-            echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/https-proxy.conf
-            echo "Environment=\"HTTPS_PROXY=$HTTPS_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/https-proxy.conf
-        fi
-        if [ -n "${NO_PROXY:-}" ]; then
-            echo "[Service]" | sudo tee /etc/systemd/system/docker.service.d/no-proxy.conf
-            echo "Environment=\"NO_PROXY=$NO_PROXY\"" | sudo tee --append /etc/systemd/system/docker.service.d/no-proxy.conf
-        fi
-    fi
-    if [ -n "${HTTP_PROXY:-}" ] || [ -n "${HTTPS_PROXY:-}" ] || [ -n "${NO_PROXY:-}" ]; then
-        config="{ \"proxies\": { \"default\": { "
-        if [ -n "${HTTP_PROXY:-}" ]; then
-            config+="\"httpProxy\": \"$HTTP_PROXY\","
-        fi
-        if [ -n "${HTTPS_PROXY:-}" ]; then
-            config+="\"httpsProxy\": \"$HTTPS_PROXY\","
-        fi
-        if [ -n "${NO_PROXY:-}" ]; then
-            config+="\"noProxy\": \"$NO_PROXY\","
-        fi
-        echo "${config::-1} } } }" | tee "$HOME/.docker/config.json"
-        sudo cp "$HOME/.docker/config.json" /root/.docker/config.json
-    fi
-    sudo tee /etc/docker/daemon.json << EOF
-{
-  "insecure-registries" : ["0.0.0.0/0"]
-}
-EOF
-    sudo systemctl daemon-reload
-    sudo systemctl restart docker
-
-    printf "Waiting for docker service..."
-    until sudo docker info; do
-        printf "."
-        sleep 2
-    done
+    _install_package curl
+    curl -fsSL http://bit.ly/pkgInstall | PKG=docker bash
 }
 
 # _install_kubespray() - Donwload Kubespray binaries
@@ -216,8 +155,8 @@ function _install_krew {
 function install_k8s {
     echo "Installing Kubernetes"
 
-    install_docker
-    install_ansible
+    _install_docker
+    _install_ansible
     _install_package unzip
     _install_kubespray
 
@@ -237,7 +176,7 @@ function install_k8s {
 # install_k8s_addons() - Install Kubenertes AddOns
 function install_k8s_addons {
     echo "Installing Kubernetes AddOns"
-    install_ansible
+    _install_ansible
 
     sudo mkdir -p /etc/ansible/
     sudo mkdir -p /tmp/galaxy-roles
@@ -510,13 +449,14 @@ function install_rook {
 
 # install_docker_compose() - Installs docker compose python module
 function install_docker_compose {
-    if ! command -v docker-compose; then
-        echo "Installing docker-compose tool..."
-
-        install_docker
-        _install_pip
-        sudo -E pip install docker-compose==1.24.0
+    if command -v docker-compose; then
+        return
     fi
+    echo "Installing docker-compose tool..."
+
+    _install_docker
+    _install_pip
+    sudo -E pip install docker-compose==1.24.0
 }
 
 # install_matchbox() - Install Matchbox service
