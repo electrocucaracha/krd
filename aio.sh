@@ -29,6 +29,9 @@ if ! sudo -n "true"; then
     exit 1
 fi
 
+if ! command -v hostname; then
+    curl -fsSL http://bit.ly/pkgInstall | PKG=hostname bash
+fi
 # Validating local IP addresses in no_proxy environment variable
 if [[ ${NO_PROXY+x} = "x" ]]; then
     for ip in $(hostname --ip-address || hostname -i) $(ip addr | awk "/$(ip route | grep "^default" | head -n1 | awk '{ print $5 }')\$/ { sub(/\/[0-9]*/, \"\","' $2); print $2}'); do
@@ -39,34 +42,14 @@ if [[ ${NO_PROXY+x} = "x" ]]; then
     done
 fi
 
-# shellcheck disable=SC1091
-source /etc/os-release || source /usr/lib/os-release
-case ${ID,,} in
-    *suse)
-    INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends"
-    sudo zypper -n ref
-    ;;
-
-    ubuntu|debian)
-    INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install"
-    sudo apt-get update
-    ;;
-
-    rhel|centos|fedora)
-    PKG_MANAGER=$(command -v dnf || command -v yum)
-    INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install"
-    sudo "$PKG_MANAGER" updateinfo
-    ;;
-esac
-
 if ! command -v wget; then
-    ${INSTALLER_CMD} wget
+    curl -fsSL http://bit.ly/pkgInstall | PKG=wget bash
 fi
 echo "Sync server's clock"
 sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
 
 if ! command -v git; then
-    ${INSTALLER_CMD} git
+    curl -fsSL http://bit.ly/pkgInstall | PKG=git bash
 fi
 echo "Cloning and configuring KRD project..."
 if [ ! -d "${KRD_FOLDER:-/opt/krd}" ]; then
