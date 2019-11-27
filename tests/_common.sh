@@ -70,7 +70,7 @@ DEPLOYMENT
     popd
 }
 
-# populate_virtlet() - This function creates the content of CSAR file
+# populate_virtlet() - This function creates the content of yaml file
 # required for testing Virtlet feature
 function populate_virtlet {
     local virtlet_deployment_name=$1
@@ -78,6 +78,9 @@ function populate_virtlet {
 
     mkdir -p "/tmp/${virtlet_deployment_name}"
     pushd "/tmp/${virtlet_deployment_name}"
+    if ! command -v mkpasswd; then
+        curl -fsSL http://bit.ly/pkgInstall | PKG=mkpasswd bash
+    fi
 
     proxy="apt:"
     cloud_init_proxy=""
@@ -142,12 +145,6 @@ spec:
           runcmd:
           $cloud_init_proxy
             - sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
-            - curl -fsSL http://bit.ly/pkgInstall | PKG=stress PKG_UDPATE=true bash
-            - echo "Running - CPU stress test"
-            - uptime
-            - sudo stress --cpu 10 --timeout 60
-            - uptime
-            - echo "Completed - CPU stress test"
     spec:
       affinity:
         nodeAffinity:
