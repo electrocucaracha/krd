@@ -14,13 +14,13 @@ box = {
     "ubuntu" => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180708.0.0' },
     "centos" => { :name => 'generic/centos7', :version=> '1.9.2' },
     "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20191004' },
-    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '31130' }
+    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '31770' }
   },
   :libvirt => {
     "ubuntu" => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0' },
     "centos" => { :name => 'centos/7', :version=> '1901.01' },
     "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20191004' },
-    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '31130' }
+    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '31770' }
   }
 }
 
@@ -194,7 +194,9 @@ Vagrant.configure("2") do |config|
         sh.inline = <<-SHELL
           mkdir -p /root/.ssh
           cat /vagrant/insecure_keys/key.pub | tee /root/.ssh/authorized_keys
-          chmod og-wx /root/.ssh/authorized_keys
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/authorized_keys
+          sudo sed -i '/^PermitRootLogin no/d' /etc/ssh/sshd_config
         SHELL
       end
       $volume_mounts_dict = ''
