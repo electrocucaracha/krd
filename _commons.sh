@@ -143,6 +143,20 @@ function _vercmp {
     esac
 }
 
+function _run_ansible_cmd {
+    local playbook=$1
+    local log=$2
+
+    ansible_cmd="ANSIBLE_ROLES_PATH=/tmp/galaxy-roles sudo -E $(command -v ansible-playbook) --become "
+    if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
+        set -o xtrace
+        ansible_cmd+="-vvv "
+    fi
+    ansible_cmd+="-i $krd_inventory "
+    echo "$ansible_cmd $playbook"
+    eval "$ansible_cmd $playbook" | tee "$log"
+}
+
 # Configuration values
 if ! command -v git; then
     _install_package git
@@ -154,10 +168,6 @@ export krd_inventory_folder=$KRD_FOLDER/inventory
 export krd_playbooks=$KRD_FOLDER/playbooks
 export krd_inventory=$krd_inventory_folder/hosts.ini
 export kubespray_folder=/opt/kubespray
-
-ansible_cmd="sudo -E ansible-playbook --become "
 if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
     set -o xtrace
-    ansible_cmd+="-vvv "
 fi
-ansible_cmd+="-i $krd_inventory "

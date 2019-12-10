@@ -16,15 +16,13 @@ source _installers.sh
 # uninstall_k8s() - Uninstall Kubernetes cluster
 function uninstall_k8s {
     _install_kubespray
-    echo "$ansible_cmd $kubespray_folder/reset.yml"
-    eval "$ansible_cmd $kubespray_folder/reset.yml" | tee "destroy-kubernetes.log"
+    _run_ansible_cmd "$kubespray_folder/reset.yml" "destroy-kubernetes.log"
 }
 
 # add_k8s_nodes() - Add Kubernetes worker, master or etcd nodes to the existing cluster
 function add_k8s_nodes {
     _install_kubespray
-    echo "$ansible_cmd $kubespray_folder/scale.yml"
-    eval "$ansible_cmd $kubespray_folder/scale.yml" | tee "scale-kubernetes.log"
+    _run_ansible_cmd "$kubespray_folder/scale.yml" "scale-kubernetes.log"
 }
 
 # upgrade_k8s() - Function that graceful upgrades the Kubernetes cluster
@@ -43,8 +41,7 @@ function upgrade_k8s {
         _install_kubespray
     fi
     sed -i "s/^kube_version: .*\$/kube_version: $KRD_KUBE_VERSION/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-    echo "$ansible_cmd $kubespray_folder/upgrade-cluster.yml"
-    eval "$ansible_cmd $kubespray_folder/upgrade-cluster.yml" | tee "upgrade-cluster-kubernetes.log"
+    _run_ansible_cmd "$kubespray_folder/upgrade-cluster.yml" "upgrade-cluster-kubernetes.log"
 
     sudo cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
     sudo chown "$USER" "$HOME/.kube/config"

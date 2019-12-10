@@ -122,8 +122,7 @@ function install_k8s {
 
     sudo mkdir -p /etc/ansible/
     sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
-    echo "$ansible_cmd $kubespray_folder/cluster.yml"
-    eval "$ansible_cmd $kubespray_folder/cluster.yml" | tee "setup-kubernetes.log"
+    _run_ansible_cmd "$kubespray_folder/cluster.yml" "setup-kubernetes.log"
 
     # Configure kubectl
     mkdir -p "$HOME/.kube"
@@ -151,7 +150,7 @@ function install_k8s_addons {
 
     for addon in ${KRD_ADDONS:-addons}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
-        eval "ANSIBLE_ROLES_PATH=/tmp/galaxy-roles $ansible_cmd $krd_playbooks/configure-${addon}.yml" | sudo tee "setup-${addon}.log"
+        _run_ansible_cmd "$krd_playbooks/configure-${addon}.yml" "setup-${addon}.log"
         if [[ "${KRD_ENABLE_TESTS}" == "true" ]]; then
             pushd "$KRD_FOLDER"/tests
             bash "${addon}".sh
