@@ -13,53 +13,6 @@ set -o pipefail
 
 source _commons.sh
 
-# _install_python() - Function that installs python
-function _install_python {
-    if ! command -v python; then
-        package=""
-        # shellcheck disable=SC1091
-        source /etc/os-release || source /usr/lib/os-release
-        case ${ID,,} in
-            ubuntu|debian)
-            package="python-minimal"
-            ;;
-            rhel|centos|fedora)
-            package="python-minimal"
-            ;;
-        esac
-        _install_package "$package"
-    fi
-}
-
-# _install_pip() - Install Python Package Manager
-function _install_pip {
-    if ! command -v pip; then
-        _install_python
-        _install_package curl
-        curl -sL https://bootstrap.pypa.io/get-pip.py | sudo -E python
-    else
-        sudo -E pip install --upgrade pip
-    fi
-}
-
-# _install_ansible() - Install and Configure Ansible program
-function _install_ansible {
-    if command -v ansible; then
-        return
-    fi
-    _install_pip
-    sudo -E pip install ansible
-}
-
-# _install_docker() - Download and install docker-engine
-function _install_docker {
-    if command -v docker; then
-        return
-    fi
-    _install_package curl
-    curl -fsSL http://bit.ly/pkgInstall | PKG=docker bash
-}
-
 # _install_kubespray() - Donwload Kubespray binaries
 function _install_kubespray {
     echo "Deploying kubernetes"
@@ -67,11 +20,22 @@ function _install_kubespray {
 
     if [[ ! -d $kubespray_folder ]]; then
         echo "Download kubespray binaries"
-        _install_package git
+
+        pkgs=""
+        for pkg in git make unzip ansible docker wget; do
+        if ! command -v "$pkg"; then
+            pkgs+=" $pkg"
+        fi
+        done
+        if [ -n "$pkgs" ]; then
+            curl -fsSL http://bit.ly/pkgInstall | PKG=$pkgs bash
+        fi
+
         sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$kubespray_version"
         sudo chown -R "$USER" $kubespray_folder
         pushd $kubespray_folder
-        sudo -E pip install -r ./requirements.txt
+        PIP_CMD="sudo -E $(command -v pip) install"
+        $PIP_CMD -r ./requirements.txt
         make mitogen
         popd
 
@@ -110,7 +74,6 @@ function _install_kubespray {
             # TODO: https://github.com/kubernetes-sigs/kubespray/issues/4737
             sed -i 's/^kube_version: .*$/kube_version: v1.13.5/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             if [ "${KRD_CONTAINER_RUNTIME}" == "crio" ]; then
-                _install_package wget
                 wget -O $kubespray_folder/roles/container-engine/cri-o/templates/crio.conf.j2 https://raw.githubusercontent.com/kubernetes-sigs/kubespray/2db289811261d90cdb335307a3ff43785fdca45a/roles/container-engine/cri-o/templates/crio.conf.j2
                 # (TODO): https://github.com/kubernetes-sigs/kubespray/pull/4607
                 sudo mkdir -p /etc/systemd/system/crio.service.d/
@@ -155,9 +118,6 @@ function _install_krew {
 function install_k8s {
     echo "Installing Kubernetes"
 
-    _install_docker
-    _install_ansible
-    _install_package unzip
     _install_kubespray
 
     sudo mkdir -p /etc/ansible/
@@ -176,7 +136,9 @@ function install_k8s {
 # install_k8s_addons() - Install Kubenertes AddOns
 function install_k8s_addons {
     echo "Installing Kubernetes AddOns"
-    _install_ansible
+    if ! command -v ansible; then
+        curl -fsSL http://bit.ly/pkgInstall | PKG=ansible bash
+    fi
 
     sudo mkdir -p /etc/ansible/
     sudo mkdir -p /tmp/galaxy-roles
@@ -454,9 +416,7 @@ function install_docker_compose {
     fi
     echo "Installing docker-compose tool..."
 
-    _install_docker
-    _install_pip
-    sudo -E pip install docker-compose==1.24.0
+    curl -fsSL http://bit.ly/pkgInstall | PKG="docker docker-compose" bash
 }
 
 # install_matchbox() - Install Matchbox service
