@@ -142,7 +142,7 @@ function install_k8s_addons {
     sudo mkdir -p /etc/ansible/
     sudo mkdir -p /tmp/galaxy-roles
     sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
-    ansible_galaxy_cmd="sudo ansible-galaxy install"
+    ansible_galaxy_cmd="sudo -E $(command -v ansible-galaxy) install"
     if [ "${KRD_DEBUG:-false}" == "true" ]; then
         ansible_galaxy_cmd+=" -vvv"
     fi
