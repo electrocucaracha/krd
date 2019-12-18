@@ -1,0 +1,32 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2019
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+clearlinux:
+  latest:
+    name: "AntonioMeireles/ClearLinux"
+    version: "31830"
+centos:
+  7:
+    name: "centos/7"
+    version: "1905.01"
+  8:
+    name: "generic/centos8"
+    version: "2.0.0"
+ubuntu:
+  xenial:
+    name: "elastic/ubuntu-16.04-x86_64"
+    version: "20180210.0.0"
+  bionic:
+    name: "peru/ubuntu-18.04-server-amd64"
+    version: "20191202.01"
+opensuse:
+  tumbleweed:
+    name: "opensuse/Tumbleweed.x86_64"
+    version: "1.0.20191216"

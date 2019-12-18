@@ -9,27 +9,13 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-box = {
-  :virtualbox => {
-    "ubuntu" => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180708.0.0' },
-    "centos" => { :name => 'generic/centos7', :version=> '1.9.2' },
-    "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20191004' },
-    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '31770' }
-  },
-  :libvirt => {
-    "ubuntu" => { :name => 'elastic/ubuntu-16.04-x86_64', :version=> '20180210.0.0' },
-    "centos" => { :name => 'centos/7', :version=> '1901.01' },
-    "opensuse" => { :name => 'opensuse/openSUSE-Tumbleweed-Vagrant.x86_64', :version=> '1.0.20191004' },
-    "clearlinux" => { :name => 'AntonioMeireles/ClearLinux', :version=> '31770' }
-  }
-}
-
 require 'yaml'
 pdf = File.dirname(__FILE__) + '/config/default.yml'
 if File.exist?(File.dirname(__FILE__) + '/config/pdf.yml')
   pdf = File.dirname(__FILE__) + '/config/pdf.yml'
 end
 nodes = YAML.load_file(pdf)
+vagrant_boxes = YAML.load_file(File.dirname(__FILE__) + '/distros_supported.yml')
 
 # Inventory file creation
 File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_file|
@@ -115,9 +101,9 @@ Vagrant.configure("2") do |config|
           p.memory = node['memory']
         end
       end
+      nodeconfig.vm.box =  vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["name"]
+      nodeconfig.vm.box_version = vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["version"]
       nodeconfig.vm.provider 'virtualbox' do |v, override|
-        override.vm.box =  box[:virtualbox][node['os']][:name]
-        override.vm.box_version = box[:virtualbox][node['os']][:version]
         if node.has_key? "volumes"
           node['volumes'].each do |volume|
             $volume_file = "#{node['name']}-#{volume['name']}.vdi"
@@ -129,8 +115,6 @@ Vagrant.configure("2") do |config|
         end # volumes
       end # virtualbox
       nodeconfig.vm.provider 'libvirt' do |v, override|
-        override.vm.box =  box[:libvirt][node['os']][:name]
-        override.vm.box_version = box[:libvirt][node['os']][:version]
         if node['roles'].include?("virtlet")
           v.nested = true
         end
@@ -220,7 +204,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "undercloud"
-    installer.vm.box =  box[:libvirt]["ubuntu"][:name]
+    installer.vm.box =  vagrant_boxes["ubuntu"]["xenial"]["name"]
     installer.vm.network :forwarded_port, guest: 9090, host: 9090
     installer.vm.provision 'shell', privileged: false do |sh|
       sh.inline = <<-SHELL
