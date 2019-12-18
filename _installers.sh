@@ -408,16 +408,6 @@ function install_rook {
     fi
 }
 
-# install_docker_compose() - Installs docker compose python module
-function install_docker_compose {
-    if command -v docker-compose; then
-        return
-    fi
-    echo "Installing docker-compose tool..."
-
-    curl -fsSL http://bit.ly/pkgInstall | PKG="docker docker-compose" bash
-}
-
 # install_matchbox() - Install Matchbox service
 function install_matchbox {
     local version="v0.8.0"
