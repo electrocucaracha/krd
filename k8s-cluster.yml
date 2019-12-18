@@ -42,7 +42,7 @@ kube_network_plugin: flannel
 kubeconfig_localhost: true
 
 # Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.15.3
+kube_version: v1.15.6 # TODO(electrocucaracha): This can't be updated to v1.16.x until Multus is fixed https://github.com/kubernetes-sigs/kubespray/issues/5472
 
 # Kube-proxy proxyMode configuration.
 # NOTE: Ipvs is based on netfilter hook function, but uses hash table as the underlying data structure and
@@ -87,5 +87,4 @@ container_manager: docker
 
 # Enable the RuntimeClass feature for selecting container runtime configurations.
 kube_feature_gates:
-  - RuntimeClass=true
   - NonPreemptingPriority=true
