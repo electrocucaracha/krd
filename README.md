@@ -57,7 +57,7 @@ implemented through the **install_k8s_addons** KRD action. This action
 uses the *KRD_ADDONS* environment variable to specify the Ansible
 playbook to be executed.
 
-    $ KRD_ADDONS=nfd ./krd_command.sh -a install_k8s_addons
+    $ KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
 
 *Note:* Some KRD AddOns have a corresponding validation script in the
 [tests](tests) folder.
@@ -83,6 +83,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_HELM_CHART         |             | Specifies the Helm chart to be installed                              |
 | KRD_FOLDER             | /opt/krd    | KRD source code destination folder                                    |
 | KRD_ACTIONS            | install_k8s | KRD actions to be installed during the All-in-One execution           |
+| KRD_ADDONS             | addons      | Specifies the Kubernetes AddOns to be installeb by install_k8s_addons |
 | KRD_CONTAINER_RUNTIME  | docker      | Specifies the Container Runtime to be used for deploying kubernetes   |
 | KRD_NETWORK_PLUGIN     | flannel     | Choose network plugin (calico, canal, cilium, contiv, flannel weave)  |
 | KRD_ENABLE_MULTUS      | true        | Enable/Disable Kubernetes Multus CNI                                  |
