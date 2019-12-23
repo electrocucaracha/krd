@@ -86,7 +86,13 @@ case ${ID,,} in
             grub_cfg="/boot/efi/EFI/centos/grub.cfg"
         fi
         sudo grub2-mkconfig -o "$grub_cfg"
-        INSTALLER_CMD+=" hwloc wget cockpit cockpit-docker"
+        INSTALLER_CMD+=" hwloc wget cockpit https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm"
+        if [[ $VERSION_ID == "7" ]]; then
+            INSTALLER_CMD+=" cockpit-docker"
+        fi
+        if ! command -v python; then
+            INSTALLER_CMD+=" python36"
+        fi
     ;;
     clear-linux-os)
         mkdir -p /etc/kernel/cmdline.d
@@ -97,6 +103,9 @@ case ${ID,,} in
 esac
 
 ${INSTALLER_CMD}
+if ! command -v python && command -v python3; then
+    sudo ln -s /usr/bin/python3 /usr/bin/python
+fi
 if lsblk -t | grep pmem; then
     case ${ID,,} in
         rhel|centos|fedora)
