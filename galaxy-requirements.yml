@@ -9,8 +9,6 @@
 ##############################################################################
 - src: andrewrothstein.go
   version: v2.1.19
-- src: andrewrothstein.kubectl
-  version: v1.1.27
 - src: andrewrothstein.kubernetes-helm
   version: v1.2.17
 - src: geerlingguy.docker

@@ -8,20 +8,6 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- hosts: localhost
-  pre_tasks:
-    - name: Load krd variables
-      include_vars:
-        file: krd-vars.yml
-    - name: check if kubeclt was installed
-      stat:
-        path: /usr/local/bin/kubectl
-      register: kubectl_lnk
-  roles:
-    - role: andrewrothstein.kubectl
-      kubectl_ver: "v{{ kubectl_version }}"
-      when: not kubectl_lnk.stat.exists
-
 - name: install SR-IOV Network CNI
   hosts: localhost
   tags:
