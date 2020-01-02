@@ -122,6 +122,22 @@ if lsblk -t | grep pmem; then
         done
     fi
 fi
+if [ "${KRD_CONTAINER_RUNTIME:-docker}" == "crio" ]; then
+    # (TODO): https://github.com/kubernetes-sigs/kubespray/pull/4607
+    sudo mkdir -p /etc/systemd/system/crio.service.d/
+    if [ -n "$HTTP_PROXY" ]; then
+        echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/http-proxy.conf
+        echo "Environment=\"HTTP_PROXY=$HTTP_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/http-proxy.conf
+    fi
+    if [ -n "$HTTPS_PROXY" ]; then
+        echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/https-proxy.conf
+        echo "Environment=\"HTTPS_PROXY=$HTTPS_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/https-proxy.conf
+    fi
+    if [ -n "$NO_PROXY" ]; then
+        echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/no-proxy.conf
+        echo "Environment=\"NO_PROXY=$NO_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/no-proxy.conf
+    fi
+fi
 
 # Enable NVDIMM mixed mode (configuration for MM:AD is set to 50:50)
 #if command -v ipmctl; then

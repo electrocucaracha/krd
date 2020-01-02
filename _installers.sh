@@ -31,7 +31,12 @@ function _install_kubespray {
             curl -fsSL http://bit.ly/pkgInstall | PKG=$pkgs bash
         fi
 
-        sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$kubespray_version"
+        # TODO: Remove this condition when this change(https://github.com/kubernetes-sigs/kubespray/pull/5426#issuecomment-569326619) is included
+        if [ -n "${KRD_CONTAINER_RUNTIME}" ] && [ "${KRD_CONTAINER_RUNTIME}" != "docker" ]; then
+            sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder
+        else
+            sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$kubespray_version"
+        fi
         sudo chown -R "$USER" $kubespray_folder
         pushd $kubespray_folder
         PIP_CMD="sudo -E $(command -v pip) install"
@@ -67,29 +72,11 @@ function _install_kubespray {
             echo "skip_downloads: false"
             } >> "$krd_inventory_folder/group_vars/all.yml"
             sed -i 's/^download_run_once: .*$/download_run_once: false/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            sed -i 's/^download_localhost: .*$/download_localhost: true/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            sed -i 's/^download_localhost: .*$/download_localhost: false/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            sed -i 's/^kube_version: .*$/kube_version: v1.15.3/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^etcd_deployment_type: .*$/etcd_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^kubelet_deployment_type: .*$/kubelet_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i "s/^container_manager: .*$/container_manager: ${KRD_CONTAINER_RUNTIME}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            # TODO: https://github.com/kubernetes-sigs/kubespray/issues/4737
-            sed -i 's/^kube_version: .*$/kube_version: v1.13.5/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            if [ "${KRD_CONTAINER_RUNTIME}" == "crio" ]; then
-                wget -O $kubespray_folder/roles/container-engine/cri-o/templates/crio.conf.j2 https://raw.githubusercontent.com/kubernetes-sigs/kubespray/2db289811261d90cdb335307a3ff43785fdca45a/roles/container-engine/cri-o/templates/crio.conf.j2
-                # (TODO): https://github.com/kubernetes-sigs/kubespray/pull/4607
-                sudo mkdir -p /etc/systemd/system/crio.service.d/
-                if [ -n "$HTTP_PROXY" ]; then
-                    echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/http-proxy.conf
-                    echo "Environment=\"HTTP_PROXY=$HTTP_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/http-proxy.conf
-                fi
-                if [ -n "$HTTPS_PROXY" ]; then
-                    echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/https-proxy.conf
-                    echo "Environment=\"HTTPS_PROXY=$HTTPS_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/https-proxy.conf
-                fi
-                if [ -n "$NO_PROXY" ]; then
-                    echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/no-proxy.conf
-                    echo "Environment=\"NO_PROXY=$NO_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/no-proxy.conf
-                fi
-            fi
         fi
         sed -i "s/^kube_network_plugin: .*$/kube_network_plugin: ${KRD_NETWORK_PLUGIN:-flannel}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         sed -i "s/^kube_network_plugin_multus: .*$/kube_network_plugin_multus: ${KRD_ENABLE_MULTUS:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"

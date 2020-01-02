@@ -43,6 +43,8 @@ $krd_debug = ENV['KRD_DEBUG'] || "false"
 $krd_network_plugin = ENV['KRD_NETWORK_PLUGIN'] || "flannel"
 $krd_enable_multus = ENV['KRD_ENABLE_MULTUS'] || "true"
 $krd_qat_plugin_mode = ENV['KRD_QAT_PLUGIN_MODE'] || "dpdk"
+$krd_container_runtime = ENV['KRD_CONTAINER_RUNTIME'] || "docker"
+
 $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
 nodes.each do |node|
   if node.has_key? "networks"
@@ -191,7 +193,8 @@ Vagrant.configure("2") do |config|
       end
       nodeconfig.vm.provision 'shell' do |sh|
         sh.env = {
-          'KRD_DEBUG': "#{$krd_debug}"
+          'KRD_DEBUG': "#{$krd_debug}",
+          'KRD_CONTAINER_RUNTIME': "#{$krd_container_runtime}"
         }
         sh.path =  "node.sh"
         sh.args = ['-v', $volume_mounts_dict[0...-1]]
@@ -222,7 +225,8 @@ Vagrant.configure("2") do |config|
         'KRD_DEBUG': "#{$krd_debug}",
         'KRD_ENABLE_MULTUS': "#{$krd_enable_multus}",
         'KRD_QAT_PLUGIN_MODE': "#{$krd_qat_plugin_mode}",
-        'KRD_NETWORK_PLUGIN': "#{$krd_network_plugin}"
+        'KRD_NETWORK_PLUGIN': "#{$krd_network_plugin}",
+        'KRD_CONTAINER_RUNTIME': "#{$krd_container_runtime}"
       }
       sh.inline = <<-SHELL
         for krd_var in $(printenv | grep KRD_); do echo "export $krd_var" | sudo tee --append /etc/environment ; done
