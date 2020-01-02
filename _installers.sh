@@ -66,6 +66,11 @@ function _install_kubespray {
         if [ -n "${NO_PROXY}" ]; then
             echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
         fi
+        # TODO: Remove this condition when this change(https://github.com/kubernetes-sigs/kubespray/issues/5472) is included
+        if [ -n "${KRD_ENABLE_MULTUS}" ] && [ "${KRD_ENABLE_MULTUS}" == "true" ]; then
+            sed -i 's/^kube_version: .*$/kube_version: v1.15.6/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        fi
+        sed -i "s/^kube_network_plugin_multus: .*$/kube_network_plugin_multus: ${KRD_ENABLE_MULTUS:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         if [ -n "${KRD_CONTAINER_RUNTIME}" ] && [ "${KRD_CONTAINER_RUNTIME}" != "docker" ]; then
             {
             echo "download_container: true"
@@ -79,7 +84,6 @@ function _install_kubespray {
             sed -i "s/^container_manager: .*$/container_manager: ${KRD_CONTAINER_RUNTIME}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         fi
         sed -i "s/^kube_network_plugin: .*$/kube_network_plugin: ${KRD_NETWORK_PLUGIN:-flannel}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        sed -i "s/^kube_network_plugin_multus: .*$/kube_network_plugin_multus: ${KRD_ENABLE_MULTUS:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
     fi
 }
 
