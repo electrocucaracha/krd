@@ -188,7 +188,9 @@ Vagrant.configure("2") do |config|
       $volume_mounts_dict = ''
       if node.has_key? "volumes"
         node['volumes'].each do |volume|
-          $volume_mounts_dict += "#{volume['name']}=#{volume['mount']},"
+          if volume.has_key? "mount"
+            $volume_mounts_dict += "#{volume['name']}=#{volume['mount']},"
+          end
         end
       end
       nodeconfig.vm.provision 'shell' do |sh|

@@ -51,6 +51,7 @@ while getopts "h?v:" opt; do
 done
 
 swapoff -a
+sed -i -e '/swap/d' /etc/fstab
 if [ -n "${dict_volumes:-}" ]; then
     for kv in ${dict_volumes//,/ } ;do
         mount_external_partition "${kv%=*}" "${kv#*=}"
@@ -101,11 +102,16 @@ case ${ID,,} in
         INSTALLER_CMD="sudo -H -E swupd bundle-add hwloc cockpit"
         sudo swupd update
 esac
+# Rook Ceph requires a Linux kernel built with the RBD module
+sudo modprobe rbd
+# LVM is required on all storage nodes
+INSTALLER_CMD+=" lvm2"
 
 ${INSTALLER_CMD}
 if ! command -v python && command -v python3; then
     sudo ln -s /usr/bin/python3 /usr/bin/python
 fi
+
 if lsblk -t | grep pmem; then
     case ${ID,,} in
         rhel|centos|fedora)
