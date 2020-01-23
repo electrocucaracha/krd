@@ -211,6 +211,7 @@ function install_helm {
     _install_package curl
     curl -L https://git.io/get_helm.sh | HELM_INSTALL_DIR=/usr/bin bash
     id -u helm &>/dev/null || sudo useradd helm
+    echo "helm ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/helm
     sudo sudo mkdir -p /home/helm/.kube
     sudo cp ~/.kube/config /home/helm/.kube/
     sudo chown helm -R /home/helm/
@@ -255,17 +256,27 @@ function install_openstack {
     local dest_folder=/opt
 
     install_helm
+    pkgs=""
+    for pkg in git make jq nmap curl bc; do
+        if ! command -v "$pkg"; then
+            pkgs+=" $pkg"
+        fi
+    done
+    if [ -n "$pkgs" ]; then
+        curl -fsSL http://bit.ly/pkgInstall | PKG=$pkgs bash
+    fi
 
     kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default
-    for label in openstack-control-plane=enabled openstack-compute-node=enable openstack-helm-node-class=primary openvswitch=enabled linuxbridge=enabled; do
-        kubectl label nodes "$label" --all
+    # TODO: Improve how the roles are assigned to the nodes
+    for label in openstack-control-plane=enabled openstack-compute-node=enable openstack-helm-node-class=primary openvswitch=enabled linuxbridge=enabled ceph-mon=enabled ceph-mgr=enabled ceph-mds=enabled; do
+        kubectl label nodes "$label" --all --overwrite
     done
 
     if [[ ! -d "$dest_folder/openstack-helm-infra" ]]; then
         sudo -E git clone https://git.openstack.org/openstack/openstack-helm-infra "$dest_folder/openstack-helm-infra"
         sudo mkdir -p $dest_folder/openstack-helm-infra/tools/gate/devel/
         pushd $dest_folder/openstack-helm-infra/tools/gate/devel/
-        sudo git checkout 9efb353b83c59e891b1b85dc6567044de0f5ac17 # 2019-05-28
+        sudo git checkout 70d93625e886a45c9afe2aa748228c39c5897e22 # 2020-01-21
         echo "proxy:" | sudo tee local-vars.yaml
         if [[ -n "${HTTP_PROXY}" ]]; then
             echo "  http: $HTTP_PROXY" | sudo tee --append local-vars.yaml
@@ -286,12 +297,14 @@ function install_openstack {
     fi
 
     if [[ ! -d "$dest_folder/openstack-helm" ]]; then
-        sudo -E git clone https://git.openstack.org/openstack/openstack-helm-infra "$dest_folder/openstack-helm"
+        sudo -E git clone https://git.openstack.org/openstack/openstack-helm "$dest_folder/openstack-helm"
         pushd $dest_folder/openstack-helm
-        sudo git checkout d334c5b68a082c0c09ce37116060b9efc1d45af4 # 2019-05-29
+        sudo git checkout 1258061410908f62c247b437fcb12d2e478ac42d # 2020-01-20
         sudo -H chown -R helm: "$dest_folder/openstack-helm"
         for script in $(find ./tools/deployment/multinode -name "??0-*.sh" | sort); do
-            sudo su helm -c "$script" | tee "$HOME/${script%.*}.log"
+            filename=$(basename -- "$script")
+            echo "Executing $filename ..."
+            sudo su helm -c "$script" | tee "$HOME/${filename%.*}.log"
         done
         popd
     fi
