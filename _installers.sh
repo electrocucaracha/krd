@@ -351,18 +351,14 @@ function install_knative {
 
     kubectl apply --selector knative.dev/crd-install=true \
         --filename "https://github.com/knative/serving/releases/download/v${knative_version}/serving.yaml" \
-        --filename "https://github.com/knative/build/releases/download/v${knative_version}/build.yaml" \
         --filename "https://github.com/knative/eventing/releases/download/v${knative_version}/release.yaml" \
-        --filename "https://github.com/knative/eventing-sources/releases/download/v${knative_version}/eventing-sources.yaml" \
-        --filename "https://github.com/knative/serving/releases/download/v${knative_version}/monitoring.yaml" \
-        --filename "https://raw.githubusercontent.com/knative/serving/v${knative_version}/third_party/config/build/clusterrole.yaml"
-    sleep 30
-    kubectl apply --filename "https://github.com/knative/serving/releases/download/v${knative_version}/serving.yaml" --selector networking.knative.dev/certificate-provider!=cert-manager \
-        --filename "https://github.com/knative/build/releases/download/v${knative_version}/build.yaml" \
+        --filename "https://github.com/knative/serving/releases/download/v${knative_version}/monitoring.yaml"
+    kubectl apply --filename "https://github.com/knative/serving/releases/download/v${knative_version}/serving.yaml" \
         --filename "https://github.com/knative/eventing/releases/download/v${knative_version}/release.yaml" \
-        --filename "https://github.com/knative/eventing-sources/releases/download/v${knative_version}/eventing-sources.yaml" \
-        --filename "https://github.com/knative/serving/releases/download/v${knative_version}/monitoring.yaml" \
-        --filename "https://raw.githubusercontent.com/knative/serving/v${knative_version}/third_party/config/build/clusterrole.yaml"
+        --filename "https://github.com/knative/serving/releases/download/v${knative_version}/monitoring.yaml"
+
+    wait_for_pods knative-eventing
+    wait_for_pods knative-monitoring
 }
 
 
