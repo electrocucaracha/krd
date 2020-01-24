@@ -1,0 +1,111 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2020
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- name: "master"
+  os:
+    name: ubuntu
+    release: xenial
+  networks:
+    - name: public-net
+      ip: "10.10.16.3"
+  memory: 8192
+  cpus: 4
+  roles:
+    - kube-master
+    - etcd
+  volumes:
+    - name: sda
+      size: 50
+      mount: /var/lib/docker/
+- name: "minion01"
+  os:
+    name: ubuntu
+    release: xenial
+  networks:
+    - name: public-net
+      ip: "10.10.16.4"
+  memory: 16384
+  cpus: 8
+  roles:
+    - kube-node
+  volumes:
+    - name: sda
+      size: 25
+      mount: /var/lib/docker/
+    - name: sdb
+      size: 50
+- name: "minion02"
+  os:
+    name: ubuntu
+    release: xenial
+  networks:
+    - name: public-net
+      ip: "10.10.16.5"
+  memory: 16384
+  cpus: 8
+  roles:
+    - kube-node
+  volumes:
+    - name: sda
+      size: 25
+      mount: /var/lib/docker/
+    - name: sdb
+      size: 50
+- name: "minion03"
+  os:
+    name: ubuntu
+    release: xenial
+  networks:
+    - name: public-net
+      ip: "10.10.16.6"
+  memory: 16384
+  cpus: 8
+  roles:
+    - kube-node
+  volumes:
+    - name: sda
+      size: 25
+      mount: /var/lib/docker/
+    - name: sdb
+      size: 50
+- name: "minion04"
+  os:
+    name: ubuntu
+    release: xenial
+  networks:
+    - name: public-net
+      ip: "10.10.16.7"
+  memory: 16384
+  cpus: 8
+  roles:
+    - kube-node
+  volumes:
+    - name: sda
+      size: 25
+      mount: /var/lib/docker/
+    - name: sdb
+      size: 50
+- name: "minion05"
+  os:
+    name: ubuntu
+    release: xenial
+  networks:
+    - name: public-net
+      ip: "10.10.16.8"
+  memory: 16384
+  cpus: 8
+  roles:
+    - kube-node
+  volumes:
+    - name: sda
+      size: 25
+      mount: /var/lib/docker/
+    - name: sdb
+      size: 50
