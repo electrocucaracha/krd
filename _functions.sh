@@ -60,3 +60,39 @@ function run_k8s_iperf {
         ./iperf3.sh | tee ~/iperf3.log
     popd
 }
+
+# wait_for_pods() - Function that waits for the running state
+function wait_for_pods {
+    local namespace=$1
+    local timeout=${2:-900}
+
+    end=$(date +%s)
+    end=$((end + timeout))
+    PENDING=True
+    READY=False
+    JOBR=False
+
+    printf "Waiting for %s's pods..." "$namespace"
+    until [ $PENDING == "False" ] && [ $READY == "True" ] && [ $JOBR == "True" ]; do
+        printf "."
+        sleep 5
+        kubectl get pods -n "$namespace" -o jsonpath="{.items[*].status.phase}" | grep Pending > /dev/null && PENDING="True" || PENDING="False"
+        query='.items[]|select(.status.phase=="Running")'
+        query="$query|.status.containerStatuses[].ready"
+
+        kubectl get pods -n "$namespace" -o json | jq -r "$query" | grep false > /dev/null && READY="False" || READY="True"
+        kubectl get jobs -n "$namespace" -o json | jq -r '.items[] | .spec.completions == .status.succeeded' | grep false > /dev/null && JOBR="False" || JOBR="True"
+        if [ "$(date +%s)" -gt $end ] ; then
+            printf "Containers failed to start after %s seconds\n" "$timeout"
+            kubectl get pods -n"$namespace" -o wide
+            echo
+            if [ $PENDING == "True" ] ; then
+                echo "Some pods are in pending state:"
+                kubectl get pods --field-selector=status.phase=Pending -n "$namespace" -o wide
+            fi
+            [ $READY == "False" ] && echo "Some pods are not ready"
+            [ $JOBR == "False" ] && echo "Some jobs have not succeeded"
+            exit
+        fi
+    done
+}

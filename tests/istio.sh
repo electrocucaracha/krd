@@ -11,6 +11,7 @@
 set -o errexit
 set -o nounset
 set -o pipefail
+set -o xtrace
 
 # shellcheck source=tests/_functions.sh
 source _functions.sh
@@ -19,12 +20,13 @@ source ../_commons.sh
 
 istio_version=$(_get_version istio)
 
-if ! istioctl version &>/dev/null; then
+if ! command -v istioctl; then
     echo "This funtional test requires istioctl client"
     exit 1
 fi
 
-wget "https://raw.githubusercontent.com/istio/istio/$istio_version/samples/bookinfo/platform/kube/bookinfo.yaml" -O /tmp/bookinfo.yaml
+#istioctl manifest apply --set gateways.enabled=true
+curl -o /tmp/bookinfo.yaml "https://raw.githubusercontent.com/istio/istio/$istio_version/samples/bookinfo/platform/kube/bookinfo.yaml"
 istioctl kube-inject -f /tmp/bookinfo.yaml | tee /tmp/bookinfo-inject.yml
 kubectl apply -f /tmp/bookinfo-inject.yml
 kubectl apply -f "https://raw.githubusercontent.com/istio/istio/$istio_version/samples/bookinfo/networking/bookinfo-gateway.yaml"

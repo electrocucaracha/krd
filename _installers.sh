@@ -314,35 +314,33 @@ function install_openstack {
 function install_istio {
     istio_version=$(_get_version istio)
 
-    if command -v istioctl; then
-        return
+    if ! command -v istioctl; then
+        _install_package curl
+        curl -L https://git.io/getLatestIstio | ISTIO_VERSION="$istio_version" sh -
+        chmod +x "./istio-$istio_version/bin/istioctl"
+        sudo mv "./istio-$istio_version/bin/istioctl" /usr/local/bin/istioctl
+        rm -rf "./istio-$istio_version/"
     fi
-
-    _install_package curl
-    curl -L https://git.io/getLatestIstio | ISTIO_VERSION="$istio_version" sh -
-    pushd "./istio-$istio_version/bin"
-    chmod +x ./istioctl
-    sudo mv ./istioctl /usr/local/bin/istioctl
-    popd
-    rm -rf "./istio-$istio_version/"
 
     install_helm
     kubectl apply -f "https://raw.githubusercontent.com/istio/istio/$istio_version/install/kubernetes/helm/helm-service-account.yaml"
+
+    # Add helm chart release repositories
     if ! helm repo list | grep -e istio.io; then
         helm repo add istio.io "https://storage.googleapis.com/istio-release/releases/$istio_version/charts/"
         helm repo update
     fi
+
+    # Install the istio-init chart to bootstrap all the Istio’s CRDs
     if ! helm ls | grep -e istio-init; then
         helm install istio.io/istio-init --name istio-init --namespace istio-system
     fi
-    echo "Waiting for istio-init to start..."
-    until [[ $(kubectl get crds | grep -c 'istio.io\|certmanager.k8s.io') -ge "23" ]];do
-        printf '.'
-        sleep 2
-    done
+    wait_for_pods istio-system
+
     if ! helm ls | grep -e "istio "; then
-        helm install istio.io/istio --name istio --namespace istio-system --set global.configValidation=false
+        helm install istio.io/istio --name istio --namespace istio-system
     fi
+    wait_for_pods istio-system
 }
 
 # install_knative() - Function taht installs Knative and its dependencies
