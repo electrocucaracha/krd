@@ -8,10 +8,8 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 - src: andrewrothstein.go
-  version: v2.1.19
-- src: andrewrothstein.kubernetes-helm
-  version: v1.2.17
+  version: v2.1.24
 - src: geerlingguy.docker
-  version: 2.5.3
+  version: 2.6.0
 - src: geerlingguy.repo-epel
   version: 1.2.4
