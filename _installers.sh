@@ -426,27 +426,29 @@ function install_rook {
 
 # install_octant() - Function that installs Octant which is a tool for developers to understand how applications run on a Kubernetes cluster
 function install_octant {
-    local version="0.5.1"
-    local filename="octant_${version}_Linux-64bit"
+    octant_version=$(_get_version octant)
+    local filename="octant_${octant_version}_Linux-64bit"
 
     if command -v octant; then
         return
     fi
 
-    _install_package wget
+    _install_package curl
+    pushd "$(mktemp -d)"
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
         ubuntu|debian)
-        wget "https://github.com/vmware/octant/releases/download/v$version/$filename.deb"
-        sudo dpkg -i "$filename.deb"
+            curl -Lo "$filename.deb" "https://github.com/vmware-tanzu/octant/releases/download/v$octant_version/$filename.deb"
+            sudo dpkg -i "$filename.deb"
         ;;
         rhel|centos|fedora)
-        wget "https://github.com/vmware/octant/releases/download/v$version/$filename.rpm"
-        sudo rpm -i "$filename.rpm"
+            curl -Lo "$filename.rpm" "https://github.com/vmware-tanzu/octant/releases/download/v$octant_version/$filename.rpm"
+            sudo rpm -i "$filename.rpm"
         ;;
     esac
     rm "$filename".*
+    popd
 }
 
 # install_kubelive() - Function that installs Kubelive tool
