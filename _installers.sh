@@ -33,6 +33,9 @@ function _install_kubespray {
 
         # TODO: Remove this condition when this change(https://github.com/kubernetes-sigs/kubespray/pull/5426#issuecomment-569326619) is included
         if [ -n "${KRD_CONTAINER_RUNTIME}" ] && [ "${KRD_CONTAINER_RUNTIME}" != "docker" ]; then
+            kubespray_version="master"
+        fi
+        if [ "$kubespray_version" == "master" ]; then
             sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder
         else
             sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$kubespray_version"
