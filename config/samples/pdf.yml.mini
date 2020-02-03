@@ -12,7 +12,9 @@
   os:
     name: centos
     release: 7
-  ip: "10.10.16.3"
+  networks:
+    - name: public-net
+      ip: "10.10.16.3"
   memory: 8192
   cpus: 2
   roles:
@@ -22,7 +24,9 @@
   os:
     name: centos
     release: 7
-  ip: "10.10.16.4"
+  networks:
+    - name: public-net
+      ip: "10.10.16.4"
   memory: 65536
   cpus: 16
   roles:
@@ -32,7 +36,9 @@
   os:
     name: centos
     release: 7
-  ip: "10.10.16.5"
+  networks:
+    - name: public-net
+      ip: "10.10.16.5"
   memory: 65536
   cpus: 16
   roles:

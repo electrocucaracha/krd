@@ -12,13 +12,19 @@
   os:
     name: "ubuntu"
     release: "xenial"
-  ip: "10.10.16.3"
+  networks:
+    - name: public-net
+      ip: "10.10.16.3"
   memory: 32768
   cpus: 16
   volumes:
     - name: sda
-      size: 50
+      size: 25
       mount: /var/lib/docker/
+    - name: sdb
+      size: 50
+    - name: sdc
+      size: 50
   roles:
     - kube-master
     - etcd
