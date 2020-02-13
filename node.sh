@@ -87,7 +87,7 @@ case ${ID,,} in
             grub_cfg="/boot/efi/EFI/centos/grub.cfg"
         fi
         sudo grub2-mkconfig -o "$grub_cfg"
-        INSTALLER_CMD+=" hwloc wget cockpit https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm"
+        INSTALLER_CMD+=" iproute-tc hwloc wget cockpit https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm"
         if [[ $VERSION_ID == "7" ]]; then
             INSTALLER_CMD+=" cockpit-docker"
         fi

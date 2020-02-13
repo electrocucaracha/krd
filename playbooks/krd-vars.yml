@@ -14,6 +14,7 @@ istio_version: 1.4.3
 knative_version: 0.11.0
 kiali_version: v1.7.0
 octant_version: 0.10.0
+rook_version: v1.2.4
 
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"

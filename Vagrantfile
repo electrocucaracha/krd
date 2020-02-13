@@ -39,7 +39,7 @@ if not File.exists?(loader)
   system('curl -O https://download.clearlinux.org/image/OVMF.fd')
 end
 
-$krd_debug = ENV['KRD_DEBUG'] || "false"
+$krd_debug = ENV['KRD_DEBUG'] || "true"
 $krd_network_plugin = ENV['KRD_NETWORK_PLUGIN'] || "flannel"
 $krd_enable_multus = ENV['KRD_ENABLE_MULTUS'] || "false"
 $krd_qat_plugin_mode = ENV['KRD_QAT_PLUGIN_MODE'] || "dpdk"

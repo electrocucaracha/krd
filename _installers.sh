@@ -396,6 +396,7 @@ function install_harbor {
 
 # install_rook() - Function that install Rook Ceph operator
 function install_rook {
+    rook_version=$(_get_version rook)
     install_helm
 
     if ! helm repo list | grep -e rook-release; then
@@ -405,7 +406,7 @@ function install_rook {
         kubectl label nodes --all role=storage --overwrite
         helm install --namespace rook-ceph --name rook-ceph rook-release/rook-ceph --wait --set csi.enableRbdDriver=false --set agent.nodeAffinity="role=storage"
         for file in common cluster-test toolbox; do
-            kubectl apply -f "https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/$file.yaml"
+            kubectl apply -f "https://raw.githubusercontent.com/rook/rook/$rook_version/cluster/examples/kubernetes/ceph/$file.yaml"
         done
 
         printf "Waiting for Ceph cluster ..."
@@ -422,7 +423,7 @@ function install_rook {
             echo "alias rados=\"kubectl -n rook-ceph exec -it \\\$(kubectl -n rook-ceph get pod -l 'app=rook-ceph-tools' -o jsonpath='{.items[0].metadata.name}') rados\"" >> ~/.bash_aliases
         fi
 
-        kubectl apply -f https://raw.githubusercontent.com/rook/rook/master/cluster/examples/kubernetes/ceph/flex/storageclass.yaml
+        kubectl apply -f "https://raw.githubusercontent.com/rook/rook/$rook_version/cluster/examples/kubernetes/ceph/flex/storageclass.yaml"
         kubectl patch storageclass rook-ceph-block -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     fi
 }
