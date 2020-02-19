@@ -102,7 +102,7 @@ function _install_package {
 
 # _get_version() - Get the version number declared in configuration file
 function _get_version {
-    grep "${1}_version:" "$krd_playbooks/krd-vars.yml" | awk -F ': ' '{print $2}'
+    grep "^${1}_version:" "$krd_playbooks/krd-vars.yml" | awk -F ': ' '{print $2}'
 }
 
 # _vercmp() - Function that compares two versions
