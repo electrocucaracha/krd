@@ -79,7 +79,7 @@ function populate_virtlet {
     mkdir -p "/tmp/${virtlet_deployment_name}"
     pushd "/tmp/${virtlet_deployment_name}"
     if ! command -v mkpasswd; then
-        curl -fsSL http://bit.ly/pkgInstall | PKG=mkpasswd bash
+        curl -fsSL http://bit.ly/install_pkg | PKG=mkpasswd bash
     fi
 
     proxy="apt:"

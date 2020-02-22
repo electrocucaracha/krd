@@ -28,7 +28,7 @@ function _install_kubespray {
         fi
         done
         if [ -n "$pkgs" ]; then
-            curl -fsSL http://bit.ly/pkgInstall | PKG=$pkgs bash
+            curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
         fi
 
         # TODO: Remove this condition when this change(https://github.com/kubernetes-sigs/kubespray/pull/5426#issuecomment-569326619) is included
@@ -131,7 +131,7 @@ function install_k8s {
 function install_k8s_addons {
     echo "Installing Kubernetes AddOns"
     if ! command -v ansible; then
-        curl -fsSL http://bit.ly/pkgInstall | PKG=ansible bash
+        curl -fsSL http://bit.ly/install_pkg | PKG=ansible bash
     fi
 
     sudo mkdir -p /etc/ansible/
@@ -266,7 +266,7 @@ function install_openstack {
         fi
     done
     if [ -n "$pkgs" ]; then
-        curl -fsSL http://bit.ly/pkgInstall | PKG=$pkgs bash
+        curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
     fi
 
     kubectl create clusterrolebinding add-on-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:default

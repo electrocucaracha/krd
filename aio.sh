@@ -30,7 +30,7 @@ if ! sudo -n "true"; then
 fi
 
 if ! command -v hostname; then
-    curl -fsSL http://bit.ly/pkgInstall | PKG=hostname bash
+    curl -fsSL http://bit.ly/install_pkg | PKG=hostname bash
 fi
 # Validating local IP addresses in no_proxy environment variable
 if [[ ${NO_PROXY+x} = "x" ]]; then
@@ -43,13 +43,13 @@ if [[ ${NO_PROXY+x} = "x" ]]; then
 fi
 
 if ! command -v wget; then
-    curl -fsSL http://bit.ly/pkgInstall | PKG=wget bash
+    curl -fsSL http://bit.ly/install_pkg | PKG=wget bash
 fi
 echo "Sync server's clock"
 sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
 
 if ! command -v git; then
-    curl -fsSL http://bit.ly/pkgInstall | PKG=git bash
+    curl -fsSL http://bit.ly/install_pkg | PKG=git bash
 fi
 echo "Cloning and configuring KRD project..."
 if [ ! -d "${KRD_FOLDER:-/opt/krd}" ]; then

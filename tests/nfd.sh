@@ -25,7 +25,7 @@ pushd /tmp/${nfd_deployment_name}
 setup "$nfd_deployment_name"
 
 if ! command -v jq; then
-    curl -fsSL http://bit.ly/pkgInstall | PKG=jq bash
+    curl -fsSL http://bit.ly/install_pkg | PKG=jq bash
 fi
 kubectl get nodes -o json -l node-role.kubernetes.io/master!= | jq .items[].metadata.labels
 labels=$(kubectl get nodes -o jsonpath="{.items[*].metadata.labels}" -l node-role.kubernetes.io/master!=)
