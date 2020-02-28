@@ -176,15 +176,13 @@ Vagrant.configure("2") do |config|
           end
         end
       end # libvirt
-      nodeconfig.vm.provision 'shell' do |sh|
-        sh.inline = <<-SHELL
-          mkdir -p /root/.ssh
-          cat /vagrant/insecure_keys/key.pub | tee /root/.ssh/authorized_keys
-          chmod 700 ~/.ssh
-          chmod 600 ~/.ssh/authorized_keys
-          sudo sed -i '/^PermitRootLogin no/d' /etc/ssh/sshd_config
-        SHELL
-      end
+      nodeconfig.vm.provision 'shell', inline: <<-SHELL
+        mkdir -p /root/.ssh
+        cat /vagrant/insecure_keys/key.pub | tee /root/.ssh/authorized_keys
+        chmod 700 ~/.ssh
+        chmod 600 ~/.ssh/authorized_keys
+        sudo sed -i '/^PermitRootLogin no/d' /etc/ssh/sshd_config
+      SHELL
       $volume_mounts_dict = ''
       if node.has_key? "volumes"
         node['volumes'].each do |volume|
@@ -211,17 +209,15 @@ Vagrant.configure("2") do |config|
     installer.vm.hostname = "undercloud"
     installer.vm.box =  vagrant_boxes["ubuntu"]["xenial"]["name"]
     installer.vm.network :forwarded_port, guest: 9090, host: 9090
-    installer.vm.provision 'shell', privileged: false do |sh|
-      sh.inline = <<-SHELL
-        cd /vagrant
-        sudo mkdir -p /root/.ssh/
-        sudo cp insecure_keys/key /root/.ssh/id_rsa
-        cp insecure_keys/key ~/.ssh/id_rsa
-        sudo chmod 400 /root/.ssh/id_rsa
-        chown "$USER" ~/.ssh/id_rsa
-        chmod 400 ~/.ssh/id_rsa
-      SHELL
-    end
+    installer.vm.provision 'shell', privileged: false, inline: <<-SHELL
+      cd /vagrant
+      sudo mkdir -p /root/.ssh/
+      sudo cp insecure_keys/key /root/.ssh/id_rsa
+      cp insecure_keys/key ~/.ssh/id_rsa
+      sudo chmod 400 /root/.ssh/id_rsa
+      chown "$USER" ~/.ssh/id_rsa
+      chmod 400 ~/.ssh/id_rsa
+    SHELL
     installer.vm.provision 'shell', privileged: false do |sh|
       sh.env = {
         'KRD_DEBUG': "#{$krd_debug}",
