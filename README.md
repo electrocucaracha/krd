@@ -1,5 +1,6 @@
 # Kubernetes Reference Deployment
 [![Build Status](https://travis-ci.org/electrocucaracha/krd.png)](https://travis-ci.org/electrocucaracha/krd)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Summary
 
@@ -88,10 +89,6 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_NETWORK_PLUGIN     | flannel     | Choose network plugin (calico, canal, cilium, contiv, flannel weave)  |
 | KRD_ENABLE_MULTUS      | false       | Enable/Disable Kubernetes Multus CNI                                  |
 | KRD_QAT_PLUGIN_MODE    | dpdk        | Specifies the deployment mode for Intel QuickAssist Plugin            |
-
-## License
-
-Apache-2.0
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [3]: playbooks/configure-virtlet.yml
