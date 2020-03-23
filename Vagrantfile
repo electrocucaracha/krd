@@ -9,6 +9,17 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
+def which(cmd)
+  exts = ENV['PATHEXT'] ? ENV['PATHEXT'].split(';') : ['']
+  ENV['PATH'].split(File::PATH_SEPARATOR).each do |path|
+    exts.each do |ext|
+      exe = File.join(path, "#{cmd}#{ext}")
+      return exe if File.executable?(exe) && !File.directory?(exe)
+    end
+  end
+  nil
+end
+
 require 'yaml'
 pdf = File.dirname(__FILE__) + '/config/default.yml'
 if File.exist?(File.dirname(__FILE__) + '/config/pdf.yml')
@@ -27,7 +38,7 @@ File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_fi
     inventory_file.puts("\n[#{group}]")
     nodes.each do |node|
       if node['roles'].include?("#{group}")
-        inventory_file.puts(node['name'])
+        inventory_file.puts("#{node['name']}\t\tansible_host=#{node['networks'][0]['ip']}\tip=#{node['networks'][0]['ip']}")
       end
     end
   end
@@ -57,15 +68,23 @@ end
 (1..31).each do |i|
   $no_proxy += ",192.168.125.#{i},10.0.2.#{i}"
 end
+$no_proxy += ",10.0.2.15,10.10.17.2"
 
 # Discoverying host capabilities
-if $krd_qat_plugin_mode == "kernel"
-  $qat_devices = `for i in 0434 0435 37c8 6f54 19e2; do lspci -d 8086:$i -m; done|awk '{print $1}'`
-else
-  $qat_devices = `for i in 0442 0443 37c9 19e3; do lspci -d 8086:$i -m; done|awk '{print $1}'`
+$qat_devices = ""
+$sriov_devices = ""
+$qemu_version = ""
+if which 'lspci'
+  if $krd_qat_plugin_mode == "kernel"
+    $qat_devices = `for i in 0434 0435 37c8 6f54 19e2; do lspci -d 8086:$i -m; done|awk '{print $1}'`
+  else
+    $qat_devices = `for i in 0442 0443 37c9 19e3; do lspci -d 8086:$i -m; done|awk '{print $1}'`
+  end
+  $sriov_devices = `lspci | grep "Ethernet .* Virtual Function"|awk '{print $1}'`
 end
-$sriov_devices = `lspci | grep "Ethernet .* Virtual Function"|awk '{print $1}'`
-$qemu_version = `qemu-system-x86_64 --version | perl -pe '($_)=/([0-9]+([.][0-9]+)+)/'`
+if which 'qemu-system-x86_64'
+  $qemu_version = `qemu-system-x86_64 --version | perl -pe '($_)=/([0-9]+([.][0-9]+)+)/'`
+end
 
 Vagrant.configure("2") do |config|
   config.vm.provider "libvirt"
@@ -86,6 +105,10 @@ Vagrant.configure("2") do |config|
       config.proxy.no_proxy = $no_proxy
       config.proxy.enabled = { docker: false }
     end
+  end
+
+  config.vm.provider "virtualbox" do |v|
+    v.gui = false
   end
 
   nodes.each do |node|
@@ -110,9 +133,9 @@ Vagrant.configure("2") do |config|
           node['volumes'].each do |volume|
             $volume_file = "#{node['name']}-#{volume['name']}.vdi"
             unless File.exist?($volume_file)
-              v.customize ['createmedium', 'disk', '--filename', $volume_file, '--size', volume['size']]
+              v.customize ['createmedium', 'disk', '--filename', $volume_file, '--size', (volume['size'] * 1024)]
             end
-            v.customize ['storageattach', :id, '--storagectl', 'IDE Controller', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', $volume_file]
+            v.customize ['storageattach', :id, '--storagectl', vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["vb_controller"], '--port', 1, '--device', 0, '--type', 'hdd', '--medium', $volume_file]
           end
         end # volumes
       end # virtualbox
@@ -209,6 +232,17 @@ Vagrant.configure("2") do |config|
     installer.vm.hostname = "undercloud"
     installer.vm.box =  vagrant_boxes["ubuntu"]["xenial"]["name"]
     installer.vm.network :forwarded_port, guest: 9090, host: 9090
+
+    [:virtualbox, :libvirt].each do |provider|
+    installer.vm.provider provider do |p|
+        p.cpus = 1
+        p.memory = 1024
+      end
+    end
+
+    # NOTE: A private network set up is required by NFS. This is due
+    # to a limitation of VirtualBox's built-in networking.
+    installer.vm.network "private_network", ip: "10.10.17.2"
     installer.vm.provision 'shell', privileged: false, inline: <<-SHELL
       cd /vagrant
       sudo mkdir -p /root/.ssh/
@@ -229,7 +263,7 @@ Vagrant.configure("2") do |config|
       sh.inline = <<-SHELL
         for krd_var in $(printenv | grep KRD_); do echo "export $krd_var" | sudo tee --append /etc/environment ; done
         cd /vagrant/
-        ./krd_command.sh -a install_k8s -a install_rundeck -a install_cockpit | tee vagrant_init.log
+        ./krd_command.sh -a install_k8s -a install_cockpit | tee vagrant_init.log
       SHELL
     end
   end # installer

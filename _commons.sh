@@ -157,10 +157,22 @@ function _run_ansible_cmd {
     eval "$ansible_cmd $playbook" | tee "$log"
 }
 
-# Configuration values
+# Requirements
+if ! command -v curl; then
+    # shellcheck disable=SC1091
+    source /etc/os-release || source /usr/lib/os-release
+    case ${ID,,} in
+        ubuntu|debian)
+            sudo apt-get update
+            sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 curl
+        ;;
+    esac
+fi
 if ! command -v git; then
     _install_package git
 fi
+
+# Configuration values
 KRD_FOLDER="$(git rev-parse --show-toplevel)"
 export KRD_FOLDER
 
