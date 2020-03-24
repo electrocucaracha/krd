@@ -123,6 +123,10 @@ function install_k8s {
     sudo cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
     sudo chown -R "$USER" "$HOME/.kube/"
     sudo mv "$krd_inventory_folder/artifacts/kubectl" /usr/local/bin/kubectl
+
+    # Configure Kubernetes Dashboard
+    KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g\"" kubectl -n kube-system edit service kubernetes-dashboard
+    KUBE_EDITOR="sed -i \"s|nodePort\: .*|nodePort\: ${KRD_KUBERNETES_DASHBOARD_PORT:-30080}|g\"" kubectl -n kube-system edit service kubernetes-dashboard
     _install_krew
     kubectl krew install tree
 }
