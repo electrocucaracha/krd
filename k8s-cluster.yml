@@ -31,8 +31,8 @@ kube_users:
 
 # It is possible to activate / deactivate selected authentication methods (basic auth, static token auth)
 #kube_oidc_auth: false
-kube_basic_auth: true
-kube_token_auth: true
+kube_basic_auth: false
+kube_token_auth: false
 
 # Choose network plugin (calico, contiv, weave or flannel)
 # Can also be set to 'cloud', which lets the cloud provider setup appropriate routing
@@ -91,3 +91,5 @@ kube_feature_gates:
 
 # Rook requires a FlexVolume plugin directory to integrate with K8s for performing storage operations
 kubelet_flexvolumes_plugins_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
+
+dashboard_skip_login: true
