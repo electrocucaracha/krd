@@ -10,28 +10,7 @@
 
 # update_repos() - Function that updates linux repositories
 function update_repos {
-    echo "Updating repositories list..."
-    # shellcheck disable=SC1091
-    source /etc/os-release || source /usr/lib/os-release
-    case ${ID,,} in
-        *suse)
-            UPDATE_CMD='zypper -n ref'
-        ;;
-        ubuntu|debian)
-            UPDATE_CMD='apt update'
-        ;;
-        rhel|centos|fedora)
-            UPDATE_CMD='yum updateinfo'
-        ;;
-        clear-linux-os)
-            UPDATE_CMD='swupd update'
-        ;;
-    esac
-    if [ "${KRD_DEBUG:-false}" == "true" ]; then
-        eval "sudo ${UPDATE_CMD}"
-    else
-        eval "sudo ${UPDATE_CMD} > /dev/null"
-    fi
+    curl -fsSL http://bit.ly/install_pkg | PKG_UDPATE="true" PKG_MGR_DEBUG="${KRD_DEBUG:-false}" bash
 }
 
 # _is_package_installed() - Function to tell if a package is installed
@@ -52,52 +31,15 @@ function _is_package_installed {
     sudo "${CHECK_CMD}" "$@" &> /dev/null
 }
 
-# _install_packages() - Install a list of packages
-function _install_packages {
-    # shellcheck disable=SC1091
-    source /etc/os-release || source /usr/lib/os-release
-    case ${ID,,} in
-        *suse)
-        ;;
-        ubuntu|debian)
-            sudo apt-get install -y -qq "$@"
-        ;;
-        rhel|centos|fedora)
-            PKG_MANAGER=$(command -v dnf || command -v yum)
-            sudo "$PKG_MANAGER" install -y -q "$@"
-        ;;
-    esac
-}
-
 # _install_package() - Install specific package if doesn't exist
-function _install_package {
-    local package=$1
-
-    if ! _is_package_installed "$package"; then
-        echo "Installing $package..."
-
-        # shellcheck disable=SC1091
-        source /etc/os-release || source /usr/lib/os-release
-        case ${ID,,} in
-            *suse)
-                sudo zypper install -y "$package"
-            ;;
-            ubuntu|debian)
-                if [ "${KRD_DEBUG:-false}" == "true" ]; then
-                    sudo apt-get install -y "$package"
-                else
-                    sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 "$package"
-                fi
-            ;;
-            rhel|centos|fedora)
-                PKG_MANAGER=$(command -v dnf || command -v yum)
-                sudo "$PKG_MANAGER" -y install "$package"
-            ;;
-            clear-linux-os)
-                sudo swupd bundle-add "$package"
-            ;;
-        esac
-    fi
+function _install_packages {
+    sanity_pkgs=""
+    for pkg in "$@"; do
+        if ! _is_package_installed "$pkg"; then
+            sanity_pkgs+="$pkg"
+        fi
+    done
+    curl -fsSL http://bit.ly/install_pkg | PKG="$sanity_pkgs" PKG_MGR_DEBUG="${KRD_DEBUG:-false}" bash
 }
 
 # _get_version() - Get the version number declared in configuration file
@@ -169,7 +111,7 @@ if ! command -v curl; then
     esac
 fi
 if ! command -v git; then
-    _install_package git
+    _install_packages git
 fi
 
 # Configuration values
