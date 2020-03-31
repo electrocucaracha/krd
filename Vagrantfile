@@ -140,6 +140,7 @@ Vagrant.configure("2") do |config|
         end # volumes
       end # virtualbox
       nodeconfig.vm.provider 'libvirt' do |v, override|
+        v.disk_bus = "sata"
         if node['roles'].include?("virtlet")
           v.nested = true
         end
