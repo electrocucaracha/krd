@@ -22,7 +22,7 @@ function _install_kubespray {
         echo "Download kubespray binaries"
 
         pkgs=""
-        for pkg in git make unzip ansible docker wget; do
+        for pkg in git make unzip ansible docker wget rsync; do
         if ! command -v "$pkg"; then
             pkgs+=" $pkg"
         fi

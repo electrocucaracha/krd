@@ -203,6 +203,8 @@ Vagrant.configure("2") do |config|
           end
         end
       end # libvirt
+
+      # Setup SSH keys on target nodes
       nodeconfig.vm.provision 'shell', inline: <<-SHELL
         mkdir -p /root/.ssh
         cat /vagrant/insecure_keys/key.pub | tee /root/.ssh/authorized_keys
@@ -218,6 +220,32 @@ Vagrant.configure("2") do |config|
           end
         end
       end
+      # Setup QAT nodes
+      nodeconfig.vm.provision "shell", inline: <<-SHELL
+        source /etc/os-release || source /usr/lib/os-release
+        case ${ID,,} in
+            clear-linux-os)
+                mkdir -p /etc/kernel/{cmdline.d,cmdline-removal.d}
+                echo "module.sig_unenforce" | sudo tee /etc/kernel/cmdline.d/allow-unsigned-modules.conf
+                echo "intel_iommu=igfx_off" | sudo tee /etc/kernel/cmdline-removal.d/disable-iommu.conf
+                clr-boot-manager update
+                sudo mkdir -p /etc/systemd/resolved.conf.d
+                printf "[Resolve]\nDNSSEC=false" | sudo tee /etc/systemd/resolved.conf.d/dnssec.conf
+            ;;
+            rhel|centos|fedora)
+                curl -fsSL http://bit.ly/install_pkg | PKG=kernel PKG_UPDATE=true bash
+                sudo grub2-set-default 0
+                grub_cfg="$(sudo readlink -f /etc/grub2.cfg)"
+                if dmesg | grep EFI; then
+                    grub_cfg="/boot/efi/EFI/centos/grub.cfg"
+                fi
+                sudo grub2-mkconfig -o "$grub_cfg"
+            ;;
+        esac
+      SHELL
+      if node['os'] == "centos"
+        nodeconfig.vm.provision :reload
+      end
       nodeconfig.vm.provision 'shell' do |sh|
         sh.env = {
           'KRD_DEBUG': "#{$krd_debug}",
@@ -225,9 +253,6 @@ Vagrant.configure("2") do |config|
         }
         sh.path =  "node.sh"
         sh.args = ['-v', $volume_mounts_dict[0...-1]]
-      end
-      if node['os'] == "centos"
-        nodeconfig.vm.provision :reload
       end
     end
   end # node.each

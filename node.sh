@@ -38,106 +38,51 @@ EOF
     echo "${dev_name}1 $mount_dir           ext4    errors=remount-ro,noatime,barrier=0 0       1" >> /etc/fstab
 }
 
-while getopts "h?v:" opt; do
-    case $opt in
-        v)
-            dict_volumes="$OPTARG"
+# disable_swap() - Disable Swap
+function disable_swap {
+    swapoff -a
+    sed -i -e '/swap/d' /etc/fstab
+}
+
+# enable_huge_pages() - Enable Huge pages
+function enable_huge_pages {
+    echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
+    sudo mkdir -p /mnt/huge
+    sudo mount -t hugetlbfs nodev /mnt/huge
+    echo 1024 | sudo tee /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+}
+
+# enable_rbd() - Rook Ceph requires a Linux kernel built with the RBD module
+function enable_rbd {
+    sudo modprobe rbd
+}
+
+# _install_deps() - Install minimal dependencies required
+function _install_deps {
+    if ! command -v curl; then
+        # shellcheck disable=SC1091
+        source /etc/os-release || source /usr/lib/os-release
+        case ${ID,,} in
+            ubuntu|debian)
+                sudo apt-get update
+                sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 curl
             ;;
-        h|\?)
-            usage
-            exit
-            ;;
-    esac
-done
-
-# Disable Swap
-swapoff -a
-sed -i -e '/swap/d' /etc/fstab
-if [ -n "${dict_volumes:-}" ]; then
-    for kv in ${dict_volumes//,/ } ;do
-        mount_external_partition "${kv%=*}" "${kv#*=}"
-    done
-fi
-
-# shellcheck disable=SC1091
-source /etc/os-release || source /usr/lib/os-release
-if [[ ${ID+x} = "x"  ]]; then
-    id_os="export $(grep "^ID=" /etc/os-release)"
-    eval "$id_os"
-fi
-case ${ID,,} in
-    opensuse*)
-        INSTALLER_CMD="sudo -H -E zypper -q install -y --no-recommends lshw"
-        sudo zypper -n ref
-    ;;
-    ubuntu|debian)
-        INSTALLER_CMD="sudo -H -E apt-get -y -q=3 install hwloc cockpit cockpit-docker"
-        sudo apt-get update
-    ;;
-    rhel|centos|fedora)
-        PKG_MANAGER=$(command -v dnf || command -v yum)
-        INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install"
-        if ! sudo "$PKG_MANAGER" repolist | grep "epel/"; then
-            $INSTALLER_CMD epel-release
-        fi
-        sudo "$PKG_MANAGER" updateinfo
-        $INSTALLER_CMD kernel
-        sudo grub2-set-default 0
-        grub_cfg="$(sudo readlink -f /etc/grub2.cfg)"
-        if dmesg | grep EFI; then
-            grub_cfg="/boot/efi/EFI/centos/grub.cfg"
-        fi
-        sudo grub2-mkconfig -o "$grub_cfg"
-        INSTALLER_CMD+=" iproute-tc hwloc wget cockpit https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm"
-        if [[ $VERSION_ID == "7" ]]; then
-            INSTALLER_CMD+=" cockpit-docker"
-        fi
-        if ! command -v python; then
-            INSTALLER_CMD+=" python36"
-        fi
-    ;;
-    clear-linux-os)
-        mkdir -p /etc/kernel/cmdline.d
-        echo "module.sig_unenforce" | sudo tee /etc/kernel/cmdline.d/allow-unsigned-modules.conf
-        clr-boot-manager update
-        INSTALLER_CMD="sudo -H -E swupd bundle-add hwloc cockpit"
-        sudo swupd update
-esac
-
-# Enable Huge Pages
-echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
-sudo mkdir -p /mnt/huge
-sudo mount -t hugetlbfs nodev /mnt/huge
-echo 1024 | sudo tee /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
-
-# Rook Ceph requires a Linux kernel built with the RBD module
-sudo modprobe rbd
-# LVM is required on all storage nodes
-INSTALLER_CMD+=" lvm2"
-
-${INSTALLER_CMD}
-if ! command -v python && command -v python3; then
-    sudo ln -s /usr/bin/python3 /usr/bin/python
-fi
-
-if lsblk -t | grep pmem; then
-    case ${ID,,} in
-        rhel|centos|fedora)
-            for repo in ipmctl safeclib; do
-                wget -O "/etc/yum.repos.d/${repo}-epel-7.repo" "https://copr.fedorainfracloud.org/coprs/jhli/${repo}/repo/epel-7/jhli-${repo}-epel-7.repo"
-            done
-            INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install ipmctl ndctl"
-        ;;
-    esac
-    ${INSTALLER_CMD}
-    if command -v ndctl && command -v jq; then
-        for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
-            sudo ndctl create-namespace -f -e "$namespace" --mode=memory
-        done
+        esac
     fi
-fi
-if [ "${KRD_CONTAINER_RUNTIME:-docker}" == "crio" ]; then
-    # (TODO): https://github.com/kubernetes-sigs/kubespray/pull/4607
+
+    pkgs="cockpit"
+    if ! command -v lstopo-no-graphics; then
+        pkgs+=" hwloc"
+    fi
+    if ! command -v vgs; then
+        pkgs+=" lvm2"
+    fi
+    curl -fsSL http://bit.ly/install_pkg | PKG="$pkgs" PKG_DEBUG="${KRD_DEBUG:-false}" bash
+}
+
+# TODO: Remove this when PR is merged  https://github.com/kubernetes-sigs/kubespray/pull/4607
+# configure_crio_proxy() - A workaround for CRI-O proxy configuration
+function configure_crio_proxy {
     sudo mkdir -p /etc/systemd/system/crio.service.d/
     if [ -n "$HTTP_PROXY" ]; then
         echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/http-proxy.conf
@@ -151,7 +96,53 @@ if [ "${KRD_CONTAINER_RUNTIME:-docker}" == "crio" ]; then
         echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/no-proxy.conf
         echo "Environment=\"NO_PROXY=$NO_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/no-proxy.conf
     fi
+}
+
+while getopts "h?v:" opt; do
+    case $opt in
+        v)
+            dict_volumes="$OPTARG"
+            ;;
+        h|\?)
+            usage
+            exit
+            ;;
+    esac
+done
+
+disable_swap
+enable_huge_pages
+enable_rbd
+_install_deps
+if [ "${KRD_CONTAINER_RUNTIME:-docker}" == "crio" ]; then
+    configure_crio_proxy
 fi
+if [ -n "${dict_volumes:-}" ]; then
+    for kv in ${dict_volumes//,/ } ;do
+        mount_external_partition "${kv%=*}" "${kv#*=}"
+    done
+fi
+
+## TODO: Improve PMEM setup
+
+#if lsblk -t | grep pmem; then
+#    # shellcheck disable=SC1091
+#    source /etc/os-release || source /usr/lib/os-release
+#    case ${ID,,} in
+#        rhel|centos|fedora)
+#            for repo in ipmctl safeclib; do
+#                curl -o "/etc/yum.repos.d/${repo}-epel-7.repo" "https://copr.fedorainfracloud.org/coprs/jhli/${repo}/repo/epel-7/jhli-${repo}-epel-7.repo"
+#            done
+#            INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install ipmctl ndctl"
+#        ;;
+#    esac
+#    ${INSTALLER_CMD}
+#    if command -v ndctl && command -v jq; then
+#        for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
+#            sudo ndctl create-namespace -f -e "$namespace" --mode=memory
+#        done
+#    fi
+#fi
 
 # Enable NVDIMM mixed mode (configuration for MM:AD is set to 50:50)
 #if command -v ipmctl; then
