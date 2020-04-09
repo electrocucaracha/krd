@@ -50,6 +50,7 @@ while getopts "h?v:" opt; do
     esac
 done
 
+# Disable Swap
 swapoff -a
 sed -i -e '/swap/d' /etc/fstab
 if [ -n "${dict_volumes:-}" ]; then
@@ -102,6 +103,13 @@ case ${ID,,} in
         INSTALLER_CMD="sudo -H -E swupd bundle-add hwloc cockpit"
         sudo swupd update
 esac
+
+# Enable Huge Pages
+echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
+sudo mkdir -p /mnt/huge
+sudo mount -t hugetlbfs nodev /mnt/huge
+echo 1024 | sudo tee /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
+
 # Rook Ceph requires a Linux kernel built with the RBD module
 sudo modprobe rbd
 # LVM is required on all storage nodes
