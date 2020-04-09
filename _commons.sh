@@ -10,7 +10,7 @@
 
 # update_repos() - Function that updates linux repositories
 function update_repos {
-    curl -fsSL http://bit.ly/install_pkg | PKG_UDPATE="true" PKG_MGR_DEBUG="${KRD_DEBUG:-false}" bash
+    curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE="true" PKG_MGR_DEBUG="${KRD_DEBUG:-false}" bash
 }
 
 # _is_package_installed() - Function to tell if a package is installed
