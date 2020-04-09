@@ -129,6 +129,9 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.box =  vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["name"]
       nodeconfig.vm.box_version = vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["version"]
       nodeconfig.vm.provider 'virtualbox' do |v, override|
+        if node['roles'].include?("virtlet")
+          v.customize ["modifyvm", :id, "--nested-hw-virt","on"]
+        end
         if node.has_key? "volumes"
           node['volumes'].each do |volume|
             $volume_file = "#{node['name']}-#{volume['name']}.vdi"
