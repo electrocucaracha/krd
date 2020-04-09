@@ -36,7 +36,7 @@ kube_token_auth: false
 
 # Choose network plugin (calico, contiv, weave or flannel)
 # Can also be set to 'cloud', which lets the cloud provider setup appropriate routing
-kube_network_plugin: flannel
+kube_network_plugin: kube-ovn
 
 # Make a copy of kubeconfig on the host that runs Ansible in GITDIR/artifacts
 kubeconfig_localhost: true

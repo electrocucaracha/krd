@@ -51,7 +51,7 @@ if not File.exists?(loader)
 end
 
 $krd_debug = ENV['KRD_DEBUG'] || "true"
-$krd_network_plugin = ENV['KRD_NETWORK_PLUGIN'] || "flannel"
+$krd_network_plugin = ENV['KRD_NETWORK_PLUGIN'] || "kube-ovn"
 $krd_enable_multus = ENV['KRD_ENABLE_MULTUS'] || "false"
 $krd_qat_plugin_mode = ENV['KRD_QAT_PLUGIN_MODE'] || "dpdk"
 $krd_container_runtime = ENV['KRD_CONTAINER_RUNTIME'] || "docker"
