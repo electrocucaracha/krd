@@ -25,11 +25,11 @@ centos:
 ubuntu:
   xenial:
     name: "peru/ubuntu-16.04-server-amd64"
-    version: "20200301.01"
+    version: "20200401.01"
     vb_controller: "IDE Controller"
   bionic:
     name: "peru/ubuntu-18.04-server-amd64"
-    version: "20200301.01"
+    version: "20200401.01"
     vb_controller: "IDE Controller"
 opensuse:
   tumbleweed:
