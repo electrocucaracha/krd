@@ -10,7 +10,7 @@
 
 # update_repos() - Function that updates linux repositories
 function update_repos {
-    curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE="true" PKG_MGR_DEBUG="${KRD_DEBUG:-false}" bash
+    curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE="true" PKG_DEBUG="${KRD_DEBUG:-false}" bash
 }
 
 # _is_package_installed() - Function to tell if a package is installed
@@ -39,7 +39,7 @@ function _install_packages {
             sanity_pkgs+="$pkg"
         fi
     done
-    curl -fsSL http://bit.ly/install_pkg | PKG="$sanity_pkgs" PKG_MGR_DEBUG="${KRD_DEBUG:-false}" bash
+    curl -fsSL http://bit.ly/install_pkg | PKG="$sanity_pkgs" PKG_DEBUG="${KRD_DEBUG:-false}" bash
 }
 
 # _get_version() - Get the version number declared in configuration file
