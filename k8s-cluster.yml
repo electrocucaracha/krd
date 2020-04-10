@@ -88,6 +88,10 @@ container_manager: docker
 # Enable the RuntimeClass feature for selecting container runtime configurations.
 kube_feature_gates:
   - NonPreemptingPriority=true
+  - TopologyManager=true # Enables NUMA alignment of CPUs and peripheral devices (such as SR-IOV VFs and GPUs), allowing your workload to run in an environment optimized for low-latency.
+
+kubelet_custom_flags:
+  - "--cpu-manager-policy=static" # Allows containers in Guaranteed pods with integer CPU requests access to exclusive CPUs on the node.
 
 # Rook requires a FlexVolume plugin directory to integrate with K8s for performing storage operations
 kubelet_flexvolumes_plugins_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
