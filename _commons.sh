@@ -10,7 +10,7 @@
 
 # update_repos() - Function that updates linux repositories
 function update_repos {
-    curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE="true" PKG_DEBUG="${KRD_DEBUG:-false}" bash
+    curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE="true" bash
 }
 
 # _is_package_installed() - Function to tell if a package is installed
@@ -39,7 +39,7 @@ function _install_packages {
             sanity_pkgs+="$pkg"
         fi
     done
-    curl -fsSL http://bit.ly/install_pkg | PKG="$sanity_pkgs" PKG_DEBUG="${KRD_DEBUG:-false}" bash
+    curl -fsSL http://bit.ly/install_pkg | PKG="$sanity_pkgs" bash
 }
 
 # _get_version() - Get the version number declared in configuration file
@@ -124,4 +124,5 @@ export krd_inventory=$krd_inventory_folder/hosts.ini
 export kubespray_folder=/opt/kubespray
 if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
     set -o xtrace
+    export PKG_DEBUG=true
 fi

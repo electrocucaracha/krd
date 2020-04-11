@@ -13,6 +13,7 @@ set -o pipefail
 
 if [ "${KRD_DEBUG:-false}" == "true" ]; then
     set -o xtrace
+    export PKG_DEBUG=true
 fi
 
 # usage() - Prints the usage of the program
@@ -77,7 +78,7 @@ function _install_deps {
     if ! command -v vgs; then
         pkgs+=" lvm2"
     fi
-    curl -fsSL http://bit.ly/install_pkg | PKG="$pkgs" PKG_DEBUG="${KRD_DEBUG:-false}" bash
+    curl -fsSL http://bit.ly/install_pkg | PKG="$pkgs" bash
 }
 
 # TODO: Remove this when PR is merged  https://github.com/kubernetes-sigs/kubespray/pull/4607

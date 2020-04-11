@@ -22,10 +22,10 @@ function _install_kubespray {
         echo "Download kubespray binaries"
 
         pkgs=""
-        for pkg in git make unzip ansible docker wget rsync; do
-        if ! command -v "$pkg"; then
-            pkgs+=" $pkg"
-        fi
+        for pkg in git make unzip ansible docker wget rsync kubectl; do
+            if ! command -v "$pkg"; then
+                pkgs+=" $pkg"
+            fi
         done
         if [ -n "$pkgs" ]; then
             curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
@@ -90,23 +90,6 @@ function _install_kubespray {
     fi
 }
 
-function _install_krew {
-    local krew_version="v0.3.1"
-
-    if kubectl krew version &>/dev/null; then
-        return
-    fi
-
-    pushd "$(mktemp -d)"
-    curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/download/${krew_version}/krew.{tar.gz,yaml}" &&
-    tar zxvf krew.tar.gz
-    ./krew-"$(uname | tr '[:upper:]' '[:lower:]')_amd64" install --manifest=krew.yaml --archive=krew.tar.gz
-    export PATH="$PATH:${KREW_ROOT:-$HOME/.krew}/bin"
-    sudo sed -i "s|^PATH=.*|PATH=\"$PATH\"|" /etc/environment
-    kubectl krew update
-    popd
-}
-
 # install_k8s() - Install Kubernetes using kubespray tool
 function install_k8s {
     echo "Installing Kubernetes"
@@ -121,13 +104,10 @@ function install_k8s {
     mkdir -p "$HOME/.kube"
     sudo cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
     sudo chown -R "$USER" "$HOME/.kube/"
-    sudo mv "$krd_inventory_folder/artifacts/kubectl" /usr/local/bin/kubectl
 
     # Configure Kubernetes Dashboard
     KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g\"" kubectl -n kube-system edit service kubernetes-dashboard
     KUBE_EDITOR="sed -i \"s|nodePort\: .*|nodePort\: ${KRD_KUBERNETES_DASHBOARD_PORT:-30080}|g\"" kubectl -n kube-system edit service kubernetes-dashboard
-    _install_krew
-    kubectl krew install tree
 }
 
 # install_k8s_addons() - Install Kubenertes AddOns

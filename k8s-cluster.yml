@@ -74,7 +74,7 @@ download_localhost: true
 kube_network_plugin_multus: false
 
 # Download kubectl onto the host that runs Ansible in {{ bin_dir }}
-kubectl_localhost: true
+kubectl_localhost: false
 
 # Settings for containerized control plane (etcd/kubelet/secrets)
 etcd_deployment_type: docker
@@ -85,9 +85,7 @@ kubelet_deployment_type: docker
 # Container for runtime
 container_manager: docker
 
-# Enable the RuntimeClass feature for selecting container runtime configurations.
 kube_feature_gates:
-  - NonPreemptingPriority=true
   - TopologyManager=true # Enables NUMA alignment of CPUs and peripheral devices (such as SR-IOV VFs and GPUs), allowing your workload to run in an environment optimized for low-latency.
 
 kubelet_custom_flags:
