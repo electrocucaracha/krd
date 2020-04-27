@@ -71,7 +71,7 @@ function _install_deps {
         esac
     fi
 
-    pkgs="cockpit"
+    pkgs="cockpit ethtool"
     if ! command -v lstopo-no-graphics; then
         pkgs+=" hwloc"
     fi
