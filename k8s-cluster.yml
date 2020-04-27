@@ -85,8 +85,8 @@ kubelet_deployment_type: docker
 # Container for runtime
 container_manager: docker
 
-kube_feature_gates:
-  - TopologyManager=true # Enables NUMA alignment of CPUs and peripheral devices (such as SR-IOV VFs and GPUs), allowing your workload to run in an environment optimized for low-latency.
+#kube_feature_gates:
+#  - TopologyManager=true # Enables NUMA alignment of CPUs and peripheral devices (such as SR-IOV VFs and GPUs), allowing your workload to run in an environment optimized for low-latency.
 
 kubelet_custom_flags:
   - "--cpu-manager-policy=static" # Allows containers in Guaranteed pods with integer CPU requests access to exclusive CPUs on the node.
