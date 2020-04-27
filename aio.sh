@@ -29,9 +29,16 @@ if ! sudo -n "true"; then
     exit 1
 fi
 
-if ! command -v hostname; then
-    curl -fsSL http://bit.ly/install_pkg | PKG=hostname bash
+pkgs=""
+for pkg in hostname wget git; do
+    if ! command -v "$pkg"; then
+        pkgs+=" $pkg"
+    fi
+done
+if [ -n "$pkgs" ]; then
+    curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
 fi
+
 # Validating local IP addresses in no_proxy environment variable
 if [[ ${NO_PROXY+x} = "x" ]]; then
     for ip in $(hostname --ip-address || hostname -i) $(ip addr | awk "/$(ip route | grep "^default" | head -n1 | awk '{ print $5 }')\$/ { sub(/\/[0-9]*/, \"\","' $2); print $2}'); do
@@ -42,15 +49,9 @@ if [[ ${NO_PROXY+x} = "x" ]]; then
     done
 fi
 
-if ! command -v wget; then
-    curl -fsSL http://bit.ly/install_pkg | PKG=wget bash
-fi
 echo "Sync server's clock"
 sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
 
-if ! command -v git; then
-    curl -fsSL http://bit.ly/install_pkg | PKG=git bash
-fi
 echo "Cloning and configuring KRD project..."
 if [ ! -d "${KRD_FOLDER:-/opt/krd}" ]; then
     sudo -E git clone --depth 1 https://github.com/electrocucaracha/krd "${KRD_FOLDER:-/opt/krd}"
