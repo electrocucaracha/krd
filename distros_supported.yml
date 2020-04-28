@@ -11,7 +11,7 @@
 clearlinux:
   latest:
     name: "AntonioMeireles/ClearLinux"
-    version: "32610"
+    version: "32890"
     vb_controller: "IDE"
 centos:
   7:
@@ -25,14 +25,14 @@ centos:
 ubuntu:
   xenial:
     name: "peru/ubuntu-16.04-server-amd64"
-    version: "20200401.01"
+    version: "20200424.01"
     vb_controller: "IDE Controller"
   bionic:
     name: "peru/ubuntu-18.04-server-amd64"
-    version: "20200401.01"
+    version: "20200424.01"
     vb_controller: "IDE Controller"
 opensuse:
   tumbleweed:
     name: "opensuse/Tumbleweed.x86_64"
-    version: "1.0.20200314"
+    version: "1.0.20200425"
     vb_controller: "IDE"
