@@ -78,7 +78,13 @@ function _install_deps {
     if ! command -v vgs; then
         pkgs+=" lvm2"
     fi
+    if ! command -v tuned-adm; then
+        pkgs+=" tuned"
+    fi
+
     curl -fsSL http://bit.ly/install_pkg | PKG="$pkgs" bash
+    sudo systemctl start tuned
+    sudo systemctl enable tuned
 }
 
 # TODO: Remove this when PR is merged  https://github.com/kubernetes-sigs/kubespray/pull/4607
