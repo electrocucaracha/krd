@@ -248,8 +248,7 @@ Vagrant.configure("2") do |config|
       end
       nodeconfig.vm.provision 'shell' do |sh|
         sh.env = {
-          'KRD_DEBUG': "#{$krd_debug}",
-          'KRD_CONTAINER_RUNTIME': "#{$krd_container_runtime}"
+          'KRD_DEBUG': "#{$krd_debug}"
         }
         sh.path =  "node.sh"
         sh.args = ['-v', $volume_mounts_dict[0...-1]]

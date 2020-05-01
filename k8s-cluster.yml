@@ -42,7 +42,7 @@ kube_network_plugin: kube-ovn
 kubeconfig_localhost: true
 
 # Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.16.9
+kube_version: v1.17.5
 
 # Kube-proxy proxyMode configuration.
 # NOTE: Ipvs is based on netfilter hook function, but uses hash table as the underlying data structure and
@@ -94,4 +94,5 @@ kubelet_custom_flags:
 # Rook requires a FlexVolume plugin directory to integrate with K8s for performing storage operations
 kubelet_flexvolumes_plugins_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
 
-dashboard_skip_login: true
+# TODO: : Remove this condition when this change(https://github.com/kubernetes-sigs/kubespray/pull/6066) is included
+#dashboard_skip_login: true

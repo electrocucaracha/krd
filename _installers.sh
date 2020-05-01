@@ -31,10 +31,6 @@ function _install_kubespray {
             curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
         fi
 
-        # TODO: Remove this condition when this change(https://github.com/kubernetes-sigs/kubespray/pull/5426#issuecomment-569326619) is included
-        if [ -n "${KRD_CONTAINER_RUNTIME}" ] && [ "${KRD_CONTAINER_RUNTIME}" != "docker" ]; then
-            kubespray_version="master"
-        fi
         if [ "$kubespray_version" == "master" ]; then
             sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder
         else
@@ -69,10 +65,6 @@ function _install_kubespray {
         if [ -n "${NO_PROXY}" ]; then
             echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
         fi
-        # TODO: Remove this condition when this change(https://github.com/kubernetes-sigs/kubespray/issues/5472) is included
-        if [ -n "${KRD_ENABLE_MULTUS}" ] && [ "${KRD_ENABLE_MULTUS}" == "true" ]; then
-            sed -i 's/^kube_version: .*$/kube_version: v1.15.6/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        fi
         sed -i "s/^kube_network_plugin_multus: .*$/kube_network_plugin_multus: ${KRD_ENABLE_MULTUS:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         if [ -n "${KRD_CONTAINER_RUNTIME}" ] && [ "${KRD_CONTAINER_RUNTIME}" != "docker" ]; then
             {
@@ -81,7 +73,6 @@ function _install_kubespray {
             } >> "$krd_inventory_folder/group_vars/all.yml"
             sed -i 's/^download_run_once: .*$/download_run_once: false/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^download_localhost: .*$/download_localhost: false/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            sed -i 's/^kube_version: .*$/kube_version: v1.15.3/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^etcd_deployment_type: .*$/etcd_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^kubelet_deployment_type: .*$/kubelet_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i "s/^container_manager: .*$/container_manager: ${KRD_CONTAINER_RUNTIME}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"

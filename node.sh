@@ -87,24 +87,6 @@ function _install_deps {
     sudo systemctl enable tuned
 }
 
-# TODO: Remove this when PR is merged  https://github.com/kubernetes-sigs/kubespray/pull/4607
-# configure_crio_proxy() - A workaround for CRI-O proxy configuration
-function configure_crio_proxy {
-    sudo mkdir -p /etc/systemd/system/crio.service.d/
-    if [ -n "$HTTP_PROXY" ]; then
-        echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/http-proxy.conf
-        echo "Environment=\"HTTP_PROXY=$HTTP_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/http-proxy.conf
-    fi
-    if [ -n "$HTTPS_PROXY" ]; then
-        echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/https-proxy.conf
-        echo "Environment=\"HTTPS_PROXY=$HTTPS_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/https-proxy.conf
-    fi
-    if [ -n "$NO_PROXY" ]; then
-        echo "[Service]" | sudo tee /etc/systemd/system/crio.service.d/no-proxy.conf
-        echo "Environment=\"NO_PROXY=$NO_PROXY\"" | sudo tee --append /etc/systemd/system/crio.service.d/no-proxy.conf
-    fi
-}
-
 while getopts "h?v:" opt; do
     case $opt in
         v)
@@ -121,9 +103,6 @@ disable_swap
 enable_huge_pages
 enable_rbd
 _install_deps
-if [ "${KRD_CONTAINER_RUNTIME:-docker}" == "crio" ]; then
-    configure_crio_proxy
-fi
 if [ -n "${dict_volumes:-}" ]; then
     for kv in ${dict_volumes//,/ } ;do
         mount_external_partition "${kv%=*}" "${kv#*=}"
