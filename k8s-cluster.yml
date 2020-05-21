@@ -94,5 +94,8 @@ kubelet_custom_flags:
 # Rook requires a FlexVolume plugin directory to integrate with K8s for performing storage operations
 kubelet_flexvolumes_plugins_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
 
-# TODO: : Remove this condition when this change(https://github.com/kubernetes-sigs/kubespray/pull/6066) is included
+# TODO: Remove this when this https://github.com/kubernetes-sigs/kubespray/pull/6066 is included
 #dashboard_skip_login: true
+
+# TODO: Remove this when this https://github.com/kubernetes-sigs/kubespray/pull/6153 is included
+docker_version: "latest"
