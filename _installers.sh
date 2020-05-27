@@ -180,42 +180,25 @@ function install_rundeck {
 
 # install_helm() - Function that installs Helm Client
 function install_helm {
-    if command -v helm; then
-        return
+    local helm_version=${KRD_HELM_VERSION:-2}
+
+    if ! command -v helm  || _vercmp "$(helm version | awk -F '"' '{print substr($2,2); exit}')" '<' "$helm_version"; then
+        curl -fsSL http://bit.ly/install_pkg | PKG="helm" PKG_HELM_VERSION="$helm_version" bash
+        if [ "$helm_version" == "2" ]; then
+            sudo cp ~/.kube/config /home/helm/.kube/
+            sudo chown helm -R /home/helm/
+            sudo su helm -c "helm init --wait"
+
+            # Setup Tiller server
+            kubectl create serviceaccount --namespace kube-system tiller
+            kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+            kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+            kubectl rollout status deployment/tiller-deploy --timeout=5m --namespace kube-system
+
+            # Update repo info
+            helm init --client-only
+        fi
     fi
-
-    curl -L https://git.io/get_helm.sh | HELM_INSTALL_DIR=/usr/bin bash
-    id -u helm &>/dev/null || sudo useradd helm
-    echo "helm ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/helm
-    sudo sudo mkdir -p /home/helm/.kube
-    sudo cp ~/.kube/config /home/helm/.kube/
-    sudo chown helm -R /home/helm/
-    sudo su helm -c "helm init --wait"
-
-    sudo tee <<EOF /etc/systemd/system/helm-serve.service >/dev/null
-[Unit]
-Description=Helm Server
-After=network.target
-
-[Service]
-User=helm
-Restart=always
-ExecStart=/usr/bin/helm serve
-
-[Install]
-WantedBy=multi-user.target
-EOF
-    sudo systemctl enable helm-serve
-    sudo systemctl start helm-serve
-
-    sudo su helm -c "helm repo remove local"
-    sudo su helm -c "helm repo add local http://localhost:8879/charts"
-    kubectl create serviceaccount --namespace kube-system tiller
-    kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-    kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
-    kubectl rollout status deployment/tiller-deploy --timeout=5m --namespace kube-system
-    helm init --client-only
-    helm repo update
 }
 
 # install_helm_chart() - Function that installs additional Official Helm Charts
