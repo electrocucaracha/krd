@@ -31,11 +31,11 @@ function _install_kubespray {
             curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
         fi
 
-        if [ "$kubespray_version" == "master" ]; then
-            sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder
-        else
-            sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder -b "$kubespray_version"
+        clone_cmd="sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder"
+        if [ "$kubespray_version" != "master" ]; then
+            clone_cmd+=" -b $kubespray_version"
         fi
+        eval "$clone_cmd"
         sudo chown -R "$USER" $kubespray_folder
         pushd $kubespray_folder
         PIP_CMD="sudo -E $(command -v pip) install"
@@ -334,7 +334,6 @@ function install_knative {
     wait_for_pods knative-eventing
     wait_for_pods knative-monitoring
 }
-
 
 # install_kiali() - Function that installs Kiali and its dependencies
 function install_kiali {
