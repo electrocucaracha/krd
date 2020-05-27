@@ -445,3 +445,42 @@ function install_cockpit {
     sudo systemctl start cockpit
     sudo systemctl enable cockpit
 }
+
+# run_cnf_conformance - Installs and runs CNF Conformance binary
+function run_cnf_conformance {
+    local cnf_conformance_dir="/opt/cnf-conformance"
+    local version="v0.6.0"
+
+    KRD_HELM_VERSION=3
+    install_helm
+
+    if [ ! -d "$cnf_conformance_dir" ]; then
+        sudo git clone --depth 1 https://github.com/cncf/cnf-conformance "$cnf_conformance_dir" -b "$version"
+        pushd "$cnf_conformance_dir/cnfs"
+        sudo git clone --depth 1 https://github.com/cncf/cnf-testbed/
+        popd
+        sudo chown -R "$USER" "$cnf_conformance_dir"
+    fi
+
+    # Install cnf_conformance binary
+    pushd "$cnf_conformance_dir"
+    if ! command -v cnf-conformance; then
+        if [ "${KRD_CNF_CONFORMANCE_INSTALL_METHOD:-binary}" == "source" ]; then
+            if ! command -v crystal; then
+                curl -fsSL http://bit.ly/install_pkg | PKG="crystal-lang" bash
+            fi
+            shards install
+            crystal build src/cnf-conformance.cr --release --static
+        else
+            curl -sL -o cnf-conformance "https://github.com/cncf/cnf-conformance/releases/download/${version}/cnf-conformance"
+            chmod +x cnf-conformance
+        fi
+        sudo cp cnf-conformance /usr/local/bin/cnf-conformance
+    fi
+
+    cnf-conformance setup
+    while IFS= read -r -d '' file; do
+        cnf-conformance cnf_setup cnf-config="$file"
+    done < <(find ./example-cnfs -name cnf-conformance.yml -print0)
+    popd
+}
