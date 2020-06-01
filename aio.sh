@@ -29,6 +29,13 @@ if ! sudo -n "true"; then
     exit 1
 fi
 
+if [[ $(id -u) -eq 0 ]]; then
+    echo ""
+    echo "This script needs to be executed without using sudo command."
+    echo ""
+    exit 1
+fi
+
 pkgs=""
 for pkg in hostname wget git; do
     if ! command -v "$pkg"; then
