@@ -28,7 +28,9 @@ function add_k8s_nodes {
 # upgrade_k8s() - Function that graceful upgrades the Kubernetes cluster
 function upgrade_k8s {
     kube_version=$(kubectl version --short | grep -e "Server" | awk -F ': ' '{print $2}')
-    kubespray_version=$(_get_version kubespray)
+    pushd "$kubespray_folder"
+    kubespray_version=$(git describe --tags)
+    popd
 
     if _vercmp "${kube_version#*v}" '==' "${KRD_KUBE_VERSION#*v}"; then
         echo "The kubespray instance has been deployed using the $kube_version version"
@@ -37,15 +39,16 @@ function upgrade_k8s {
 
     if [ -n "${KRD_KUBESPRAY_VERSION+x}" ] && _vercmp "${kubespray_version#*v}" '<' "${KRD_KUBESPRAY_VERSION#*v}" ; then
         sed -i "s/^kubespray_version: .*\$/kubespray_version: $KRD_KUBESPRAY_VERSION/" "$krd_playbooks/krd-vars.yml"
-        sudo rm -rf $kubespray_folder
-        _install_kubespray
+        pushd "$kubespray_folder"
+        git fetch --all --tags --prune
+        git pull origin "${KRD_KUBESPRAY_VERSION}"
+        popd
     fi
     sed -i "s/^kube_version: .*\$/kube_version: $KRD_KUBE_VERSION/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
     _run_ansible_cmd "$kubespray_folder/upgrade-cluster.yml" "upgrade-cluster-kubernetes.log"
 
     sudo cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
     sudo chown "$USER" "$HOME/.kube/config"
-    sudo mv "$krd_inventory_folder/artifacts/kubectl" /usr/local/bin/kubectl
 }
 
 # run_k8s_iperf() - Function that execute networking benchmark
