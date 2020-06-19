@@ -14,6 +14,7 @@ set -o pipefail
 
 if [ "${KRD_DEBUG:-false}" == "true" ]; then
     set -o xtrace
+    export PKG_DEBUG=true
 fi
 if [ -n "${KRD_ACTIONS_DECLARE:-}" ]; then
     eval "${KRD_ACTIONS_DECLARE}"
@@ -43,7 +44,7 @@ for pkg in hostname wget git; do
     fi
 done
 if [ -n "$pkgs" ]; then
-    curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
+    curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs PKG_UPDATE=true bash
 fi
 
 # Validating local IP addresses in no_proxy environment variable
@@ -62,7 +63,7 @@ sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -
 echo "Cloning and configuring KRD project..."
 if [ ! -d "${KRD_FOLDER:-/opt/krd}" ]; then
     sudo -E git clone --depth 1 https://github.com/electrocucaracha/krd "${KRD_FOLDER:-/opt/krd}"
-    sudo chown -R "$USER" "${KRD_FOLDER:-/opt/krd}"
+    sudo chown -R "$USER": "${KRD_FOLDER:-/opt/krd}"
 fi
 cd /opt/krd || exit
 
@@ -115,3 +116,6 @@ echo "Deploying KRD project"
 for krd_action in "${KRD_ACTIONS[@]:-install_k8s}"; do
     ./krd_command.sh -a "$krd_action" | tee "krd_${krd_action}.log"
 done
+if [ -f /etc/apt/sources.list.d/docker.list ] && [ -f /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list ]; then
+    sudo rm /etc/apt/sources.list.d/docker.list
+fi
