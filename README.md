@@ -34,12 +34,12 @@ automatically. The *setup.sh* script of the
 install dependencies and plugins required for its usage. This script
 supports two Virtualization technologies (Libvirt and VirtualBox).
 
-    $ curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
+    curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
 
 Once Vagrant is installed, it's possible to provision a cluster using
 the following instructions:
 
-    $ vagrant up && vagrant up installer
+    vagrant up && vagrant up installer
 
 ![Provisioning](docs/src/img/provisioning.png)
 
@@ -51,14 +51,14 @@ Those projects are grouped in KRD actions and it's possible to get
 the current list of current supported actions executing the following
 instruction:
 
-    $ ./krd_command.sh -h
+    ./krd_command.sh -h
 
 The actions which require the execution of a distributed commands were
 implemented through the **install_k8s_addons** KRD action. This action
 uses the *KRD_ADDONS* environment variable to specify the Ansible
 playbook to be executed.
 
-    $ KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
+    KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
 
 *Note:* Some KRD AddOns have a corresponding validation script in the
 [tests](tests) folder.
@@ -71,7 +71,7 @@ upgrade the existing deployment or remove the services.  The following
 instruction shows how to upgrade the existing Kubernetes cluster to
 *v1.15.3* using the Kubespray version *v2.11.0*:
 
-    $ KRD_KUBE_VERSION=v1.15.3 KRD_KUBESPRAY_VERSION=v2.11.0 ./krd_command.sh -a upgrade_k8s
+    KRD_KUBE_VERSION=v1.15.3 KRD_KUBESPRAY_VERSION=v2.11.0 ./krd_command.sh -a upgrade_k8s
 
 ### Environment variables
 
