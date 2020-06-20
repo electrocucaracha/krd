@@ -12,7 +12,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-
 # populate_CSAR_multus() - This function creates the content of CSAR file
 # required for testing Multus feature
 function populate_CSAR_multus {
@@ -79,7 +78,7 @@ function populate_virtlet {
     mkdir -p "/tmp/${virtlet_deployment_name}"
     pushd "/tmp/${virtlet_deployment_name}"
     if ! command -v mkpasswd; then
-        curl -fsSL http://bit.ly/install_pkg | PKG=mkpasswd bash
+        curl -fsSL http://bit.ly/install_pkg | PKG=whois bash
     fi
 
     proxy="apt:"
