@@ -1,22 +1,18 @@
----
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2018
+# Copyright (c) 2020
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-go_version: 1.14.4
-kubespray_version: v2.13.2
-istio_version: 1.4.3
-knative_version: 0.11.0
-kiali_version: v1.7.0
-octant_version: 0.10.0
-rook_version: v1.2.4
-kube-ovn_version: v1.2.1
-prometheus-operator_version: v0.40.0
+persistence:
+  enabled: false
 
-qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
-qat_plugin_version: "0.15.0"
+service:                                                    
+  type: NodePort
+  nodePort: 30086
+
+adminUser: admin
+adminPassword: secret

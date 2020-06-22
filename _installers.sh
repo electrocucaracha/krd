@@ -501,3 +501,22 @@ function run_sonobuoy {
     sonobuoy results "$(sonobuoy retrieve)"
     sonobuoy delete --wait
 }
+
+# install_ovn_metrics_dashboard() - Enables a Grafana dashboard
+function install_ovn_metrics_dashboard {
+    kube_ovn_version=$(_get_version kube-ovn)
+    prometheus_operator_version=$(_get_version prometheus-operator)
+
+    install_helm
+
+    if ! helm ls | grep -e metrics-dashboard; then
+        helm install stable/grafana --name metrics-dashboard -f ./helm/kube-ovn/grafana.yml
+    fi
+    kubectl apply -f "https://raw.githubusercontent.com/coreos/prometheus-operator/${prometheus_operator_version}/bundle.yaml"
+    if ! kubectl get namespaces 2>/dev/null | grep  monitoring; then
+        kubectl create namespace monitoring
+    fi
+    for resource in cni-monitor controller-monitor pinger-monitor; do
+        kubectl apply -f "https://raw.githubusercontent.com/alauda/kube-ovn/${kube_ovn_version}/dist/monitoring/${resource}.yaml"
+    done
+}
