@@ -520,3 +520,17 @@ function install_ovn_metrics_dashboard {
         kubectl apply -f "https://raw.githubusercontent.com/alauda/kube-ovn/${kube_ovn_version}/dist/monitoring/${resource}.yaml"
     done
 }
+
+# install_metrics_server() - Installs Metrics Server services
+function install_metrics_server {
+    install_helm
+
+    if ! helm ls | grep -e metrics-server; then
+        helm install stable/metrics-server --name metrics-server \
+        --set args[0]="--kubelet-insecure-tls" \
+        --set args[1]="--kubelet-preferred-address-types=InternalIP" \
+        --set args[2]="--v=2"
+    fi
+}
+
+
