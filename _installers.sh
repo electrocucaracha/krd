@@ -38,7 +38,7 @@ function _install_kubespray {
         eval "$clone_cmd"
         sudo chown -R "$USER" $kubespray_folder
         pushd $kubespray_folder
-        PIP_CMD="sudo -E $(command -v pip) install"
+        PIP_CMD="sudo -E $(command -v pip) install --no-cache-dir"
         $PIP_CMD -r ./requirements.txt
         make mitogen
         popd
@@ -483,4 +483,21 @@ function run_cnf_conformance {
         cnf-conformance cnf_setup cnf-config="$file"
     done < <(find ./example-cnfs -name cnf-conformance.yml -print0)
     popd
+}
+
+# run_sonobuoy - Installs and runs Sonobuoy conformance tool
+function run_sonobuoy {
+    local sonobuoy_dir="/opt/sonobuoy"
+    local version="0.18.3"
+
+    if [ ! -d "$sonobuoy_dir" ]; then
+        pushd "$(mktemp -d)" > /dev/null
+        curl -L -o sonobuoy.tgz "https://github.com/vmware-tanzu/sonobuoy/releases/download/v$version/sonobuoy_${version}_linux_amd64.tar.gz"
+        tar xzf sonobuoy.tgz
+        sudo mv sonobuoy /usr/local/bin/
+        popd
+    fi
+    sonobuoy run --wait
+    sonobuoy results "$(sonobuoy retrieve)"
+    sonobuoy delete --wait
 }
