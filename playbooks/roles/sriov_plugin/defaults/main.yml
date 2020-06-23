@@ -14,4 +14,4 @@ sriov_devices:
   - 37cd
 sriov_drivers:
   - i40evf
-sriov_plugin_version: v3.0.0
+sriov_plugin_version: v3.2

@@ -18,6 +18,9 @@ rules:
   - ""
   resources:
   - nodes
+# when using command line flag --resource-labels to create extended resources
+# you will need to uncomment "- nodes/status"
+# - nodes/status
   verbs:
   - get
   - patch
@@ -37,13 +40,14 @@ subjects:
   namespace: node-feature-discovery
 ---
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   labels:
     app: nfd-master
   name: nfd-master
   namespace: node-feature-discovery
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: nfd-master
@@ -53,8 +57,15 @@ spec:
         app: nfd-master
     spec:
       serviceAccount: nfd-master
-      nodeSelector:
-        node-role.kubernetes.io/master: ""
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: "node-role.kubernetes.io/master"
+                    operator: In
+                    values: [""]
       tolerations:
         - key: "node-role.kubernetes.io/master"
           operator: "Equal"

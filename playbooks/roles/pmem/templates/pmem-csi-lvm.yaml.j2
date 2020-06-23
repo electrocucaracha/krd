@@ -1,12 +1,16 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    pmem-csi.intel.com/deployment: lvm-production
   name: pmem-csi-controller
   namespace: default
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  labels:
+    pmem-csi.intel.com/deployment: lvm-production
   name: pmem-csi-external-provisioner-cfg
   namespace: default
 rules:
@@ -36,6 +40,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  labels:
+    pmem-csi.intel.com/deployment: lvm-production
   name: pmem-csi-external-provisioner-runner
 rules:
 - apiGroups:
@@ -109,6 +115,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  labels:
+    pmem-csi.intel.com/deployment: lvm-production
   name: pmem-csi-csi-provisioner-role-cfg
   namespace: default
 roleRef:
@@ -123,6 +131,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  labels:
+    pmem-csi.intel.com/deployment: lvm-production
   name: pmem-csi-csi-provisioner-role
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -136,16 +146,39 @@ subjects:
 apiVersion: v1
 kind: Service
 metadata:
+  labels:
+    pmem-csi.intel.com/deployment: lvm-production
   name: pmem-csi-controller
+  namespace: default
 spec:
   ports:
   - port: 10000
+    targetPort: 10000
   selector:
     app: pmem-csi-controller
+    pmem-csi.intel.com/deployment: lvm-production
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    pmem-csi.intel.com/deployment: lvm-production
+  name: pmem-csi-metrics
+  namespace: default
+spec:
+  ports:
+  - port: 10010
+    targetPort: 10010
+  selector:
+    app: pmem-csi-controller
+    pmem-csi.intel.com/deployment: lvm-production
+  type: NodePort
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  labels:
+    pmem-csi.intel.com/deployment: lvm-production
   name: pmem-csi-controller
   namespace: default
 spec:
@@ -153,23 +186,38 @@ spec:
   selector:
     matchLabels:
       app: pmem-csi-controller
+      pmem-csi.intel.com/deployment: lvm-production
   serviceName: pmem-csi-controller
   template:
     metadata:
       labels:
         app: pmem-csi-controller
+        pmem-csi.intel.com/deployment: lvm-production
+        pmem-csi.intel.com/webhook: ignore
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pmem-csi.intel.com/controller
+                operator: NotIn
+                values:
+                - "no"
+                - "false"
       containers:
-      - args:
+      - command:
+        - /usr/local/bin/pmem-csi-driver
         - -v=3
-        - -drivername=pmem-csi.intel.com
         - -mode=controller
         - -endpoint=unix:///csi/csi-controller.sock
         - -registryEndpoint=tcp://0.0.0.0:10000
+        - -metricsListen=:10010
         - -nodeid=$(KUBE_NODE_NAME)
-        - -caFile=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        - -certFile=/certs/pmem-csi-registry.crt
-        - -keyFile=/certs/pmem-csi-registry.key
+        - -caFile=/certs/ca.crt
+        - -certFile=/certs/tls.crt
+        - -keyFile=/certs/tls.key
+        - -drivername=$(PMEM_CSI_DRIVER_NAME)
         env:
         - name: KUBE_NODE_NAME
           valueFrom:
@@ -178,72 +226,75 @@ spec:
               fieldPath: spec.nodeName
         - name: TERMINATION_LOG_PATH
           value: /tmp/termination-log
+        - name: PMEM_CSI_DRIVER_NAME
+          value: pmem-csi.intel.com
         image: intel/pmem-csi-driver:{{ pmem_version }}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: pmem-driver
-        securityContext:
-          privileged: true
         terminationMessagePath: /tmp/termination-log
         volumeMounts:
-        - mountPath: /certs/
+        - mountPath: /certs
           name: registry-cert
         - mountPath: /csi
           name: plugin-socket-dir
       - args:
-        - --timeout=5m
-        - --v=3
+        - -v=3
         - --csi-address=/csi/csi-controller.sock
         - --feature-gates=Topology=true
         - --strict-topology=true
-        image: quay.io/k8scsi/csi-provisioner:v1.2.1
-        imagePullPolicy: Always
+        - --timeout=5m
+        image: quay.io/k8scsi/csi-provisioner:v1.6.0
+        imagePullPolicy: IfNotPresent
         name: external-provisioner
         volumeMounts:
         - mountPath: /csi
           name: plugin-socket-dir
-      serviceAccount: pmem-csi-controller
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      serviceAccountName: pmem-csi-controller
       volumes:
       - emptyDir: null
         name: plugin-socket-dir
       - name: registry-cert
         secret:
-          items:
-          - key: tls.crt
-            path: pmem-csi-registry.crt
-          - key: tls.key
-            path: pmem-csi-registry.key
           secretName: pmem-csi-registry-secrets
 ---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
+  labels:
+    pmem-csi.intel.com/deployment: lvm-production
   name: pmem-csi-node
+  namespace: default
 spec:
   selector:
     matchLabels:
       app: pmem-csi-node
+      pmem-csi.intel.com/deployment: lvm-production
   template:
     metadata:
       labels:
         app: pmem-csi-node
+        pmem-csi.intel.com/deployment: lvm-production
+        pmem-csi.intel.com/webhook: ignore
     spec:
       containers:
-      - args:
+      - command:
+        - /usr/local/bin/pmem-csi-driver
         - -deviceManager=lvm
         - -v=3
-        - -drivername=pmem-csi.intel.com
         - -mode=node
-        - -endpoint=$(CSI_ENDPOINT)
+        - -endpoint=unix:///pmem-csi/csi.sock
         - -nodeid=$(KUBE_NODE_NAME)
         - -controllerEndpoint=tcp://$(KUBE_POD_IP):10001
-        - -registryEndpoint=$(PMEM_CSI_CONTROLLER_PORT_10000_TCP)
-        - -caFile=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        - -certFile=/certs/$(KUBE_NODE_NAME).crt
-        - -keyFile=/certs/$(KUBE_NODE_NAME).key
-        - -statePath=/var/lib/pmem-csi.intel.com
+        - -registryEndpoint=tcp://pmem-csi-controller:10000
+        - -caFile=/certs/ca.crt
+        - -certFile=/certs/tls.crt
+        - -keyFile=/certs/tls.key
+        - -statePath=/pmem-csi
+        - -drivername=$(PMEM_CSI_DRIVER_NAME)
         env:
-        - name: CSI_ENDPOINT
-          value: unix:///var/lib/pmem-csi.intel.com/csi.sock
         - name: KUBE_NODE_NAME
           valueFrom:
             fieldRef:
@@ -254,13 +305,16 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: status.podIP
+        - name: PMEM_CSI_DRIVER_NAME
+          value: pmem-csi.intel.com
         - name: TERMINATION_LOG_PATH
           value: /tmp/termination-log
         image: intel/pmem-csi-driver:{{ pmem_version }}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: pmem-driver
         securityContext:
           privileged: true
+          runAsUser: 0
         terminationMessagePath: /tmp/termination-log
         volumeMounts:
         - mountPath: /var/lib/kubelet/plugins/kubernetes.io/csi
@@ -269,54 +323,57 @@ spec:
         - mountPath: /var/lib/kubelet/pods
           mountPropagation: Bidirectional
           name: pods-dir
-        - mountPath: /certs/
-          name: registry-cert
+        - mountPath: /certs
+          name: node-cert
         - mountPath: /dev
           name: dev-dir
-        - mountPath: /var/lib/pmem-csi.intel.com
+        - mountPath: /pmem-csi
+          mountPropagation: Bidirectional
           name: pmem-state-dir
       - args:
         - -v=3
-        - --kubelet-registration-path=/var/lib/pmem-csi.intel.com/csi.sock
+        - --kubelet-registration-path=/var/lib/$(PMEM_CSI_DRIVER_NAME)/csi.sock
         - --csi-address=/pmem-csi/csi.sock
-        image: quay.io/k8scsi/csi-node-driver-registrar:v1.1.0
-        imagePullPolicy: Always
+        env:
+        - name: PMEM_CSI_DRIVER_NAME
+          value: pmem-csi.intel.com
+        image: quay.io/k8scsi/csi-node-driver-registrar:v1.2.0
+        imagePullPolicy: IfNotPresent
         name: driver-registrar
         volumeMounts:
         - mountPath: /pmem-csi
           name: pmem-state-dir
         - mountPath: /registration
           name: registration-dir
-      hostNetwork: true
       initContainers:
-      - args:
-        - -v=3
-        command:
+      - command:
         - /usr/local/bin/pmem-ns-init
+        - -v=3
         env:
         - name: TERMINATION_LOG_PATH
           value: /tmp/pmem-ns-init-termination-log
         image: intel/pmem-csi-driver:{{ pmem_version }}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: pmem-ns-init
         securityContext:
           privileged: true
+          runAsUser: 0
         terminationMessagePath: /tmp/pmem-ns-init-termination-log
         volumeMounts:
         - mountPath: /sys
           name: sys-dir
-      - args:
-        - -v=3
-        command:
+      - command:
         - /usr/local/bin/pmem-vgm
+        - -v=3
         env:
         - name: TERMINATION_LOG_PATH
           value: /tmp/pmem-vgm-termination-log
         image: intel/pmem-csi-driver:{{ pmem_version }}
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: pmem-vgm
         securityContext:
           privileged: true
+          runAsUser: 0
         terminationMessagePath: /tmp/pmem-vgm-termination-log
       nodeSelector:
         storage: pmem
@@ -333,7 +390,7 @@ spec:
           path: /var/lib/kubelet/pods
           type: DirectoryOrCreate
         name: pods-dir
-      - name: registry-cert
+      - name: node-cert
         secret:
           secretName: pmem-csi-node-secrets
       - hostPath:
@@ -352,7 +409,12 @@ spec:
 apiVersion: storage.k8s.io/v1beta1
 kind: CSIDriver
 metadata:
+  labels:
+    pmem-csi.intel.com/deployment: lvm-production
   name: pmem-csi.intel.com
 spec:
   attachRequired: false
   podInfoOnMount: true
+  volumeLifecycleModes:
+  - Persistent
+  - Ephemeral

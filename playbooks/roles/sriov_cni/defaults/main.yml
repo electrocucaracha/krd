@@ -10,7 +10,7 @@
 
 sriov_template_folder: /tmp/sriov_k8s
 sriov_resource_name: intel_sriov_netdevice
-sriov_cni_version: v2.1.0
+sriov_cni_version: v2.3
 sriov_network_name: sriov-net
 sriov_network_subnet: 10.56.206.0/24
 sriov_network_gateway: 10.56.206.1

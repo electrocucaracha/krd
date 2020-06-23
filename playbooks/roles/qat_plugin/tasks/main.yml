@@ -17,20 +17,20 @@
 
 - name: generate QAT DPDK k8s resources based on templates
   template:
-    src: qat_plugin.yaml.j2
-    dest: "{{ qat_template_folder }}/qat_plugin.yml"
+    src: plugin.yaml.j2
+    dest: "{{ qat_template_folder }}/plugin.yml"
   when: qat_plugin_mode == "dpdk"
 
 - name: generate QAT kernel k8s resources based on templates
   template:
-    src: qat_plugin_kernel_mode.yaml.j2
-    dest: "{{ qat_template_folder }}/qat_plugin.yml"
+    src: plugin_kernel_mode.yaml.j2
+    dest: "{{ qat_template_folder }}/plugin.yml"
   when: qat_plugin_mode == "kernel"
 
 - name: get QAT configmap files
   copy:
-    src: qat_plugin_default_configmap.yaml
-    dest: "{{ qat_template_folder }}/qat_plugin_default_configmap.yml"
+    src: configmap.yaml
+    dest: "{{ qat_template_folder }}/configmap.yaml"
 
 - name: create QAT k8s resources
   command: "/usr/local/bin/kubectl apply -f {{ qat_template_folder }}"

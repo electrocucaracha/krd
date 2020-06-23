@@ -9,5 +9,5 @@
 ##############################################################################
 
 qat_template_folder: /tmp/qat_k8s
-qat_plugin_version: "0.15.0"
+qat_plugin_version: "0.17.0"
 qat_plugin_mode: dpdk

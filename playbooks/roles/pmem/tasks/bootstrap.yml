@@ -18,10 +18,13 @@
     - cfssl
     - cfssljson
 
-- name: bootstrap | get setup-ca-kubernetes.sh shell script
+- name: bootstrap | get shell scripts
   copy:
-    src: setup-ca-kubernetes
-    dest: "{{ pmem_template_folder }}/setup-ca-kubernetes.sh"
+    src: "{{ item }}"
+    dest: "{{ pmem_template_folder }}/{{ item }}.sh"
+  with_items:
+    - setup-ca-kubernetes
+    - setup-ca
 
 - name: bootstrap | get pmem nodes
   shell: "/usr/local/bin/kubectl get nodes -l storage=pmem --ignore-not-found --no-headers | wc -l"
