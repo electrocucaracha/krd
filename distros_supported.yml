@@ -11,28 +11,28 @@
 clearlinux:
   latest:
     name: "AntonioMeireles/ClearLinux"
-    version: "33260"
+    version: "33420"
     vb_controller: "IDE"
 centos:
   7:
     name: "generic/centos7"
-    version: "3.0.8"
+    version: "3.0.10"
     vb_controller: "IDE"
   8:
     name: "generic/centos8"
-    version: "3.0.8"
+    version: "3.0.10"
     vb_controller: "IDE Controller"
 ubuntu:
   xenial:
     name: "generic/ubuntu1604"
-    version: "3.0.8"
+    version: "3.0.10"
     vb_controller: "IDE Controller"
   bionic:
     name: "generic/ubuntu1804"
-    version: "3.0.8"
+    version: "3.0.10"
     vb_controller: "IDE Controller"
 opensuse:
   tumbleweed:
     name: "generic/opensuse42"
-    version: "3.0.8"
+    version: "3.0.10"
     vb_controller: "IDE"
