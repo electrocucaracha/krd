@@ -1,0 +1,47 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2019
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- name: create qat folder
+  file:
+    state: directory
+    path: "{{ qat_driver_dest }}"
+
+- name: extract qat driver source code
+  unarchive:
+    src: "{{ qat_driver_url }}"
+    dest: "{{ qat_driver_dest }}"
+    remote_src: yes
+    creates: "{{ qat_driver_dest }}/configure"
+
+- name: check if configure was executed
+  stat:
+    path: "{{ qat_driver_dest }}/config.log"
+  register: configure_log
+
+- name: configure qat driver source code
+  command: ./configure
+  args:
+    chdir: "{{ qat_driver_dest }}"
+  register: configure
+  when: not configure_log.stat.exists
+
+- name: check if there is a adf_ctl binary
+  stat:
+    path: /usr/local/bin/adf_ctl
+  register: adf_ctl
+
+- name: build qat driver
+  become: yes
+  make:
+    chdir: "{{ qat_driver_dest }}"
+    target: install
+  when: not adf_ctl.stat.exists
+  notify:
+    - start qat_service service

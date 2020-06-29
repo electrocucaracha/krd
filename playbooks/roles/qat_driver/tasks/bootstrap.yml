@@ -1,48 +1,56 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2019 Intel Corporation
+# Copyright (c) 2019
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: bootstrap - SuSE | install build tools
+- name: install SuSE build tools
+  become: yes
   zypper:
-    name: "pattern devel_C_C++"
+    name: devel_C_C++
     state: present
     type: pattern
+    update_cache: yes
   when: ansible_os_family == 'Suse'
 
-- name: bootstrap - RedHat | install build tools
+- name: install RedHat build tools
+  become: yes
   yum:
     name: "@Development tools"
     state: present
   when: ansible_os_family == 'RedHat'
 
-- name: Load krd variables
+- name: Load distro variables
   include_vars:
     file: "{{ ansible_os_family }}.yml"
 
-- name: bootstrap | install qat compilation packages
+- name: Update apt packages
+  become: true
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  when: ansible_os_family == 'Debian'
+
+- name: install qat compilation packages
+  become: yes
   package:
     name: "{{ item }}"
     state: present
   with_items: "{{ qat_driver_pkgs }}"
 
-- name: bootstrap | get kernel version
-  shell: "uname -r"
-  register: kernel_version
-
-- name: bootstrap - Debian | install kernel development tools
+- name: install Debian kernel development tools
+  become: yes
   package:
-    name: "linux-headers-{{ kernel_version.stdout }}"
+    name: "linux-headers-{{ ansible_kernel }}"
     state: present
   when: ansible_os_family == 'Debian'
 
-- name: bootstrap - RedHat | install kernel development tools
+- name: install RedHat kernel development tools
   package:
-    name: "kernel-devel-{{ kernel_version.stdout }}"
+    name: kernel-devel
     state: present
   when: ansible_os_family == 'RedHat'

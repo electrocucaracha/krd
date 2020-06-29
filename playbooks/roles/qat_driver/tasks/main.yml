@@ -1,68 +1,45 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2019 Intel Corporation
+# Copyright (c) 2019
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
+- name: get intel_qat version
+  shell: PATH=$PATH:/usr/sbin/:/sbin/ modinfo intel_qat | grep "^version:" | awk '{ print $2 }'
+  register: intel_qat_version
+  changed_when: false
+
+- debug:
+    var: intel_qat_version
+
 - include: cleanup.yml
+  when: intel_qat_version.stdout != qat_driver_version
 
 - include: bootstrap.yml
+  when: intel_qat_version.stdout != qat_driver_version
 
-- name: retrieve QAT driver
-  get_url:
-    url: "{{ qat_driver_url }}"
-    dest: "/tmp/qat.tar.gz"
-
-- name: create qat folder
-  file:
-    state: directory
-    path: "{{ qat_driver_dest }}"
-
-- name: extract qat driver source code
-  unarchive:
-    src: "/tmp/qat.tar.gz"
-    dest: "{{ qat_driver_dest }}"
-    remote_src: yes
-
-- name: configure qat driver source code
-  command: ./configure
-  args:
-    chdir: "{{ qat_driver_dest }}"
-
-- name: build qat driver
-  make:
-    chdir: "{{ qat_driver_dest }}"
-    target: "{{ item }}"
-  loop:
-    - clean
-    - uninstall
-    - install
+- include: build.yml
+  when: intel_qat_version.stdout != qat_driver_version
 
 - name: create qat_service systemd wrapper
+  become: yes
   copy:
     src: qat_service.service
     dest: /etc/systemd/system/qat_service.service
-  when: ansible_os_family == 'ClearLinux'
-
-- name: reload qat_service service
-  service:
-    name: "qat_service"
-    state: reloaded
-
-- name: start qat_service service
-  service:
-    name: "qat_service"
-    state: started
-    enabled: yes
+  when: ansible_os_family in ['ClearLinux', 'Suse']
+  notify:
+    - start qat_service service
 
 - name: configure number of processes per qat device
   block:
   - name: get qat devices
-    shell: /usr/local/bin/adf_ctl status | grep up | awk '{print $4 substr($1, 4)}' | tr -d ','
+    shell: >
+           /usr/local/bin/adf_ctl status | grep up |
+           awk '{print $4 substr($1, 4)}' | tr -d ','
     register: qat_devices
   - name: ensure SHIM config section
     blockinfile:
