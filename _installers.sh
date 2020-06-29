@@ -21,8 +21,10 @@ function _install_kubespray {
     if [[ ! -d $kubespray_folder ]]; then
         echo "Download kubespray binaries"
 
-        pkgs=""
-        for pkg in git make unzip ansible docker wget rsync kubectl; do
+        # NOTE: bindep prints a multiline's output
+        # shellcheck disable=SC2005
+        pkgs="$(echo "$(bindep kubespray -b)")"
+        for pkg in ansible docker kubectl; do
             if ! command -v "$pkg"; then
                 pkgs+=" $pkg"
             fi

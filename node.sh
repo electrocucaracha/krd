@@ -71,18 +71,8 @@ function _install_deps {
         esac
     fi
 
-    pkgs="cockpit ethtool"
-    if ! command -v lstopo-no-graphics; then
-        pkgs+=" hwloc"
-    fi
-    if ! command -v vgs; then
-        pkgs+=" lvm2"
-    fi
-    if ! command -v tuned-adm; then
-        pkgs+=" tuned"
-    fi
-
-    curl -fsSL http://bit.ly/install_pkg | PKG="$pkgs" bash
+    curl -fsSL http://bit.ly/install_pkg | PKG=bindep bash
+    curl -fsSL http://bit.ly/install_pkg | PKG="$(bindep node -b)" bash
     sudo systemctl start tuned
     sudo systemctl enable tuned
 }

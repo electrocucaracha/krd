@@ -110,8 +110,12 @@ if ! command -v curl; then
         ;;
     esac
 fi
-if ! command -v git; then
-    _install_packages git
+if ! command -v bindep; then
+    _install_packages bindep
+fi
+pkgs="$(bindep -b)"
+if [ -n "$pkgs" ]; then
+    curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
 fi
 
 # Configuration values

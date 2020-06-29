@@ -1,0 +1,11 @@
+cockpit [node]
+ethtool [node]
+hwloc [node]
+lvm2 [node]
+tuned [node]
+
+git [(node kubespray)]
+make [kubespray]
+unzip [kubespray]
+wget [kubespray]
+rsync [kubespray]
