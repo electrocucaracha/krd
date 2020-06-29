@@ -12,3 +12,4 @@ Table of contents
    :maxdepth: 3
 
    Project Architecture <architecture>
+   Bare Metal provisioning <bare_metal_provisioning>
