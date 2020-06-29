@@ -248,10 +248,18 @@ Vagrant.configure("2") do |config|
       end
       nodeconfig.vm.provision 'shell' do |sh|
         sh.env = {
-          'KRD_DEBUG': "#{$krd_debug}"
+          'KRD_DEBUG': "#{$krd_debug}",
+          'NODE_VOLUME': "#{$volume_mounts_dict[0...-1]}"
         }
-        sh.path =  "node.sh"
-        sh.args = ['-v', $volume_mounts_dict[0...-1]]
+        sh.inline = <<-SHELL
+          set -o xtrace
+          cd /vagrant
+          cmd="./node.sh"
+          if [[ $NODE_VOLUME ]]; then
+              cmd+=" -v $NODE_VOLUME"
+          fi
+          eval $cmd
+        SHELL
       end
     end
   end # node.each
