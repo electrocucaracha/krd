@@ -1,0 +1,4 @@
+molecule
+molecule_vagrant
+docker
+testinfra

@@ -8,22 +8,10 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- include: cleanup.yml
-
-- name: ensure destination folder exists
-  file:
-    state: directory
-    path: "{{ nfd_template_folder }}"
-
-- name: generate NFD k8s resources based on templates
-  template:
-    src: "nfd-{{ item }}.yaml.j2"
-    dest: "{{ nfd_template_folder }}/nfd-{{ item }}.yml"
+- name: create NFD k8s resources based on templates
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'nfd-{{ item }}.yaml.j2') }}"
   with_items:
     - master
     - worker-daemonset
-
-- name: create NFD k8s resources
-  command: "/usr/local/bin/kubectl apply -f {{ nfd_template_folder }}"
-  register: nfd_result
-  changed_when: "'created' in nfd_result.stdout"

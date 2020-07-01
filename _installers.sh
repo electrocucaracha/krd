@@ -106,18 +106,27 @@ function install_k8s {
 # install_k8s_addons() - Install Kubenertes AddOns
 function install_k8s_addons {
     echo "Installing Kubernetes AddOns"
-    if ! command -v ansible; then
-        curl -fsSL http://bit.ly/install_pkg | PKG=ansible bash
+    pkgs=""
+    for pkg in ansible pip; do
+        if ! command -v "$pkg"; then
+            pkgs+=" $pkg"
+        fi
+    done
+    if [ -n "$pkgs" ]; then
+        curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
     fi
 
     sudo mkdir -p /etc/ansible/
     sudo mkdir -p /tmp/galaxy-roles
     sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
+    pip_cmd="sudo -E $(command -v pip) install"
     ansible_galaxy_cmd="sudo -E $(command -v ansible-galaxy) install"
     if [ "${KRD_DEBUG:-false}" == "true" ]; then
         ansible_galaxy_cmd+=" -vvv"
+        pip_cmd+=" --verbose"
     fi
     eval "${ansible_galaxy_cmd} -p /tmp/galaxy-roles -r $KRD_FOLDER/galaxy-requirements.yml --ignore-errors"
+    eval "${pip_cmd} openshift"
 
     for addon in ${KRD_ADDONS:-addons}; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
@@ -535,4 +544,42 @@ function install_metrics_server {
     fi
 }
 
+# install_nsm() - Installs Network Service Mesh
+function install_nsm {
+    install_helm
 
+    # Add helm chart release repositories
+    if ! helm repo list | grep -e nsm; then
+        helm repo add nsm https://helm.nsm.dev/
+        helm repo update
+    fi
+
+    # Install the nsm chart
+    if ! helm ls | grep -e nsm; then
+        helm install nsm/nsm --name nsm
+    fi
+
+    for daemonset in $(kubectl get daemonset | grep nsm | awk '{print $1}'); do
+        echo "Waiting for $daemonset to successfully rolled out"
+        if ! kubectl rollout status "daemonset/$daemonset" --timeout=5m > /dev/null; then
+            echo "The $daemonset daemonset has not started properly"
+            exit 1
+        fi
+    done
+}
+
+# install_velero() - Installs Velero solution
+function install_velero {
+    install_helm
+
+    # Add helm chart release repositories
+    if ! helm repo list | grep -e vmware-tanzu; then
+        helm repo add vmware-tanzu https://vmware-tanzu.github.io/helm-charts
+        helm repo update
+    fi
+
+    # Install the nsm chart
+    if ! helm ls | grep -e velero; then
+        helm install vmware-tanzu/velero --name velero
+    fi
+}

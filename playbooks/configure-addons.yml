@@ -26,6 +26,8 @@
 
 - name: install Node Feature Discovery add-on
   hosts: localhost
+  collections:
+    - community.kubernetes
   tags: nfd
   roles:
     - nfd
