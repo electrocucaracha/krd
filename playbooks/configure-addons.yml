@@ -47,6 +47,8 @@
 
 - name: install Persistent Memory add-on
   hosts: localhost
+  collections:
+    - community.kubernetes
   pre_tasks:
     - name: Load krd variables
       include_vars:

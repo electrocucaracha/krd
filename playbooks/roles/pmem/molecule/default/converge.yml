@@ -1,12 +1,18 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2019
+# Copyright (c) 2020
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-pmem_template_folder: "/tmp/pmem_k8s"
-pmem_version: v0.7.6
+- name: Converge
+  hosts: all
+  collections:
+    - community.kubernetes
+  tasks:
+    - name: "Include pmem"
+      include_role:
+        name: "pmem"

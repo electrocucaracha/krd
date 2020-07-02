@@ -8,27 +8,93 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
+- name: check if cfssl binary exists
+  stat:
+    path: /usr/local/bin/cfssl
+  register: cfssl
+
+- name: check if cfssljson binary exists
+  stat:
+    path: /usr/local/bin/cfssljson
+  register: cfssljson
+
+- debug:
+    var: '{{ item }}'
+  with_items:
+    - cfssl
+    - cfssljson
+
+- name: deploy cfssl binaries
+  block:
+    - name: install go get dependencies
+      become: yes
+      package:
+        name: git
+        state: present
+    - name: install CloudFlare's PKI/TLS toolkit
+      command: "/usr/local/go/bin/go get -u github.com/cloudflare/cfssl/cmd/..."
+    - name: move CloudFlare's PKI/TLS toolkit binaries to PATH
+      command: "mv {{ ansible_env.HOME }}/go/bin/{{ item }} /usr/local/bin/"
+      become: yes
+      with_items:
+        - cfssl
+        - cfssljson
+  when:
+    - not cfssl.stat.exists
+    - not cfssljson.stat.exists
+
 - name: ensure destination folder exists
   file:
     state: directory
     path: "{{ pmem_template_folder }}"
 
-- include: bootstrap.yml
-
-- name: generate PMEM k8s resources based on templates
-  template:
-    src: "pmem-csi-lvm.yaml.j2"
-    dest: "{{ pmem_template_folder }}/pmem-csi-lvm.yml"
-
-- name: get PMEM storageclass files
+- name: copy shell scripts
   copy:
-    src: "pmem-{{ item }}.yaml"
-    dest: "{{ pmem_template_folder }}/pmem-{{ item }}.yml"
+    src: "{{ item }}"
+    dest: "{{ pmem_template_folder }}/{{ item }}.sh"
+    mode: +x
+  with_items:
+    - setup-ca-kubernetes
+    - setup-ca
+
+- name: get PMEM CSI node secret
+  k8s_info:
+    kind: Secret
+    name: pmem-csi-node-secrets
+    namespace: default
+  register: node_secret
+
+- name: get PMEM CSI registry secret
+  k8s_info:
+    kind: Secret
+    name: pmem-csi-registry-secrets
+    namespace: default
+  register: registry_secret
+
+- debug:
+    var: '{{ item }}_secret'
+  with_items:
+    - node
+    - registry
+
+- name: create PMEM secrets
+  become: yes
+  shell: 'PATH=$PATH:/usr/local/bin/ {{ pmem_template_folder }}/setup-ca-kubernetes.sh'
+  args:
+    chdir: '{{ pmem_template_folder }}'
+  when:
+    - node_secret.resources | length == 0
+    - registry_secret.resources | length == 0
+
+- name: create PMEM CSI for LVM driver
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'pmem-csi-lvm.yaml.j2') }}"
+
+- name: create PMEM storage classes
+  k8s:
+    state: present
+    definition: "{{ lookup('file', 'pmem-{{ item }}.yaml') }}"
   with_items:
     - storageclass-ext4
     - storageclass-xfs
-
-- name: create PMEM k8s resources
-  command: "/usr/local/bin/kubectl apply -f {{ pmem_template_folder }}"
-  register: pmem_result
-  changed_when: "'created' in pmem_result.stdout"

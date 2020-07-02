@@ -231,12 +231,16 @@ spec:
         image: intel/pmem-csi-driver:{{ pmem_version }}
         imagePullPolicy: IfNotPresent
         name: pmem-driver
+        securityContext:
+          readOnlyRootFilesystem: true
         terminationMessagePath: /tmp/termination-log
         volumeMounts:
         - mountPath: /certs
           name: registry-cert
         - mountPath: /csi
           name: plugin-socket-dir
+        - mountPath: /tmp
+          name: tmp-dir
       - args:
         - -v=3
         - --csi-address=/csi/csi-controller.sock
@@ -246,6 +250,8 @@ spec:
         image: quay.io/k8scsi/csi-provisioner:v1.6.0
         imagePullPolicy: IfNotPresent
         name: external-provisioner
+        securityContext:
+          readOnlyRootFilesystem: true
         volumeMounts:
         - mountPath: /csi
           name: plugin-socket-dir
@@ -259,6 +265,8 @@ spec:
       - name: registry-cert
         secret:
           secretName: pmem-csi-registry-secrets
+      - emptyDir: {}
+        name: tmp-dir
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -285,14 +293,14 @@ spec:
         - -deviceManager=lvm
         - -v=3
         - -mode=node
-        - -endpoint=unix:///pmem-csi/csi.sock
+        - -endpoint=unix:///var/lib/$(PMEM_CSI_DRIVER_NAME)/csi.sock
         - -nodeid=$(KUBE_NODE_NAME)
         - -controllerEndpoint=tcp://$(KUBE_POD_IP):10001
         - -registryEndpoint=tcp://pmem-csi-controller:10000
         - -caFile=/certs/ca.crt
         - -certFile=/certs/tls.crt
         - -keyFile=/certs/tls.key
-        - -statePath=/pmem-csi
+        - -statePath=/var/lib/$(PMEM_CSI_DRIVER_NAME)
         - -drivername=$(PMEM_CSI_DRIVER_NAME)
         env:
         - name: KUBE_NODE_NAME
@@ -327,7 +335,9 @@ spec:
           name: node-cert
         - mountPath: /dev
           name: dev-dir
-        - mountPath: /pmem-csi
+        - mountPath: /sys
+          name: sys-dir
+        - mountPath: /var/lib/pmem-csi.intel.com
           mountPropagation: Bidirectional
           name: pmem-state-dir
       - args:
@@ -340,6 +350,8 @@ spec:
         image: quay.io/k8scsi/csi-node-driver-registrar:v1.2.0
         imagePullPolicy: IfNotPresent
         name: driver-registrar
+        securityContext:
+          readOnlyRootFilesystem: true
         volumeMounts:
         - mountPath: /pmem-csi
           name: pmem-state-dir
@@ -352,7 +364,7 @@ spec:
         env:
         - name: TERMINATION_LOG_PATH
           value: /tmp/pmem-ns-init-termination-log
-        image: intel/pmem-csi-driver:{{ pmem_version }}
+        image: intel/pmem-csi-driver:v0.7.6
         imagePullPolicy: IfNotPresent
         name: pmem-ns-init
         securityContext:
@@ -368,7 +380,7 @@ spec:
         env:
         - name: TERMINATION_LOG_PATH
           value: /tmp/pmem-vgm-termination-log
-        image: intel/pmem-csi-driver:{{ pmem_version }}
+        image: intel/pmem-csi-driver:v0.7.6
         imagePullPolicy: IfNotPresent
         name: pmem-vgm
         securityContext:

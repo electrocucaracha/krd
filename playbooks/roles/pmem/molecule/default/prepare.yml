@@ -1,0 +1,74 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2020
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- name: boostrap servers
+  hosts: all
+  vars:
+    pip_install_packages:
+      - name: openshift
+    kind_dest: /usr/local/bin
+  pre_tasks:
+    - name: install setuptools
+      become: yes
+      package:
+        name: python-setuptools
+    - name: install openshift python2 pkg
+      become: yes
+      package:
+        name: python2-openshift
+      when:
+        - ansible_distribution == 'CentOS'
+        - ansible_distribution_major_version == '7'
+    - name: Load krd variables
+      include_vars:
+        file: ../../../../krd-vars.yml
+  roles:
+    - role: andrewrothstein.kind
+      kind_install_dir: '{{ kind_dest }}'
+    - andrewrothstein.kubectl
+    - role: geerlingguy.pip
+      pip_package: python3-pip
+      become: yes
+    - role: geerlingguy.docker
+      docker_install_compose: false
+      become: yes
+    - role: andrewrothstein.go
+      go_version: "{{ go_version }}"
+  tasks:
+    - name: add existing user ansible's user to docker's group
+      become: yes
+      user:
+        name: '{{ ansible_ssh_user }}'
+        groups: docker
+        append: yes
+    - name: get k8s clusters
+      command:  '{{ kind_dest }}/kind get clusters --quiet'
+      register: kind_cluster
+      failed_when: ( kind_cluster.rc not in [ 0, 1 ] )
+    - debug:
+        var: kind_cluster
+    - name: create k8s cluster
+      become: yes
+      command: '{{ kind_dest }}/kind create cluster --name molecule --wait=300s'
+      when: not 'molecule' in kind_cluster.stdout
+    - name: create kubeconfig folder
+      file:
+        path: '{{ ansible_env.HOME }}/.kube/'
+        state: directory
+    - name: copy kubeconfig root file
+      become: yes
+      copy:
+        src: /root/.kube/config
+        dest: '{{ ansible_env.HOME }}/.kube/config'
+        remote_src: yes
+        owner: '{{ ansible_ssh_user }}'
+        group: '{{ ansible_ssh_user }}'
+    - name: label PMEM node
+      command: kubectl label node molecule-control-plane storage=pmem
