@@ -11,22 +11,34 @@
 - name: "kubernetes"
   os:
     name: "ubuntu"
-    release: "xenial"
+    release: "bionic"
   networks:
     - name: public-net
       ip: "10.10.16.3"
-  memory: 32768
-  cpus: 16
+  memory: 2048
+  cpus: 2
+  numa_nodes: # Total memory for NUMA nodes must be equal to RAM size
+    - cpus: 0-1
+      memory: 2048
+  pmem:
+    size: 2G # This value may affect the currentMemory libvirt tag
+    slots: 2
+    max_size: 4G
+    vNVDIMMs:
+      - mem_id: mem0
+        id: nv0
+        share: "on"
+        path: /dev/shm
+        size: 2G
   volumes:
-    - name: sda
+    - name: sdb
       size: 25
       mount: /var/lib/docker/
-    - name: sdb
-      size: 50
     - name: sdc
-      size: 50
+      size: 10
   roles:
     - kube-master
     - etcd
     - kube-node
+    - virtlet
     - qat-node

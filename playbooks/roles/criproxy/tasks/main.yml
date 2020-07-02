@@ -40,6 +40,9 @@
     line: "                --container-runtime=remote --container-runtime-endpoint=unix:///run/criproxy.sock --image-service-endpoint=unix:///run/criproxy.sock --enable-controller-attach-detach=false \\"
     insertafter: '^ExecStart=/usr/local/bin/kubelet *'
     state: present
+  when: ansible_facts.services.kubelet is defined
+  notify:
+    - restart kubelet services
 
 - name: create dockershim service
   become: yes
@@ -69,6 +72,7 @@
     name: "{{ item }}"
     state: started
     enabled: yes
+  when: ansible_facts.services[item] is defined
   with_items:
     - dockershim
     - criproxy
@@ -78,3 +82,4 @@
   service:
     name: kubelet
     state: restarted
+  when: ansible_facts.services.kubelet is defined

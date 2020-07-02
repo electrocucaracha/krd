@@ -94,6 +94,7 @@ Vagrant.configure("2") do |config|
     v.management_network_address = "192.168.125.0/27"
     v.management_network_name = "krd-mgmt-net"
     v.random_hostname = true
+    v.disk_device = 'sda'
   end
   config.ssh.insert_key = false
   config.vm.synced_folder './', '/vagrant'

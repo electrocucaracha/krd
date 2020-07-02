@@ -50,3 +50,13 @@ matrix:
         - sudo $(command -v tox)
       env:
         - VAGRANT_EXECUTION=true
+
+    - name: Pod Definition File validation
+      language: shelL
+      script:
+        - cp config/samples/pdf.yml.aio config/pdf.yml
+        - sudo vagrant up
+        - KRD_ACTIONS=("install_k8s" "install_k8s_addons")
+        - KRD_ACTIONS_DECLARE=$(declare -p KRD_ACTIONS) sudo -E vagrant up installer
+      env:
+        - VAGRANT_EXECUTION=true
