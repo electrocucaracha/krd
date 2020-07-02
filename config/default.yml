@@ -108,10 +108,10 @@
         size: 4G
   cpus: 4
   volumes:
-    - name: sda
+    - name: sdc
       size: 25
       mount: /var/lib/docker/
-    - name: sdb
+    - name: sdd
       size: 50
   roles:
     - kube-node

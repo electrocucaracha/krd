@@ -37,6 +37,7 @@ if [[ $(id -u) -eq 0 ]]; then
     exit 1
 fi
 
+curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE=true bash
 pkgs=""
 for pkg in hostname wget git; do
     if ! command -v "$pkg"; then
@@ -44,7 +45,7 @@ for pkg in hostname wget git; do
     fi
 done
 if [ -n "$pkgs" ]; then
-    curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs PKG_UPDATE=true bash
+    curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
 fi
 
 # Validating local IP addresses in no_proxy environment variable
@@ -61,11 +62,12 @@ echo "Sync server's clock"
 sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
 
 echo "Cloning and configuring KRD project..."
-if [ ! -d "${KRD_FOLDER:-/opt/krd}" ]; then
-    sudo -E git clone --depth 1 https://github.com/electrocucaracha/krd "${KRD_FOLDER:-/opt/krd}"
-    sudo chown -R "$USER": "${KRD_FOLDER:-/opt/krd}"
+krd_folder="${KRD_FOLDER:-/opt/krd}"
+if [ ! -d "$krd_folder" ]; then
+    sudo -E git clone --depth 1 https://github.com/electrocucaracha/krd "$krd_folder"
+    sudo chown -R "$USER": "$krd_folder"
 fi
-cd /opt/krd || exit
+cd "$krd_folder" || exit
 
 is_k8s_action="false"
 for value in "${KRD_ACTIONS[@]:-install_k8s}"; do

@@ -8,6 +8,20 @@ matrix:
       env:
         - TOXENV=lint
 
-    - language: shell
+    - name: All-in-One Ubuntu 16.04 LTS validation
+      dist: xenial
+      language: shell
       script:
-        - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+
+    - name: All-in-One Ubuntu 18.04 LTS validation
+      language: shell
+      script:
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+
+    - name: All-in-One Ubuntu 18.04 LTS validation on ARM
+      os: linux
+      arch: arm64
+      language: shell
+      script:
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh

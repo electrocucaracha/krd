@@ -23,20 +23,20 @@ instructions that *aio.sh* contains.
 Hardware Requirements
 #####################
 
-+-----------+--------+
-| Concept   | Amount |
-+===========+========+
-| CPUs      | 8      |
-+-----------+--------+
-| Memory    | 32GB   |
-+-----------+--------+
-| Hard Disk | 150GB  |
-+-----------+--------+
++------------------+--------+
+| Concept          | Amount |
++==================+========+
+| CPU(amd64,arm64) | 2      |
++------------------+--------+
+| Memory           | 7.5GB  |
++------------------+--------+
+| Hard Disk        | ~50GB  |
++------------------+--------+
 
 Software Requirements
 #####################
 
-- Ubuntu Server 16.04 LTS
+- Ubuntu Server +16.04 LTS
 
 aio.sh
 ######
