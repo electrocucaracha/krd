@@ -21,10 +21,6 @@ platforms:
     box: generic/ubuntu1804
     memory: 512
     cpus: 1
-  - name: opensuse42
-    box: generic/opensuse42
-    memory: 512
-    cpus: 1
 provisioner:
   name: ansible
 verifier:

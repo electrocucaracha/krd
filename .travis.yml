@@ -1,10 +1,26 @@
+git:
+  depth: 1
+
+dist: bionic
+
+cache:
+  directories:
+  - /home/travis/.vagrant.d/boxes
+
+before_install:
+  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE="true" PKG="vagrant" bash ; fi
+  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then sudo apt-get install -y bridge-utils dnsmasq-base ebtables libvirt-bin libvirt-dev qemu-kvm qemu-utils ruby-dev; fi
+  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then sudo vagrant plugin install vagrant-libvirt; fi
+
 matrix:
   include:
-    - language: python
+    - name: Lint validation
+      language: python
       install:
         - pip install tox
       script:
         - tox
+        - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
       env:
         - TOXENV=lint
 
@@ -25,3 +41,12 @@ matrix:
       language: shell
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+
+    - name: Ansible Molecule validation
+      language: python
+      install:
+        - pip install tox
+      script:
+        - sudo $(command -v tox)
+      env:
+        - VAGRANT_EXECUTION=true
