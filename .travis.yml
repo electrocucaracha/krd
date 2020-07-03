@@ -73,11 +73,11 @@ jobs:
         - sudo $(command -v tox) -e qat_driver
       env:
         - VAGRANT_EXECUTION=true
-    - name: SR-IOV CNI role validation
+    - name: SR-IOV roles validation
       language: python
       install:
         - pip install tox
       script:
-        - sudo $(command -v tox) -e sriov_cni
+        - sudo $(command -v tox) -e sriov_cni,sriov_plugin
       env:
         - VAGRANT_EXECUTION=true
