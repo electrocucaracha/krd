@@ -10,7 +10,7 @@
 
 set -o nounset
 set -o pipefail
-
+set -o errexit
 if [ "${KRD_DEBUG:-false}" == "true" ]; then
     set -o xtrace
     export PKG_DEBUG=true
@@ -36,7 +36,7 @@ EOF
     mkfs -t ext4 "${dev_name}1"
     mkdir -p "$mount_dir"
     mount "${dev_name}1" "$mount_dir"
-    echo "${dev_name}1 $mount_dir           ext4    errors=remount-ro,noatime,barrier=0 0       1" >> /etc/fstab
+    echo "${dev_name}1 $mount_dir           ext4    errors=remount-ro,noatime,barrier=0 0       1" | sudo tee --append /etc/fstab
 }
 
 # disable_swap() - Disable Swap
@@ -73,8 +73,11 @@ function _install_deps {
 
     curl -fsSL http://bit.ly/install_pkg | PKG=bindep bash
     curl -fsSL http://bit.ly/install_pkg | PKG="$(bindep node -b)" bash
-    sudo systemctl start tuned
-    sudo systemctl enable tuned
+    if systemctl list-unit-files tuned.service | grep "1 unit"; then
+        sudo sed -i "s|#\!/usr/bin/python|#\!$(command -v python2)|g" /usr/sbin/tuned
+        sudo systemctl start tuned
+        sudo systemctl enable tuned
+    fi
 }
 
 while getopts "h?v:" opt; do

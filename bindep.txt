@@ -2,7 +2,7 @@ cockpit [node]
 ethtool [node]
 hwloc [node]
 lvm2 [node]
-tuned [node]
+tuned [node !platform:ubuntu-xenial]
 
 git [(node kubespray)]
 make [kubespray]
