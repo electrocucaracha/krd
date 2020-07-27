@@ -74,10 +74,10 @@
     - cpus: 12-15
       memory: 8192
   volumes:
-    - name: sda
+    - name: sdb
       size: 25
       mount: /var/lib/docker/
-    - name: sdb
+    - name: sdc
       size: 50
   roles:
     - kube-node
