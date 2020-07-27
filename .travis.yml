@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-language: shell
+language: python
 os: linux
 git:
   depth: 1
@@ -17,67 +17,61 @@ cache:
   directories:
     - /home/travis/.vagrant.d/boxes
     - /home/travis/.cache/molecule
-before_install:
-  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu ; fi
-  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then curl -fsSL http://bit.ly/install_pkg | PKG="vagrant bridge-utils dnsmasq ebtables libvirt qemu-kvm ruby-devel gcc" bash ; fi
-  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then vagrant plugin install vagrant-libvirt; fi
 jobs:
   include:
     - name: Pod Definition File validation
+      language: shell
+      install:
+        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
+        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
       script:
         - cp config/samples/pdf.yml.aio config/pdf.yml
         - sudo vagrant up
-      env:
-        - VAGRANT_EXECUTION=true
     - name: Lint validation
-      language: python
       install:
         - pip install tox
       script:
         - tox -e lint
         - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
     - name: Documents validation
-      language: python
       install:
         - pip install tox
       script:
         - tox -e docs
     - name: All-in-One Ubuntu 16.04 LTS validation
+      language: shell
       dist: xenial
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
     - name: All-in-One Ubuntu 18.04 LTS validation
+      language: shell
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
     - name: NFD role validation
-      language: python
       install:
+        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
+        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
         - pip install tox
       script:
         - sudo $(command -v tox) -e nfd
-      env:
-        - VAGRANT_EXECUTION=true
     - name: PMEM role validation
-      language: python
       install:
+        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
+        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
         - pip install tox
       script:
         - sudo $(command -v tox) -e pmem
-      env:
-        - VAGRANT_EXECUTION=true
     - name: QAT driver installation role validation
-      language: python
       install:
+        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
+        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
         - pip install tox
       script:
         - sudo $(command -v tox) -e qat_driver
-      env:
-        - VAGRANT_EXECUTION=true
     - name: SR-IOV roles validation
-      language: python
       install:
+        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
+        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
         - pip install tox
       script:
         - sudo $(command -v tox) -e sriov_cni,sriov_plugin
-      env:
-        - VAGRANT_EXECUTION=true
