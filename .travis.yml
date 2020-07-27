@@ -18,9 +18,9 @@ cache:
     - /home/travis/.vagrant.d/boxes
     - /home/travis/.cache/molecule
 before_install:
-  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE="true" PKG="vagrant" bash ; fi
-  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then sudo apt-get install -y bridge-utils dnsmasq-base ebtables libvirt-bin libvirt-dev qemu-kvm qemu-utils ruby-dev; fi
-  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then sudo vagrant plugin install vagrant-libvirt; fi
+  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu ; fi
+  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then curl -fsSL http://bit.ly/install_pkg | PKG="vagrant bridge-utils dnsmasq ebtables libvirt qemu-kvm ruby-devel gcc" bash ; fi
+  - if [ -n "${VAGRANT_EXECUTION:-}" ]; then vagrant plugin install vagrant-libvirt; fi
 jobs:
   include:
     - name: Pod Definition File validation
