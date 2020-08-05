@@ -69,9 +69,9 @@ The functions defined in this project covers the life-cycle of a
 Kubernetes cluster. In other words, its possible to add more nodes,
 upgrade the existing deployment or remove the services.  The following
 instruction shows how to upgrade the existing Kubernetes cluster to
-*v1.15.3* using the Kubespray version *v2.11.0*:
+*v1.17.9* using the Kubespray version *v2.13.3*:
 
-    KRD_KUBE_VERSION=v1.15.3 KRD_KUBESPRAY_VERSION=v2.11.0 ./krd_command.sh -a upgrade_k8s
+    KRD_KUBE_VERSION=v1.17.9 KRD_KUBESPRAY_VERSION=v2.13.3 ./krd_command.sh -a upgrade_k8s
 
 ### Environment variables
 

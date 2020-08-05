@@ -36,13 +36,13 @@ kube_token_auth: false
 
 # Choose network plugin (calico, contiv, weave or flannel)
 # Can also be set to 'cloud', which lets the cloud provider setup appropriate routing
-kube_network_plugin: kube-ovn
+kube_network_plugin: flannel
 
 # Make a copy of kubeconfig on the host that runs Ansible in GITDIR/artifacts
 kubeconfig_localhost: true
 
 # Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.17.7
+kube_version: v1.17.9
 
 # Kube-proxy proxyMode configuration.
 # NOTE: Ipvs is based on netfilter hook function, but uses hash table as the underlying data structure and
