@@ -192,31 +192,72 @@ function install_rundeck {
 # install_helm() - Function that installs Helm Client
 function install_helm {
     local helm_version=${KRD_HELM_VERSION:-2}
+    local tiller_namespace=${KRD_TILLER_NAMESPACE:-default}
 
     if ! command -v helm  || _vercmp "$(helm version | awk -F '"' '{print substr($2,2); exit}')" '<' "$helm_version"; then
         curl -fsSL http://bit.ly/install_pkg | PKG="helm" PKG_HELM_VERSION="$helm_version" bash
-        if [ "$helm_version" == "2" ]; then
-            sudo cp ~/.kube/config /home/helm/.kube/
-            sudo chown helm -R /home/helm/
-            sudo su helm -c "helm init --wait"
-
-            # Setup Tiller server
-            kubectl create serviceaccount --namespace kube-system tiller
-            kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
-            kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
-            kubectl rollout status deployment/tiller-deploy --timeout=5m --namespace kube-system
-
-            # Update repo info
-            helm init --client-only
+    fi
+    if [ "$helm_version" == "2" ]; then
+        # Setup Tiller server
+        if ! kubectl get "namespaces/$tiller_namespace" --no-headers -o custom-columns=name:.metadata.name; then
+            kubectl create namespace "$tiller_namespace"
         fi
+        if ! kubectl get serviceaccount/tiller -n "$tiller_namespace" --no-headers -o custom-columns=name:.metadata.name; then
+            kubectl create serviceaccount --namespace "$tiller_namespace" tiller
+        fi
+        if ! kubectl get role/tiller-role -n "$tiller_namespace" --no-headers -o custom-columns=name:.metadata.name; then
+            cat <<EOF | kubectl apply -f -
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tiller-role
+  namespace: $tiller_namespace
+rules:
+- apiGroups: ["", "extensions", "apps"]
+  resources: ["*"]
+  verbs: ["*"]
+EOF
+        fi
+        if ! kubectl get rolebinding/tiller-role-binding -n "$tiller_namespace" --no-headers -o custom-columns=name:.metadata.name; then
+            cat <<EOF | kubectl apply -f -
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: tiller-role-binding
+  namespace: $tiller_namespace
+subjects:
+- kind: ServiceAccount
+  name: tiller
+  namespace: $tiller_namespace
+roleRef:
+  kind: Role
+  name: tiller-role
+  apiGroup: rbac.authorization.k8s.io
+EOF
+        fi
+        sudo cp ~/.kube/config /home/helm/.kube/
+        sudo chown helm -R /home/helm/
+        sudo su helm -c "helm init --wait --tiller-namespace $tiller_namespace"
+        kubectl patch deploy --namespace "$tiller_namespace" tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+        kubectl rollout status deployment/tiller-deploy --timeout=5m --namespace "$tiller_namespace"
+
+        # Update repo info
+        helm init --client-only
     fi
 }
 
 # install_helm_chart() - Function that installs additional Official Helm Charts
 function install_helm_chart {
+    local tiller_namespace=${KRD_TILLER_NAMESPACE:-default}
+
+    if [ -z "${KRD_HELM_CHART}" ]; then
+        return
+    fi
+
     install_helm
 
-    helm install "stable/$KRD_HELM_CHART"
+    helm upgrade "${KRD_HELM_NAME:-$KRD_HELM_CHART}" \
+    "stable/$KRD_HELM_CHART" --install --atomic --tiller-namespace "$tiller_namespace"
 }
 
 # install_openstack() - Function that install OpenStack Controller services
