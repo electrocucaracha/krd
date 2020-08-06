@@ -14,6 +14,7 @@ or Virtual Machines.
 |:--------------:|:-----------------------------------------------|:----------------------------------|:-----------:|
 | Kubernetes     | Base Kubernetes deployment                     | [kubespray][1]                    | Done        |
 | Virtlet        | Allows to run VMs                              | [configure-virtlet.yml][3]        | Tested      |
+| Kubevirt       | Allows to run VMs                              |                                   | Tested      |
 | Multus         | Provides Multiple Network support in a pod     |                                   | Tested      |
 | NFD            | Node feature discovery                         | [nfd role][4]                     | Tested      |
 | Istio          | Service Mesh platform                          |                                   | Tested      |
