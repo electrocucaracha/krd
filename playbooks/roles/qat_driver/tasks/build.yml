@@ -17,7 +17,7 @@
   unarchive:
     src: "{{ qat_driver_url }}"
     dest: "{{ qat_driver_dest }}"
-    remote_src: yes
+    remote_src: true
     creates: "{{ qat_driver_dest }}/configure"
 
 - name: check if configure was executed
@@ -38,7 +38,7 @@
   register: adf_ctl
 
 - name: build qat driver
-  become: yes
+  become: true
   make:
     chdir: "{{ qat_driver_dest }}"
     target: install

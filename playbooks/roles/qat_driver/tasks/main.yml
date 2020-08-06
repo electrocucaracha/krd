@@ -26,7 +26,7 @@
   when: intel_qat_version.stdout != qat_driver_version
 
 - name: create qat_service systemd wrapper
-  become: yes
+  become: true
   copy:
     src: qat_service.service
     dest: /etc/systemd/system/qat_service.service
@@ -36,26 +36,26 @@
 
 - name: configure number of processes per qat device
   block:
-  - name: get qat devices
-    shell: >
-           /usr/local/bin/adf_ctl status | grep up |
-           awk '{print $4 substr($1, 4)}' | tr -d ','
-    register: qat_devices
-  - name: ensure SHIM config section
-    blockinfile:
-      dest: "/etc/{{ item }}.conf"
-      block: |
-        [SHIM]
-        NumberCyInstances = {{ shim.num_crypto_instances }}
-        NumberDcInstances = {{ shim.num_decompression_instances }}
-        NumProcesses = {{ shim.num_processes }}
-        LimitDevAccess = {{ shim.limit_dev_access }}
-        # Crypto - User instance #0
-        Cy0Name = "UserCY0"
-        Cy0IsPolled = 1
-        # List of core affinities
-        Cy0CoreAffinity = 0
-    loop: "{{ qat_devices.stdout_lines }}"
-  - name: restart qat services
-    command: /usr/local/bin/adf_ctl restart
+    - name: get qat devices
+      shell: >
+        /usr/local/bin/adf_ctl status | grep up |
+        awk '{print $4 substr($1, 4)}' | tr -d ','
+      register: qat_devices
+    - name: ensure SHIM config section
+      blockinfile:
+        dest: "/etc/{{ item }}.conf"
+        block: |
+          [SHIM]
+          NumberCyInstances = {{ shim.num_crypto_instances }}
+          NumberDcInstances = {{ shim.num_decompression_instances }}
+          NumProcesses = {{ shim.num_processes }}
+          LimitDevAccess = {{ shim.limit_dev_access }}
+          # Crypto - User instance #0
+          Cy0Name = "UserCY0"
+          Cy0IsPolled = 1
+          # List of core affinities
+          Cy0CoreAffinity = 0
+      loop: "{{ qat_devices.stdout_lines }}"
+    - name: restart qat services
+      command: /usr/local/bin/adf_ctl restart
   when: qat_plugin_mode == "kernel"

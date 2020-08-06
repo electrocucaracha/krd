@@ -1,20 +1,17 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2019
+# Copyright (c) 2020
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: pmem-csi-sc-ext4
-parameters:
-  csi.storage.k8s.io/fstype: ext4
-  eraseafter: "true"
-provisioner: pmem-csi.intel.com
-reclaimPolicy: Delete
-volumeBindingMode: Immediate
+extends: default
+
+ignore: |
+  deployment.yaml
+
+rules:
+  line-length: disable

@@ -12,6 +12,9 @@ dependency:
   name: galaxy
 driver:
   name: vagrant
+lint: |
+  set -e
+  yamllint -c ../../../.yamllint .
 platforms:
   - name: centos7
     box: generic/centos7

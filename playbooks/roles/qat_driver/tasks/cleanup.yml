@@ -12,7 +12,7 @@
   service_facts:
 
 - name: stop qat_service service
-  become: yes
+  become: true
   service:
     name: qat_service
     state: stopped
@@ -27,14 +27,14 @@
     var: intel_qat_deps
 
 - name: remove intel_qat kernel module dependencies
-  become: yes
+  become: true
   modprobe:
     name: "{{ item }}"
     state: absent
   loop: "{{ intel_qat_deps.stdout_lines }}"
 
 - name: remove kernel module
-  become: yes
+  become: true
   modprobe:
     name: intel_qat
     state: absent

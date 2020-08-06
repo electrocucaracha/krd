@@ -27,7 +27,7 @@
 - name: deploy cfssl binaries
   block:
     - name: install go get dependencies
-      become: yes
+      become: true
       package:
         name: git
         state: present
@@ -35,7 +35,7 @@
       command: "/usr/local/go/bin/go get -u github.com/cloudflare/cfssl/cmd/..."
     - name: move CloudFlare's PKI/TLS toolkit binaries to PATH
       command: "mv {{ ansible_env.HOME }}/go/bin/{{ item }} /usr/local/bin/"
-      become: yes
+      become: true
       with_items:
         - cfssl
         - cfssljson
@@ -78,7 +78,7 @@
     - registry
 
 - name: create PMEM secrets
-  become: yes
+  become: true
   shell: 'PATH=$PATH:/usr/local/bin/ {{ pmem_template_folder }}/setup-ca-kubernetes.sh'
   args:
     chdir: '{{ pmem_template_folder }}'

@@ -9,8 +9,8 @@
 ##############################################################################
 
 - name: start qat_service service
-  become: yes
+  become: true
   service:
     name: qat_service
     state: started
-    enabled: yes
+    enabled: true

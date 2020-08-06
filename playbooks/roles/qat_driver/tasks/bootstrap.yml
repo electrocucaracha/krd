@@ -9,16 +9,16 @@
 ##############################################################################
 
 - name: install SuSE build tools
-  become: yes
+  become: true
   zypper:
     name: devel_C_C++
     state: present
     type: pattern
-    update_cache: yes
+    update_cache: true
   when: ansible_os_family == 'Suse'
 
 - name: install RedHat build tools
-  become: yes
+  become: true
   yum:
     name: "@Development tools"
     state: present
@@ -31,19 +31,19 @@
 - name: Update apt packages
   become: true
   apt:
-    update_cache: yes
+    update_cache: true
     cache_valid_time: 3600
   when: ansible_os_family == 'Debian'
 
 - name: install qat compilation packages
-  become: yes
+  become: true
   package:
     name: "{{ item }}"
     state: present
   with_items: "{{ qat_driver_pkgs }}"
 
 - name: install Debian kernel development tools
-  become: yes
+  become: true
   package:
     name: "linux-headers-{{ ansible_kernel }}"
     state: present
