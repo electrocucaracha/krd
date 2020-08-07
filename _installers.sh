@@ -331,25 +331,31 @@ function install_istio {
         rm -rf "./istio-$istio_version/"
     fi
 
-    install_helm
-    kubectl apply -f "https://raw.githubusercontent.com/istio/istio/$istio_version/install/kubernetes/helm/helm-service-account.yaml"
-
-    # Add helm chart release repositories
-    if ! helm repo list | grep -e istio.io; then
-        helm repo add istio.io "https://storage.googleapis.com/istio-release/releases/$istio_version/charts/"
-        helm repo update
+    # Create a secret for Kiali service
+    if ! kubectl get namespaces/istio-system --no-headers -o custom-columns=name:.metadata.name; then
+        kubectl create namespace istio-system
+    fi
+    if ! kubectl get secrets/kiali --no-headers -o custom-columns=name:.metadata.name -n istio-system; then
+        cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kiali
+  namespace: istio-system
+  labels:
+    app: kiali
+type: Opaque
+data:
+  username: $(echo "admin" | base64)
+  passphrase: $(echo "admin" | base64)
+EOF
     fi
 
-    # Install the istio-init chart to bootstrap all the Istio’s CRDs
-    if ! helm ls | grep -e istio-init; then
-        helm install istio.io/istio-init --name istio-init --namespace istio-system
-    fi
+    istioctl install --skip-confirmation \
+    --set values.kiali.enabled=true
     wait_for_pods istio-system
-
-    if ! helm ls | grep -e "istio "; then
-        helm install istio.io/istio --name istio --namespace istio-system
-    fi
-    wait_for_pods istio-system
+    istioctl manifest generate --set values.kiali.enabled=true > /tmp/generated-manifest.yaml
+    istioctl verify-install -f /tmp/generated-manifest.yaml
 }
 
 # install_knative() - Function taht installs Knative and its dependencies
@@ -368,22 +374,6 @@ function install_knative {
 
     wait_for_pods knative-eventing
     wait_for_pods knative-monitoring
-}
-
-# install_kiali() - Function that installs Kiali and its dependencies
-function install_kiali {
-    kiali_version=$(_get_version kiali)
-
-    install_istio
-
-    if kubectl get deployment --all-namespaces | grep kiali-operator; then
-        return
-    fi
-    export AUTH_STRATEGY=anonymous
-    export KIALI_IMAGE_VERSION=$kiali_version
-    export ISTIO_NAMESPACE=istio-system
-
-    bash <(curl -L https://git.io/getLatestKialiOperator)
 }
 
 # install_harbor() - Function that installs Harbor Cloud Native registry project

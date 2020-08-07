@@ -15,8 +15,10 @@ set -o xtrace
 
 # shellcheck source=tests/_functions.sh
 source _functions.sh
+pushd ../
 # shellcheck source=_commons.sh
-source ../_commons.sh
+source _commons.sh
+popd
 
 istio_version=$(_get_version istio)
 
