@@ -13,6 +13,8 @@ set -o pipefail
 
 source _commons.sh
 
+tiller_namespace=${KRD_TILLER_NAMESPACE:-default}
+
 # _install_kubespray() - Donwload Kubespray binaries
 function _install_kubespray {
     echo "Deploying kubernetes"
@@ -192,7 +194,6 @@ function install_rundeck {
 # install_helm() - Function that installs Helm Client
 function install_helm {
     local helm_version=${KRD_HELM_VERSION:-2}
-    local tiller_namespace=${KRD_TILLER_NAMESPACE:-default}
 
     if ! command -v helm  || _vercmp "$(helm version | awk -F '"' '{print substr($2,2); exit}')" '<' "$helm_version"; then
         curl -fsSL http://bit.ly/install_pkg | PKG="helm" PKG_HELM_VERSION="$helm_version" bash
@@ -248,8 +249,6 @@ EOF
 
 # install_helm_chart() - Function that installs additional Official Helm Charts
 function install_helm_chart {
-    local tiller_namespace=${KRD_TILLER_NAMESPACE:-default}
-
     if [ -z "${KRD_HELM_CHART}" ]; then
         return
     fi
@@ -352,7 +351,7 @@ EOF
     fi
 
     istioctl install --skip-confirmation \
-    --set values.kiali.enabled=true
+    --set values.kiali.enabled=true || :
     wait_for_pods istio-system
     istioctl manifest generate --set values.kiali.enabled=true > /tmp/generated-manifest.yaml
     istioctl verify-install -f /tmp/generated-manifest.yaml
@@ -364,16 +363,42 @@ function install_knative {
 
     install_istio
 
-    kubectl apply --selector knative.dev/crd-install=true \
-        --filename "https://github.com/knative/serving/releases/download/v${knative_version}/serving.yaml" \
-        --filename "https://github.com/knative/eventing/releases/download/v${knative_version}/release.yaml" \
-        --filename "https://github.com/knative/serving/releases/download/v${knative_version}/monitoring.yaml"
-    kubectl apply --filename "https://github.com/knative/serving/releases/download/v${knative_version}/serving.yaml" \
-        --filename "https://github.com/knative/eventing/releases/download/v${knative_version}/release.yaml" \
-        --filename "https://github.com/knative/serving/releases/download/v${knative_version}/monitoring.yaml"
+    # Using Istio mTLS feature
+    if ! kubectl get namespaces/knative-serving --no-headers -o custom-columns=name:.metadata.name; then
+        kubectl create namespace knative-serving
+    fi
+    kubectl label namespace knative-serving istio-injection=enabled --overwrite
+    cat <<EOF | kubectl apply -f -
+apiVersion: "security.istio.io/v1beta1"
+kind: "PeerAuthentication"
+metadata:
+  name: "default"
+  namespace: "knative-serving"
+spec:
+  mtls:
+    mode: PERMISSIVE
+EOF
+    if kubectl get service cluster-local-gateway -n istio-system; then
+        kubectl apply -f "https://raw.githubusercontent.com/knative/serving/v${knative_version}/third_party/istio-1.4.9/istio-knative-extras.yaml"
+    fi
 
+    # Install the Serving component
+    kubectl apply -f "https://github.com/knative/serving/releases/download/v${knative_version}/serving-crds.yaml"
+    kubectl apply -f "https://github.com/knative/serving/releases/download/v${knative_version}/serving-core.yaml"
+    kubectl apply -f "https://github.com/knative/net-istio/releases/download/v${knative_version}/release.yaml"
+
+    # Install the Eventing component
+    kubectl apply -f "https://github.com/knative/eventing/releases/download/v${knative_version}/eventing-crds.yaml"
+    kubectl apply -f "https://github.com/knative/eventing/releases/download/v${knative_version}/eventing-core.yaml"
+
+    ## Install a default Channel
+    kubectl apply -f "https://github.com/knative/eventing/releases/download/v${knative_version}/in-memory-channel.yaml"
+
+    ## Install a Broker
+    kubectl apply -f "https://github.com/knative/eventing/releases/download/v${knative_version}/mt-channel-broker.yaml"
+
+    wait_for_pods knative-serving
     wait_for_pods knative-eventing
-    wait_for_pods knative-monitoring
 }
 
 # install_harbor() - Function that installs Harbor Cloud Native registry project
@@ -567,11 +592,13 @@ function install_ovn_metrics_dashboard {
 function install_metrics_server {
     install_helm
 
-    if ! helm ls | grep -e metrics-server; then
+    if ! helm ls --tiller-namespace "$tiller_namespace" | grep -e metrics-server; then
+clusterroles
+
         helm install stable/metrics-server --name metrics-server \
         --set args[0]="--kubelet-insecure-tls" \
         --set args[1]="--kubelet-preferred-address-types=InternalIP" \
-        --set args[2]="--v=2"
+        --set args[2]="--v=2" --tiller-namespace "$tiller_namespace"
     fi
 }
 
