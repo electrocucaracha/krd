@@ -9,3 +9,4 @@ make [kubespray]
 unzip [kubespray]
 wget [kubespray]
 rsync [kubespray]
+jq

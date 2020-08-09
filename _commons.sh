@@ -8,6 +8,9 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 #############################################################################
 
+set -o errexit
+set -o pipefail
+
 # update_repos() - Function that updates linux repositories
 function update_repos {
     curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE="true" bash
@@ -113,8 +116,8 @@ fi
 if ! command -v bindep; then
     _install_packages bindep
 fi
-pkgs="$(bindep -b)"
-if [ -n "$pkgs" ]; then
+pkgs="$(bindep -b || :)"
+if [ "$pkgs" ]; then
     curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
 fi
 
