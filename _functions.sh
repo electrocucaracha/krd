@@ -10,6 +10,9 @@
 
 set -o errexit
 set -o pipefail
+if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
+    set -o xtrace
+fi
 
 source _installers.sh
 
@@ -87,7 +90,7 @@ function wait_for_pods {
         kubectl get jobs -n "$namespace" -o json | jq -r '.items[] | .spec.completions == .status.succeeded' | grep false > /dev/null && JOBR="False" || JOBR="True"
         if [ "$(date +%s)" -gt $end ] ; then
             printf "Containers failed to start after %s seconds\n" "$timeout"
-            kubectl get pods -n"$namespace" -o wide
+            kubectl get pods -n "$namespace" -o wide
             echo
             if [ $PENDING == "True" ] ; then
                 echo "Some pods are in pending state:"

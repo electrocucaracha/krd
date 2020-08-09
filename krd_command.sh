@@ -10,6 +10,9 @@
 
 set -o errexit
 set -o pipefail
+if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
+    set -o xtrace
+fi
 
 # shellcheck source=_functions.sh
 source _functions.sh
