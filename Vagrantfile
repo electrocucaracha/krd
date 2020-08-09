@@ -98,6 +98,7 @@ Vagrant.configure("2") do |config|
   end
   config.ssh.insert_key = false
   config.vm.synced_folder './', '/vagrant'
+  config.vm.box_check_update = false
 
   if ENV['http_proxy'] != nil and ENV['https_proxy'] != nil
     if Vagrant.has_plugin?('vagrant-proxyconf')
@@ -273,7 +274,7 @@ Vagrant.configure("2") do |config|
     [:virtualbox, :libvirt].each do |provider|
     installer.vm.provider provider do |p|
         p.cpus = 1
-        p.memory = 1024
+        p.memory = 512
       end
     end
 
@@ -300,7 +301,7 @@ Vagrant.configure("2") do |config|
       sh.inline = <<-SHELL
         for krd_var in $(printenv | grep KRD_); do echo "export $krd_var" | sudo tee --append /etc/environment ; done
         cd /vagrant/
-        ./krd_command.sh -a install_k8s -a install_cockpit | tee vagrant_init.log
+        ./krd_command.sh -a install_k8s -a install_cockpit | tee ~/vagrant_init.log
       SHELL
     end
   end # installer
