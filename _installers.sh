@@ -20,20 +20,20 @@ function _install_kubespray {
     echo "Deploying kubernetes"
     kubespray_version=$(_get_version kubespray)
 
+    # NOTE: bindep prints a multiline's output
+    # shellcheck disable=SC2005
+    pkgs="$(echo "$(bindep kubespray -b)")"
+    for pkg in ansible docker kubectl; do
+        if ! command -v "$pkg"; then
+            pkgs+=" $pkg"
+        fi
+    done
+    if [ -n "$pkgs" ]; then
+        curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
+    fi
+
     if [[ ! -d $kubespray_folder ]]; then
         echo "Download kubespray binaries"
-
-        # NOTE: bindep prints a multiline's output
-        # shellcheck disable=SC2005
-        pkgs="$(echo "$(bindep kubespray -b)")"
-        for pkg in ansible docker kubectl; do
-            if ! command -v "$pkg"; then
-                pkgs+=" $pkg"
-            fi
-        done
-        if [ -n "$pkgs" ]; then
-            curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
-        fi
 
         clone_cmd="sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder"
         if [ "$kubespray_version" != "master" ]; then
@@ -85,6 +85,40 @@ function _install_kubespray {
     fi
 }
 
+function _update_ngnix_ingress_ca {
+    local cert_dir=/opt/cert-manager/certs
+
+    if "$(kubectl krew search cert-manager | awk 'FNR==2{ print $NF}')" == "no"; then
+        kubectl krew install cert-manager
+    fi
+    if ! command -v cfssl; then
+        curl -fsSL http://bit.ly/install_pkg | PKG=go-lang bash
+    fi
+    if ! command -v cfssl; then
+        /usr/local/go/bin/go get -u github.com/cloudflare/cfssl/cmd/cfssl
+        sudo mv ~/go/bin/cfssl /usr/bin/
+    fi
+    if ! command -v cfssljson; then
+        /usr/local/go/bin/go get -u github.com/cloudflare/cfssl/cmd/cfssljson
+        sudo mv ~/go/bin/cfssljson /usr/bin/
+    fi
+    sudo mkdir -p "$cert_dir"
+    sudo chown -R "$USER:" "$cert_dir"
+    pushd "$cert_dir" > /dev/null
+    <<EOF cfssl gencert -initca - | cfssljson -bare ca
+{
+    "CN": "cert-manager",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    }
+}
+EOF
+    KUBE_EDITOR="sed -i \"s|tls.crt\: .*|tls.crt\: $(< ca.pem base64 -w 0)|g; s|tls.key\: .*|tls.key\: $(< ca-key.pem base64 -w 0)|g\"" kubectl edit secret/ca-key-pair -n cert-manager
+    popd > /dev/null
+
+}
+
 # install_k8s() - Install Kubernetes using kubespray tool
 function install_k8s {
     echo "Installing Kubernetes"
@@ -101,8 +135,12 @@ function install_k8s {
     sudo chown -R "$USER" "$HOME/.kube/"
 
     # Configure Kubernetes Dashboard
-    KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g\"" kubectl -n kube-system edit service kubernetes-dashboard
-    KUBE_EDITOR="sed -i \"s|nodePort\: .*|nodePort\: ${KRD_KUBERNETES_DASHBOARD_PORT:-30080}|g\"" kubectl -n kube-system edit service kubernetes-dashboard
+    KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g; s|nodePort\: .*|nodePort\: ${KRD_KUBERNETES_DASHBOARD_PORT:-30080}|g\"" kubectl -n kube-system edit service kubernetes-dashboard
+
+    # Update Nginx Ingress CA certificate and key values
+    if kubectl get secret/ca-key-pair -n cert-manager --no-headers -o custom-columns=name:.metadata.name; then
+        _update_ngnix_ingress_ca
+    fi
 }
 
 # install_k8s_addons() - Install Kubenertes AddOns
@@ -642,6 +680,7 @@ function install_velero {
     fi
 }
 
+# install_kubevirt() - Installs KubeVirt solution
 function install_kubevirt {
     kubevirt_version=$(_get_version kubevirt)
 
@@ -657,3 +696,4 @@ function install_kubevirt {
         fi
     done
 }
+

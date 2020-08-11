@@ -95,3 +95,9 @@ kubelet_custom_flags:
 kubelet_flexvolumes_plugins_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
 
 dashboard_skip_login: true
+
+# Cert manager deployment
+cert_manager_enabled: true
+
+# Nginx ingress controller deployment
+ingress_nginx_enabled: true

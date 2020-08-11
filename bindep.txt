@@ -9,4 +9,5 @@ make [kubespray]
 unzip [kubespray]
 wget [kubespray]
 rsync [kubespray]
+build-essential [kubespray platform:dpkg]
 jq
