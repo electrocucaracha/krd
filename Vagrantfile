@@ -50,6 +50,15 @@ if not File.exists?(loader)
   system('curl -O https://download.clearlinux.org/image/OVMF.fd')
 end
 
+if which 'vm_stat'
+  $memfree = `vm_stat | awk '/Pages free/ {print $3 * 4 }'`
+else
+  if File.exists?("/proc/zoneinfo") && File.exists?("/proc/meminfo")
+   $memfree = `awk -v low=$(grep low /proc/zoneinfo | awk '{k+=$2}END{print k}') '{a[$1]=$2}  END{ print a["MemFree:"]+a["Active(file):"]+a["Inactive(file):"]+a["SReclaimable:"]-(12*low);}' /proc/meminfo`
+  end
+end
+puts "Free memory(kb): #{$memfree}"
+
 $krd_debug = ENV['KRD_DEBUG'] || "true"
 $krd_network_plugin = ENV['KRD_NETWORK_PLUGIN'] || "kube-ovn"
 $krd_enable_multus = ENV['KRD_ENABLE_MULTUS'] || "false"
