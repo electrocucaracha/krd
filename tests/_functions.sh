@@ -35,19 +35,7 @@ function recreate_deployment {
 
 # wait_deployment() - Wait process to Running status on the Deployment's pods
 function wait_deployment {
-    local deployment_name=$1
-
-    status_phase=""
-    while [[ "$status_phase" != "Running" ]]; do
-        new_phase=$(kubectl get pods | grep  "$deployment_name" | awk '{print $3}')
-        if [[ "$new_phase" != "$status_phase" ]]; then
-            echo "$(date +%H:%M:%S) - $deployment_name : $new_phase"
-            status_phase=$new_phase
-        fi
-        if [[ "$new_phase" == "Err"* ]]; then
-            exit 1
-        fi
-    done
+    kubectl rollout status "deployment/$1" --timeout=5m
 }
 
 # setup() - Base testing setup shared among functional tests
@@ -55,7 +43,6 @@ function setup {
     for deployment_name in "$@"; do
         recreate_deployment "$deployment_name"
     done
-    sleep 5
     for deployment_name in "$@"; do
         wait_deployment "$deployment_name"
     done
