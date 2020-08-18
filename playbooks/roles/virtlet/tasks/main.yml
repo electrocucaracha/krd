@@ -8,14 +8,14 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
+- name: apply virtlet extraRuntime label
+  command: "/usr/local/bin/kubectl label node {{ item }} extraRuntime=virtlet --overwrite"
+  with_inventory_hostnames: virtlet
+
 - name: create Virtlet binary folder
   file:
     state: directory
     path: "{{ virtlet_dest }}"
-
-- name: apply virtlet extraRuntime label
-  command: "/usr/local/bin/kubectl label node {{ item }} extraRuntime=virtlet --overwrite"
-  with_inventory_hostnames: virtlet
 
 - name: generate image translations confimap file
   template:
@@ -27,9 +27,7 @@
   ignore_errors: True
 
 - name: download virtletctl
-  get_url:
-    url: "{{ virtlet_url }}"
-    dest: "{{ virtlet_dest }}/virtletctl"
+  command: curl -Ls -o {{ virtlet_dest }}/virtletctl {{ virtlet_url }} # noqa 303
 
 - name: set virtletctl execution permissions
   file:

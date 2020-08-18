@@ -8,78 +8,101 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: create CRIProxy binary folder
-  file:
-    state: directory
-    path: "{{ criproxy_dest }}"
-
 - name: get service status
   service_facts:
 
 - name: disable AppArmor in all nodes
-  become: yes
+  become: true
   service:
     name: apparmor
     state: stopped
     enabled: no
   when:
     - ansible_os_family == "Debian"
-    - ansible_facts.services.apparmor is defined
+    - ansible_facts.services["apparmor.service"] is defined
 
 - name: disable SELinux in all nodes
   selinux:
     state: disabled
   when:
     - ansible_os_family == "RedHat"
-    - ansible_facts.services.selinux is defined
+    - ansible_facts.services["selinux.service"] is defined
 
-- name: modify args for kubelet service
-  become: yes
-  lineinfile:
-    dest: /etc/systemd/system/kubelet.service
-    line: "                --container-runtime=remote --container-runtime-endpoint=unix:///run/criproxy.sock --image-service-endpoint=unix:///run/criproxy.sock --enable-controller-attach-detach=false \\"
-    insertafter: '^ExecStart=/usr/local/bin/kubelet *'
-    state: present
-  when: ansible_facts.services.kubelet is defined
-  notify:
-    - restart kubelet services
+- name: check that kubelet env file exists
+  stat:
+    path: /etc/kubernetes/kubelet.env
+  register: kubelet_env_stat
+
+- debug:
+    var: kubelet_env_stat
 
 - name: create dockershim service
-  become: yes
-  copy:
-    src: dockershim.service
-    dest: /etc/systemd/system/dockershim.service
+  become: true
+  block:
+    - name: remove leftovers
+      file:
+        path: /var/run/dockershim.sock
+        state: absent
+    - name: create dockershim service
+      copy:
+        src: dockershim.service
+        dest: /etc/systemd/system/dockershim.service
+    - name: restart dockershim service
+      service:
+        name: dockershim
+        state: restarted
+        enabled: true
+      notify:
+        - restart criproxy service
+    - name: wait for dockershim socket to be created
+      wait_for:
+        path: /var/run/dockershim.sock
+        delay: 5
+        timeout: 600
+  when: kubelet_env_stat.stat.exists
+
+- name: create CRIProxy binary folder
+  file:
+    state: directory
+    path: "{{ criproxy_dest }}"
+
+- name: check that criproxy binary exists
+  stat:
+    path: "{{ criproxy_dest }}/criproxy"
+  register: criproxy_stat
+
+- debug:
+    var: criproxy_stat
 
 - name: download CRIproxy package
-  get_url:
-    url: "{{ criproxy_url }}"
-    dest: "{{ criproxy_dest }}/criproxy"
+  command: curl -Ls -o {{ criproxy_dest }}/criproxy {{ criproxy_url }} # noqa 303
+  when: not criproxy_stat.stat.exists
 
 - name: set criproxy execution permissions
   file:
     path: "{{ criproxy_dest }}/criproxy"
     mode: "+x"
 
-- name: create criproxy service
-  become: yes
+- name: recreate criproxy service
+  become: true
   template:
     src: criproxy.service.j2
     dest: /etc/systemd/system/criproxy.service
 
-- name: start criproxy and dockershim services
-  become: yes
+- name: restart criproxy service
+  become: true
   service:
-    name: "{{ item }}"
-    state: started
-    enabled: yes
-  when: ansible_facts.services[item] is defined
-  with_items:
-    - dockershim
-    - criproxy
-
-- name: restart kubelet services
-  become: yes
-  service:
-    name: kubelet
+    name: criproxy
     state: restarted
-  when: ansible_facts.services.kubelet is defined
+    enabled: true
+
+- name: modify args for kubelet service
+  become: true
+  lineinfile:
+    dest: /etc/systemd/system/kubelet.service
+    line: "                --container-runtime=remote --container-runtime-endpoint=unix:///run/criproxy.sock --image-service-endpoint=unix:///run/criproxy.sock --enable-controller-attach-detach=false \\"
+    insertafter: '^ExecStart=/usr/local/bin/kubelet *'
+    state: present
+  when: ansible_facts.services["kubelet.service"] is defined
+  notify:
+    - restart kubelet service

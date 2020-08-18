@@ -38,15 +38,16 @@ jobs:
         - pip install tox
       script:
         - tox -e docs
-    - name: All-in-One Ubuntu 16.04 LTS validation
+    - name: All-in-One validation (Ubuntu 16.04 LTS)
       language: shell
       dist: xenial
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-    - name: All-in-One Ubuntu 18.04 LTS validation
+    - name: All-in-One + Virtlet role validation(Ubuntu 18.04 LTS)
       language: shell
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
     - name: NFD role validation
       install:
         - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
@@ -75,3 +76,10 @@ jobs:
         - pip install tox
       script:
         - sudo $(command -v tox) -e sriov_cni,sriov_plugin
+    - name: CRIproxy role validation
+      install:
+        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
+        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
+        - pip install tox
+      script:
+        - sudo $(command -v tox) -e criproxy

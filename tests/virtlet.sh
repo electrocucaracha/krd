@@ -20,10 +20,7 @@ source _functions.sh
 virtlet_deployment_name=virtlet-deployment
 
 printf "Waiting for Virtlet services..."
-until kubectl get pods -n kube-system | grep "virtlet-.*Running"; do
-    printf "."
-    sleep 2
-done
+kubectl rollout status daemonset/virtlet -n kube-system --timeout=5m
 
 populate_virtlet $virtlet_deployment_name "ubuntu/18.04"
 pushd /tmp/${virtlet_deployment_name}
