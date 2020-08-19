@@ -45,12 +45,13 @@
         state: absent
     - name: create dockershim service
       copy:
+        mode: '0644'
         src: dockershim.service
         dest: /etc/systemd/system/dockershim.service
-    - name: restart dockershim service
+    - name: start dockershim service
       service:
         name: dockershim
-        state: restarted
+        state: started
         enabled: true
       notify:
         - restart criproxy service
@@ -63,6 +64,7 @@
 
 - name: create CRIProxy binary folder
   file:
+    mode: '0755'
     state: directory
     path: "{{ criproxy_dest }}"
 
@@ -86,19 +88,21 @@
 - name: recreate criproxy service
   become: true
   template:
+    mode: preserve
     src: criproxy.service.j2
     dest: /etc/systemd/system/criproxy.service
 
-- name: restart criproxy service
+- name: start criproxy service
   become: true
   service:
     name: criproxy
-    state: restarted
+    state: started
     enabled: true
 
 - name: modify args for kubelet service
   become: true
   lineinfile:
+    mode: '0644'
     dest: /etc/systemd/system/kubelet.service
     line: "                --container-runtime=remote --container-runtime-endpoint=unix:///run/criproxy.sock --image-service-endpoint=unix:///run/criproxy.sock --enable-controller-attach-detach=false \\"
     insertafter: '^ExecStart=/usr/local/bin/kubelet *'

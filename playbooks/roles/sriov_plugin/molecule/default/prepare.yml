@@ -58,11 +58,13 @@
       when: not 'molecule' in kind_cluster.stdout
     - name: create kubeconfig folder
       file:
+        mode: '0755'
         path: '{{ ansible_env.HOME }}/.kube/'
         state: directory
     - name: copy kubeconfig root file
       become: true
       copy:
+        mode: preserve
         src: /root/.kube/config
         dest: '{{ ansible_env.HOME }}/.kube/config'
         remote_src: true

@@ -93,8 +93,10 @@
         file:
           state: directory
           path: /root/.docker/
+          mode: preserve
       - name: configure docker client to use proxy values
         copy:
+          mode: preserve
           dest: "/root/.docker/config.json"
           content: |
             {

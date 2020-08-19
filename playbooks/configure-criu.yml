@@ -27,6 +27,7 @@
     - name: enable docker experimental features
       become: yes
       copy:
+        mode: preserve
         dest: /etc/docker/daemon.json
         content: |
           {
@@ -39,8 +40,10 @@
         file:
           state: directory
           path: /root/.docker/
+          mode: preserve
       - name: configure docker client to use proxy values
         copy:
+          mode: preserve
           dest: "/root/.docker/config.json"
           content: |
             {

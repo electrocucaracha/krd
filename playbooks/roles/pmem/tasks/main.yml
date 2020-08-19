@@ -45,6 +45,7 @@
 
 - name: ensure destination folder exists
   file:
+    mode: '0755'
     state: directory
     path: "{{ pmem_template_folder }}"
 
@@ -94,7 +95,7 @@
 - name: create PMEM storage classes
   k8s:
     state: present
-    definition: "{{ lookup('file', 'pmem-{{ item }}.yaml') }}"
+    definition: "{{ lookup('file', 'pmem-{{ item }}.yaml') }}" # noqa 207
   with_items:
     - storageclass-ext4
     - storageclass-xfs

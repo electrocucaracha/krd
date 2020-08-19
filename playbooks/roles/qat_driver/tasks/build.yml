@@ -10,11 +10,13 @@
 
 - name: create qat folder
   file:
+    mode: '0755'
     state: directory
     path: "{{ qat_driver_dest }}"
 
 - name: extract qat driver source code
   unarchive:
+    mode: '0755'
     src: "{{ qat_driver_url }}"
     dest: "{{ qat_driver_dest }}"
     remote_src: true

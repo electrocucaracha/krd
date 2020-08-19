@@ -19,10 +19,12 @@
       block:
       - name: create docker config folder
         file:
+          mode: preserve
           state: directory
           path: /root/.docker/
       - name: configure docker client to use proxy values
         copy:
+          mode: preserve
           dest: "/root/.docker/config.json"
           content: |
             {
@@ -39,12 +41,12 @@
       when: lookup('env','http_proxy') != "fooproxy" or lookup('env','https_proxy') != "fooproxy" or lookup('env','no_proxy') != "fooproxy"
     - name: clone QAT envoy repo repo
       git:
-        repo: "https://github.com/electrocucaracha/kubernetes-qat-envoy"
+        repo: "https://github.com/intel/kubernetes-qat-envoy"
         dest: "{{ qat_envoy_dest }}"
-        version: "fix_bazel_jobs"
+        version: "01bb5ef2ea405a3bf070c7080a7ac898afd2ce1d"
         force: yes
     - name: remove old envoy docker images
       shell: "docker images envoy-qat -q | xargs docker rmi -f"
       ignore_errors: True
     - name: build docker image
-      command: "docker image build -t envoy-qat:devel -f {{ qat_envoy_dest }}/Dockerfile.envoy {{ qat_envoy_dest }}/"
+      command: "docker image build -t envoy-qat:devel -f {{ qat_envoy_dest }}/Dockerfile.openssl {{ qat_envoy_dest }}/"

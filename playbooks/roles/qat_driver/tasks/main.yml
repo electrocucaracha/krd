@@ -28,6 +28,7 @@
 - name: create qat_service systemd wrapper
   become: true
   copy:
+    mode: preserve
     src: qat_service.service
     dest: /etc/systemd/system/qat_service.service
   when: ansible_os_family in ['ClearLinux', 'Suse']

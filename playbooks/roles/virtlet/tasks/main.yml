@@ -14,11 +14,13 @@
 
 - name: create Virtlet binary folder
   file:
+    mode: '0755'
     state: directory
     path: "{{ virtlet_dest }}"
 
 - name: generate image translations confimap file
   template:
+    mode: preserve
     src: "images.yaml.j2"
     dest: "{{ virtlet_dest }}/images.yml"
 
