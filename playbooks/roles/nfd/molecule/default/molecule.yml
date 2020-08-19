@@ -17,6 +17,7 @@ driver:
   name: vagrant
 lint: |
   set -e
+  PATH=${PATH}
   yamllint -c ../../../.yamllint .
 platforms:
   - name: instance
