@@ -138,7 +138,9 @@ Vagrant.configure("2") do |config|
         end
       end
       nodeconfig.vm.box =  vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["name"]
-      nodeconfig.vm.box_version = vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["version"]
+      if vagrant_boxes[node["os"]["name"]][node["os"]["release"]].has_key? "version"
+        nodeconfig.vm.box_version = vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["version"]
+      end
       nodeconfig.vm.provider 'virtualbox' do |v, override|
         if node['roles'].include?("virtlet")
           v.customize ["modifyvm", :id, "--nested-hw-virt","on"]

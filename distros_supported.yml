@@ -11,28 +11,25 @@
 clearlinux:
   latest:
     name: AntonioMeireles/ClearLinux
-    version: 33450
     vb_controller: IDE
 centos:
   7:
     name: generic/centos7
-    version: 3.0.20
-    vb_controller: IDE
+    vb_controller: IDE Controller
   8:
     name: generic/centos8
-    version: 3.0.20
     vb_controller: IDE Controller
 ubuntu:
   xenial:
     name: generic/ubuntu1604
-    version: 3.0.20
     vb_controller: IDE Controller
   bionic:
     name: generic/ubuntu1804
-    version: 3.0.20
+    vb_controller: IDE Controller
+  focal:
+    name: generic/ubuntu2004
     vb_controller: IDE Controller
 opensuse:
   tumbleweed:
     name: opensuse/Tumbleweed.x86_64
-    version: 1.0.20200708
-    vb_controller: IDE
+    vb_controller: SATA Controller
