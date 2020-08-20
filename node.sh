@@ -71,10 +71,12 @@ function _install_deps {
         esac
     fi
 
+    PATH="$PATH:/usr/local/bin/"
+    export PATH
     curl -fsSL http://bit.ly/install_pkg | PKG=bindep bash
     curl -fsSL http://bit.ly/install_pkg | PKG="$(bindep node -b)" bash
     if systemctl list-unit-files tuned.service | grep "1 unit"; then
-        sudo sed -i "s|#\!/usr/bin/python|#\!$(command -v python2)|g" /usr/sbin/tuned
+        sudo sed -i "s|#\!/usr/bin/python |#\!$(command -v python2) |g" /usr/sbin/tuned
         sudo systemctl start tuned
         sudo systemctl enable tuned
     fi
