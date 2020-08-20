@@ -289,7 +289,7 @@ Vagrant.configure("2") do |config|
 
     # NOTE: A private network set up is required by NFS. This is due
     # to a limitation of VirtualBox's built-in networking.
-    installer.vm.network "private_network", ip: "10.10.17.2"
+    installer.vm.network "private_network", ip: "10.10.16.2"
     installer.vm.provision 'shell', privileged: false, inline: <<-SHELL
       cd /vagrant
       sudo mkdir -p /root/.ssh/

@@ -8,22 +8,22 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: "kubernetes"
+- name: aio
   os:
-    name: "ubuntu"
-    release: "bionic"
+    name: ubuntu
+    release: bionic
   networks:
     - name: public-net
       ip: "10.10.16.3"
-  memory: 2048
+  memory: 6144
   cpus: 2
   numa_nodes: # Total memory for NUMA nodes must be equal to RAM size
     - cpus: 0-1
-      memory: 2048
+      memory: 6144
   pmem:
-    size: 2G # This value may affect the currentMemory libvirt tag
+    size: 6G # This value may affect the currentMemory libvirt tag
     slots: 2
-    max_size: 4G
+    max_size: 8G
     vNVDIMMs:
       - mem_id: mem0
         id: nv0
