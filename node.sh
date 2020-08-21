@@ -72,7 +72,9 @@ function _install_deps {
     fi
 
     PATH="$PATH:/usr/local/bin/"
-    export PATH
+    PKG_PYTHON_MAJOR_VERSION=2
+    export PATH PKG_PYTHON_MAJOR_VERSION
+
     curl -fsSL http://bit.ly/install_pkg | PKG=bindep bash
     curl -fsSL http://bit.ly/install_pkg | PKG="$(bindep node -b)" bash
     if systemctl list-unit-files tuned.service | grep "1 unit"; then
@@ -102,6 +104,16 @@ if [ -n "${dict_volumes:-}" ]; then
     for kv in ${dict_volumes//,/ } ;do
         mount_external_partition "${kv%=*}" "${kv#*=}"
     done
+fi
+if command -v firewall-cmd && systemctl is-active --quiet firewalld; then
+    sudo firewall-cmd --zone=public --permanent --add-port=6443/tcp
+    sudo firewall-cmd --zone=public --permanent --add-service=https
+    sudo firewall-cmd --reload
+    if [ "${KRD_DEBUG:-false}" == "true" ]; then
+        sudo firewall-cmd --get-active-zones
+        sudo firewall-cmd --zone=public --list-services
+        sudo firewall-cmd --zone=public --list-ports
+    fi
 fi
 
 ## TODO: Improve PMEM setup

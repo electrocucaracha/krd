@@ -3,6 +3,7 @@ ethtool [node]
 hwloc [node]
 lvm2 [node]
 tuned [node !platform:ubuntu-xenial]
+libselinux-python [node platform:centos-7]
 
 git [(node kubespray)]
 make [kubespray]
