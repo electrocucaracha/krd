@@ -1,9 +1,11 @@
-cockpit [node]
+cockpit [node !platform:suse]
 ethtool [node]
 hwloc [node]
 lvm2 [node]
 tuned [node !platform:ubuntu-xenial]
 libselinux-python [node platform:centos-7]
+e2fsprogs [node platform:suse]
+wget [node]
 
 git [(node kubespray)]
 make [kubespray]

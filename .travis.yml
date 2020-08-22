@@ -33,7 +33,24 @@ jobs:
         - cp config/samples/travisci/centos_7.yml config/pdf.yml
       script:
         - sudo vagrant up
-        - ./krd_command.sh -a install_k8s
+        - KRD_DEBUG=true ./krd_command.sh -a install_k8s
+        - kubectl get nodes -o wide
+    - name: Pod Definition File validation (openSUSE Tumbleweed)
+      language: shell
+      install:
+        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
+        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
+        - sudo mkdir -p /root/.ssh/
+        - sudo cp insecure_keys/key /root/.ssh/id_rsa
+        - cp insecure_keys/key ~/.ssh/id_rsa
+        - sudo chmod 400 /root/.ssh/id_rsa
+        - chown "$USER" ~/.ssh/id_rsa
+        - chmod 400 ~/.ssh/id_rsa
+        - cp config/samples/travisci/opensuse_tumbleweed.yml config/pdf.yml
+      script:
+        - sudo vagrant up
+        - KRD_DEBUG=true ./krd_command.sh -a install_k8s
+        - kubectl get nodes -o wide
     - name: Lint validation
       install:
         - pip install tox

@@ -8,6 +8,14 @@ This project offers a reference for deploying a Kubernetes cluster.
 Its ansible playbooks allow to provision a deployment on Bare-metal
 or Virtual Machines.
 
+## Linux Distros
+
+| Name       | Version     |
+|:-----------|:-----------:|
+| Ubuntu     | 16.04/18.04 |
+| CentOS     | 7           |
+| openSUSE   | Tumbleweed  |
+
 # Components
 
 | Name           | Description                                    | Source                            | Status      |

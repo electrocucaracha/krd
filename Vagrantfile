@@ -259,7 +259,7 @@ Vagrant.configure("2") do |config|
       if node['os'] == "centos"
         nodeconfig.vm.provision :reload
       end
-      nodeconfig.vm.provision 'shell' do |sh|
+      nodeconfig.vm.provision 'shell', privileged: false do |sh|
         sh.env = {
           'KRD_DEBUG': "#{$krd_debug}",
           'NODE_VOLUME': "#{$volume_mounts_dict[0...-1]}"

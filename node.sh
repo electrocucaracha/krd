@@ -30,19 +30,19 @@ function mount_external_partition {
     local dev_name="/dev/$1"
     local mount_dir=$2
 
-    sfdisk "$dev_name" --no-reread << EOF
+    sudo sfdisk "$dev_name" --no-reread << EOF
 ;
 EOF
-    mkfs -t ext4 "${dev_name}1"
-    mkdir -p "$mount_dir"
-    mount "${dev_name}1" "$mount_dir"
+    sudo mkfs -t ext4 "${dev_name}1"
+    sudo mkdir -p "$mount_dir"
+    sudo mount "${dev_name}1" "$mount_dir"
     echo "${dev_name}1 $mount_dir           ext4    errors=remount-ro,noatime,barrier=0 0       1" | sudo tee --append /etc/fstab
 }
 
 # disable_swap() - Disable Swap
 function disable_swap {
-    swapoff -a
-    sed -i -e '/swap/d' /etc/fstab
+    sudo swapoff -a
+    sudo sed -i -e '/swap/d' /etc/fstab
 }
 
 # enable_huge_pages() - Enable Huge pages
@@ -71,10 +71,6 @@ function _install_deps {
         esac
     fi
 
-    PATH="$PATH:/usr/local/bin/"
-    PKG_PYTHON_MAJOR_VERSION=2
-    export PATH PKG_PYTHON_MAJOR_VERSION
-
     curl -fsSL http://bit.ly/install_pkg | PKG=bindep bash
     curl -fsSL http://bit.ly/install_pkg | PKG="$(bindep node -b)" bash
     if systemctl list-unit-files tuned.service | grep "1 unit"; then
@@ -96,10 +92,18 @@ while getopts "h?v:" opt; do
     esac
 done
 
+PATH="$PATH:/usr/local/bin/"
+PKG_PYTHON_MAJOR_VERSION=2
+export PATH PKG_PYTHON_MAJOR_VERSION
+
 disable_swap
 enable_huge_pages
 enable_rbd
 _install_deps
+
+echo "Sync server's clock"
+sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+
 if [ -n "${dict_volumes:-}" ]; then
     for kv in ${dict_volumes//,/ } ;do
         mount_external_partition "${kv%=*}" "${kv#*=}"
