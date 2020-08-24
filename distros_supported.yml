@@ -15,6 +15,7 @@ clearlinux:
 centos:
   7:
     name: generic/centos7
+    version: 3.0.28
     vb_controller: IDE Controller
   8:
     name: generic/centos8
@@ -22,14 +23,13 @@ centos:
 ubuntu:
   xenial:
     name: generic/ubuntu1604
+    version: 3.0.28
     vb_controller: IDE Controller
   bionic:
     name: generic/ubuntu1804
     vb_controller: IDE Controller
-  focal:
-    name: generic/ubuntu2004
-    vb_controller: IDE Controller
 opensuse:
-  tumbleweed:
+  42:
     name: generic/opensuse42
+    version: 3.0.28
     vb_controller: IDE Controller

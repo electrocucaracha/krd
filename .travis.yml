@@ -78,10 +78,10 @@ jobs:
       language: shell
       script:
         - ./check.sh centos 8
-    - name: Pod Definition File validation (openSUSE Tumbleweed)
+    - name: Pod Definition File validation (openSUSE Leap)
       language: shell
       script:
-        - ./check opensuse tumbleweed
+        - ./check.sh opensuse 42
     - name: Pod Definition File validation (Ubuntu 16.04 LTS)
       language: shell
       script:
