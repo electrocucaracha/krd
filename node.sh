@@ -60,9 +60,9 @@ function enable_rbd {
 
 # _install_deps() - Install minimal dependencies required
 function _install_deps {
+    # shellcheck disable=SC1091
+    source /etc/os-release || source /usr/lib/os-release
     if ! command -v curl; then
-        # shellcheck disable=SC1091
-        source /etc/os-release || source /usr/lib/os-release
         case ${ID,,} in
             ubuntu|debian)
                 sudo apt-get update
@@ -70,7 +70,21 @@ function _install_deps {
             ;;
         esac
     fi
+    case ${ID,,} in
+        rhel|centos|fedora)
+            if [ "${VERSION_ID}" == "7" ]; then
+                PKG_PYTHON_MAJOR_VERSION=2
+                export PKG_PYTHON_MAJOR_VERSION
+            fi
+        ;;
+        *suse)
+            PKG_PYTHON_MAJOR_VERSION=2
+            export PKG_PYTHON_MAJOR_VERSION
+        ;;
+    esac
 
+    PATH="$PATH:/usr/local/bin/"
+    export PATH
     curl -fsSL http://bit.ly/install_pkg | PKG=bindep bash
     curl -fsSL http://bit.ly/install_pkg | PKG="$(bindep node -b)" bash
     if systemctl list-unit-files tuned.service | grep "1 unit"; then
@@ -91,10 +105,6 @@ while getopts "h?v:" opt; do
             ;;
     esac
 done
-
-PATH="$PATH:/usr/local/bin/"
-PKG_PYTHON_MAJOR_VERSION=2
-export PATH PKG_PYTHON_MAJOR_VERSION
 
 disable_swap
 enable_huge_pages
