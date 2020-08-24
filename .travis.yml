@@ -30,54 +30,6 @@ jobs:
         - pip install tox
       script:
         - tox -e docs
-    - name: Pod Definition File validation (CentOS 7)
-      language: shell
-      install:
-        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
-        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
-        - sudo mkdir -p /root/.ssh/
-        - sudo cp insecure_keys/key /root/.ssh/id_rsa
-        - cp insecure_keys/key ~/.ssh/id_rsa
-        - sudo chmod 400 /root/.ssh/id_rsa
-        - chown "$USER" ~/.ssh/id_rsa
-        - chmod 400 ~/.ssh/id_rsa
-        - cp config/samples/travisci/centos_7.yml config/pdf.yml
-      script:
-        - sudo vagrant up
-        - KRD_DEBUG=true ./krd_command.sh -a install_k8s
-        - kubectl get nodes -o wide
-    - name: Pod Definition File validation (openSUSE Tumbleweed)
-      language: shell
-      install:
-        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
-        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
-        - sudo mkdir -p /root/.ssh/
-        - sudo cp insecure_keys/key /root/.ssh/id_rsa
-        - cp insecure_keys/key ~/.ssh/id_rsa
-        - sudo chmod 400 /root/.ssh/id_rsa
-        - chown "$USER" ~/.ssh/id_rsa
-        - chmod 400 ~/.ssh/id_rsa
-        - cp config/samples/travisci/opensuse_tumbleweed.yml config/pdf.yml
-      script:
-        - sudo vagrant up
-        - KRD_DEBUG=true ./krd_command.sh -a install_k8s
-        - kubectl get nodes -o wide
-    - name: Pod Definition File validation (Ubuntu 16.04 LTS)
-      language: shell
-      install:
-        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
-        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
-        - sudo mkdir -p /root/.ssh/
-        - sudo cp insecure_keys/key /root/.ssh/id_rsa
-        - cp insecure_keys/key ~/.ssh/id_rsa
-        - sudo chmod 400 /root/.ssh/id_rsa
-        - chown "$USER" ~/.ssh/id_rsa
-        - chmod 400 ~/.ssh/id_rsa
-        - cp config/samples/travisci/ubuntu_xenial.yml config/pdf.yml
-      script:
-        - sudo vagrant up
-        - KRD_DEBUG=true ./krd_command.sh -a install_k8s
-        - kubectl get nodes -o wide
     - name: All-in-One + Virtlet role validation (Ubuntu 18.04 LTS)
       language: shell
       script:
@@ -118,3 +70,15 @@ jobs:
         - pip install tox
       script:
         - sudo $(command -v tox) -e criproxy
+    - name: Pod Definition File validation (CentOS 7)
+      language: shell
+      script:
+        - ./check.sh centos 7
+    - name: Pod Definition File validation (openSUSE Tumbleweed)
+      language: shell
+      script:
+        - ./check opensuse tumbleweed
+    - name: Pod Definition File validation (Ubuntu 16.04 LTS)
+      language: shell
+      script:
+        - ./check.sh ubuntu xenial

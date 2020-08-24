@@ -1,4 +1,4 @@
----
+#!/bin/bash
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
 # Copyright (c) 2018
@@ -8,10 +8,46 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
+set -o errexit
+set -o nounset
+set -o pipefail
+
+function die {
+    echo >&2 "$@"
+    exit 1
+}
+
+function info {
+    echo "$(date +%H:%M:%S) - INFO: $1"
+}
+
+[ "$#" -eq 2 ] || die "2 arguments required, $# provided"
+
+info "Install Integration dependencies - $1"
+# shellcheck disable=SC1091
+source /etc/os-release || source /usr/lib/os-release
+case ${ID,,} in
+    ubuntu|debian)
+        sudo apt-get update
+        sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
+    ;;
+esac
+curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
+
+info "Configure SSH keys"
+sudo mkdir -p /root/.ssh/
+sudo cp insecure_keys/key /root/.ssh/id_rsa
+cp insecure_keys/key ~/.ssh/id_rsa
+sudo chmod 400 /root/.ssh/id_rsa
+chown "$USER" ~/.ssh/id_rsa
+chmod 400 ~/.ssh/id_rsa
+
+info "Define target node"
+tee <<EOL config/pdf.yml
 - name: aio
   os:
-    name: centos
-    release: 8
+    name: $1
+    release: $2
   networks:
     - name: public-net
       ip: "10.10.16.3"
@@ -42,3 +78,13 @@
     - kube-node
     - virtlet
     - qat-node
+EOL
+
+info "Provision target node"
+sudo vagrant up
+
+info "Provision bastion node"
+KRD_DEBUG=true ./krd_command.sh -a install_k8s
+
+info "Validate Kubernetes execution"
+kubectl get nodes -o wide
