@@ -74,6 +74,10 @@ jobs:
       language: shell
       script:
         - ./check.sh centos 7
+    - name: Pod Definition File validation (CentOS 8)
+      language: shell
+      script:
+        - ./check.sh centos 8
     - name: Pod Definition File validation (openSUSE Tumbleweed)
       language: shell
       script:
