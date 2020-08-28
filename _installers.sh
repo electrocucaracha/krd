@@ -35,13 +35,12 @@ function _install_kubespray {
     if [[ ! -d $kubespray_folder ]]; then
         echo "Download kubespray binaries"
 
-        clone_cmd="sudo -E git clone --depth 1 https://github.com/kubernetes-sigs/kubespray $kubespray_folder"
-        if [ "$kubespray_version" != "master" ]; then
-            clone_cmd+=" -b $kubespray_version"
-        fi
-        eval "$clone_cmd"
-        sudo chown -R "$USER" $kubespray_folder
+        sudo -E git clone "https://github.com/kubernetes-sigs/kubespray" "$kubespray_folder"
+        sudo chown -R "$USER:$USER" $kubespray_folder
         pushd $kubespray_folder
+        if [ "$kubespray_version" != "master" ]; then
+            git checkout -b "$kubespray_version" "$kubespray_version"
+        fi
         PIP_CMD="sudo -E $(command -v pip) install --no-cache-dir"
         $PIP_CMD -r ./requirements.txt
         make mitogen
@@ -70,6 +69,9 @@ function _install_kubespray {
             echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
         fi
         sed -i "s/^kube_network_plugin_multus: .*$/kube_network_plugin_multus: ${KRD_ENABLE_MULTUS:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        if [ -n "${KRD_KUBE_VERSION}" ]; then
+            sed -i "s/^kube_version: .*$/kube_version: ${KRD_KUBE_VERSION}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        fi
         if [ -n "${KRD_CONTAINER_RUNTIME}" ] && [ "${KRD_CONTAINER_RUNTIME}" != "docker" ]; then
             {
             echo "download_container: true"

@@ -19,6 +19,15 @@ cache:
     - /home/travis/.cache/molecule
 jobs:
   include:
+    - name: Pod Definition File validation (CentOS 7)
+      language: shell
+      script:
+        - ./check.sh centos 7
+    - name: All-in-One + Virtlet role validation (Ubuntu 18.04 LTS)
+      language: shell
+      script:
+        - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - KRD_DEBUG=true KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
     - name: Lint validation
       install:
         - pip install tox
@@ -30,11 +39,6 @@ jobs:
         - pip install tox
       script:
         - tox -e docs
-    - name: All-in-One + Virtlet role validation (Ubuntu 18.04 LTS)
-      language: shell
-      script:
-        - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-        - KRD_DEBUG=true KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
     - name: NFD role validation
       install:
         - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
@@ -70,10 +74,6 @@ jobs:
         - pip install tox
       script:
         - sudo $(command -v tox) -e criproxy
-    - name: Pod Definition File validation (CentOS 7)
-      language: shell
-      script:
-        - ./check.sh centos 7
     - name: Pod Definition File validation (CentOS 8)
       language: shell
       script:

@@ -43,8 +43,11 @@ function upgrade_k8s {
     if [ -n "${KRD_KUBESPRAY_VERSION+x}" ] && _vercmp "${kubespray_version#*v}" '<' "${KRD_KUBESPRAY_VERSION#*v}" ; then
         sed -i "s/^kubespray_version: .*\$/kubespray_version: $KRD_KUBESPRAY_VERSION/" "$krd_playbooks/krd-vars.yml"
         pushd "$kubespray_folder"
-        git fetch --all --tags --prune
-        git pull origin "${KRD_KUBESPRAY_VERSION}"
+        git checkout master
+        git pull origin master
+        git checkout -b "$KRD_KUBESPRAY_VERSION" "$KRD_KUBESPRAY_VERSION"
+        PIP_CMD="sudo -E $(command -v pip) install --no-cache-dir"
+        $PIP_CMD -r ./requirements.txt
         popd
     fi
     sed -i "s/^kube_version: .*\$/kube_version: $KRD_KUBE_VERSION/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"

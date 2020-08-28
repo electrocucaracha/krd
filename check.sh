@@ -17,8 +17,26 @@ function die {
     exit 1
 }
 
+function msg {
+    echo "$(date +%H:%M:%S) - $1: $2"
+}
+
 function info {
-    echo "$(date +%H:%M:%S) - INFO: $1"
+    msg "INFO" "$1"
+}
+
+function error {
+    msg "ERROR" "$1"
+    exit 1
+}
+
+function asserts {
+    local expected=$1
+    local current=$2
+
+    if [ " $expected " != " $current " ]; then
+        error "got $current, want $expected"
+    fi
 }
 
 [ "$#" -eq 2 ] || die "2 arguments required, $# provided"
@@ -43,7 +61,7 @@ chown "$USER" ~/.ssh/id_rsa
 chmod 400 ~/.ssh/id_rsa
 
 info "Define target node"
-tee <<EOL config/pdf.yml
+cat <<EOL > config/pdf.yml
 - name: aio
   os:
     name: $1
@@ -83,8 +101,17 @@ EOL
 info "Provision target node"
 sudo vagrant up
 
-info "Provision bastion node"
-KRD_DEBUG=true ./krd_command.sh -a install_k8s
+KRD_DEBUG=true
+KRD_KUBE_VERSION=v1.17.6
+KRD_KUBESPRAY_VERSION=v2.13.1
+export KRD_DEBUG KRD_KUBE_VERSION KRD_KUBESPRAY_VERSION
+
+info "Provision Kubernetes cluster"
+./krd_command.sh -a install_k8s
 
 info "Validate Kubernetes execution"
 kubectl get nodes -o wide
+asserts "$KRD_KUBE_VERSION" "$(kubectl version --short | awk 'FNR==2{print $3}')"
+pushd /opt/kubespray > /dev/null
+asserts "$KRD_KUBESPRAY_VERSION" "$(git describe --abbrev=0 --tags)"
+popd > /dev/null
