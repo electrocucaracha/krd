@@ -9,6 +9,7 @@
 ##############################################################################
 
 name: Lint Code Base
+# yamllint disable-line rule:truthy
 on:
   push:
     branches:

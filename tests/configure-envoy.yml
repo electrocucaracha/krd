@@ -13,40 +13,40 @@
     qat_envoy_dest: /tmp/kubernetes-qat-envoy
   roles:
     - role: geerlingguy.docker
-  become: yes
+  become: true
   tasks:
     - name: configure docker client
       block:
-      - name: create docker config folder
-        file:
-          mode: preserve
-          state: directory
-          path: /root/.docker/
-      - name: configure docker client to use proxy values
-        copy:
-          mode: preserve
-          dest: "/root/.docker/config.json"
-          content: |
-            {
-              "proxies":
+        - name: create docker config folder
+          file:
+            mode: '0755'
+            state: directory
+            path: /root/.docker/
+        - name: configure docker client to use proxy values
+          copy:
+            mode: preserve
+            dest: "/root/.docker/config.json"
+            content: |
               {
-                "default":
+                "proxies":
                 {
-                  "httpProxy": "{{ lookup('env','http_proxy') }}",
-                  "httpsProxy": "{{ lookup('env','https_proxy') }}",
-                  "noProxy": "{{ lookup('env','no_proxy') }}"
+                  "default":
+                  {
+                    "httpProxy": "{{ lookup('env','http_proxy') }}",
+                    "httpsProxy": "{{ lookup('env','https_proxy') }}",
+                    "noProxy": "{{ lookup('env','no_proxy') }}"
+                  }
                 }
               }
-            }
       when: lookup('env','http_proxy') != "fooproxy" or lookup('env','https_proxy') != "fooproxy" or lookup('env','no_proxy') != "fooproxy"
     - name: clone QAT envoy repo repo
       git:
         repo: "https://github.com/intel/kubernetes-qat-envoy"
         dest: "{{ qat_envoy_dest }}"
         version: "01bb5ef2ea405a3bf070c7080a7ac898afd2ce1d"
-        force: yes
+        force: true
     - name: remove old envoy docker images
       shell: "docker images envoy-qat -q | xargs docker rmi -f"
-      ignore_errors: True
+      ignore_errors: true
     - name: build docker image
       command: "docker image build -t envoy-qat:devel -f {{ qat_envoy_dest }}/Dockerfile.openssl {{ qat_envoy_dest }}/"

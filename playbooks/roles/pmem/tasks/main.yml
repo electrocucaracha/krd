@@ -95,7 +95,7 @@
 - name: create PMEM storage classes
   k8s:
     state: present
-    definition: "{{ lookup('file', 'pmem-{{ item }}.yaml') }}" # noqa 207
+    definition: "{{ lookup('file', 'pmem-{{ item }}.yaml') }}"  # noqa 207
   with_items:
     - storageclass-ext4
     - storageclass-xfs

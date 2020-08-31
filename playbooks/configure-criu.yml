@@ -21,11 +21,11 @@
         name: criu-el7
         description: Copr repo for criu-el7 owned by adrian
         baseurl: https://copr-be.cloud.fedoraproject.org/results/adrian/criu-el7/epel-7-$basearch/
-        gpgcheck: yes
+        gpgcheck: true
         gpgkey: https://copr-be.cloud.fedoraproject.org/results/adrian/criu-el7/pubkey.gpg
       when: ansible_os_family == 'RedHat'
     - name: enable docker experimental features
-      become: yes
+      become: true
       copy:
         mode: preserve
         dest: /etc/docker/daemon.json
@@ -36,27 +36,27 @@
           }
     - name: configure docker client
       block:
-      - name: create docker config folder
-        file:
-          state: directory
-          path: /root/.docker/
-          mode: preserve
-      - name: configure docker client to use proxy values
-        copy:
-          mode: preserve
-          dest: "/root/.docker/config.json"
-          content: |
-            {
-              "proxies":
+        - name: create docker config folder
+          file:
+            state: directory
+            path: /root/.docker/
+            mode: '0755'
+        - name: configure docker client to use proxy values
+          copy:
+            mode: preserve
+            dest: "/root/.docker/config.json"
+            content: |
               {
-                "default":
+                "proxies":
                 {
-                  "httpProxy": "{{ lookup('env','http_proxy') }}",
-                  "httpsProxy": "{{ lookup('env','https_proxy') }}",
-                  "noProxy": "{{ lookup('env','no_proxy') }}"
+                  "default":
+                  {
+                    "httpProxy": "{{ lookup('env','http_proxy') }}",
+                    "httpsProxy": "{{ lookup('env','https_proxy') }}",
+                    "noProxy": "{{ lookup('env','no_proxy') }}"
+                  }
                 }
               }
-            }
       when: lookup('env','http_proxy') != "fooproxy" or lookup('env','https_proxy') != "fooproxy" or lookup('env','no_proxy') != "fooproxy"
     - name: install CRIU packages
       package:

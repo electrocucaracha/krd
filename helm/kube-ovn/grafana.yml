@@ -1,3 +1,4 @@
+---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
 # Copyright (c) 2020
@@ -10,7 +11,7 @@
 persistence:
   enabled: false
 
-service:                                                    
+service:
   type: NodePort
   nodePort: 30086
 

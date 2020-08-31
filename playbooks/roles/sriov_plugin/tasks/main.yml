@@ -11,7 +11,7 @@
 - name: create SR-IOV k8s resources
   k8s:
     state: present
-    definition: "{{ lookup('template', '{{ item }}.yaml.j2') }}" # noqa 207
+    definition: "{{ lookup('template', '{{ item }}.yaml.j2') }}"  # noqa 207
     namespace: kube-system
   with_items:
     - configMap

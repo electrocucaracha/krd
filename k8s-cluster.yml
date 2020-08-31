@@ -1,3 +1,4 @@
+---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
 # Copyright (c) 2018
@@ -30,7 +31,6 @@ kube_users:
       - system:masters
 
 # It is possible to activate / deactivate selected authentication methods (basic auth, static token auth)
-#kube_oidc_auth: false
 kube_basic_auth: false
 kube_token_auth: false
 
@@ -85,11 +85,11 @@ kubelet_deployment_type: docker
 # Container for runtime
 container_manager: docker
 
-#kube_feature_gates:
-#  - TopologyManager=true # Enables NUMA alignment of CPUs and peripheral devices (such as SR-IOV VFs and GPUs), allowing your workload to run in an environment optimized for low-latency.
+# kube_feature_gates:
+#   - TopologyManager=true # Enables NUMA alignment of CPUs and peripheral devices (such as SR-IOV VFs and GPUs), allowing your workload to run in an environment optimized for low-latency.
 
 kubelet_custom_flags:
-  - "--cpu-manager-policy=static" # Allows containers in Guaranteed pods with integer CPU requests access to exclusive CPUs on the node.
+  - "--cpu-manager-policy=static"  # Allows containers in Guaranteed pods with integer CPU requests access to exclusive CPUs on the node.
 
 # Rook requires a FlexVolume plugin directory to integrate with K8s for performing storage operations
 kubelet_flexvolumes_plugins_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec

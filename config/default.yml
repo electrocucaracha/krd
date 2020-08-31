@@ -64,7 +64,7 @@
     - "41:02.6"
     - "41:02.7"
   cpus: 16
-  numa_nodes: # Total memory for NUMA nodes must be equal to RAM size
+  numa_nodes:  # Total memory for NUMA nodes must be equal to RAM size
     - cpus: 0-3
       memory: 8192
     - cpus: 4-7
@@ -92,7 +92,7 @@
       ip: "10.10.16.7"
   memory: 8192
   pmem:
-    size: 8G # This value may affect the currentMemory libvirt tag
+    size: 8G  # This value may affect the currentMemory libvirt tag
     slots: 4
     max_size: 32G
     vNVDIMMs:
