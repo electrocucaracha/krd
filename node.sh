@@ -130,29 +130,18 @@ if command -v firewall-cmd && systemctl is-active --quiet firewalld; then
     fi
 fi
 
-## TODO: Improve PMEM setup
+if lsblk -t | grep pmem; then
+    if command -v ndctl && command -v jq; then
+        for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
+            sudo ndctl create-namespace -f -e "$namespace" --mode=memory
+        done
+        sudo ndctl list -iNRD
+    fi
+fi
 
-#if lsblk -t | grep pmem; then
-#    # shellcheck disable=SC1091
-#    source /etc/os-release || source /usr/lib/os-release
-#    case ${ID,,} in
-#        rhel|centos|fedora)
-#            for repo in ipmctl safeclib; do
-#                curl -o "/etc/yum.repos.d/${repo}-epel-7.repo" "https://copr.fedorainfracloud.org/coprs/jhli/${repo}/repo/epel-7/jhli-${repo}-epel-7.repo"
-#            done
-#            INSTALLER_CMD="sudo -H -E ${PKG_MANAGER} -q -y install ipmctl ndctl"
-#        ;;
-#    esac
-#    ${INSTALLER_CMD}
-#    if command -v ndctl && command -v jq; then
-#        for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
-#            sudo ndctl create-namespace -f -e "$namespace" --mode=memory
-#        done
-#    fi
-#fi
-
+lstopo-no-graphics
 # Enable NVDIMM mixed mode (configuration for MM:AD is set to 50:50)
-#if command -v ipmctl; then
-#    ipmctl create -goal memorymode=50 persistentmemorytype=appdirect 2>&1 /dev/null
-#    ipmctl create -goal memorymode=50 persistentmemorytype=appdirectnotinterleaved 2>&1 /dev/null
-#fi
+if command -v ipmctl && [[ "$(sudo ipmctl show -dimm | awk -F'|' 'FNR==3{print $4}')" == *"Healthy"* ]]; then
+    sudo ipmctl create -goal memorymode=50 persistentmemorytype=appdirect
+    sudo ipmctl create -goal memorymode=50 persistentmemorytype=appdirectnotinterleaved
+fi

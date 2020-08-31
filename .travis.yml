@@ -27,6 +27,7 @@ jobs:
       language: shell
       script:
         - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - kubectl get nodes -o wide
         - KRD_DEBUG=true KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
     - name: Lint validation
       install:
