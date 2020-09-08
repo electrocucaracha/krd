@@ -87,3 +87,7 @@ jobs:
       language: shell
       script:
         - ./check.sh ubuntu xenial
+    - name: Pod Definition File validation (Ubuntu 20.04 LTS)
+      language: shell
+      script:
+        - ./check.sh ubuntu focal

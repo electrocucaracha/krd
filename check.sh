@@ -102,8 +102,8 @@ info "Provision target node"
 sudo vagrant up
 
 KRD_DEBUG=true
-KRD_KUBE_VERSION=v1.17.6
-KRD_KUBESPRAY_VERSION=v2.13.1
+KRD_KUBE_VERSION=v1.18.8
+KRD_KUBESPRAY_VERSION=v2.14.0
 export KRD_DEBUG KRD_KUBE_VERSION KRD_KUBESPRAY_VERSION
 
 info "Provision Kubernetes cluster"
