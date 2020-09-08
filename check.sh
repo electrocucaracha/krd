@@ -39,6 +39,15 @@ function asserts {
     fi
 }
 
+exit_trap() {
+    printf "CPU usage: "
+    grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage " %"}'
+    printf "Memory free(Kb):"
+    awk -v low="$(grep low /proc/zoneinfo | awk '{k+=$2}END{print k}')" '{a[$1]=$2}  END{ print a["MemFree:"]+a["Active(file):"]+a["Inactive(file):"]+a["SReclaimable:"]-(12*low);}' /proc/meminfo
+    echo "Environment variables:"
+    env | grep "KRD"
+}
+
 [ "$#" -eq 2 ] || die "2 arguments required, $# provided"
 
 info "Install Integration dependencies - $1"
@@ -107,7 +116,9 @@ KRD_KUBESPRAY_VERSION=v2.14.0
 export KRD_DEBUG KRD_KUBE_VERSION KRD_KUBESPRAY_VERSION
 
 info "Provision Kubernetes cluster"
+trap exit_trap ERR
 ./krd_command.sh -a install_k8s
+trap ERR
 
 info "Validate Kubernetes execution"
 kubectl get nodes -o wide

@@ -99,7 +99,6 @@ function _run_ansible_cmd {
 
     ansible_cmd="ANSIBLE_ROLES_PATH=/tmp/galaxy-roles sudo -E $(command -v ansible-playbook) --become "
     if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
-        set -o xtrace
         ansible_cmd+="-vvv "
     fi
     ansible_cmd+="-i $krd_inventory "
