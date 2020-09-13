@@ -17,20 +17,22 @@ cache:
   directories:
     - /home/travis/.vagrant.d/boxes
     - /home/travis/.cache/molecule
+before_install:
+  - eval "$(gimme stable)"
 jobs:
   include:
     - name: Pod Definition File validation (CentOS 7)
-      install:
-        - eval "$(gimme stable)"
       script:
         - ./check.sh centos 7
     - name: All-in-One + Virtlet role validation (Ubuntu 18.04 LTS)
-      install:
-        - eval "$(gimme stable)"
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - kubectl get nodes -o wide
         - KRD_DEBUG=true KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
+    - name: All-in-One + Kubevirt validation (Ubuntu 18.04 LTS)
+      script:
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - KRD_DEBUG=true KRD_ENABLE_TESTS=true ./krd_command.sh -a install_kubevirt
     - name: Lint validation
       language: python
       install:
@@ -85,22 +87,14 @@ jobs:
       script:
         - sudo $(command -v tox) -e criproxy
     - name: Pod Definition File validation (CentOS 8)
-      install:
-        - eval "$(gimme stable)"
       script:
         - ./check.sh centos 8
     - name: Pod Definition File validation (openSUSE Leap)
-      install:
-        - eval "$(gimme stable)"
       script:
         - ./check.sh opensuse 42
     - name: Pod Definition File validation (Ubuntu 16.04 LTS)
-      install:
-        - eval "$(gimme stable)"
       script:
         - ./check.sh ubuntu xenial
     - name: Pod Definition File validation (Ubuntu 20.04 LTS)
-      install:
-        - eval "$(gimme stable)"
       script:
         - ./check.sh ubuntu focal

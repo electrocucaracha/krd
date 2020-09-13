@@ -37,19 +37,24 @@ EOF
 while getopts ":a:" OPTION; do
     case $OPTION in
         a)
-        eval "case \$OPTARG in
-            ${valid_options%?})
-            echo \"Running \$OPTARG...\"
-            \$OPTARG
-            ;;
-            *)
-            echo Invalid action
-            usage
-            exit 1
-        esac"
+            eval "case \$OPTARG in
+                ${valid_options%?})
+                    echo \"Running \$OPTARG...\"
+                    \$OPTARG
+                    if [ \"\$KRD_ENABLE_TESTS\" == \"true\" ] && [ -f \$KRD_FOLDER/tests/\${OPTARG#*install_}.sh ]  ; then
+                        pushd \$KRD_FOLDER/tests
+                        bash \${OPTARG#*install_}.sh
+                        popd
+                    fi
+                ;;
+                *)
+                    echo Invalid action
+                    usage
+                    exit 1
+                esac"
         ;;
         *)
-        usage
+            usage
         ;;
     esac
 done

@@ -699,11 +699,17 @@ function install_kubevirt {
         kubectl create configmap kubevirt-config -n kubevirt --from-literal debug.useEmulation=true
     fi
     kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-cr.yaml"
-    kubectl krew install virt
-    for deployment in api controller operator; do
+    # shellcheck disable=SC1091
+    source /etc/profile.d/krew_path.sh
+    if [ "$(kubectl krew search virt | awk 'FNR==2{ print $NF}')" == "no" ]; then
+        kubectl krew install virt
+    fi
+    for deployment in operator api controller; do
         if kubectl get "deployment/virt-$deployment" -n kubevirt --no-headers -o custom-columns=name:.metadata.name; then
             kubectl rollout status "deployment/virt-$deployment" -n kubevirt --timeout=5m
+            sleep 5
         fi
     done
+    kubectl rollout status daemonset/virt-handler -n kubevirt --timeout=5m
 }
 
