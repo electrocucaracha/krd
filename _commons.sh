@@ -98,7 +98,7 @@ function _run_ansible_cmd {
     local log=$2
 
     ansible_cmd="ANSIBLE_ROLES_PATH=/tmp/galaxy-roles sudo -E $(command -v ansible-playbook) --become "
-    if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
+    if [[ "${KRD_ANSIBLE_DEBUG:-false}" == "true" ]]; then
         ansible_cmd+="-vvv "
     fi
     ansible_cmd+="-i $krd_inventory "
@@ -135,5 +135,4 @@ export krd_inventory=$krd_inventory_folder/hosts.ini
 export kubespray_folder=/opt/kubespray
 if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
     set -o xtrace
-    export PKG_DEBUG=true
 fi

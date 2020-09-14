@@ -13,7 +13,6 @@ set -o pipefail
 set -o errexit
 if [ "${KRD_DEBUG:-false}" == "true" ]; then
     set -o xtrace
-    export PKG_DEBUG=true
 fi
 
 # usage() - Prints the usage of the program

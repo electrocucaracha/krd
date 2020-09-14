@@ -59,7 +59,7 @@ else
 end
 puts "Free memory(kb): #{$memfree}"
 
-$krd_debug = ENV['KRD_DEBUG'] || "true"
+$debug = ENV['DEBUG'] || "true"
 $krd_network_plugin = ENV['KRD_NETWORK_PLUGIN'] || "flannel"
 $krd_enable_multus = ENV['KRD_ENABLE_MULTUS'] || "false"
 $krd_qat_plugin_mode = ENV['KRD_QAT_PLUGIN_MODE'] || "dpdk"
@@ -263,7 +263,8 @@ Vagrant.configure("2") do |config|
       end
       nodeconfig.vm.provision 'shell', privileged: false do |sh|
         sh.env = {
-          'KRD_DEBUG': "#{$krd_debug}",
+          'KRD_DEBUG': "#{$debug}",
+          'PKG_DEBUG': "#{$debug}",
           'NODE_VOLUME': "#{$volume_mounts_dict[0...-1]}"
         }
         sh.inline = <<-SHELL
@@ -305,7 +306,9 @@ Vagrant.configure("2") do |config|
     SHELL
     installer.vm.provision 'shell', privileged: false do |sh|
       sh.env = {
-        'KRD_DEBUG': "#{$krd_debug}",
+        'KRD_DEBUG': "#{$debug}",
+        'PKG_DEBUG': "#{$debug}",
+        'KRD_ANSIBLE_DEBUG': "#{$debug}",
         'KRD_ENABLE_MULTUS': "#{$krd_enable_multus}",
         'KRD_QAT_PLUGIN_MODE': "#{$krd_qat_plugin_mode}",
         'KRD_NETWORK_PLUGIN': "#{$krd_network_plugin}",

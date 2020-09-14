@@ -87,6 +87,8 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | Name                   | Default     | Description                                                           |
 |:-----------------------|:------------|:----------------------------------------------------------------------|
 | KRD_DEBUG              | false       | Enables verbose execution                                             |
+| KRD_ANSIBLE_DEBUG      | false       | Enables ansible verbose execution                                     |
+| PKG_DEBUG              | false       | Enables cURL package installer verbose execution                      |
 | KRD_KUBE_VERSION       |             | Specifies the Kubernetes version to be upgraded                       |
 | KRD_KUBESPRAY_VERSION  |             | Specifies the Kubespray version to be used during the upgrade process |
 | KRD_ENABLE_TESTS       |             | Enables the functional tests during the deployment process            |

@@ -49,7 +49,7 @@ function _install_kubespray {
         rm -rf "$krd_inventory_folder"/group_vars/
         mkdir -p "$krd_inventory_folder/group_vars/"
         cp "$KRD_FOLDER/k8s-cluster.yml" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        if [ "${KRD_DEBUG:-false}" == "true" ]; then
+        if [ "${KRD_ANSIBLE_DEBUG:-false}" == "true" ]; then
             echo "kube_log_level: 5" | tee "$krd_inventory_folder/group_vars/all.yml"
         else
             echo "kube_log_level: 2" | tee "$krd_inventory_folder/group_vars/all.yml"
@@ -171,7 +171,7 @@ function install_k8s_addons {
     sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
     pip_cmd="sudo -E $(command -v pip) install"
     ansible_galaxy_cmd="sudo -E $(command -v ansible-galaxy) install"
-    if [ "${KRD_DEBUG:-false}" == "true" ]; then
+    if [ "${KRD_ANSIBLE_DEBUG:-false}" == "true" ]; then
         ansible_galaxy_cmd+=" -vvv"
         pip_cmd+=" --verbose"
     fi
