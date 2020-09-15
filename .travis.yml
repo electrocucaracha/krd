@@ -21,19 +21,6 @@ before_install:
   - eval "$(gimme stable)"
 jobs:
   include:
-    - name: Pod Definition File validation (CentOS 7)
-      script:
-        - ./check.sh centos 7
-    - name: All-in-One + Virtlet role validation (Ubuntu 18.04 LTS)
-      script:
-        - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-        - kubectl get nodes -o wide
-        - KRD_DEBUG=true KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
-    - name: All-in-One + Kubevirt validation (Ubuntu 16.04 LTS)
-      dist: xenial
-      script:
-        - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-        - KRD_DEBUG=true KRD_ENABLE_TESTS=true ./krd_command.sh -a install_kubevirt
     - name: Lint validation
       language: python
       install:
@@ -87,6 +74,24 @@ jobs:
         - pip install tox
       script:
         - sudo $(command -v tox) -e criproxy
+    - name: All-in-One + Virtlet role validation
+      script:
+        - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - kubectl get nodes -o wide
+        - KRD_DEBUG=true KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
+    - name: All-in-One + Kubevirt validation
+      script:
+        - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - kubectl get nodes -o wide
+        - KRD_DEBUG=true KRD_ENABLE_TESTS=true ./krd_command.sh -a install_kubevirt
+    - name: All-in-One + Istio validation
+      script:
+        - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - kubectl get nodes -o wide
+        - KRD_DEBUG=true KRD_ENABLE_TESTS=true ./krd_command.sh -a install_kubevirt
+    - name: Pod Definition File validation (CentOS 7)
+      script:
+        - ./check.sh centos 7
     - name: Pod Definition File validation (CentOS 8)
       script:
         - ./check.sh centos 8
@@ -96,6 +101,9 @@ jobs:
     - name: Pod Definition File validation (Ubuntu 16.04 LTS)
       script:
         - ./check.sh ubuntu xenial
+    - name: Pod Definition File validation (Ubuntu 18.04 LTS)
+      script:
+        - ./check.sh ubuntu bionic
     - name: Pod Definition File validation (Ubuntu 20.04 LTS)
       script:
         - ./check.sh ubuntu focal
