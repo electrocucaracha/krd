@@ -88,7 +88,7 @@ jobs:
       script:
         - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - kubectl get nodes -o wide
-        - KRD_DEBUG=true KRD_ENABLE_TESTS=true ./krd_command.sh -a install_kubevirt
+        - KRD_DEBUG=true ./krd_command.sh -a install_istio
     - name: Pod Definition File validation (CentOS 7)
       script:
         - ./check.sh centos 7
