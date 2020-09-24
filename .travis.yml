@@ -78,16 +78,20 @@ jobs:
       script:
         - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - kubectl get nodes -o wide
+        - kubectl get all -A -o wide
         - KRD_DEBUG=true KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
-    - name: All-in-One + Kubevirt validation
+    - name: All-in-One + Kubevirt + Multus validation
       script:
-        - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - KRD_DEBUG=true KRD_ENABLE_MULTUS=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - kubectl get nodes -o wide
+        - kubectl get all -A -o wide
         - KRD_DEBUG=true KRD_ENABLE_TESTS=true ./krd_command.sh -a install_kubevirt
+        - cd tests; ./multus.sh
     - name: All-in-One + Istio validation
       script:
         - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - kubectl get nodes -o wide
+        - kubectl get all -A -o wide
         - KRD_DEBUG=true ./krd_command.sh -a install_istio
     - name: Pod Definition File validation (CentOS 7)
       script:

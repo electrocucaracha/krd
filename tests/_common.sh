@@ -12,63 +12,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-# populate_CSAR_multus() - This function creates the content of CSAR file
-# required for testing Multus feature
-function populate_CSAR_multus {
-    local multus_deployment_name=${1}
-
-    mkdir -p "/tmp/${multus_deployment_name}"
-    pushd "/tmp/${multus_deployment_name}"
-
-    cat << NET > bridge-network.yaml
-apiVersion: "k8s.cni.cncf.io/v1"
-kind: NetworkAttachmentDefinition
-metadata:
-  name: bridge-conf
-spec:
-  config: '{
-    "cniVersion": "0.3.0",
-    "name": "mynet",
-    "type": "bridge",
-    "ipam": {
-        "type": "host-local",
-        "subnet": "10.10.0.0/16"
-    }
-}'
-NET
-
-    cat << DEPLOYMENT > "$multus_deployment_name.yaml"
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: $multus_deployment_name
-  labels:
-    app: multus
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: multus
-  template:
-    metadata:
-      labels:
-        app: multus
-      annotations:
-        k8s.v1.cni.cncf.io/networks: '[
-          { "name": "bridge-conf", "interfaceRequest": "eth1" },
-          { "name": "bridge-conf", "interfaceRequest": "eth2" }
-        ]'
-    spec:
-      containers:
-      - name: $multus_deployment_name
-        image: "busybox"
-        command: ["top"]
-        stdin: true
-        tty: true
-DEPLOYMENT
-    popd
-}
-
 # populate_virtlet() - This function creates the content of yaml file
 # required for testing Virtlet feature
 function populate_virtlet {
