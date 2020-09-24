@@ -717,5 +717,8 @@ function install_kubevirt {
         fi
     done
     kubectl rollout status daemonset/virt-handler -n kubevirt --timeout=5m
+    until [ "$(kubectl api-resources --api-group kubevirt.io --no-headers | wc -l)" == "6" ]; do
+        sleep 5
+    done
 }
 

@@ -12,6 +12,15 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# shellcheck source=tests/_functions.sh
+source _functions.sh
+
+# Setup
+kubectl delete vm testvm --ignore-not-found=true
+
+# Test
+info "===== Test started ====="
+
 cat << EOL | kubectl apply -f -
 apiVersion: kubevirt.io/v1alpha3
 kind: VirtualMachine
@@ -54,6 +63,15 @@ EOL
 
 kubectl get vms
 kubectl virt start testvm
-kubectl wait --for=condition=ready vmis testvm --timeout=120s
+kubectl wait --for=condition=ready vmis testvm --timeout=5m > /dev/null
+vm_pod=$(kubectl get pods -o jsonpath='{.items[0].metadata.name}' | grep virt-launcher-testvm)
+info "$vm_pod details:"
+kubectl logs "$vm_pod" -c compute | jq -R "fromjson? | .msg"
+info "$vm_pod assertions:"
+assert_non_empty "$(kubectl logs "$vm_pod" -c compute | grep 'Successfully connected to domain notify socket at')" "testvm unsuccessfully created"
 #kubectl virt console testvm
+
+info "===== Test completed ====="
+
+# Teardown
 kubectl delete vm testvm
