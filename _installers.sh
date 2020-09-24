@@ -23,7 +23,7 @@ function _install_kubespray {
     # NOTE: bindep prints a multiline's output
     # shellcheck disable=SC2005
     pkgs="$(echo "$(bindep kubespray -b)")"
-    for pkg in ansible docker kubectl; do
+    for pkg in docker kubectl; do
         if ! command -v "$pkg"; then
             pkgs+=" $pkg"
         fi
@@ -41,8 +41,14 @@ function _install_kubespray {
         if [ "$kubespray_version" != "master" ]; then
             git checkout -b "$kubespray_version" "$kubespray_version"
         fi
-        PIP_CMD="sudo -E $(command -v pip) install --no-cache-dir"
-        $PIP_CMD -r ./requirements.txt
+        PIP_CMD="sudo -E $(command -v pip)"
+        # This ensures that ansible is previously not installed
+        if command -v ansible; then
+            sitepackages_path=$(pip show ansible | grep Location | awk '{ print $2 }')
+            $PIP_CMD uninstall ansible -y
+            sudo rm -rf "$sitepackages_path/ansible"
+        fi
+        $PIP_CMD install --no-cache-dir -r ./requirements.txt
         make mitogen
         popd
 
