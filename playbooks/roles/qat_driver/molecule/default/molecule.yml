@@ -23,6 +23,7 @@ platforms:
     cpus: 1
   - name: bionic
     box: generic/ubuntu1804
+    box_version: 3.0.30
     memory: 512
     cpus: 1
 provisioner:
