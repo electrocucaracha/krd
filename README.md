@@ -52,6 +52,18 @@ the following instructions:
 
 ![Provisioning](docs/src/img/provisioning.png)
 
+## Override Default Cluster setup
+
+Vagrant uses the [default configuration](config/default.yml) to define
+the Virtual Machines used by the Kubernetes cluster, this
+configuration can be overwritten defining the *config/pdf.yml* file.
+The **diagram** tox environment generates the *krd.png* file to
+visualize the topology of the cluster.
+
+    tox -e diagram
+
+![Sample diagram](docs/src/img/sample_tox_diagram.png)
+
 ## Install KRD actions
 
 The [KRD command script](krd_command.sh) provides an easy way to
