@@ -384,30 +384,9 @@ function install_istio {
         rm -rf "./istio-$istio_version/"
     fi
 
-    # Create a secret for Kiali service
-    if ! kubectl get namespaces/istio-system --no-headers -o custom-columns=name:.metadata.name; then
-        kubectl create namespace istio-system
-    fi
-    if ! kubectl get secrets/kiali --no-headers -o custom-columns=name:.metadata.name -n istio-system; then
-        cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Secret
-metadata:
-  name: kiali
-  namespace: istio-system
-  labels:
-    app: kiali
-type: Opaque
-data:
-  username: $(echo "admin" | base64)
-  passphrase: $(echo "admin" | base64)
-EOF
-    fi
-
-    istioctl install --skip-confirmation \
-    --set values.kiali.enabled=true || :
+    istioctl install --skip-confirmation || :
     wait_for_pods istio-system
-    istioctl manifest generate --set values.kiali.enabled=true > /tmp/generated-manifest.yaml
+    istioctl manifest generate > /tmp/generated-manifest.yaml
     istioctl verify-install -f /tmp/generated-manifest.yaml
 }
 
