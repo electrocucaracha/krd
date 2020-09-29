@@ -74,25 +74,32 @@ jobs:
         - pip install tox
       script:
         - sudo $(command -v tox) -e criproxy
-    - name: All-in-One + Virtlet role validation
+    - name: All-in-One + Virtlet role + Metrics Server validation
       script:
-        - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - kubectl get nodes -o wide
-        - kubectl get all -A -o wide
-        - KRD_DEBUG=true KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
+        - KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
+        - ./krd_command.sh -a install_metrics_server
+        - kubectl top node
+        - kubectl top pod
+      env:
+        - KRD_DEBUG=true
     - name: All-in-One + Kubevirt + Multus validation
       script:
-        - KRD_DEBUG=true KRD_ENABLE_MULTUS=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - KRD_ENABLE_MULTUS=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - kubectl get nodes -o wide
         - kubectl get all -A -o wide
-        - KRD_DEBUG=true KRD_ENABLE_TESTS=true ./krd_command.sh -a install_kubevirt
+        - KRD_ENABLE_TESTS=true ./krd_command.sh -a install_kubevirt
         - cd tests; ./multus.sh
+      env:
+        - KRD_DEBUG=true
     - name: All-in-One + Istio validation
       script:
-        - KRD_DEBUG=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-        - kubectl get nodes -o wide
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - ./krd_command.sh -a install_istio
         - kubectl get all -A -o wide
-        - KRD_DEBUG=true ./krd_command.sh -a install_istio
+      env:
+        - KRD_DEBUG=true
     - name: Pod Definition File validation (CentOS 7)
       script:
         - ./check.sh centos 7

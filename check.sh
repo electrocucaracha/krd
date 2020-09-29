@@ -46,6 +46,9 @@ exit_trap() {
     awk -v low="$(grep low /proc/zoneinfo | awk '{k+=$2}END{print k}')" '{a[$1]=$2}  END{ print a["MemFree:"]+a["Active(file):"]+a["Inactive(file):"]+a["SReclaimable:"]-(12*low);}' /proc/meminfo
     echo "Environment variables:"
     env | grep "KRD"
+    if command -v kubectl; then
+        kubectl get all -A -o wide
+    fi
 }
 
 [ "$#" -eq 2 ] || die "2 arguments required, $# provided"

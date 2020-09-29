@@ -624,12 +624,72 @@ function install_metrics_server {
     install_helm
 
     if ! helm ls --tiller-namespace "$tiller_namespace" | grep -e metrics-server; then
-clusterroles
+        cat <<EOF | kubectl auth reconcile -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: metrics-server-role
+rules:
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["clusterrolebindings", "clusterroles", "rolebindings"]
+  verbs: ["create", "delete", "bind"]
+- apiGroups: ["apiregistration.k8s.io"]
+  resources: ["apiservices"]
+  verbs: ["create", "delete"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["extension-apiserver-authentication"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["nodes", "pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["namespaces", "nodes", "nodes/stats", "pods"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: metrics-server-tiller-binding
+subjects:
+  - kind: ServiceAccount
+    name: tiller
+    namespace: $tiller_namespace
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: metrics-server-role
+EOF
 
         helm install stable/metrics-server --name metrics-server \
+        --set image.repository="rancher/metrics-server" \
         --set args[0]="--kubelet-insecure-tls" \
         --set args[1]="--kubelet-preferred-address-types=InternalIP" \
         --set args[2]="--v=2" --tiller-namespace "$tiller_namespace"
+
+        if ! kubectl rollout status deployment/metrics-server --timeout=5m > /dev/null; then
+            echo "The metrics server has not started properly"
+            exit 1
+        fi
+        attempt_counter=0
+        max_attempts=5
+        until kubectl top node 2> /dev/null; do
+            if [ ${attempt_counter} -eq ${max_attempts} ];then
+                echo "Max attempts reached"
+                exit 1
+            fi
+            attempt_counter=$((attempt_counter+1))
+            sleep 60
+        done
+        attempt_counter=0
+        until kubectl top pod 2> /dev/null; do
+            if [ ${attempt_counter} -eq ${max_attempts} ];then
+                echo "Max attempts reached"
+                exit 1
+            fi
+            attempt_counter=$((attempt_counter+1))
+            sleep 60
+        done
     fi
 }
 
