@@ -48,7 +48,7 @@ function _install_packages {
 # _get_version() - Get the version number declared as environment variable or in the configuration file
 function _get_version {
     krd_var_version="KRD_$(awk -v name="$1" 'BEGIN {print toupper(name)}')_VERSION"
-    if [ -n "${!krd_var_version}" ]; then
+    if [ "${!krd_var_version:-}" ]; then
         echo "${!krd_var_version}"
     else
         grep "^${1}_version:" "$krd_playbooks/krd-vars.yml" | awk -F ': ' '{print $2}'
