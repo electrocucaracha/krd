@@ -374,6 +374,8 @@ function install_openstack {
 }
 
 # install_istio() - Function that installs Istio
+# Resources requests (600m CPU + 2,176Mi):
+# Resources limits (2000m CPU + 1Gi):
 function install_istio {
     istio_version=$(_get_version istio)
 
@@ -390,7 +392,13 @@ function install_istio {
     istioctl verify-install -f /tmp/generated-manifest.yaml
 }
 
-# install_knative() - Function taht installs Knative and its dependencies
+# install_knative() - Function that installs Knative and its dependencies
+# Resources requests (1,050m CPU + 840Mi):
+#  - Eventing 420m CPU + 420Mi
+#  - Serving 630m CPU + 420Mi
+# Resources limits (4,400m CPU + 4,300Mi):
+#  - Eventing 600m CPU + 600Mi
+#  - Serving 3,800m CPU + 3,700Mi
 function install_knative {
     knative_version=$(_get_version knative)
 
@@ -400,35 +408,25 @@ function install_knative {
     if ! kubectl get namespaces/knative-serving --no-headers -o custom-columns=name:.metadata.name; then
         kubectl create namespace knative-serving
     fi
-    kubectl label namespace knative-serving istio-injection=enabled --overwrite
-    cat <<EOF | kubectl apply -f -
-apiVersion: "security.istio.io/v1beta1"
-kind: "PeerAuthentication"
-metadata:
-  name: "default"
-  namespace: "knative-serving"
-spec:
-  mtls:
-    mode: PERMISSIVE
-EOF
     if kubectl get service cluster-local-gateway -n istio-system; then
-        kubectl apply -f "https://raw.githubusercontent.com/knative/serving/v${knative_version}/third_party/istio-1.4.9/istio-knative-extras.yaml"
+        kubectl apply -f "https://raw.githubusercontent.com/knative-sandbox/net-istio/master/third_party/istio-stable/istio-knative-extras.yaml"
     fi
 
     # Install the Serving component
-    kubectl apply -f "https://github.com/knative/serving/releases/download/v${knative_version}/serving-crds.yaml"
-    kubectl apply -f "https://github.com/knative/serving/releases/download/v${knative_version}/serving-core.yaml"
-    kubectl apply -f "https://github.com/knative/net-istio/releases/download/v${knative_version}/release.yaml"
+    kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_version}/serving-crds.yaml"
+    kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_version}/serving-core.yaml"
+    kubectl apply -f "https://github.com/knative/net-istio/releases/download/${knative_version}/release.yaml"
+    kubectl apply -f "https://github.com/knative/net-certmanager/releases/download/${knative_version}/release.yaml"
 
     # Install the Eventing component
-    kubectl apply -f "https://github.com/knative/eventing/releases/download/v${knative_version}/eventing-crds.yaml"
-    kubectl apply -f "https://github.com/knative/eventing/releases/download/v${knative_version}/eventing-core.yaml"
+    kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/eventing-crds.yaml"
+    kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/eventing-core.yaml"
 
     ## Install a default Channel
-    kubectl apply -f "https://github.com/knative/eventing/releases/download/v${knative_version}/in-memory-channel.yaml"
+    kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/in-memory-channel.yaml"
 
     ## Install a Broker
-    kubectl apply -f "https://github.com/knative/eventing/releases/download/v${knative_version}/mt-channel-broker.yaml"
+    kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/mt-channel-broker.yaml"
 
     wait_for_pods knative-serving
     wait_for_pods knative-eventing
