@@ -90,6 +90,9 @@ function _install_kubespray {
             sed -i "s/^container_manager: .*$/container_manager: ${KRD_CONTAINER_RUNTIME}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         fi
         sed -i "s/^kube_network_plugin: .*$/kube_network_plugin: ${KRD_NETWORK_PLUGIN:-flannel}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^cert_manager_enabled: .*$/cert_manager_enabled: ${KRD_CERT_MANAGER_ENABLED:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^ingress_nginx_enabled: .*$/ingress_nginx_enabled: ${KRD_INGRESS_NGINX_ENABLED:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^dashboard_enabled: .*$/dashboard_enabled: ${KRD_DASHBOARD_ENABLED:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
     fi
 }
 
@@ -151,7 +154,9 @@ function install_k8s {
     sudo chown -R "$USER" "$HOME/.kube/"
 
     # Configure Kubernetes Dashboard
-    KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g; s|nodePort\: .*|nodePort\: ${KRD_KUBERNETES_DASHBOARD_PORT:-30080}|g\"" kubectl -n kube-system edit service kubernetes-dashboard
+    if kubectl get deployment/kubernetes-dashboard -n kube-system --no-headers -o custom-columns=name:.metadata.name; then
+        KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g; s|nodePort\: .*|nodePort\: ${KRD_KUBERNETES_DASHBOARD_PORT:-30080}|g\"" kubectl -n kube-system edit service kubernetes-dashboard
+    fi
 
     # Update Nginx Ingress CA certificate and key values
     if kubectl get secret/ca-key-pair -n cert-manager --no-headers -o custom-columns=name:.metadata.name; then

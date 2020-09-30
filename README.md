@@ -10,11 +10,11 @@ or Virtual Machines.
 
 ## Linux Distros
 
-| Name       | Version     |
-|:-----------|:-----------:|
-| Ubuntu     | 16.04/18.04 |
-| CentOS     | 7           |
-| openSUSE   | Tumbleweed  |
+| Name       | Version           |
+|:-----------|:-----------------:|
+| Ubuntu     | 16.04/18.04/20.04 |
+| CentOS     | 7/8               |
+| openSUSE   | Tumbleweed        |
 
 # Components
 
@@ -96,22 +96,25 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 
 ### Environment variables
 
-| Name                   | Default     | Description                                                           |
-|:-----------------------|:------------|:----------------------------------------------------------------------|
-| KRD_DEBUG              | false       | Enables verbose execution                                             |
-| KRD_ANSIBLE_DEBUG      | false       | Enables ansible verbose execution                                     |
-| PKG_DEBUG              | false       | Enables cURL package installer verbose execution                      |
-| KRD_KUBE_VERSION       |             | Specifies the Kubernetes version to be upgraded                       |
-| KRD_KUBESPRAY_VERSION  |             | Specifies the Kubespray version to be used during the upgrade process |
-| KRD_ENABLE_TESTS       |             | Enables the functional tests during the deployment process            |
-| KRD_HELM_CHART         |             | Specifies the Helm chart to be installed                              |
-| KRD_FOLDER             | /opt/krd    | KRD source code destination folder                                    |
-| KRD_ACTIONS            | install_k8s | KRD actions to be installed during the All-in-One execution           |
-| KRD_ADDONS             | addons      | Specifies the Kubernetes AddOns to be installed by install_k8s_addons |
-| KRD_CONTAINER_RUNTIME  | docker      | Specifies the Container Runtime to be used for deploying kubernetes   |
-| KRD_NETWORK_PLUGIN     | flannel     | Choose network plugin (calico, canal, cilium, contiv, flannel weave)  |
-| KRD_ENABLE_MULTUS      | false       | Enable/Disable Kubernetes Multus CNI                                  |
-| KRD_QAT_PLUGIN_MODE    | dpdk        | Specifies the deployment mode for Intel QuickAssist Plugin            |
+| Name                      | Default     | Description                                                           |
+|:--------------------------|:------------|:----------------------------------------------------------------------|
+| KRD_DEBUG                 | false       | Enables verbose execution                                             |
+| KRD_ANSIBLE_DEBUG         | false       | Enables ansible verbose execution                                     |
+| PKG_DEBUG                 | false       | Enables cURL package installer verbose execution                      |
+| KRD_KUBE_VERSION          |             | Specifies the Kubernetes version to be upgraded                       |
+| KRD_KUBESPRAY_VERSION     |             | Specifies the Kubespray version to be used during the upgrade process |
+| KRD_ENABLE_TESTS          |             | Enables the functional tests during the deployment process            |
+| KRD_HELM_CHART            |             | Specifies the Helm chart to be installed                              |
+| KRD_FOLDER                | /opt/krd    | KRD source code destination folder                                    |
+| KRD_ACTIONS               | install_k8s | KRD actions to be installed during the All-in-One execution           |
+| KRD_ADDONS                | addons      | Specifies the Kubernetes AddOns to be installed by install_k8s_addons |
+| KRD_CONTAINER_RUNTIME     | docker      | Specifies the Container Runtime to be used for deploying kubernetes   |
+| KRD_NETWORK_PLUGIN        | flannel     | Choose network plugin (calico, canal, cilium, contiv, flannel weave)  |
+| KRD_ENABLE_MULTUS         | false       | Enable/Disable Kubernetes Multus CNI                                  |
+| KRD_QAT_PLUGIN_MODE       | dpdk        | Specifies the deployment mode for Intel QuickAssist Plugin            |
+| KRD_CERT_MANAGER_ENABLED  | true        | Enable/Disable [Kubernetes Cert-Manager][10]                          |
+| KRD_INGRESS_NGINX_ENABLED | true        | Enable/Disable [NGINX Ingress Controller][11]                         |
+| KRD_DASHBOARD_ENABLED     | false       | Enable/Disable [Kubernetes Dashboard][12]                             |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [3]: playbooks/configure-virtlet.yml
@@ -121,3 +124,6 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 [7]: https://github.com/electrocucaracha/bootstrap-vagrant
 [8]: playbooks/roles/qat_plugin
 [9]: playbooks/roles/sriov_plugin
+[10]: https://cert-manager.io/
+[11]: https://kubernetes.github.io/ingress-nginx/
+[12]: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/

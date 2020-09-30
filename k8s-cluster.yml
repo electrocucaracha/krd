@@ -94,6 +94,8 @@ kubelet_custom_flags:
 # Rook requires a FlexVolume plugin directory to integrate with K8s for performing storage operations
 kubelet_flexvolumes_plugins_dir: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
 
+# Dashboard
+dashboard_enabled: false
 dashboard_skip_login: true
 
 # Cert manager deployment

@@ -77,29 +77,32 @@ jobs:
     - name: All-in-One + Virtlet role + Metrics Server validation
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-        - kubectl get nodes -o wide
         - KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
         - ./krd_command.sh -a install_metrics_server
         - kubectl top node
         - kubectl top pod
+        - kubectl get all -A -o wide
       env:
         - KRD_DEBUG=true
     - name: All-in-One + Kubevirt + Multus validation
       script:
-        - KRD_ENABLE_MULTUS=true KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-        - kubectl get nodes -o wide
-        - kubectl get all -A -o wide
-        - KRD_ENABLE_TESTS=true ./krd_command.sh -a install_kubevirt
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - ./krd_command.sh -a install_kubevirt
         - cd tests; ./multus.sh
+        - kubectl get all -A -o wide
       env:
         - KRD_DEBUG=true
-    - name: All-in-One + Istio validation
+        - KRD_ENABLE_MULTUS=true
+        - KRD_CERT_MANAGER_ENABLED=false
+        - KRD_INGRESS_NGINX_ENABLED=false
+    - name: All-in-One + Istio + Dashboard validation
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - ./krd_command.sh -a install_istio
         - kubectl get all -A -o wide
       env:
         - KRD_DEBUG=true
+        - KRD_DASHBOARD_ENABLED=true
     - name: Pod Definition File validation (CentOS 7)
       script:
         - ./check.sh centos 7
