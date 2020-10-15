@@ -74,7 +74,7 @@ function _install_kubespray {
         if [ -n "${NO_PROXY}" ]; then
             echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
         fi
-        sed -i "s/^kube_network_plugin_multus: .*$/kube_network_plugin_multus: ${KRD_ENABLE_MULTUS:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^kube_network_plugin_multus: .*$/kube_network_plugin_multus: ${KRD_MULTUS_ENABLED:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         if [ -n "${KRD_KUBE_VERSION}" ]; then
             sed -i "s/^kube_version: .*$/kube_version: ${KRD_KUBE_VERSION}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         fi

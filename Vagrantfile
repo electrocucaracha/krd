@@ -61,7 +61,7 @@ puts "Free memory(kb): #{$memfree}"
 
 $debug = ENV['DEBUG'] || "true"
 $krd_network_plugin = ENV['KRD_NETWORK_PLUGIN'] || "flannel"
-$krd_enable_multus = ENV['KRD_ENABLE_MULTUS'] || "false"
+$krd_enable_multus = ENV['KRD_MULTUS_ENABLED'] || "false"
 $krd_kata_containers_enabled = ENV['KRD_KATA_CONTAINERS_ENABLED'] || "false"
 $krd_qat_plugin_mode = ENV['KRD_QAT_PLUGIN_MODE'] || "dpdk"
 $krd_container_runtime = ENV['KRD_CONTAINER_RUNTIME'] || "docker"
@@ -310,7 +310,7 @@ Vagrant.configure("2") do |config|
         'KRD_DEBUG': "#{$debug}",
         'PKG_DEBUG': "#{$debug}",
         'KRD_ANSIBLE_DEBUG': "#{$debug}",
-        'KRD_ENABLE_MULTUS': "#{$krd_enable_multus}",
+        'KRD_MULTUS_ENABLED': "#{$krd_enable_multus}",
         'KRD_QAT_PLUGIN_MODE': "#{$krd_qat_plugin_mode}",
         'KRD_NETWORK_PLUGIN': "#{$krd_network_plugin}",
         'KRD_CONTAINER_RUNTIME': "#{$krd_container_runtime}",

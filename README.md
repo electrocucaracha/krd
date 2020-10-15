@@ -110,7 +110,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_ADDONS                  | addons      | Specifies the Kubernetes AddOns to be installed by install_k8s_addons |
 | KRD_CONTAINER_RUNTIME       | docker      | Specifies the Container Runtime to be used for deploying kubernetes   |
 | KRD_NETWORK_PLUGIN          | flannel     | Choose network plugin (calico, canal, cilium, contiv, flannel weave)  |
-| KRD_ENABLE_MULTUS           | false       | Enable/Disable Kubernetes Multus CNI                                  |
+| KRD_MULTUS_ENABLED          | false       | Enable/Disable [Kubernetes Multus CNI][2]                             |
 | KRD_QAT_PLUGIN_MODE         | dpdk        | Specifies the deployment mode for Intel QuickAssist Plugin            |
 | KRD_CERT_MANAGER_ENABLED    | true        | Enable/Disable [Kubernetes Cert-Manager][10]                          |
 | KRD_INGRESS_NGINX_ENABLED   | true        | Enable/Disable [NGINX Ingress Controller][11]                         |
@@ -118,6 +118,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_KATA_CONTAINERS_ENABLED | false       | Enable/Disable [Kata Containers Runtime][13]                          |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
+[2]: https://intel.github.io/multus-cni/
 [3]: playbooks/configure-virtlet.yml
 [4]: playbooks/roles/nfd
 [5]: https://www.vagrantup.com/

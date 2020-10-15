@@ -101,7 +101,7 @@ jobs:
         - kubectl get all -A -o wide
       env:
         - KRD_DEBUG=true
-        - KRD_ENABLE_MULTUS=true
+        - KRD_MULTUS_ENABLED=true
         - KRD_CERT_MANAGER_ENABLED=false
         - KRD_INGRESS_NGINX_ENABLED=false
     - name: All-in-One + Istio + Dashboard validation
