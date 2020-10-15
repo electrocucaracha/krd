@@ -62,6 +62,7 @@ puts "Free memory(kb): #{$memfree}"
 $debug = ENV['DEBUG'] || "true"
 $krd_network_plugin = ENV['KRD_NETWORK_PLUGIN'] || "flannel"
 $krd_enable_multus = ENV['KRD_ENABLE_MULTUS'] || "false"
+$krd_kata_containers_enabled = ENV['KRD_KATA_CONTAINERS_ENABLED'] || "false"
 $krd_qat_plugin_mode = ENV['KRD_QAT_PLUGIN_MODE'] || "dpdk"
 $krd_container_runtime = ENV['KRD_CONTAINER_RUNTIME'] || "docker"
 $krd_kube_version = ENV['KRD_KUBE_VERSION']
@@ -314,7 +315,8 @@ Vagrant.configure("2") do |config|
         'KRD_NETWORK_PLUGIN': "#{$krd_network_plugin}",
         'KRD_CONTAINER_RUNTIME': "#{$krd_container_runtime}",
         'KRD_KUBE_VERSION': "#{$krd_kube_version}",
-        'KRD_KUBESPRAY_VERSION': "#{$krd_kubespray_version}"
+        'KRD_KUBESPRAY_VERSION': "#{$krd_kubespray_version}",
+        'KRD_KATA_CONTAINERS_ENABLED': "#{$krd_kata_containers_enabled}",
       }
       sh.inline = <<-SHELL
         for krd_var in $(printenv | grep KRD_); do echo "export $krd_var" | sudo tee --append /etc/environment ; done

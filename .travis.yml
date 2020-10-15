@@ -84,6 +84,15 @@ jobs:
         - kubectl get all -A -o wide
       env:
         - KRD_DEBUG=true
+    - name: All-in-One + Katacontainers validation
+      script:
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - cd tests; ./katacontainers.sh
+        - kubectl get all -A -o wide
+      env:
+        - KRD_DEBUG=true
+        - KRD_CONTAINER_RUNTIME=containerd
+        - KRD_KATA_CONTAINERS_ENABLED=true
     - name: All-in-One + Kubevirt + Multus validation
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh

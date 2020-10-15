@@ -88,6 +88,10 @@ function _install_kubespray {
             sed -i 's/^etcd_deployment_type: .*$/etcd_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^kubelet_deployment_type: .*$/kubelet_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i "s/^container_manager: .*$/container_manager: ${KRD_CONTAINER_RUNTIME}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            # TODO: Remove this condition once this PR 6830 is merged
+            if [ "${KRD_CONTAINER_RUNTIME}" == "containerd" ]; then
+                sed -i "s/^kata_containers_enabled: .*$/kata_containers_enabled: ${KRD_KATA_CONTAINERS_ENABLED:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            fi
         fi
         sed -i "s/^kube_network_plugin: .*$/kube_network_plugin: ${KRD_NETWORK_PLUGIN:-flannel}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         sed -i "s/^cert_manager_enabled: .*$/cert_manager_enabled: ${KRD_CERT_MANAGER_ENABLED:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"

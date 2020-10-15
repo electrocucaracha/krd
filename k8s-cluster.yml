@@ -103,3 +103,6 @@ cert_manager_enabled: true
 
 # Nginx ingress controller deployment
 ingress_nginx_enabled: true
+
+# Kata Containers is an OCI runtime, where containers are run inside lightweight VMs
+kata_containers_enabled: false
