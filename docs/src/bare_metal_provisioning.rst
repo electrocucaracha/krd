@@ -93,9 +93,6 @@ addressing those tasks to localhost.
     [etcd]
     localhost
 
-    [virtlet]
-    localhost
-
     [k8s-cluster:children]
     kube-node
     kube-master

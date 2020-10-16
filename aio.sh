@@ -61,9 +61,9 @@ fi
 echo "Sync server's clock"
 sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
 
-echo "Cloning and configuring KRD project..."
 krd_folder="${KRD_FOLDER:-/opt/krd}"
 if [ ! -d "$krd_folder" ]; then
+    echo "Cloning and configuring KRD project..."
     sudo -E git clone --depth 1 https://github.com/electrocucaracha/krd "$krd_folder"
     sudo chown -R "$USER": "$krd_folder"
 fi
@@ -101,9 +101,6 @@ $hostname
 $hostname
 
 [etcd]
-$hostname
-
-[virtlet]
 $hostname
 
 [k8s-cluster:children]

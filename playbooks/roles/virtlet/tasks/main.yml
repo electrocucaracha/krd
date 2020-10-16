@@ -10,7 +10,7 @@
 
 - name: apply virtlet extraRuntime label
   command: "/usr/local/bin/kubectl label node {{ item }} extraRuntime=virtlet --overwrite"
-  with_inventory_hostnames: virtlet
+  with_inventory_hostnames: kube-node
 
 - name: create Virtlet binary folder
   file:

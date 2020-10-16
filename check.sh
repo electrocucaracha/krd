@@ -96,7 +96,6 @@ cat <<EOL > config/pdf.yml
     - kube-master
     - etcd
     - kube-node
-    - virtlet
     - qat-node
 EOL
 

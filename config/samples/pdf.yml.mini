@@ -31,7 +31,6 @@
   cpus: 16
   roles:
     - kube-node
-    - virtlet
 - name: "minion02"
   os:
     name: centos

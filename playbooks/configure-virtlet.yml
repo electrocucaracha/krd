@@ -15,7 +15,7 @@
     - virtlet
 
 - name: install virtlet
-  hosts: virtlet
+  hosts: kube-node
   tags: virtlet
   roles:
     - criproxy

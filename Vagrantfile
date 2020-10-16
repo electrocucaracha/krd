@@ -34,7 +34,7 @@ File.open(File.dirname(__FILE__) + "/inventory/hosts.ini", "w") do |inventory_fi
   nodes.each do |node|
     inventory_file.puts(node['name'])
   end
-  ['kube-master', 'kube-node', 'etcd', 'virtlet', 'qat-node', 'criu'].each do|group|
+  ['kube-master', 'kube-node', 'etcd', 'qat-node', 'criu'].each do|group|
     inventory_file.puts("\n[#{group}]")
     nodes.each do |node|
       if node['roles'].include?("#{group}")
@@ -145,7 +145,7 @@ Vagrant.configure("2") do |config|
         nodeconfig.vm.box_version = vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["version"]
       end
       nodeconfig.vm.provider 'virtualbox' do |v, override|
-        if node['roles'].include?("virtlet")
+        if node['roles'].include?("kube-node")
           v.customize ["modifyvm", :id, "--nested-hw-virt","on"]
         end
         if node.has_key? "volumes"
@@ -160,7 +160,7 @@ Vagrant.configure("2") do |config|
       end # virtualbox
       nodeconfig.vm.provider 'libvirt' do |v, override|
         v.disk_bus = "sata"
-        if node['roles'].include?("virtlet")
+        if node['roles'].include?("kube-node")
           v.nested = true
         end
         if node['os'] == "clearlinux"
