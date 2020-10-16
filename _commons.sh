@@ -55,6 +55,21 @@ function _get_version {
     fi
 }
 
+# get_cpu_arch() - Gets CPU architecture of the server
+function get_cpu_arch {
+    case "$(uname -m)" in
+        x86_64)
+            echo "amd64"
+        ;;
+        armv8*|aarch64*)
+            echo "arm64"
+        ;;
+        armv*)
+            echo "armv7"
+        ;;
+    esac
+}
+
 # _vercmp() - Function that compares two versions
 function _vercmp {
     local v1=$1

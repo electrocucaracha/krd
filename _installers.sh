@@ -102,28 +102,20 @@ function _install_kubespray {
 
 function _update_ngnix_ingress_ca {
     local cert_dir=/opt/cert-manager/certs
+    local cfssl_version=1.4.1
 
     # shellcheck disable=SC1091
     source /etc/profile.d/krew_path.sh
     if [ "$(kubectl krew search cert-manager | awk 'FNR==2{ print $NF}')" == "no" ]; then
         kubectl krew install cert-manager
     fi
-    if ! command -v go || _vercmp "$(go version | awk '{sub("go", "", $3) ; print $3}')" '<' "1.12"; then
-        curl -fsSL http://bit.ly/install_pkg | PKG=go-lang bash
-        # shellcheck disable=SC1091
-        source /etc/profile.d/path.sh
-    fi
-    go_get_cmd="GOPATH=/tmp/ go get -u"
-    if [ "${KRD_DEBUG:-false}" == "true" ]; then
-        go_get_cmd+=" -v"
-    fi
     if ! command -v cfssl; then
-        eval "$go_get_cmd github.com/cloudflare/cfssl/cmd/cfssl"
-        sudo mv /tmp/bin/cfssl /usr/bin/
+        sudo curl -Lo /usr/bin/cfssl "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/cfssl_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" > /dev/null
+        sudo chmod +x /usr/bin/cfssl
     fi
     if ! command -v cfssljson; then
-        eval "$go_get_cmd  github.com/cloudflare/cfssl/cmd/cfssljson"
-        sudo mv /tmp/bin/cfssljson /usr/bin/
+        sudo curl -Lo /usr/bin/cfssljson "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/cfssljson_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" > /dev/null
+        sudo chmod +x /usr/bin/cfssljson
     fi
     sudo mkdir -p "$cert_dir"
     sudo chown -R "$USER:" "$cert_dir"
