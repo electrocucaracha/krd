@@ -16,7 +16,6 @@ dist: bionic
 cache:
   directories:
     - /home/travis/.vagrant.d/boxes
-    - /home/travis/.cache/molecule
 install:
   - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
   - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash

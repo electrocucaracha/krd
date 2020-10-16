@@ -22,7 +22,7 @@ lint: |
 platforms:
   - name: instance
     box: generic/centos7
-    memory: 2048
+    memory: 6144
     cpus: 2
 provisioner:
   name: ansible
