@@ -48,21 +48,11 @@ exit_trap() {
     env | grep "KRD"
     if command -v kubectl; then
         kubectl get all -A -o wide
+        kubectl get nodes -o wide
     fi
 }
 
 [ "$#" -eq 2 ] || die "2 arguments required, $# provided"
-
-info "Install Integration dependencies - $1"
-# shellcheck disable=SC1091
-source /etc/os-release || source /usr/lib/os-release
-case ${ID,,} in
-    ubuntu|debian)
-        sudo apt-get update
-        sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
-    ;;
-esac
-curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
 
 info "Configure SSH keys"
 sudo mkdir -p /root/.ssh/
@@ -112,11 +102,6 @@ EOL
 
 info "Provision target node"
 sudo vagrant up
-
-KRD_DEBUG=true
-KRD_KUBE_VERSION=v1.18.9
-KRD_KUBESPRAY_VERSION=v2.14.1
-export KRD_DEBUG KRD_KUBE_VERSION KRD_KUBESPRAY_VERSION
 
 info "Provision Kubernetes cluster"
 trap exit_trap ERR

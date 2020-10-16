@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-language: minimal
+language: python
 os: linux
 git:
   depth: 1
@@ -17,64 +17,36 @@ cache:
   directories:
     - /home/travis/.vagrant.d/boxes
     - /home/travis/.cache/molecule
-before_install:
-  - eval "$(gimme stable)"
+install:
+  - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
+  - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
+script:
+  - pip install tox
+  - sudo -E $(command -v tox)
+env:
+  - TOXENV=nfd
+  - TOXENV=pmem
+  - TOXENV=qat_driver
+  - TOXENV=sriov_cni
+  - TOXENV=sriov_plugin
+  - TOXENV=criproxy
 jobs:
   include:
     - name: Lint validation
-      language: python
       install:
         - pip install tox
       script:
         - tox -e lint
         - bash -c 'shopt -s globstar; shellcheck -x **/*.sh'
     - name: Documents validation
-      language: python
       install:
         - pip install tox
       script:
         - tox -e docs
-    - name: NFD role validation
-      language: python
-      install:
-        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
-        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
-        - pip install tox
-      script:
-        - sudo $(command -v tox) -e nfd
-    - name: PMEM role validation
-      language: python
-      install:
-        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
-        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
-        - pip install tox
-      script:
-        - sudo $(command -v tox) -e pmem
-    - name: QAT driver installation role validation
-      language: python
-      install:
-        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
-        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
-        - pip install tox
-      script:
-        - sudo $(command -v tox) -e qat_driver
-    - name: SR-IOV roles validation
-      language: python
-      install:
-        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
-        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
-        - pip install tox
-      script:
-        - sudo $(command -v tox) -e sriov_cni,sriov_plugin
-    - name: CRIproxy role validation
-      language: python
-      install:
-        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
-        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
-        - pip install tox
-      script:
-        - sudo $(command -v tox) -e criproxy
     - name: All-in-One + Virtlet role + Metrics Server validation
+      language: shell
+      install:
+        - eval "$(gimme stable)"
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
@@ -84,7 +56,10 @@ jobs:
         - kubectl get all -A -o wide
       env:
         - KRD_DEBUG=true
-    - name: All-in-One + Katacontainers validation
+    - name: All-in-One + Katacontainers + Dashboard validation
+      language: shell
+      install:
+        - eval "$(gimme stable)"
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - cd tests; ./katacontainers.sh
@@ -93,7 +68,11 @@ jobs:
         - KRD_DEBUG=true
         - KRD_CONTAINER_RUNTIME=containerd
         - KRD_KATA_CONTAINERS_ENABLED=true
+        - KRD_DASHBOARD_ENABLED=true
     - name: All-in-One + Kubevirt + Multus validation
+      language: shell
+      install:
+        - eval "$(gimme stable)"
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - ./krd_command.sh -a install_kubevirt
@@ -104,29 +83,62 @@ jobs:
         - KRD_MULTUS_ENABLED=true
         - KRD_CERT_MANAGER_ENABLED=false
         - KRD_INGRESS_NGINX_ENABLED=false
-    - name: All-in-One + Istio + Dashboard validation
+    - name: All-in-One + Istio validation
+      language: shell
+      install:
+        - eval "$(gimme stable)"
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - ./krd_command.sh -a install_istio
         - kubectl get all -A -o wide
+        - kubectl describe nodes
       env:
         - KRD_DEBUG=true
-        - KRD_DASHBOARD_ENABLED=true
     - name: Pod Definition File validation (CentOS 7)
+      language: shell
       script:
         - ./check.sh centos 7
+      env:
+        - KRD_DEBUG=true
+        - KRD_KUBE_VERSION=v1.18.5
+        - KRD_KUBESPRAY_VERSION=v2.13.3
     - name: Pod Definition File validation (CentOS 8)
+      language: shell
       script:
         - ./check.sh centos 8
+      env:
+        - KRD_DEBUG=true
+        - KRD_KUBE_VERSION=v1.19.2
+        - KRD_KUBESPRAY_VERSION=v2.14.1
     - name: Pod Definition File validation (openSUSE Leap)
+      language: shell
       script:
         - ./check.sh opensuse 42
+      env:
+        - KRD_DEBUG=true
+        - KRD_KUBE_VERSION=v1.19.2
+        - KRD_KUBESPRAY_VERSION=v2.14.1
     - name: Pod Definition File validation (Ubuntu 16.04 LTS)
+      language: shell
       script:
         - ./check.sh ubuntu xenial
+      env:
+        - KRD_DEBUG=true
+        - KRD_KUBE_VERSION=v1.17.7
+        - KRD_KUBESPRAY_VERSION=v2.12.9
     - name: Pod Definition File validation (Ubuntu 18.04 LTS)
+      language: shell
       script:
         - ./check.sh ubuntu bionic
+      env:
+        - KRD_DEBUG=true
+        - KRD_KUBE_VERSION=v1.18.5
+        - KRD_KUBESPRAY_VERSION=v2.13.3
     - name: Pod Definition File validation (Ubuntu 20.04 LTS)
+      language: shell
       script:
         - ./check.sh ubuntu focal
+      env:
+        - KRD_DEBUG=true
+        - KRD_KUBE_VERSION=v1.19.2
+        - KRD_KUBESPRAY_VERSION=v2.14.1
