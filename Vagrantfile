@@ -60,13 +60,14 @@ end
 puts "Free memory(kb): #{$memfree}"
 
 $debug = ENV['DEBUG'] || "true"
-$krd_network_plugin = ENV['KRD_NETWORK_PLUGIN'] || "flannel"
-$krd_enable_multus = ENV['KRD_MULTUS_ENABLED'] || "false"
-$krd_kata_containers_enabled = ENV['KRD_KATA_CONTAINERS_ENABLED'] || "false"
-$krd_qat_plugin_mode = ENV['KRD_QAT_PLUGIN_MODE'] || "dpdk"
-$krd_container_runtime = ENV['KRD_CONTAINER_RUNTIME'] || "docker"
-$krd_kube_version = ENV['KRD_KUBE_VERSION']
-$krd_kubespray_version = ENV['KRD_KUBESPRAY_VERSION']
+$network_plugin = ENV['KRD_NETWORK_PLUGIN']
+$enable_multus = ENV['KRD_MULTUS_ENABLED']
+$kata_containers_enabled = ENV['KRD_KATA_CONTAINERS_ENABLED']
+$qat_plugin_mode = ENV['KRD_QAT_PLUGIN_MODE']
+$container_runtime = ENV['KRD_CONTAINER_RUNTIME']
+$kube_version = ENV['KRD_KUBE_VERSION']
+$kubespray_version = ENV['KRD_KUBESPRAY_VERSION']
+$kubespray_repo = ENV['KRD_KUBESPRAY_REPO']
 
 $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
 nodes.each do |node|
@@ -310,13 +311,14 @@ Vagrant.configure("2") do |config|
         'KRD_DEBUG': "#{$debug}",
         'PKG_DEBUG': "#{$debug}",
         'KRD_ANSIBLE_DEBUG': "#{$debug}",
-        'KRD_MULTUS_ENABLED': "#{$krd_enable_multus}",
-        'KRD_QAT_PLUGIN_MODE': "#{$krd_qat_plugin_mode}",
-        'KRD_NETWORK_PLUGIN': "#{$krd_network_plugin}",
-        'KRD_CONTAINER_RUNTIME': "#{$krd_container_runtime}",
-        'KRD_KUBE_VERSION': "#{$krd_kube_version}",
-        'KRD_KUBESPRAY_VERSION': "#{$krd_kubespray_version}",
-        'KRD_KATA_CONTAINERS_ENABLED': "#{$krd_kata_containers_enabled}",
+        'KRD_MULTUS_ENABLED': "#{$multus_enabled}",
+        'KRD_QAT_PLUGIN_MODE': "#{$qat_plugin_mode}",
+        'KRD_NETWORK_PLUGIN': "#{$network_plugin}",
+        'KRD_CONTAINER_RUNTIME': "#{$container_runtime}",
+        'KRD_KUBE_VERSION': "#{$kube_version}",
+        'KRD_KUBESPRAY_VERSION': "#{$kubespray_version}",
+        'KRD_KATA_CONTAINERS_ENABLED': "#{$kata_containers_enabled}",
+        'KRD_KUBESPRAY_REPO': "#{$kubespray_repo}",
       }
       sh.inline = <<-SHELL
         for krd_var in $(printenv | grep KRD_); do echo "export $krd_var" | sudo tee --append /etc/environment ; done

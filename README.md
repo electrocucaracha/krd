@@ -84,6 +84,16 @@ playbook to be executed.
 *Note:* Some KRD AddOns have a corresponding validation script in the
 [tests](tests) folder.
 
+### Provision Development environments
+
+This project can be also used to provision a Kubespray development
+environment. Through the `KRD_KUBESPRAY_REPO` environment
+variable is possible to specify the Kubespray's fork to fetch source
+code and the `KRD_KUBESPRAY_VERSION` can be used to define the branch
+to be selected.
+
+    KRD_KUBESPRAY_REPO=https://github.com/electrocucaracha/kubespray KRD_KUBESPRAY_VERSION=origin/release-2.9 ./krd_command.sh -a install_k8s
+
 ## Day-2 Operations
 
 The functions defined in this project covers the life-cycle of a
@@ -96,26 +106,27 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 
 ### Environment variables
 
-| Name                        | Default     | Description                                                           |
-|:----------------------------|:------------|:----------------------------------------------------------------------|
-| KRD_DEBUG                   | false       | Enables verbose execution                                             |
-| KRD_ANSIBLE_DEBUG           | false       | Enables ansible verbose execution                                     |
-| PKG_DEBUG                   | false       | Enables cURL package installer verbose execution                      |
-| KRD_KUBE_VERSION            |             | Specifies the Kubernetes version to be upgraded                       |
-| KRD_KUBESPRAY_VERSION       |             | Specifies the Kubespray version to be used during the upgrade process |
-| KRD_ENABLE_TESTS            |             | Enables the functional tests during the deployment process            |
-| KRD_HELM_CHART              |             | Specifies the Helm chart to be installed                              |
-| KRD_FOLDER                  | /opt/krd    | KRD source code destination folder                                    |
-| KRD_ACTIONS                 | install_k8s | KRD actions to be installed during the All-in-One execution           |
-| KRD_ADDONS                  | addons      | Specifies the Kubernetes AddOns to be installed by install_k8s_addons |
-| KRD_CONTAINER_RUNTIME       | docker      | Specifies the Container Runtime to be used for deploying kubernetes   |
-| KRD_NETWORK_PLUGIN          | flannel     | Choose network plugin (calico, canal, cilium, contiv, flannel weave)  |
-| KRD_MULTUS_ENABLED          | false       | Enable/Disable [Kubernetes Multus CNI][2]                             |
-| KRD_QAT_PLUGIN_MODE         | dpdk        | Specifies the deployment mode for Intel QuickAssist Plugin            |
-| KRD_CERT_MANAGER_ENABLED    | true        | Enable/Disable [Kubernetes Cert-Manager][10]                          |
-| KRD_INGRESS_NGINX_ENABLED   | true        | Enable/Disable [NGINX Ingress Controller][11]                         |
-| KRD_DASHBOARD_ENABLED       | false       | Enable/Disable [Kubernetes Dashboard][12]                             |
-| KRD_KATA_CONTAINERS_ENABLED | false       | Enable/Disable [Kata Containers Runtime][13]                          |
+| Name                        | Default                                      | Description                                                           |
+|:----------------------------|:---------------------------------------------|:----------------------------------------------------------------------|
+| KRD_DEBUG                   | false                                        | Enables verbose execution                                             |
+| KRD_ANSIBLE_DEBUG           | false                                        | Enables ansible verbose execution                                     |
+| PKG_DEBUG                   | false                                        | Enables cURL package installer verbose execution                      |
+| KRD_KUBE_VERSION            |                                              | Specifies the Kubernetes version to be upgraded                       |
+| KRD_KUBESPRAY_VERSION       |                                              | Specifies the Kubespray version to be used during the upgrade process |
+| KRD_KUBESPRAY_REPO          | https://github.com/kubernetes-sigs/kubespray | Specifies the Git repository to fetch the Kubespray's source code     |
+| KRD_ENABLE_TESTS            |                                              | Enables the functional tests during the deployment process            |
+| KRD_HELM_CHART              |                                              | Specifies the Helm chart to be installed                              |
+| KRD_FOLDER                  | /opt/krd                                     | KRD source code destination folder                                    |
+| KRD_ACTIONS                 | install_k8s                                  | KRD actions to be installed during the All-in-One execution           |
+| KRD_ADDONS                  | addons                                       | Specifies the Kubernetes AddOns to be installed by install_k8s_addons |
+| KRD_CONTAINER_RUNTIME       | docker                                       | Specifies the Container Runtime to be used for deploying kubernetes   |
+| KRD_NETWORK_PLUGIN          | flannel                                      | Choose network plugin (calico, canal, cilium, contiv, flannel weave)  |
+| KRD_MULTUS_ENABLED          | false                                        | Enable/Disable [Kubernetes Multus CNI][2]                             |
+| KRD_QAT_PLUGIN_MODE         | dpdk                                         | Specifies the deployment mode for Intel QuickAssist Plugin            |
+| KRD_CERT_MANAGER_ENABLED    | true                                         | Enable/Disable [Kubernetes Cert-Manager][10]                          |
+| KRD_INGRESS_NGINX_ENABLED   | true                                         | Enable/Disable [NGINX Ingress Controller][11]                         |
+| KRD_DASHBOARD_ENABLED       | false                                        | Enable/Disable [Kubernetes Dashboard][12]                             |
+| KRD_KATA_CONTAINERS_ENABLED | false                                        | Enable/Disable [Kata Containers Runtime][13]                          |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [2]: https://intel.github.io/multus-cni/

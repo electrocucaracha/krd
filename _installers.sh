@@ -35,11 +35,11 @@ function _install_kubespray {
     if [[ ! -d $kubespray_folder ]]; then
         echo "Download kubespray binaries"
 
-        sudo -E git clone "https://github.com/kubernetes-sigs/kubespray" "$kubespray_folder"
+        sudo -E git clone "${KRD_KUBESPRAY_REPO:-https://github.com/kubernetes-sigs/kubespray}" "$kubespray_folder"
         sudo chown -R "$USER:$USER" $kubespray_folder
         pushd $kubespray_folder
         if [ "$kubespray_version" != "master" ]; then
-            git checkout -b "$kubespray_version" "$kubespray_version"
+            git checkout -b "${kubespray_version#"origin/"}" "$kubespray_version"
         fi
         PIP_CMD="sudo -E $(command -v pip)"
         # This ensures that ansible is previously not installed
