@@ -137,3 +137,19 @@ jobs:
         - KRD_DEBUG=true
         - KRD_KUBE_VERSION=v1.19.2
         - KRD_KUBESPRAY_VERSION=v2.14.1
+    - name: Pod Definition File validation (Fedora 31)
+      language: shell
+      script:
+        - ./check.sh fedora 31
+      env:
+        - KRD_DEBUG=true
+        - KRD_KUBE_VERSION=v1.18.5
+        - KRD_KUBESPRAY_VERSION=v2.13.3
+    - name: Pod Definition File validation (Fedora 32)
+      language: shell
+      script:
+        - ./check.sh fedora 32
+      env:
+        - KRD_DEBUG=true
+        - KRD_KUBE_VERSION=v1.19.2
+        - KRD_KUBESPRAY_VERSION=v2.14.1

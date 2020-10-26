@@ -110,11 +110,11 @@ function _update_ngnix_ingress_ca {
         kubectl krew install cert-manager
     fi
     if ! command -v cfssl; then
-        sudo curl -Lo /usr/bin/cfssl "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/cfssl_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" > /dev/null
+        sudo curl -sLo /usr/bin/cfssl "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/cfssl_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" > /dev/null
         sudo chmod +x /usr/bin/cfssl
     fi
     if ! command -v cfssljson; then
-        sudo curl -Lo /usr/bin/cfssljson "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/cfssljson_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" > /dev/null
+        sudo curl -sLo /usr/bin/cfssljson "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/cfssljson_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" > /dev/null
         sudo chmod +x /usr/bin/cfssljson
     fi
     sudo mkdir -p "$cert_dir"

@@ -249,7 +249,7 @@ Vagrant.configure("2") do |config|
                 sudo mkdir -p /etc/systemd/resolved.conf.d
                 printf "[Resolve]\nDNSSEC=false" | sudo tee /etc/systemd/resolved.conf.d/dnssec.conf
             ;;
-            rhel|centos|fedora)
+            centos)
                 curl -fsSL http://bit.ly/install_pkg | PKG=kernel PKG_UPDATE=true bash
                 sudo grub2-set-default 0
                 grub_cfg="$(sudo readlink -f /etc/grub2.cfg)"
