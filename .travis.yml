@@ -44,8 +44,7 @@ jobs:
         - tox -e docs
     - name: All-in-One + Virtlet role + Metrics Server validation
       language: shell
-      install:
-        - eval "$(gimme stable)"
+      install: skip
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
@@ -57,8 +56,7 @@ jobs:
         - KRD_DEBUG=true
     - name: All-in-One + Katacontainers + Dashboard validation
       language: shell
-      install:
-        - eval "$(gimme stable)"
+      install: skip
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - cd tests; ./katacontainers.sh
@@ -70,8 +68,7 @@ jobs:
         - KRD_DASHBOARD_ENABLED=true
     - name: All-in-One + Kubevirt + Multus validation
       language: shell
-      install:
-        - eval "$(gimme stable)"
+      install: skip
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - ./krd_command.sh -a install_kubevirt
@@ -84,8 +81,7 @@ jobs:
         - KRD_INGRESS_NGINX_ENABLED=false
     - name: All-in-One + Istio validation
       language: shell
-      install:
-        - eval "$(gimme stable)"
+      install: skip
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - ./krd_command.sh -a install_istio
