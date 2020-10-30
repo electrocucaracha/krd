@@ -95,24 +95,24 @@ jobs:
         - ./check.sh centos 7
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.18.5
-        - KRD_KUBESPRAY_VERSION=v2.13.3
+        - KRD_KUBE_VERSION=v1.18.9
+        - KRD_KUBESPRAY_VERSION=v2.13.4
     - name: Pod Definition File validation (CentOS 8)
       language: shell
       script:
         - ./check.sh centos 8
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.19.2
-        - KRD_KUBESPRAY_VERSION=v2.14.1
+        - KRD_KUBE_VERSION=v1.19.3
+        - KRD_KUBESPRAY_VERSION=v2.14.2
     - name: Pod Definition File validation (openSUSE Leap)
       language: shell
       script:
         - ./check.sh opensuse 42
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.19.2
-        - KRD_KUBESPRAY_VERSION=v2.14.1
+        - KRD_KUBE_VERSION=v1.19.3
+        - KRD_KUBESPRAY_VERSION=v2.14.2
     - name: Pod Definition File validation (Ubuntu 16.04 LTS)
       language: shell
       script:
@@ -120,36 +120,36 @@ jobs:
       env:
         - KRD_DEBUG=true
         - KRD_KUBE_VERSION=v1.17.7
-        - KRD_KUBESPRAY_VERSION=v2.12.9
+        - KRD_KUBESPRAY_VERSION=v2.12.10
     - name: Pod Definition File validation (Ubuntu 18.04 LTS)
       language: shell
       script:
         - ./check.sh ubuntu bionic
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.18.5
-        - KRD_KUBESPRAY_VERSION=v2.13.3
+        - KRD_KUBE_VERSION=v1.18.9
+        - KRD_KUBESPRAY_VERSION=v2.13.4
     - name: Pod Definition File validation (Ubuntu 20.04 LTS)
       language: shell
       script:
         - ./check.sh ubuntu focal
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.19.2
-        - KRD_KUBESPRAY_VERSION=v2.14.1
+        - KRD_KUBE_VERSION=v1.19.3
+        - KRD_KUBESPRAY_VERSION=v2.14.2
     - name: Pod Definition File validation (Fedora 31)
       language: shell
       script:
         - ./check.sh fedora 31
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.18.5
-        - KRD_KUBESPRAY_VERSION=v2.13.3
+        - KRD_KUBE_VERSION=v1.18.9
+        - KRD_KUBESPRAY_VERSION=v2.13.4
     - name: Pod Definition File validation (Fedora 32)
       language: shell
       script:
         - ./check.sh fedora 32
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.19.2
-        - KRD_KUBESPRAY_VERSION=v2.14.1
+        - KRD_KUBE_VERSION=v1.19.3
+        - KRD_KUBESPRAY_VERSION=v2.14.2
