@@ -132,7 +132,7 @@ fi
 if lsblk -t | grep pmem; then
     if command -v ndctl && command -v jq; then
         for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
-            sudo ndctl create-namespace -f -e "$namespace" --mode=memory
+            sudo ndctl create-namespace -f -e "$namespace" --mode=memory || true
         done
         sudo ndctl list -iNRD
     fi
