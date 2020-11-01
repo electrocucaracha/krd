@@ -9,6 +9,7 @@ e2fsprogs [node platform:suse]
 wget [node]
 ndctl [node !platform:ubuntu-xenial]
 ipmctl [node !platform:ubuntu-xenial !platform:ubuntu-bionic !platform:suse]
+grubby [node platform:fedora]
 
 git [(node kubespray)]
 make [kubespray]
