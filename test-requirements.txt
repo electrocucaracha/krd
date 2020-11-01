@@ -1,4 +1,4 @@
 molecule==3.0.8 # MIT
-molecule_vagrant # MIT
+molecule_vagrant==0.3 # MIT
 docker # Apache-2.0
 testinfra # Apache-2.0
