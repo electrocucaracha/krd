@@ -148,6 +148,7 @@ function install_k8s {
     mkdir -p "$HOME/.kube"
     sudo cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
     sudo chown -R "$USER" "$HOME/.kube/"
+    chmod 600 "$HOME/.kube/config"
 
     # Configure Kubernetes Dashboard
     if kubectl get deployment/kubernetes-dashboard -n kube-system --no-headers -o custom-columns=name:.metadata.name; then
@@ -157,6 +158,11 @@ function install_k8s {
     # Update Nginx Ingress CA certificate and key values
     if kubectl get secret/ca-key-pair -n cert-manager --no-headers -o custom-columns=name:.metadata.name; then
         _update_ngnix_ingress_ca
+    fi
+
+    # Sets Local storage as default Storage class
+    if kubectl get storageclass/local-storage --no-headers -o custom-columns=name:.metadata.name; then
+        kubectl patch storageclass local-storage -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     fi
 }
 
