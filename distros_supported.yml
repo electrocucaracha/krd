@@ -11,40 +11,31 @@
 clearlinux:
   latest:
     name: AntonioMeireles/ClearLinux
-    vb_controller: IDE
 centos:
   7:
     name: generic/centos7
     version: 3.0.36
-    vb_controller: IDE Controller
   8:
     name: generic/centos8
     version: 3.0.36
-    vb_controller: IDE Controller
 ubuntu:
   xenial:
     name: generic/ubuntu1604
     version: 3.0.36
-    vb_controller: IDE Controller
   bionic:
     name: generic/ubuntu1804
-    vb_controller: IDE Controller
     version: 3.0.36
   focal:
     name: generic/ubuntu2004
-    vb_controller: IDE Controller
     version: 3.0.36
 opensuse:
   42:
     name: generic/opensuse42
     version: 3.0.36
-    vb_controller: IDE Controller
 fedora:
   31:
     name: generic/fedora31
     version: 3.0.36
-    vb_controller: IDE Controller
   32:
     name: generic/fedora32
     version: 3.0.36
-    vb_controller: IDE Controller

@@ -149,13 +149,24 @@ Vagrant.configure("2") do |config|
         if node['roles'].include?("kube-node")
           v.customize ["modifyvm", :id, "--nested-hw-virt","on"]
         end
+        if node.has_key? "storage_controllers"
+          node['storage_controllers'].each do |storage_controller|
+            v.customize ['storagectl', :id, '--name', storage_controller['name'], '--add', storage_controller['type'], '--controller', storage_controller['controller']]
+          end #storage_controllers
+        end
         if node.has_key? "volumes"
+          $port = 0
           node['volumes'].each do |volume|
+            $port +=1
+            $controller = "IDE Controller"
+            if volume.has_key? "controller"
+              $controller = "#{volume['controller']}"
+            end
             $volume_file = "#{node['name']}-#{volume['name']}.vdi"
             unless File.exist?($volume_file)
               v.customize ['createmedium', 'disk', '--filename', $volume_file, '--size', (volume['size'] * 1024)]
             end
-            v.customize ['storageattach', :id, '--storagectl', vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["vb_controller"], '--port', 1, '--device', 0, '--type', 'hdd', '--medium', $volume_file]
+            v.customize ['storageattach', :id, '--storagectl', $controller , '--port', $port.to_s, '--type', 'hdd', '--medium', $volume_file]
           end
         end # volumes
       end # virtualbox

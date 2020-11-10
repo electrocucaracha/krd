@@ -35,12 +35,24 @@
   cpus: 8
   roles:
     - kube-node
+  storage_controllers:
+    - name: AHCI Controller
+      type: sata
+      controller: IntelAhci
   volumes:
     - name: sda
       size: 25
       mount: /var/lib/docker/
     - name: sdb
       size: 50
+    - name: sdc
+      size: 20
+      mount: /mnt/disks/vol1
+      controller: AHCI Controller
+    - name: sdd
+      size: 20
+      mount: /mnt/disks/vol2
+      controller: AHCI Controller
 - name: "minion02"
   os:
     name: ubuntu
@@ -52,12 +64,24 @@
   cpus: 8
   roles:
     - kube-node
+  storage_controllers:
+    - name: AHCI Controller
+      type: sata
+      controller: IntelAhci
   volumes:
     - name: sda
       size: 25
       mount: /var/lib/docker/
     - name: sdb
       size: 50
+    - name: sdc
+      size: 20
+      mount: /mnt/disks/vol1
+      controller: AHCI Controller
+    - name: sdd
+      size: 20
+      mount: /mnt/disks/vol2
+      controller: AHCI Controller
 - name: "minion03"
   os:
     name: ubuntu
@@ -69,12 +93,24 @@
   cpus: 8
   roles:
     - kube-node
+  storage_controllers:
+    - name: AHCI Controller
+      type: sata
+      controller: IntelAhci
   volumes:
     - name: sda
       size: 25
       mount: /var/lib/docker/
     - name: sdb
       size: 50
+    - name: sdc
+      size: 20
+      mount: /mnt/disks/vol1
+      controller: AHCI Controller
+    - name: sdd
+      size: 20
+      mount: /mnt/disks/vol2
+      controller: AHCI Controller
 - name: "minion04"
   os:
     name: ubuntu
@@ -86,12 +122,24 @@
   cpus: 8
   roles:
     - kube-node
+  storage_controllers:
+    - name: AHCI Controller
+      type: sata
+      controller: IntelAhci
   volumes:
     - name: sda
       size: 25
       mount: /var/lib/docker/
     - name: sdb
       size: 50
+    - name: sdc
+      size: 20
+      mount: /mnt/disks/vol1
+      controller: AHCI Controller
+    - name: sdd
+      size: 20
+      mount: /mnt/disks/vol2
+      controller: AHCI Controller
 - name: "minion05"
   os:
     name: ubuntu
@@ -103,9 +151,21 @@
   cpus: 8
   roles:
     - kube-node
+  storage_controllers:
+    - name: AHCI Controller
+      type: sata
+      controller: IntelAhci
   volumes:
     - name: sda
       size: 25
       mount: /var/lib/docker/
     - name: sdb
       size: 50
+    - name: sdc
+      size: 20
+      mount: /mnt/disks/vol1
+      controller: AHCI Controller
+    - name: sdd
+      size: 20
+      mount: /mnt/disks/vol2
+      controller: AHCI Controller
