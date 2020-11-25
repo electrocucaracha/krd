@@ -151,7 +151,10 @@ Vagrant.configure("2") do |config|
         end
         if node.has_key? "storage_controllers"
           node['storage_controllers'].each do |storage_controller|
-            v.customize ['storagectl', :id, '--name', storage_controller['name'], '--add', storage_controller['type'], '--controller', storage_controller['controller']]
+            # Add VirtualBox storage controllers if they weren't added before
+            if ! %x(VBoxManage showvminfo $(VBoxManage list vms | awk '/#{node['name']}/{gsub(".*{","");gsub("}.*","");print}') --machinereadable 2>&1 | grep storagecontrollername).include? storage_controller['name']
+              v.customize ['storagectl', :id, '--name', storage_controller['name'], '--add', storage_controller['type'], '--controller', storage_controller['controller']]
+            end
           end #storage_controllers
         end
         if node.has_key? "volumes"
