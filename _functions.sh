@@ -14,13 +14,7 @@ if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
     set -o xtrace
 fi
 
-source _installers.sh
-
-# uninstall_k8s() - Uninstall Kubernetes cluster
-function uninstall_k8s {
-    _install_kubespray
-    _run_ansible_cmd "$kubespray_folder/reset.yml --extra-vars \"reset_confirmation=yes\"" "destroy-kubernetes.log"
-}
+source _commons.sh
 
 # add_k8s_nodes() - Add Kubernetes worker, master or etcd nodes to the existing cluster
 function add_k8s_nodes {

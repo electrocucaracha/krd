@@ -14,8 +14,9 @@ if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
     set -o xtrace
 fi
 
-# shellcheck source=_functions.sh
 source _functions.sh
+source _installers.sh
+source _uninstallers.sh
 
 if ! sudo -n "true"; then
     echo ""
