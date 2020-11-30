@@ -11,6 +11,10 @@ ndctl [node !platform:ubuntu-xenial]
 ipmctl [node !platform:ubuntu-xenial !platform:ubuntu-bionic !platform:suse]
 grubby [node platform:fedora]
 
+# Longhorn requirements
+open-iscsi [node platform:ubuntu]
+iscsi-initiator-utils [node platform:centos]
+
 git [(node kubespray)]
 make [kubespray]
 unzip [kubespray]

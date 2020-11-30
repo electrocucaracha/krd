@@ -106,3 +106,8 @@ ingress_nginx_enabled: true
 
 # Kata Containers is an OCI runtime, where containers are run inside lightweight VMs
 kata_containers_enabled: false
+
+# The Mount propagation feature allows for sharing volumes mounted by
+# a container to other containers in the same pod, or even to other
+# pods on the same node
+docker_mount_flags: shared

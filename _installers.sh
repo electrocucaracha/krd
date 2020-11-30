@@ -858,3 +858,76 @@ EOF
     echo "KubeSphere web console: http://$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}'):30880/login"
     echo "KubeSphere 'admin' user with 'P@88w0rd' password"
 }
+
+# install_longhorn() - Installs Longhorn is a lightweight, reliable
+# and easy-to-use distributed block storage system
+function install_longhorn {
+    kube_version=$(kubectl version --short | grep -e "Server" | awk -F ': ' '{print $2}')
+    KRD_HELM_VERSION=3 install_helm
+
+    if ! helm repo list | grep -e longhorn; then
+        helm repo add longhorn https://charts.longhorn.io
+        helm repo update
+    fi
+    if ! kubectl get namespaces/longhorn-system --no-headers -o custom-columns=name:.metadata.name; then
+        kubectl create namespace longhorn-system
+    fi
+    if ! helm ls --namespace longhorn-system | grep -q longhorn; then
+        helm upgrade --install longhorn longhorn/longhorn \
+        --timeout 600s \
+        --namespace longhorn-system
+    fi
+    for daemonset in $(kubectl get daemonset -n longhorn-system --no-headers -o custom-columns=name:.metadata.name); do
+        echo "Waiting for $daemonset to successfully rolled out"
+        if ! kubectl rollout status "daemonset/$daemonset" -n longhorn-system --timeout=5m > /dev/null; then
+            echo "The $daemonset daemonset has not started properly"
+            exit 1
+        fi
+    done
+    for deployment in $(kubectl get deployment -n longhorn-system --no-headers -o custom-columns=name:.metadata.name); do
+        echo "Waiting for $deployment to successfully rolled out"
+        if ! kubectl rollout status "deployment/$deployment" -n longhorn-system --timeout=5m > /dev/null; then
+            echo "The $deployment deployment has not started properly"
+            exit 1
+        fi
+    done
+    if _vercmp "${kube_version#*v}" '=>' "1.19"; then
+        cat <<EOF | kubectl apply -f -
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: longhorn-ingress
+  namespace: longhorn-system
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: longhorn-frontend
+                port:
+                  number: 80
+EOF
+    else
+        cat <<EOF | kubectl apply -f -
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: longhorn-ingress
+  namespace: longhorn-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: longhorn-frontend
+          servicePort: 80
+EOF
+    fi
+
+}
