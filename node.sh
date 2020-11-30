@@ -120,6 +120,7 @@ if [ -n "${dict_volumes:-}" ]; then
 fi
 if command -v firewall-cmd && systemctl is-active --quiet firewalld; then
     sudo firewall-cmd --zone=public --permanent --add-port=6443/tcp
+    sudo firewall-cmd --zone=public --permanent --add-port=10250/tcp
     sudo firewall-cmd --zone=public --permanent --add-service=https
     sudo firewall-cmd --reload
     if [ "${KRD_DEBUG:-false}" == "true" ]; then
