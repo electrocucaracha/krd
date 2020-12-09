@@ -24,7 +24,7 @@ function add_k8s_nodes {
 
 # upgrade_k8s() - Function that graceful upgrades the Kubernetes cluster
 function upgrade_k8s {
-    kube_version=$(kubectl version --short | grep -e "Server" | awk -F ': ' '{print $2}')
+    kube_version=$(_get_kube_version)
     pushd "$kubespray_folder"
     kubespray_version=$(git describe --tags)
     popd

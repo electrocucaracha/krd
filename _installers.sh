@@ -777,7 +777,7 @@ EOF
 # install_longhorn() - Installs Longhorn is a lightweight, reliable
 # and easy-to-use distributed block storage system
 function install_longhorn {
-    kube_version=$(kubectl version --short | grep -e "Server" | awk -F ': ' '{print $2}')
+    kube_version=$(_get_kube_version)
     KRD_HELM_VERSION=3 install_helm
 
     if ! helm repo list | grep -e longhorn; then

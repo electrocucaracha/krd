@@ -11,7 +11,18 @@
 set -o errexit
 set -o pipefail
 
-# _install_kubespray() - Donwload Kubespray binaries
+# _get_kube_version() - Get the Kubernetes version used or installed on the remote cluster
+function _get_kube_version {
+    if [ -n "${KRD_KUBE_VERSION}" ]; then
+        echo "${KRD_KUBE_VERSION}"
+    elif [ -f "$krd_inventory_folder/group_vars/k8s-cluster.yml" ]; then
+        grep kube_version "$krd_inventory_folder/group_vars/k8s-cluster.yml" | awk '{ print $2}'
+    elif command -v kubectl; then
+        kubectl version --short | grep -e "Server" | awk -F ': ' '{print $2}'
+    fi
+}
+
+# _install_kubespray() - Download Kubespray binaries
 function _install_kubespray {
     echo "Deploying kubernetes"
     kubespray_version=$(_get_version kubespray)
@@ -25,6 +36,7 @@ function _install_kubespray {
         fi
     done
     if [ -n "$pkgs" ]; then
+        # NOTE: Shorten link -> https://github.com/electrocucaracha/pkg-mgr_scripts
         curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
     fi
 
@@ -60,7 +72,7 @@ function _install_kubespray {
         echo "override_system_hostname: false"
         echo "kubeadm_enabled: true"
         echo "docker_dns_servers_strict: false"
-        } >> "$krd_inventory_folder//group_vars/all.yml"
+        } >> "$krd_inventory_folder/group_vars/all.yml"
         if [ -n "${HTTP_PROXY}" ]; then
             echo "http_proxy: \"$HTTP_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
         fi
