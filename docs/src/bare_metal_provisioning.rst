@@ -48,8 +48,7 @@ The following instruction starts the provisioning process.
 
 .. code-block:: bash
 
-    KRD_ACTIONS=("install_k8s")
-    curl -fsSL http://bit.ly/KRDaio | KRD_ACTIONS_DECLARE=$(declare -p KRD_ACTIONS) bash
+    curl -fsSL http://bit.ly/KRDaio | KRD_ACTIONS_LIST="install_k8s,install_cockpit" bash
 
 In overall, this script can be summarized in the following phases:
 

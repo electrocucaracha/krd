@@ -16,9 +16,6 @@ if [ "${KRD_DEBUG:-false}" == "true" ]; then
     set -o xtrace
     export PKG_DEBUG=true
 fi
-if [ -n "${KRD_ACTIONS_DECLARE:-}" ]; then
-    eval "${KRD_ACTIONS_DECLARE}"
-fi
 
 if ! sudo -n "true"; then
     echo ""
@@ -112,9 +109,13 @@ fi
 sudo -E ./node.sh
 
 echo "Deploying KRD project"
-for krd_action in "${KRD_ACTIONS[@]:-install_k8s}"; do
-    ./krd_command.sh -a "$krd_action" | tee "krd_${krd_action}.log"
-done
+if [ -n "${KRD_ACTIONS_LIST:-}" ]; then
+    for krd_action in ${KRD_ACTIONS_LIST//,/ }; do
+        ./krd_command.sh -a "$krd_action" | tee "krd_${krd_action}.log"
+    done
+else
+    ./krd_command.sh -a install_k8s | tee krd_install_k8s.log
+fi
 if [ -f /etc/apt/sources.list.d/docker.list ] && [ -f /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list ]; then
     sudo rm /etc/apt/sources.list.d/docker.list
 fi
