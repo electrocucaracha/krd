@@ -29,14 +29,20 @@ function _install_kubespray {
     echo "Deploying kubernetes"
     kubespray_version=$(_get_version kubespray)
 
+    if [ "${KRD_CONTAINER_RUNTIME:-docker}" != "docker" ]; then
+        export KRD_DOWNLOAD_RUN_ONCE=false
+        export KRD_DOWNLOAD_LOCALHOST=false
+    fi
+
     # NOTE: bindep prints a multiline's output
     # shellcheck disable=SC2005
     pkgs="$(echo "$(bindep kubespray -b)")"
-    for pkg in docker kubectl; do
-        if ! command -v "$pkg"; then
-            pkgs+=" $pkg"
-        fi
-    done
+    if [ "${KRD_DOWNLOAD_LOCALHOST:-true}" == "true" ] && ! command -v docker; then
+        pkgs+=" docker"
+    fi
+    if ! command -v kubectl; then
+        pkgs+=" kubectl"
+    fi
     if [ -n "$pkgs" ]; then
         # NOTE: Shorten link -> https://github.com/electrocucaracha/pkg-mgr_scripts
         curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
@@ -88,13 +94,13 @@ function _install_kubespray {
         if [ -n "${KRD_KUBE_VERSION}" ]; then
             sed -i "s/^kube_version: .*$/kube_version: ${KRD_KUBE_VERSION}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         fi
-        if [ -n "${KRD_CONTAINER_RUNTIME}" ] && [ "${KRD_CONTAINER_RUNTIME}" != "docker" ]; then
+        sed -i "s/^download_run_once: .*$/download_run_once: ${KRD_DOWNLOAD_RUN_ONCE:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^download_localhost: .*$/download_localhost: ${KRD_DOWNLOAD_LOCALHOST:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        if [ "${KRD_CONTAINER_RUNTIME:-docker}" != "docker" ]; then
             {
             echo "download_container: true"
             echo "skip_downloads: false"
             } >> "$krd_inventory_folder/group_vars/all.yml"
-            sed -i 's/^download_run_once: .*$/download_run_once: false/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            sed -i 's/^download_localhost: .*$/download_localhost: false/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^etcd_deployment_type: .*$/etcd_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^kubelet_deployment_type: .*$/kubelet_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i "s/^container_manager: .*$/container_manager: ${KRD_CONTAINER_RUNTIME}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
