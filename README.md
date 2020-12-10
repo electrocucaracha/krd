@@ -114,6 +114,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_KUBE_VERSION                      |                                              | Specifies the Kubernetes version to be upgraded                                 |
 | KRD_DOWNLOAD_RUN_ONCE                 | true                                         | Download images and binaries only once and then push them to the cluster nodes  |
 | KRD_DOWNLOAD_LOCALHOST                | true                                         | Make localhost the download delegate                                            |
+| KRD_DNS_SERVER                        |                                              | Set to use a custom cluster DNS                                                 |
 | KRD_KUBESPRAY_VERSION                 |                                              | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | https://github.com/kubernetes-sigs/kubespray | Specifies the Git repository to fetch the Kubespray's source code               |
 | KRD_ENABLE_TESTS                      |                                              | Enables the functional tests during the deployment process                      |

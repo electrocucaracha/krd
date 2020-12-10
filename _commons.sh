@@ -94,6 +94,9 @@ function _install_kubespray {
         if [ -n "${KRD_KUBE_VERSION}" ]; then
             sed -i "s/^kube_version: .*$/kube_version: ${KRD_KUBE_VERSION}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         fi
+        if [ -n "${KRD_DNS_SERVER}" ]; then
+            sed -i "s/^manual_dns_server: .*$/manual_dns_server: ${KRD_DNS_SERVER}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        fi
         sed -i "s/^download_run_once: .*$/download_run_once: ${KRD_DOWNLOAD_RUN_ONCE:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         sed -i "s/^download_localhost: .*$/download_localhost: ${KRD_DOWNLOAD_LOCALHOST:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         if [ "${KRD_CONTAINER_RUNTIME:-docker}" != "docker" ]; then

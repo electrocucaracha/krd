@@ -111,3 +111,6 @@ kata_containers_enabled: false
 # a container to other containers in the same pod, or even to other
 # pods on the same node
 docker_mount_flags: shared
+
+# Should be set to a cluster IP if using a custom cluster DNS
+manual_dns_server: ""
