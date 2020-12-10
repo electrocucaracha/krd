@@ -68,6 +68,7 @@ $container_runtime = ENV['KRD_CONTAINER_RUNTIME']
 $kube_version = ENV['KRD_KUBE_VERSION']
 $kubespray_version = ENV['KRD_KUBESPRAY_VERSION']
 $kubespray_repo = ENV['KRD_KUBESPRAY_REPO']
+$installer_ip = "10.10.16.2"
 
 $no_proxy = ENV['NO_PROXY'] || ENV['no_proxy'] || "127.0.0.1,localhost"
 nodes.each do |node|
@@ -298,7 +299,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "undercloud"
-    installer.vm.box =  vagrant_boxes["ubuntu"]["xenial"]["name"]
+    installer.vm.box =  vagrant_boxes["ubuntu"]["bionic"]["name"]
     installer.vm.network :forwarded_port, guest: 9090, host: 9090
 
     [:virtualbox, :libvirt].each do |provider|
@@ -310,7 +311,7 @@ Vagrant.configure("2") do |config|
 
     # NOTE: A private network set up is required by NFS. This is due
     # to a limitation of VirtualBox's built-in networking.
-    installer.vm.network "private_network", ip: "10.10.16.2"
+    installer.vm.network "private_network", ip: $installer_ip
     installer.vm.provision 'shell', privileged: false, inline: <<-SHELL
       cd /vagrant
       sudo mkdir -p /root/.ssh/
@@ -333,11 +334,13 @@ Vagrant.configure("2") do |config|
         'KRD_KUBESPRAY_VERSION': "#{$kubespray_version}",
         'KRD_KATA_CONTAINERS_ENABLED': "#{$kata_containers_enabled}",
         'KRD_KUBESPRAY_REPO': "#{$kubespray_repo}",
+        'KRD_REGISTRY_MIRRORS_LIST': "http://#{$installer_ip}:5000",
+        'KRD_INSECURE_REGISTRIES_LIST': "#{$installer_ip}:5000",
       }
       sh.inline = <<-SHELL
         for krd_var in $(printenv | grep KRD_); do echo "export $krd_var" | sudo tee --append /etc/environment ; done
         cd /vagrant/
-        ./krd_command.sh -a install_k8s -a install_cockpit | tee ~/vagrant_init.log
+        ./krd_command.sh -a install_local_registry -a install_k8s | tee ~/vagrant_init.log
       SHELL
     end
   end # installer

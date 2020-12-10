@@ -13,12 +13,14 @@ set -o pipefail
 
 # _get_kube_version() - Get the Kubernetes version used or installed on the remote cluster
 function _get_kube_version {
-    if [ -n "${KRD_KUBE_VERSION}" ]; then
-        echo "${KRD_KUBE_VERSION}"
-    elif [ -f "$krd_inventory_folder/group_vars/k8s-cluster.yml" ]; then
-        grep kube_version "$krd_inventory_folder/group_vars/k8s-cluster.yml" | awk '{ print $2}'
-    elif command -v kubectl; then
+    if command -v kubectl; then
         kubectl version --short | grep -e "Server" | awk -F ': ' '{print $2}'
+    elif [ -f "$KRD_FOLDER/k8s-cluster.yml" ]; then
+        grep kube_version "$KRD_FOLDER/k8s-cluster.yml" | awk '{ print $2}'
+    elif [ -n "${KRD_KUBE_VERSION}" ]; then
+        echo "${KRD_KUBE_VERSION}"
+    else
+        echo "v1.18.10"
     fi
 }
 
@@ -100,6 +102,18 @@ function _install_kubespray {
             if [ "${KRD_CONTAINER_RUNTIME}" == "containerd" ]; then
                 sed -i "s/^kata_containers_enabled: .*$/kata_containers_enabled: ${KRD_KATA_CONTAINERS_ENABLED:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             fi
+        fi
+        if [ -n "${KRD_REGISTRY_MIRRORS_LIST}" ]; then
+            echo "docker_registry_mirrors:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
+                echo "  - $mirror" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            done
+        fi
+        if [ -n "${KRD_INSECURE_REGISTRIES_LIST}" ]; then
+            echo "docker_insecure_registries:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            for registry in ${KRD_INSECURE_REGISTRIES_LIST//,/ }; do
+                echo "  - $registry" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            done
         fi
         sed -i "s/^kube_network_plugin: .*$/kube_network_plugin: ${KRD_NETWORK_PLUGIN:-flannel}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         sed -i "s/^cert_manager_enabled: .*$/cert_manager_enabled: ${KRD_CERT_MANAGER_ENABLED:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"

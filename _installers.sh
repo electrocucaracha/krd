@@ -15,6 +15,35 @@ source _commons.sh
 
 tiller_namespace=${KRD_TILLER_NAMESPACE:-default}
 
+function install_local_registry {
+    kube_version=$(_get_kube_version)
+
+    pkgs=""
+    for pkg in docker skopeo; do
+        if ! command -v "$pkg"; then
+            pkgs+=" $pkg"
+        fi
+    done
+    if [ -n "$pkgs" ]; then
+        # NOTE: Shorten link -> https://github.com/electrocucaracha/pkg-mgr_scripts
+        curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
+    fi
+
+    # Start local registry
+    if [[ -z $(sudo docker ps -aqf "name=registry") ]]; then
+        sudo mkdir -p /var/lib/registry
+        sudo -E docker run -d --name registry --restart=always \
+        -p "${DOCKER_REGISTRY_PORT:-5000}":5000 -v /var/lib/registry:/var/lib/registry registry:2
+    fi
+
+    # Preload Kubespray images
+    export kube_version
+    envsubst \$kube_version < kubespray_images.tpl > /tmp/kubespray_images.txt
+    while IFS= read -r image; do
+        skopeo copy --dest-tls-verify=false "docker://$image" "docker://localhost:5000/${image#*/}"
+    done < /tmp/kubespray_images.txt
+}
+
 function _update_ngnix_ingress_ca {
     local cert_dir=/opt/cert-manager/certs
     local cfssl_version=1.4.1
