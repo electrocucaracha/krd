@@ -44,8 +44,8 @@ function disable_swap {
     sudo sed -i -e '/swap/d' /etc/fstab
 }
 
-# enable_huge_pages() - Enable Huge pages
-function enable_huge_pages {
+# enable_hugepages() - Enable Hugepages
+function enable_hugepages {
     echo madvise | sudo tee /sys/kernel/mm/transparent_hugepage/enabled
     sudo mkdir -p /mnt/huge
     sudo mount -t hugetlbfs nodev /mnt/huge
@@ -106,7 +106,10 @@ while getopts "h?v:" opt; do
 done
 
 disable_swap
-enable_huge_pages
+# Some containers doesn't support Hugepages (https://github.com/docker-library/postgres/issues/451#issuecomment-447472044)
+if [ "${KRD_HUGEPAGES_ENABLED:-true}" == "true" ]; then
+    enable_hugepages
+fi
 enable_rbd
 _install_deps
 

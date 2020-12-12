@@ -126,6 +126,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_NETWORK_PLUGIN                    | flannel                                      | Choose network plugin (calico, canal, cilium, contiv, flannel weave)            |
 | KRD_REGISTRY_MIRRORS_LIST             |                                              | Specifies a list of additional registry mirrors                                 |
 | KRD_INSECURE_REGISTRIES_LIST          |                                              | Specifies a list of insecure-registries (IP address or domain name)             |
+| KRD_HUGEPAGES_ENABLED                 | true                                         | Enable/Disable [HugeTLB Pages][17] on cluster nodes                             |
 | KRD_MULTUS_ENABLED                    | false                                        | Enable/Disable [Kubernetes Multus CNI][2]                                       |
 | KRD_QAT_PLUGIN_MODE                   | dpdk                                         | Specifies the deployment mode for Intel QuickAssist Plugin                      |
 | KRD_CERT_MANAGER_ENABLED              | true                                         | Enable/Disable [Kubernetes Cert-Manager][10]                                    |
@@ -152,3 +153,4 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 [14]: https://kubesphere.io/docs/pluggable-components/devops/
 [15]: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
 [16]: https://kubesphere.io/docs/pluggable-components/service-mesh/
+[17]: https://www.kernel.org/doc/html/latest/admin-guide/mm/hugetlbpage.html
