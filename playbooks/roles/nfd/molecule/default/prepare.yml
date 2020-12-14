@@ -11,28 +11,11 @@
 - name: boostrap servers
   hosts: all
   vars:
-    pip_install_packages:
-      - name: openshift
     kind_dest: /usr/local/bin
-  pre_tasks:
-    - name: install setuptools
-      become: true
-      package:
-        name: python-setuptools
-    - name: install openshift python2 pkg
-      become: true
-      package:
-        name: python2-openshift
-      when:
-        - ansible_distribution == 'CentOS'
-        - ansible_distribution_major_version == '7'
   roles:
     - role: andrewrothstein.kind
       kind_install_dir: '{{ kind_dest }}'
     - andrewrothstein.kubectl
-    - role: geerlingguy.pip
-      pip_package: python3-pip
-      become: true
     - role: geerlingguy.docker
       docker_install_compose: false
       become: true
@@ -67,3 +50,20 @@
         remote_src: true
         owner: '{{ ansible_ssh_user }}'
         group: '{{ ansible_ssh_user }}'
+    - name: download pip installer
+      get_url:
+        url: https://bootstrap.pypa.io/get-pip.py
+        dest: /tmp/get-pip.py
+        mode: 0440
+    - name: install pip
+      become: true
+      command: /usr/bin/python /tmp/get-pip.py
+    - name: install python dependencies
+      become: true
+      pip:
+        name: "{{ item.name | default(item) }}"
+        version: "{{ item.version | default(omit) }}"
+      with_items:
+        - name: kubernetes
+          version: 11.0.0
+        - openshift

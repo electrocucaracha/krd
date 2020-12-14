@@ -19,8 +19,6 @@ roles:
     version: v1.1.2
   - name: andrewrothstein.kind
     version: v1.0.3
-  - name: geerlingguy.pip
-    version: 2.0.0
   - name: andrewrothstein.kubectl
     version: v1.1.48
 
