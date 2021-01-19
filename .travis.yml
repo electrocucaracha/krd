@@ -47,26 +47,32 @@ jobs:
       install: skip
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-        - KRD_ENABLE_TESTS=true KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
         - ./krd_command.sh -a install_metrics_server
-        - kubectl top node
-        - kubectl top pod
-        - kubectl get all -A -o wide
       env:
         - KRD_DEBUG=true
+        - KRD_ACTIONS_LIST="install_k8s,install_k8s_addons"
+        - KRD_ENABLE_TESTS=true
+        - KRD_ADDONS_LIST=virtlet
+        - KRD_KUBE_VERSION=v1.18.10
+      after_success:
+        - kubectl top node
+        - kubectl top pod
+      after_failure:
+        - kubectl get all -A -o wide
     - name: All-in-One + Runtime classes + Dashboard validation
       language: shell
       install: skip
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - cd tests; ./runtimeclasses.sh
-        - kubectl get all -A -o wide
       env:
         - KRD_DEBUG=true
         - KRD_CONTAINER_RUNTIME=crio
         - KRD_KATA_CONTAINERS_ENABLED=true
         - KRD_CRUN_ENABLED=true
         - KRD_DASHBOARD_ENABLED=true
+      after_success:
+        - kubectl get all -A -o wide
     - name: All-in-One + Kubevirt + Multus validation
       language: shell
       install: skip
@@ -74,38 +80,39 @@ jobs:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - ./krd_command.sh -a install_kubevirt
         - cd tests; ./multus.sh
-        - kubectl get all -A -o wide
       env:
         - KRD_DEBUG=true
         - KRD_MULTUS_ENABLED=true
         - KRD_CERT_MANAGER_ENABLED=false
         - KRD_INGRESS_NGINX_ENABLED=false
+      after_success:
+        - kubectl get all -A -o wide
     - name: All-in-One + Istio validation
       language: shell
       install: skip
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - ./krd_command.sh -a install_istio
-        - kubectl get all -A -o wide
-        - kubectl describe nodes
       env:
         - KRD_DEBUG=true
+      after_success:
+        - kubectl get all -A -o wide
     - name: Pod Definition File validation (CentOS 7)
       language: shell
       script:
         - ./check.sh centos 7
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.18.9
-        - KRD_KUBESPRAY_VERSION=v2.13.4
+        - KRD_KUBE_VERSION=v1.18.10
+        - KRD_KUBESPRAY_VERSION=v2.14.2
     - name: Pod Definition File validation (CentOS 8)
       language: shell
       script:
         - ./check.sh centos 8
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.19.3
-        - KRD_KUBESPRAY_VERSION=v2.14.2
+        - KRD_KUBE_VERSION=v1.19.7
+        - KRD_KUBESPRAY_VERSION=v2.15.0
         - KRD_CONTAINER_RUNTIME=containerd
     - name: Pod Definition File validation (openSUSE Leap)
       language: shell
@@ -113,45 +120,47 @@ jobs:
         - ./check.sh opensuse 42
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.19.3
-        - KRD_KUBESPRAY_VERSION=v2.14.2
+        - KRD_KUBE_VERSION=v1.19.7
+        - KRD_KUBESPRAY_VERSION=v2.15.0
     - name: Pod Definition File validation (Ubuntu 16.04 LTS)
       language: shell
       script:
         - ./check.sh ubuntu xenial
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.17.7
-        - KRD_KUBESPRAY_VERSION=v2.12.10
+        - KRD_KUBE_VERSION=v1.17.9
+        - KRD_KUBESPRAY_VERSION=v2.13.3
     - name: Pod Definition File validation (Ubuntu 18.04 LTS)
       language: shell
       script:
         - ./check.sh ubuntu bionic
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.18.9
-        - KRD_KUBESPRAY_VERSION=v2.13.4
+        - KRD_KUBE_VERSION=v1.18.10
+        - KRD_KUBESPRAY_VERSION=v2.14.2
     - name: Pod Definition File validation (Ubuntu 20.04 LTS)
       language: shell
       script:
         - ./check.sh ubuntu focal
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.19.3
-        - KRD_KUBESPRAY_VERSION=v2.14.2
-    - name: Pod Definition File validation (Fedora 31)
-      language: shell
-      script:
-        - ./check.sh fedora 31
-      env:
-        - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.18.9
-        - KRD_KUBESPRAY_VERSION=v2.13.4
+        - KRD_KUBE_VERSION=v1.19.7
+        - KRD_KUBESPRAY_VERSION=v2.15.0
+        - KRD_CONTAINER_RUNTIME=containerd
     - name: Pod Definition File validation (Fedora 32)
       language: shell
       script:
         - ./check.sh fedora 32
       env:
         - KRD_DEBUG=true
-        - KRD_KUBE_VERSION=v1.19.3
+        - KRD_KUBE_VERSION=v1.18.10
         - KRD_KUBESPRAY_VERSION=v2.14.2
+    - name: Pod Definition File validation (Fedora 33)
+      language: shell
+      script:
+        - ./check.sh fedora 33
+      env:
+        - KRD_DEBUG=true
+        - KRD_KUBE_VERSION=v1.19.7
+        - KRD_KUBESPRAY_VERSION=v2.15.0
+        - KRD_CONTAINER_RUNTIME=containerd

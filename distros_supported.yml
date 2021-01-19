@@ -33,9 +33,9 @@ opensuse:
     name: generic/opensuse42
     version: 3.1.12
 fedora:
-  31:
-    name: generic/fedora31
-    version: 3.1.12
   32:
     name: generic/fedora32
+    version: 3.1.12
+  33:
+    name: generic/fedora33
     version: 3.1.12
