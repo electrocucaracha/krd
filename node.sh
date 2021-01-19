@@ -40,8 +40,19 @@ EOF
 
 # disable_swap() - Disable Swap
 function disable_swap {
-    sudo swapoff -a
-    sudo sed -i -e '/swap/d' /etc/fstab
+    # Fedora 33 introduces zram-generator service - https://fedoraproject.org/wiki/Changes/SwapOnZRAM
+    if systemctl is-active --quiet swap-create@zram0; then
+        sudo systemctl stop swap-create@zram0
+        sudo touch /etc/systemd/zram-generator.conf
+    fi
+    if [ -n "$(sudo swapon --show)" ]; then
+        if [ "$KRD_DEBUG" == "true" ]; then
+            sudo swapon --show
+            sudo blkid
+        fi
+        sudo swapoff "$(sudo swapon --show=NAME --noheadings)"
+        sudo sed -i -e '/swap/d' /etc/fstab
+    fi
 }
 
 # enable_hugepages() - Enable Hugepages
@@ -93,6 +104,56 @@ function _install_deps {
     fi
 }
 
+# sync_clock() - Sync server's clock
+function sync_clock {
+    echo "Sync server's clock"
+    sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+}
+
+# mount_partitions() - Mount and format additional volumes
+function mount_partitions {
+    if [ -n "${dict_volumes:-}" ]; then
+        for kv in ${dict_volumes//,/ } ;do
+            mount_external_partition "${kv%=*}" "${kv#*=}"
+        done
+    fi
+}
+
+# disable_k8s_ports() - Disable FirewallD ports used by Kubernetes Kubelet
+function disable_k8s_ports {
+    if command -v firewall-cmd && systemctl is-active --quiet firewalld; then
+        sudo firewall-cmd --zone=public --permanent --add-port=6443/tcp
+        sudo firewall-cmd --zone=public --permanent --add-port=10250/tcp
+        sudo firewall-cmd --zone=public --permanent --add-service=https
+        sudo firewall-cmd --reload
+        if [ "${KRD_DEBUG:-false}" == "true" ]; then
+            sudo firewall-cmd --get-active-zones
+            sudo firewall-cmd --zone=public --list-services
+            sudo firewall-cmd --zone=public --list-ports
+        fi
+    fi
+}
+
+# create_pmem_namespaces() - Creates Persistent Memory namespaces
+function create_pmem_namespaces {
+    if lsblk -t | grep pmem && command -v ndctl && command -v jq; then
+        for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
+            sudo ndctl create-namespace -f -e "$namespace" --mode=memory || true
+        done
+        if [ "${KRD_DEBUG:-false}" == "true" ]; then
+            sudo ndctl list -iNRD
+        fi
+    fi
+}
+
+# enable_nvdimm_mixed_mode() - Enable NVDIMM mixed mode (configuration for MM:AD is set to 50:50)
+function enable_nvdimm_mixed_mode {
+    if command -v ipmctl && [[ "$(sudo ipmctl show -dimm | awk -F'|' 'FNR==3{print $4}')" == *"Healthy"* ]]; then
+        sudo ipmctl create -goal memorymode=50 persistentmemorytype=appdirect
+        sudo ipmctl create -goal memorymode=50 persistentmemorytype=appdirectnotinterleaved
+    fi
+}
+
 while getopts "h?v:" opt; do
     case $opt in
         v)
@@ -112,39 +173,12 @@ if [ "${KRD_HUGEPAGES_ENABLED:-true}" == "true" ]; then
 fi
 enable_rbd
 _install_deps
+sync_clock
+mount_partitions
+disable_k8s_ports
+create_pmem_namespaces
+enable_nvdimm_mixed_mode
 
-echo "Sync server's clock"
-sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
-
-if [ -n "${dict_volumes:-}" ]; then
-    for kv in ${dict_volumes//,/ } ;do
-        mount_external_partition "${kv%=*}" "${kv#*=}"
-    done
-fi
-if command -v firewall-cmd && systemctl is-active --quiet firewalld; then
-    sudo firewall-cmd --zone=public --permanent --add-port=6443/tcp
-    sudo firewall-cmd --zone=public --permanent --add-port=10250/tcp
-    sudo firewall-cmd --zone=public --permanent --add-service=https
-    sudo firewall-cmd --reload
-    if [ "${KRD_DEBUG:-false}" == "true" ]; then
-        sudo firewall-cmd --get-active-zones
-        sudo firewall-cmd --zone=public --list-services
-        sudo firewall-cmd --zone=public --list-ports
-    fi
-fi
-
-if lsblk -t | grep pmem; then
-    if command -v ndctl && command -v jq; then
-        for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
-            sudo ndctl create-namespace -f -e "$namespace" --mode=memory || true
-        done
-        sudo ndctl list -iNRD
-    fi
-fi
-
-lstopo-no-graphics
-# Enable NVDIMM mixed mode (configuration for MM:AD is set to 50:50)
-if command -v ipmctl && [[ "$(sudo ipmctl show -dimm | awk -F'|' 'FNR==3{print $4}')" == *"Healthy"* ]]; then
-    sudo ipmctl create -goal memorymode=50 persistentmemorytype=appdirect
-    sudo ipmctl create -goal memorymode=50 persistentmemorytype=appdirectnotinterleaved
+if [ "${KRD_DEBUG:-false}" == "true" ]; then
+    lstopo-no-graphics
 fi

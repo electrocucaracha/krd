@@ -292,6 +292,7 @@ Vagrant.configure("2") do |config|
           if [[ $NODE_VOLUME ]]; then
               cmd+=" -v $NODE_VOLUME"
           fi
+          cmd+=" | tee ~/node.log"
           eval $cmd
         SHELL
       end
