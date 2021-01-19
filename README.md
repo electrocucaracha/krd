@@ -133,6 +133,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_INGRESS_NGINX_ENABLED             | true                                         | Enable/Disable [NGINX Ingress Controller][11]                                   |
 | KRD_DASHBOARD_ENABLED                 | false                                        | Enable/Disable [Kubernetes Dashboard][12]                                       |
 | KRD_KATA_CONTAINERS_ENABLED           | false                                        | Enable/Disable [Kata Containers Runtime][13]                                    |
+| KRD_CRUN_ENABLED                      | false                                        | Enable/Disable [crun][18]                                                       |
 | KRD_KUBESPHERE_DEVOPS_ENABLED         | true                                         | Enable/Disable [KubeSphere DevOps System][14]                                   |
 | KRD_KUBESPHERE_METRICS_SERVER_ENABLED | false                                        | Enable/Disable [Horizontal Pod Autoscaler][15] on KubeSphere                    |
 | KRD_KUBESPHERE_SERVICEMESH_ENABLED    | false                                        | Enable/Disable [KubeSphere Service Mesh][16]                                    |
@@ -154,3 +155,4 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 [15]: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
 [16]: https://kubesphere.io/docs/pluggable-components/service-mesh/
 [17]: https://www.kernel.org/doc/html/latest/admin-guide/mm/hugetlbpage.html
+[18]: https://github.com/containers/crun

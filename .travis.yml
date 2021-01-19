@@ -54,17 +54,18 @@ jobs:
         - kubectl get all -A -o wide
       env:
         - KRD_DEBUG=true
-    - name: All-in-One + Katacontainers + Dashboard validation
+    - name: All-in-One + Runtime classes + Dashboard validation
       language: shell
       install: skip
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-        - cd tests; ./katacontainers.sh
+        - cd tests; ./runtimeclasses.sh
         - kubectl get all -A -o wide
       env:
         - KRD_DEBUG=true
-        - KRD_CONTAINER_RUNTIME=containerd
+        - KRD_CONTAINER_RUNTIME=crio
         - KRD_KATA_CONTAINERS_ENABLED=true
+        - KRD_CRUN_ENABLED=true
         - KRD_DASHBOARD_ENABLED=true
     - name: All-in-One + Kubevirt + Multus validation
       language: shell
@@ -105,7 +106,7 @@ jobs:
         - KRD_DEBUG=true
         - KRD_KUBE_VERSION=v1.19.3
         - KRD_KUBESPRAY_VERSION=v2.14.2
-        - KRD_CONTAINER_RUNTIME=crio
+        - KRD_CONTAINER_RUNTIME=containerd
     - name: Pod Definition File validation (openSUSE Leap)
       language: shell
       script:

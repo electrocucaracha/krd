@@ -29,11 +29,6 @@ function _install_kubespray {
     echo "Deploying kubernetes"
     kubespray_version=$(_get_version kubespray)
 
-    if [ "${KRD_CONTAINER_RUNTIME:-docker}" != "docker" ]; then
-        export KRD_DOWNLOAD_RUN_ONCE=false
-        export KRD_DOWNLOAD_LOCALHOST=false
-    fi
-
     # NOTE: bindep prints a multiline's output
     # shellcheck disable=SC2005
     pkgs="$(echo "$(bindep kubespray -b)")"
@@ -101,16 +96,14 @@ function _install_kubespray {
         sed -i "s/^download_localhost: .*$/download_localhost: ${KRD_DOWNLOAD_LOCALHOST:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         if [ "${KRD_CONTAINER_RUNTIME:-docker}" != "docker" ]; then
             {
-            echo "download_container: true"
+            echo "download_container: false"
             echo "skip_downloads: false"
             } >> "$krd_inventory_folder/group_vars/all.yml"
             sed -i 's/^etcd_deployment_type: .*$/etcd_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^kubelet_deployment_type: .*$/kubelet_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i "s/^container_manager: .*$/container_manager: ${KRD_CONTAINER_RUNTIME}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            # TODO: Remove this condition once this PR 6830 is merged
-            if [ "${KRD_CONTAINER_RUNTIME}" == "containerd" ]; then
-                sed -i "s/^kata_containers_enabled: .*$/kata_containers_enabled: ${KRD_KATA_CONTAINERS_ENABLED:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            fi
+            sed -i "s/^kata_containers_enabled: .*$/kata_containers_enabled: ${KRD_KATA_CONTAINERS_ENABLED:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            sed -i "s/^crun_enabled: .*$/crun_enabled: ${KRD_CRUN_ENABLED:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         fi
         if [ -n "${KRD_REGISTRY_MIRRORS_LIST}" ]; then
             echo "docker_registry_mirrors:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"

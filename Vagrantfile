@@ -63,6 +63,7 @@ $debug = ENV['DEBUG'] || "true"
 $network_plugin = ENV['KRD_NETWORK_PLUGIN']
 $enable_multus = ENV['KRD_MULTUS_ENABLED']
 $kata_containers_enabled = ENV['KRD_KATA_CONTAINERS_ENABLED']
+$crun_enabled = ENV['KRD_CRUN_ENABLED']
 $qat_plugin_mode = ENV['KRD_QAT_PLUGIN_MODE']
 $container_runtime = ENV['KRD_CONTAINER_RUNTIME']
 $kube_version = ENV['KRD_KUBE_VERSION']
@@ -333,6 +334,7 @@ Vagrant.configure("2") do |config|
         'KRD_KUBE_VERSION': "#{$kube_version}",
         'KRD_KUBESPRAY_VERSION': "#{$kubespray_version}",
         'KRD_KATA_CONTAINERS_ENABLED': "#{$kata_containers_enabled}",
+        'KRD_CRUN_ENABLED': "#{$crun_enabled}",
         'KRD_KUBESPRAY_REPO': "#{$kubespray_repo}",
         'KRD_REGISTRY_MIRRORS_LIST': "http://#{$installer_ip}:5000",
         'KRD_INSECURE_REGISTRIES_LIST': "#{$installer_ip}:5000",

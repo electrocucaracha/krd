@@ -42,7 +42,7 @@ kube_network_plugin: flannel
 kubeconfig_localhost: true
 
 # Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.18.10
+kube_version: v1.19.7
 
 # Kube-proxy proxyMode configuration.
 # NOTE: Ipvs is based on netfilter hook function, but uses hash table as the underlying data structure and
@@ -100,6 +100,9 @@ ingress_nginx_enabled: true
 
 # Kata Containers is an OCI runtime, where containers are run inside lightweight VMs
 kata_containers_enabled: false
+
+# crun is a container runtime which has lower footprint, better performance and cgroup2 support
+crun_enabled: false
 
 # The Mount propagation feature allows for sharing volumes mounted by
 # a container to other containers in the same pod, or even to other

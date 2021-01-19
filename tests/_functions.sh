@@ -50,6 +50,18 @@ function assert_are_not_equal {
     fi
 }
 
+# assert_contains() - This assertion checks if the input contains another value
+function assert_contains {
+    local input=$1
+    local expected=$2
+    local error_msg=$3
+
+    info "Contains Assertion - value: $1 expected: $2"
+    if [[ "$input" != *"$expected"* ]]; then
+        error "$error_msg"
+    fi
+}
+
 # destroy_deployment() - This function ensures that a specific deployment is
 # destroyed in Kubernetes
 function destroy_deployment {
