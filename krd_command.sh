@@ -10,13 +10,15 @@
 
 set -o errexit
 set -o pipefail
-if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
-    set -o xtrace
-fi
+set -o nounset
 
 source _functions.sh
 source _installers.sh
 source _uninstallers.sh
+
+if [[ "$KRD_DEBUG" == "true" ]]; then
+    set -o xtrace
+fi
 
 if ! sudo -n "true"; then
     echo ""

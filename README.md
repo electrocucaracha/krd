@@ -76,10 +76,10 @@ instruction:
 
 The actions which require the execution of a distributed commands were
 implemented through the **install_k8s_addons** KRD action. This action
-uses the *KRD_ADDONS* environment variable to specify the Ansible
+uses the *KRD_ADDONS_LIST* environment variable to specify the Ansible
 playbook to be executed.
 
-    KRD_ADDONS=virtlet ./krd_command.sh -a install_k8s_addons
+    KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
 
 *Note:* Some KRD AddOns have a corresponding validation script in the
 [tests](tests) folder.
@@ -114,14 +114,14 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_KUBE_VERSION                      |                                              | Specifies the Kubernetes version to be upgraded                                 |
 | KRD_DOWNLOAD_RUN_ONCE                 | true                                         | Download images and binaries only once and then push them to the cluster nodes  |
 | KRD_DOWNLOAD_LOCALHOST                | true                                         | Make localhost the download delegate                                            |
-| KRD_DNS_SERVER                        |                                              | Set to use a custom cluster DNS                                                 |
+| KRD_MANUAL_DNS_SERVER                 |                                              | Set to use a custom cluster DNS                                                 |
 | KRD_KUBESPRAY_VERSION                 |                                              | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | https://github.com/kubernetes-sigs/kubespray | Specifies the Git repository to fetch the Kubespray's source code               |
-| KRD_ENABLE_TESTS                      |                                              | Enables the functional tests during the deployment process                      |
+| KRD_ENABLE_TESTS                      | false                                        | Enables the functional tests during the deployment process                      |
 | KRD_HELM_CHART                        |                                              | Specifies the Helm chart to be installed                                        |
 | KRD_FOLDER                            | /opt/krd                                     | KRD source code destination folder                                              |
 | KRD_ACTIONS_LIST                      | install_k8s                                  | Specifies a list of KRD actions to be installed during the All-in-One execution |
-| KRD_ADDONS                            | addons                                       | Specifies the Kubernetes AddOns to be installed by install_k8s_addons           |
+| KRD_ADDONS_LIST                       | addons                                       | Specifies the Kubernetes AddOns to be installed by install_k8s_addons           |
 | KRD_CONTAINER_RUNTIME                 | docker                                       | Specifies the Container Runtime to be used for deploying kubernetes             |
 | KRD_NETWORK_PLUGIN                    | flannel                                      | Choose network plugin (calico, canal, cilium, contiv, flannel weave)            |
 | KRD_REGISTRY_MIRRORS_LIST             |                                              | Specifies a list of additional registry mirrors                                 |

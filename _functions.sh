@@ -10,11 +10,12 @@
 
 set -o errexit
 set -o pipefail
-if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
-    set -o xtrace
-fi
+set -o nounset
 
 source _commons.sh
+if [[ "$KRD_DEBUG" == "true" ]]; then
+    set -o xtrace
+fi
 
 # add_k8s_nodes() - Add Kubernetes worker, master or etcd nodes to the existing cluster
 function add_k8s_nodes {

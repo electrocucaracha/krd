@@ -10,8 +10,12 @@
 
 set -o errexit
 set -o pipefail
+set -o nounset
 
-export KRD_TILLER_NAMESPACE=${KRD_TILLER_NAMESPACE:-default}
+source defaults.env
+if [[ "$KRD_DEBUG" == "true" ]]; then
+    set -o xtrace
+fi
 
 # _get_kube_version() - Get the Kubernetes version used or installed on the remote cluster
 function _get_kube_version {
@@ -34,7 +38,7 @@ function _install_kubespray {
     # NOTE: bindep prints a multiline's output
     # shellcheck disable=SC2005
     pkgs="$(echo "$(bindep kubespray -b)")"
-    if [ "${KRD_DOWNLOAD_LOCALHOST:-true}" == "true" ] && ! command -v docker; then
+    if [ "$KRD_DOWNLOAD_LOCALHOST" == "true" ] && ! command -v docker; then
         pkgs+=" docker"
     fi
     if ! command -v kubectl; then
@@ -48,7 +52,7 @@ function _install_kubespray {
     if [[ ! -d $kubespray_folder ]]; then
         echo "Download kubespray binaries"
 
-        sudo -E git clone "${KRD_KUBESPRAY_REPO:-https://github.com/kubernetes-sigs/kubespray}" "$kubespray_folder"
+        sudo -E git clone "$KRD_KUBESPRAY_REPO" "$kubespray_folder"
         sudo chown -R "$USER:$USER" "$kubespray_folder"
         pushd "$kubespray_folder"
         if [ "$kubespray_version" != "master" ]; then
@@ -68,7 +72,7 @@ function _install_kubespray {
         rm -rf "$krd_inventory_folder"/group_vars/
         mkdir -p "$krd_inventory_folder/group_vars/"
         cp "$KRD_FOLDER/k8s-cluster.yml" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        if [ "${KRD_ANSIBLE_DEBUG:-false}" == "true" ]; then
+        if [ "$KRD_ANSIBLE_DEBUG" == "true" ]; then
             echo "kube_log_level: 5" | tee "$krd_inventory_folder/group_vars/all.yml"
         else
             echo "kube_log_level: 2" | tee "$krd_inventory_folder/group_vars/all.yml"
@@ -87,25 +91,25 @@ function _install_kubespray {
         if [ -n "${NO_PROXY}" ]; then
             echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
         fi
-        sed -i "s/^kube_network_plugin_multus: .*$/kube_network_plugin_multus: ${KRD_MULTUS_ENABLED:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^kube_network_plugin_multus: .*$/kube_network_plugin_multus: $KRD_MULTUS_ENABLED/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         if [ -n "${KRD_KUBE_VERSION}" ]; then
             sed -i "s/^kube_version: .*$/kube_version: ${KRD_KUBE_VERSION}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         fi
-        if [ -n "${KRD_DNS_SERVER}" ]; then
-            sed -i "s/^manual_dns_server: .*$/manual_dns_server: ${KRD_DNS_SERVER}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        if [ -n "$KRD_MANUAL_DNS_SERVER" ]; then
+            sed -i "s/^manual_dns_server: .*$/manual_dns_server: $KRD_MANUAL_DNS_SERVER/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         fi
-        sed -i "s/^download_run_once: .*$/download_run_once: ${KRD_DOWNLOAD_RUN_ONCE:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        sed -i "s/^download_localhost: .*$/download_localhost: ${KRD_DOWNLOAD_LOCALHOST:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        if [ "${KRD_CONTAINER_RUNTIME:-docker}" != "docker" ]; then
+        sed -i "s/^download_run_once: .*$/download_run_once: $KRD_DOWNLOAD_RUN_ONCE/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^download_localhost: .*$/download_localhost: $KRD_DOWNLOAD_LOCALHOST/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        if [ "$KRD_CONTAINER_RUNTIME" != "docker" ]; then
             {
             echo "download_container: false"
             echo "skip_downloads: false"
             } >> "$krd_inventory_folder/group_vars/all.yml"
             sed -i 's/^etcd_deployment_type: .*$/etcd_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             sed -i 's/^kubelet_deployment_type: .*$/kubelet_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            sed -i "s/^container_manager: .*$/container_manager: ${KRD_CONTAINER_RUNTIME}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            sed -i "s/^kata_containers_enabled: .*$/kata_containers_enabled: ${KRD_KATA_CONTAINERS_ENABLED:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            sed -i "s/^crun_enabled: .*$/crun_enabled: ${KRD_CRUN_ENABLED:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            sed -i "s/^container_manager: .*$/container_manager: $KRD_CONTAINER_RUNTIME/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            sed -i "s/^kata_containers_enabled: .*$/kata_containers_enabled: $KRD_KATA_CONTAINERS_ENABLED/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            sed -i "s/^crun_enabled: .*$/crun_enabled: $KRD_CRUN_ENABLED/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         fi
         if [ -n "${KRD_REGISTRY_MIRRORS_LIST}" ]; then
             echo "docker_registry_mirrors:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
@@ -119,10 +123,10 @@ function _install_kubespray {
                 echo "  - $registry" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             done
         fi
-        sed -i "s/^kube_network_plugin: .*$/kube_network_plugin: ${KRD_NETWORK_PLUGIN:-flannel}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        sed -i "s/^cert_manager_enabled: .*$/cert_manager_enabled: ${KRD_CERT_MANAGER_ENABLED:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        sed -i "s/^ingress_nginx_enabled: .*$/ingress_nginx_enabled: ${KRD_INGRESS_NGINX_ENABLED:-true}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        sed -i "s/^dashboard_enabled: .*$/dashboard_enabled: ${KRD_DASHBOARD_ENABLED:-false}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^kube_network_plugin: .*$/kube_network_plugin: $KRD_NETWORK_PLUGIN/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^cert_manager_enabled: .*$/cert_manager_enabled: $KRD_CERT_MANAGER_ENABLED/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^ingress_nginx_enabled: .*$/ingress_nginx_enabled: $KRD_INGRESS_NGINX_ENABLED}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        sed -i "s/^dashboard_enabled: .*$/dashboard_enabled: $KRD_DASHBOARD_ENABLED/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
     fi
 }
 
@@ -228,7 +232,7 @@ function _run_ansible_cmd {
     local log=$2
 
     ansible_cmd="ANSIBLE_ROLES_PATH=/tmp/galaxy-roles sudo -E $(command -v ansible-playbook) --become "
-    if [[ "${KRD_ANSIBLE_DEBUG:-false}" == "true" ]]; then
+    if [[ "$KRD_ANSIBLE_DEBUG" == "true" ]]; then
         ansible_cmd+="-vvv "
     fi
     ansible_cmd+="-i $krd_inventory "
@@ -263,6 +267,6 @@ export krd_inventory_folder=$KRD_FOLDER/inventory
 export krd_playbooks=$KRD_FOLDER/playbooks
 export krd_inventory=$krd_inventory_folder/hosts.ini
 export kubespray_folder=/opt/kubespray
-if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
+if [[ "$KRD_DEBUG" == "true" ]]; then
     set -o xtrace
 fi

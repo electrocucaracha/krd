@@ -8,10 +8,13 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-set -o nounset
-set -o pipefail
 set -o errexit
-if [ "${KRD_DEBUG:-false}" == "true" ]; then
+set -o pipefail
+set -o nounset
+
+source defaults.env
+
+if [[ "$KRD_DEBUG" == "true" ]]; then
     set -o xtrace
 fi
 
@@ -126,7 +129,7 @@ function disable_k8s_ports {
         sudo firewall-cmd --zone=public --permanent --add-port=10250/tcp
         sudo firewall-cmd --zone=public --permanent --add-service=https
         sudo firewall-cmd --reload
-        if [ "${KRD_DEBUG:-false}" == "true" ]; then
+        if [ "$KRD_DEBUG" == "true" ]; then
             sudo firewall-cmd --get-active-zones
             sudo firewall-cmd --zone=public --list-services
             sudo firewall-cmd --zone=public --list-ports
@@ -140,7 +143,7 @@ function create_pmem_namespaces {
         for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
             sudo ndctl create-namespace -f -e "$namespace" --mode=memory || true
         done
-        if [ "${KRD_DEBUG:-false}" == "true" ]; then
+        if [ "$KRD_DEBUG" == "true" ]; then
             sudo ndctl list -iNRD
         fi
     fi
@@ -168,7 +171,7 @@ done
 
 disable_swap
 # Some containers doesn't support Hugepages (https://github.com/docker-library/postgres/issues/451#issuecomment-447472044)
-if [ "${KRD_HUGEPAGES_ENABLED:-true}" == "true" ]; then
+if [ "$KRD_HUGEPAGES_ENABLED" == "true" ]; then
     enable_hugepages
 fi
 enable_rbd
@@ -179,6 +182,6 @@ disable_k8s_ports
 create_pmem_namespaces
 enable_nvdimm_mixed_mode
 
-if [ "${KRD_DEBUG:-false}" == "true" ]; then
+if [ "$KRD_DEBUG" == "true" ]; then
     lstopo-no-graphics
 fi

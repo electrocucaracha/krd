@@ -10,9 +10,14 @@
 
 set -o errexit
 set -o pipefail
+set -o nounset
 
 source _commons.sh
+if [[ "$KRD_DEBUG" == "true" ]]; then
+    set -o xtrace
+fi
 
+# install_local_registry() - Installs a Docker registry
 function install_local_registry {
     kube_version=$(_get_kube_version)
 
@@ -31,7 +36,7 @@ function install_local_registry {
     if [[ -z $(sudo docker ps -aqf "name=registry") ]]; then
         sudo mkdir -p /var/lib/registry
         sudo -E docker run -d --name registry --restart=always \
-        -p "${DOCKER_REGISTRY_PORT:-5000}":5000 -v /var/lib/registry:/var/lib/registry registry:2
+        -p "$KRD_DOCKER_LOCAL_REGISTRY_PORT":5000 -v /var/lib/registry:/var/lib/registry registry:2
     fi
 
     # Preload Kubespray images
@@ -94,7 +99,7 @@ function install_k8s {
 
     # Configure Kubernetes Dashboard
     if kubectl get deployment/kubernetes-dashboard -n kube-system --no-headers -o custom-columns=name:.metadata.name; then
-        KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g; s|nodePort\: .*|nodePort\: ${KRD_KUBERNETES_DASHBOARD_PORT:-30080}|g\"" kubectl -n kube-system edit service kubernetes-dashboard
+        KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g; s|nodePort\: .*|nodePort\: $KRD_DASHBOARD_PORT|g\"" kubectl -n kube-system edit service kubernetes-dashboard
     fi
 
     # Update Nginx Ingress CA certificate and key values
@@ -126,17 +131,17 @@ function install_k8s_addons {
     sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
     pip_cmd="sudo -E $(command -v pip) install"
     ansible_galaxy_cmd="sudo -E $(command -v ansible-galaxy) install"
-    if [ "${KRD_ANSIBLE_DEBUG:-false}" == "true" ]; then
+    if [ "$KRD_ANSIBLE_DEBUG" == "true" ]; then
         ansible_galaxy_cmd+=" -vvv"
         pip_cmd+=" --verbose"
     fi
     eval "${ansible_galaxy_cmd} -p /tmp/galaxy-roles -r $KRD_FOLDER/galaxy-requirements.yml --ignore-errors"
     eval "${pip_cmd} openshift"
 
-    for addon in ${KRD_ADDONS:-addons}; do
+    for addon in ${KRD_ADDONS_LIST//,/ }; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
         _run_ansible_cmd "$krd_playbooks/configure-${addon}.yml" "setup-${addon}.log"
-        if [[ "${KRD_ENABLE_TESTS}" == "true" ]]; then
+        if [[ "$KRD_ENABLE_TESTS" == "true" ]]; then
             pushd "$KRD_FOLDER"/tests
             bash "${addon}".sh
             popd
@@ -196,7 +201,7 @@ function install_rundeck {
 
 # install_helm() - Function that installs Helm Client
 function install_helm {
-    local helm_version=${KRD_HELM_VERSION:-2}
+    local helm_version=${KRD_HELM_VERSION}
 
     if ! command -v helm  || _vercmp "$(helm version | awk -F '"' '{print substr($2,2); exit}')" '<' "$helm_version"; then
         curl -fsSL http://bit.ly/install_pkg | PKG="helm" PKG_HELM_VERSION="$helm_version" bash
@@ -252,14 +257,15 @@ EOF
 
 # install_helm_chart() - Function that installs additional Official Helm Charts
 function install_helm_chart {
-    if [ -z "${KRD_HELM_CHART}" ]; then
+    if [ -z "$KRD_HELM_CHART" ]; then
         return
     fi
 
     install_helm
 
     helm upgrade "${KRD_HELM_NAME:-$KRD_HELM_CHART}" \
-    "stable/$KRD_HELM_CHART" --install --atomic --tiller-namespace "$KRD_TILLER_NAMESPACE"
+    "stable/$KRD_HELM_CHART" --install --atomic \
+    --tiller-namespace "$KRD_TILLER_NAMESPACE"
 }
 
 # install_openstack() - Function that install OpenStack Controller services
@@ -512,7 +518,7 @@ function run_cnf_conformance {
     # Install cnf_conformance binary
     pushd "$cnf_conformance_dir"
     if ! command -v cnf-conformance; then
-        if [ "${KRD_CNF_CONFORMANCE_INSTALL_METHOD:-binary}" == "source" ]; then
+        if [ "$KRD_CNF_CONFORMANCE_INSTALL_METHOD" == "source" ]; then
             if ! command -v crystal; then
                 curl -fsSL http://bit.ly/install_pkg | PKG="crystal-lang" bash
             fi
@@ -767,7 +773,7 @@ spec:
   auditing:                # Whether to install KubeSphere audit log system. It provides a security-relevant chronological set of records，recording the sequence of activities happened in platform, initiated by different tenants.
     enabled: false
   devops:                  # (CPU: 0.47 Core, Memory: 8.6 G) Whether to install KubeSphere DevOps System. It provides out-of-box CI/CD system based on Jenkins, and automated workflow tools including Source-to-Image & Binary-to-Image.
-    enabled: ${KRD_KUBESPHERE_DEVOPS_ENABLED:-true}
+    enabled: $KRD_KUBESPHERE_DEVOPS_ENABLED
     jenkinsMemoryLim: 2Gi      # Jenkins memory limit.
     jenkinsMemoryReq: 1500Mi   # Jenkins memory request.
     jenkinsVolumeSize: 8Gi     # Jenkins volume size.
@@ -783,7 +789,7 @@ spec:
     enabled: false
     logsidecarReplicas: 2
   metrics_server:                    # (CPU: 56 m, Memory: 44.35 MiB) Whether to install metrics-server. IT enables HPA (Horizontal Pod Autoscaler).
-    enabled: ${KRD_KUBESPHERE_METRICS_SERVER_ENABLED:-false}
+    enabled: $KRD_KUBESPHERE_METRICS_SERVER_ENABLED
   monitoring:
     # prometheusReplicas: 1            # Prometheus replicas are responsible for monitoring different segments of data source and provide high availability as well.
     prometheusMemoryRequest: 400Mi   # Prometheus request memory.
@@ -799,7 +805,7 @@ spec:
   openpitrix:          # (2 Core, 3.6 G) Whether to install KubeSphere Application Store. It provides an application store for Helm-based applications, and offer application lifecycle management.
     enabled: false
   servicemesh:         # (0.3 Core, 300 MiB) Whether to install KubeSphere Service Mesh (Istio-based). It provides fine-grained traffic management, observability and tracing, and offer visualization for traffic topology.
-    enabled: ${KRD_KUBESPHERE_SERVICEMESH_ENABLED:-false}
+    enabled: $KRD_KUBESPHERE_SERVICEMESH_ENABLED
 EOF
     for namespace in "" -controls -monitoring -devops; do
         if kubectl get "namespace/kubesphere$namespace-system" --no-headers -o custom-columns=name:.metadata.name; then
