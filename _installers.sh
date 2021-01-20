@@ -13,8 +13,6 @@ set -o pipefail
 
 source _commons.sh
 
-tiller_namespace=${KRD_TILLER_NAMESPACE:-default}
-
 function install_local_registry {
     kube_version=$(_get_kube_version)
 
@@ -205,36 +203,36 @@ function install_helm {
     fi
     if [ "$helm_version" == "2" ]; then
         # Setup Tiller server
-        if ! kubectl get "namespaces/$tiller_namespace" --no-headers -o custom-columns=name:.metadata.name; then
-            kubectl create namespace "$tiller_namespace"
+        if ! kubectl get "namespaces/$KRD_TILLER_NAMESPACE" --no-headers -o custom-columns=name:.metadata.name; then
+            kubectl create namespace "$KRD_TILLER_NAMESPACE"
         fi
-        if ! kubectl get serviceaccount/tiller -n "$tiller_namespace" --no-headers -o custom-columns=name:.metadata.name; then
-            kubectl create serviceaccount --namespace "$tiller_namespace" tiller
+        if ! kubectl get serviceaccount/tiller -n "$KRD_TILLER_NAMESPACE" --no-headers -o custom-columns=name:.metadata.name; then
+            kubectl create serviceaccount --namespace "$KRD_TILLER_NAMESPACE" tiller
         fi
-        if ! kubectl get role/tiller-role -n "$tiller_namespace" --no-headers -o custom-columns=name:.metadata.name; then
+        if ! kubectl get role/tiller-role -n "$KRD_TILLER_NAMESPACE" --no-headers -o custom-columns=name:.metadata.name; then
             cat <<EOF | kubectl apply -f -
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: tiller-role
-  namespace: $tiller_namespace
+  namespace: $KRD_TILLER_NAMESPACE
 rules:
 - apiGroups: ["", "extensions", "apps"]
   resources: ["*"]
   verbs: ["*"]
 EOF
         fi
-        if ! kubectl get rolebinding/tiller-role-binding -n "$tiller_namespace" --no-headers -o custom-columns=name:.metadata.name; then
+        if ! kubectl get rolebinding/tiller-role-binding -n "$KRD_TILLER_NAMESPACE" --no-headers -o custom-columns=name:.metadata.name; then
             cat <<EOF | kubectl apply -f -
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: tiller-role-binding
-  namespace: $tiller_namespace
+  namespace: $KRD_TILLER_NAMESPACE
 subjects:
 - kind: ServiceAccount
   name: tiller
-  namespace: $tiller_namespace
+  namespace: $KRD_TILLER_NAMESPACE
 roleRef:
   kind: Role
   name: tiller-role
@@ -243,9 +241,9 @@ EOF
         fi
         sudo cp ~/.kube/config /home/helm/.kube/
         sudo chown helm -R /home/helm/
-        sudo su helm -c "helm init --wait --tiller-namespace $tiller_namespace"
-        kubectl patch deploy --namespace "$tiller_namespace" tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
-        kubectl rollout status deployment/tiller-deploy --timeout=5m --namespace "$tiller_namespace"
+        sudo su helm -c "helm init --wait --tiller-namespace $KRD_TILLER_NAMESPACE"
+        kubectl patch deploy --namespace "$KRD_TILLER_NAMESPACE" tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
+        kubectl rollout status deployment/tiller-deploy --timeout=5m --namespace "$KRD_TILLER_NAMESPACE"
 
         # Update repo info
         helm init --client-only
@@ -261,7 +259,7 @@ function install_helm_chart {
     install_helm
 
     helm upgrade "${KRD_HELM_NAME:-$KRD_HELM_CHART}" \
-    "stable/$KRD_HELM_CHART" --install --atomic --tiller-namespace "$tiller_namespace"
+    "stable/$KRD_HELM_CHART" --install --atomic --tiller-namespace "$KRD_TILLER_NAMESPACE"
 }
 
 # install_openstack() - Function that install OpenStack Controller services
@@ -573,8 +571,9 @@ function install_ovn_metrics_dashboard {
 # install_metrics_server() - Installs Metrics Server services
 function install_metrics_server {
     install_helm
+    helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
 
-    if ! helm ls --tiller-namespace "$tiller_namespace" | grep -e metrics-server; then
+    if _vercmp "${helm_installed_version#*v}" '<' '3'; then
         cat <<EOF | kubectl auth reconcile -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -605,43 +604,55 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: tiller
-    namespace: $tiller_namespace
+    namespace: $KRD_TILLER_NAMESPACE
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: metrics-server-role
 EOF
-
-        helm install stable/metrics-server --name metrics-server \
+        if ! helm ls --tiller-namespace "$KRD_TILLER_NAMESPACE" | grep -q metrics-server; then
+            helm install stable/metrics-server --name metrics-server \
+            --set image.repository="rancher/metrics-server" \
+            --wait \
+            --set args[0]="--kubelet-insecure-tls" \
+            --set args[1]="--kubelet-preferred-address-types=InternalIP" \
+            --set args[2]="--v=2" --tiller-namespace "$KRD_TILLER_NAMESPACE"
+        fi
+    else
+        if ! helm repo list | grep -q stable; then
+            helm repo add stable https://charts.helm.sh/stable
+            helm repo update
+        fi
+        helm upgrade --install metrics-server stable/metrics-server \
         --set image.repository="rancher/metrics-server" \
+        --wait \
         --set args[0]="--kubelet-insecure-tls" \
-        --set args[1]="--kubelet-preferred-address-types=InternalIP" \
-        --set args[2]="--v=2" --tiller-namespace "$tiller_namespace"
+        --set args[1]="--kubelet-preferred-address-types=InternalIP"
+    fi
 
-        if ! kubectl rollout status deployment/metrics-server --timeout=5m > /dev/null; then
-            echo "The metrics server has not started properly"
+    if ! kubectl rollout status deployment/metrics-server --timeout=5m > /dev/null; then
+        echo "The metrics server has not started properly"
+        exit 1
+    fi
+    attempt_counter=0
+    max_attempts=5
+    until kubectl top node 2> /dev/null; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+            echo "Max attempts reached"
             exit 1
         fi
-        attempt_counter=0
-        max_attempts=5
-        until kubectl top node 2> /dev/null; do
-            if [ ${attempt_counter} -eq ${max_attempts} ];then
-                echo "Max attempts reached"
-                exit 1
-            fi
-            attempt_counter=$((attempt_counter+1))
-            sleep 60
-        done
-        attempt_counter=0
-        until kubectl top pod 2> /dev/null; do
-            if [ ${attempt_counter} -eq ${max_attempts} ];then
-                echo "Max attempts reached"
-                exit 1
-            fi
-            attempt_counter=$((attempt_counter+1))
-            sleep 60
-        done
-    fi
+        attempt_counter=$((attempt_counter+1))
+        sleep 60
+    done
+    attempt_counter=0
+    until kubectl top pod 2> /dev/null; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+            echo "Max attempts reached"
+            exit 1
+        fi
+        attempt_counter=$((attempt_counter+1))
+        sleep 60
+    done
 }
 
 # install_nsm() - Installs Network Service Mesh

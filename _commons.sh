@@ -11,6 +11,8 @@
 set -o errexit
 set -o pipefail
 
+export KRD_TILLER_NAMESPACE=${KRD_TILLER_NAMESPACE:-default}
+
 # _get_kube_version() - Get the Kubernetes version used or installed on the remote cluster
 function _get_kube_version {
     if command -v kubectl; then
