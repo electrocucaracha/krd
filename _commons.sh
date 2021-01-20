@@ -26,7 +26,7 @@ function _get_kube_version {
     elif [ -n "${KRD_KUBE_VERSION}" ]; then
         echo "${KRD_KUBE_VERSION}"
     else
-        echo "v1.18.10"
+        echo "v1.19.7"
     fi
 }
 
@@ -68,65 +68,54 @@ function _install_kubespray {
         $PIP_CMD install --no-cache-dir -r ./requirements.txt
         make mitogen
         popd
+    fi
 
-        rm -rf "$krd_inventory_folder"/group_vars/
-        mkdir -p "$krd_inventory_folder/group_vars/"
-        cp "$KRD_FOLDER/k8s-cluster.yml" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        if [ "$KRD_ANSIBLE_DEBUG" == "true" ]; then
-            echo "kube_log_level: 5" | tee "$krd_inventory_folder/group_vars/all.yml"
-        else
-            echo "kube_log_level: 2" | tee "$krd_inventory_folder/group_vars/all.yml"
+    mkdir -p "$krd_inventory_folder/group_vars/"
+    cat << EOF > "$krd_inventory_folder/group_vars/all.yml"
+override_system_hostname: false
+docker_dns_servers_strict: false
+EOF
+    if [ "$KRD_ANSIBLE_DEBUG" == "true" ]; then
+        echo "kube_log_level: 5" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+    else
+        echo "kube_log_level: 2" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+    fi
+    if [ -n "${HTTP_PROXY:-}" ]; then
+        echo "http_proxy: \"$HTTP_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+    fi
+    if [ -n "${HTTPS_PROXY:-}" ]; then
+        echo "https_proxy: \"$HTTPS_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+    fi
+    if [ -n "${NO_PROXY:-}" ]; then
+        echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+    fi
+    KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE="docker"
+    if [ "$KRD_CONTAINER_RUNTIME" != "docker" ]; then
+        echo "download_container: false" | tee --append "$krd_inventory_folder/group_vars/all.yml"
+        KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE="host"
+        if [ "$KRD_CONTAINER_RUNTIME" == "containerd" ]; then
+            export KRD_CRUN_ENABLED=false
         fi
-        {
-        echo "override_system_hostname: false"
-        echo "kubeadm_enabled: true"
-        echo "docker_dns_servers_strict: false"
-        } >> "$krd_inventory_folder/group_vars/all.yml"
-        if [ -n "${HTTP_PROXY}" ]; then
-            echo "http_proxy: \"$HTTP_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
-        fi
-        if [ -n "${HTTPS_PROXY}" ]; then
-            echo "https_proxy: \"$HTTPS_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
-        fi
-        if [ -n "${NO_PROXY}" ]; then
-            echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
-        fi
-        sed -i "s/^kube_network_plugin_multus: .*$/kube_network_plugin_multus: $KRD_MULTUS_ENABLED/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        if [ -n "${KRD_KUBE_VERSION}" ]; then
-            sed -i "s/^kube_version: .*$/kube_version: ${KRD_KUBE_VERSION}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        fi
-        if [ -n "$KRD_MANUAL_DNS_SERVER" ]; then
-            sed -i "s/^manual_dns_server: .*$/manual_dns_server: $KRD_MANUAL_DNS_SERVER/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        fi
-        sed -i "s/^download_run_once: .*$/download_run_once: $KRD_DOWNLOAD_RUN_ONCE/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        sed -i "s/^download_localhost: .*$/download_localhost: $KRD_DOWNLOAD_LOCALHOST/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        if [ "$KRD_CONTAINER_RUNTIME" != "docker" ]; then
-            {
-            echo "download_container: false"
-            echo "skip_downloads: false"
-            } >> "$krd_inventory_folder/group_vars/all.yml"
-            sed -i 's/^etcd_deployment_type: .*$/etcd_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            sed -i 's/^kubelet_deployment_type: .*$/kubelet_deployment_type: host/' "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            sed -i "s/^container_manager: .*$/container_manager: $KRD_CONTAINER_RUNTIME/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            sed -i "s/^kata_containers_enabled: .*$/kata_containers_enabled: $KRD_KATA_CONTAINERS_ENABLED/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            sed -i "s/^crun_enabled: .*$/crun_enabled: $KRD_CRUN_ENABLED/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        fi
-        if [ -n "${KRD_REGISTRY_MIRRORS_LIST}" ]; then
-            echo "docker_registry_mirrors:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
-                echo "  - $mirror" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            done
-        fi
-        if [ -n "${KRD_INSECURE_REGISTRIES_LIST}" ]; then
-            echo "docker_insecure_registries:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            for registry in ${KRD_INSECURE_REGISTRIES_LIST//,/ }; do
-                echo "  - $registry" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            done
-        fi
-        sed -i "s/^kube_network_plugin: .*$/kube_network_plugin: $KRD_NETWORK_PLUGIN/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        sed -i "s/^cert_manager_enabled: .*$/cert_manager_enabled: $KRD_CERT_MANAGER_ENABLED/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        sed -i "s/^ingress_nginx_enabled: .*$/ingress_nginx_enabled: $KRD_INGRESS_NGINX_ENABLED}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        sed -i "s/^dashboard_enabled: .*$/dashboard_enabled: $KRD_DASHBOARD_ENABLED/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+    fi
+    export KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE
+    envsubst < k8s-cluster.tpl > "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+    if [ -n "${KRD_KUBE_VERSION:-}" ]; then
+        sed -i "s/^kube_version: .*$/kube_version: ${KRD_KUBE_VERSION}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+    fi
+    if [ -n "${KRD_MANUAL_DNS_SERVER:-}" ]; then
+        sed -i "s/^manual_dns_server: .*$/manual_dns_server: $KRD_MANUAL_DNS_SERVER/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+    fi
+    if [ -n "${KRD_REGISTRY_MIRRORS_LIST:-}" ]; then
+        echo "docker_registry_mirrors:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
+            echo "  - $mirror" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        done
+    fi
+    if [ -n "${KRD_INSECURE_REGISTRIES_LIST:-}" ]; then
+        echo "docker_insecure_registries:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        for registry in ${KRD_INSECURE_REGISTRIES_LIST//,/ }; do
+            echo "  - $registry" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        done
     fi
 }
 
