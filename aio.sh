@@ -12,6 +12,9 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
+# All-in-One deployments can't take advantage of image caching.
+export KRD_DOWNLOAD_LOCALHOST=false
+
 if [ "${KRD_DEBUG:-false}" == "true" ]; then
     set -o xtrace
     export PKG_DEBUG=true

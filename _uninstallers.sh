@@ -21,7 +21,6 @@ fi
 function uninstall_k8s {
     _install_kubespray
     _run_ansible_cmd "$kubespray_folder/reset.yml --extra-vars \"reset_confirmation=yes\"" "destroy-kubernetes.log"
-    rm -rf "$kubespray_folder"
 }
 
 # uninstall_metrics_server() - Uninstall Metrics Server services
