@@ -43,6 +43,16 @@
       file:
         path: /var/run/dockershim.sock
         state: absent
+    - name: get kubelet version
+      shell: /usr/local/bin/kubelet --version | awk '{ gsub(/v/,""); print $2 }'
+      register: kubelet_version
+      changed_when: false
+    - debug:
+        var: kubelet_version
+    - name: Stop if kubelet doesn't support --experimental-dockershim option
+      assert:
+        that: kubelet_version.stdout is version('1.19', '<')
+        msg: "Kubelet has removed its Experimental Dockershim option. See https://github.com/kubernetes/kubernetes/commit/53adde65ce000c4d90ee8f807e90658426733a5"
     - name: create dockershim service
       copy:
         mode: '0644'
@@ -57,10 +67,12 @@
         - restart criproxy service
     - name: wait for dockershim socket to be created
       wait_for:
-        path: /var/run/dockershim.sock
+        path: "{{ cri_socket_path }}"
         delay: 5
         timeout: 600
-  when: kubelet_env_stat.stat.exists
+  when:
+    - kubelet_env_stat.stat.exists
+    - ansible_facts.services["docker.service"] is defined
 
 - name: create CRIProxy binary folder
   file:
@@ -103,10 +115,12 @@
   become: true
   lineinfile:
     mode: '0644'
-    dest: /etc/systemd/system/kubelet.service
-    line: "                --container-runtime=remote --container-runtime-endpoint=unix:///run/criproxy.sock --image-service-endpoint=unix:///run/criproxy.sock --enable-controller-attach-detach=false \\"
-    insertafter: '^ExecStart=/usr/local/bin/kubelet *'
+    dest: /etc/kubernetes/kubelet.env
+    insertafter: '^--pod-infra-container-image=*'
+    line: '--container-runtime=remote --container-runtime-endpoint=unix:///run/criproxy.sock --image-service-endpoint=unix:///run/criproxy.sock --enable-controller-attach-detach=false \'
     state: present
-  when: ansible_facts.services["kubelet.service"] is defined
+  when:
+    - ansible_facts.services["kubelet.service"] is defined
+    - ansible_facts.services["docker.service"] is defined
   notify:
     - restart kubelet service

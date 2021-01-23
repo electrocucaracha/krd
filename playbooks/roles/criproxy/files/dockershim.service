@@ -2,24 +2,23 @@
 Description=dockershim for criproxy
 
 [Service]
+User=root
 EnvironmentFile=-/etc/kubernetes/kubelet.env
-ExecStartPre=-/bin/mkdir -p /var/lib/kubelet/volume-plugins
-ExecStart=/usr/local/bin/kubelet --experimental-dockershim --port 11250 \
-      $KUBE_LOGTOSTDERR \
-      $KUBE_LOG_LEVEL \
-      $KUBELET_API_SERVER \
-      $KUBELET_ADDRESS \
-      $KUBELET_PORT \
-      $KUBELET_HOSTNAME \
-      $KUBE_ALLOW_PRIV \
-      $KUBELET_ARGS \
-      $DOCKER_SOCKET \
-      $KUBELET_NETWORK_PLUGIN \
-      $KUBELET_VOLUME_PLUGIN \
-      $KUBELET_CLOUDPROVIDER
+ExecStart=/usr/local/bin/kubelet \
+                --experimental-dockershim --port 11250 \
+                $KUBE_LOGTOSTDERR \
+                $KUBE_LOG_LEVEL \
+                $KUBELET_API_SERVER \
+                $KUBELET_ADDRESS \
+                $KUBELET_PORT \
+                $KUBELET_HOSTNAME \
+                $KUBELET_ARGS \
+                $DOCKER_SOCKET \
+                $KUBELET_NETWORK_PLUGIN \
+                $KUBELET_VOLUME_PLUGIN \
+                $KUBELET_CLOUDPROVIDER
 Restart=always
-StartLimitInterval=0
-RestartSec=10
+RestartSec=10s
 
 [Install]
 RequiredBy=criproxy.service
