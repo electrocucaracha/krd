@@ -52,7 +52,7 @@
         group: '{{ ansible_ssh_user }}'
     - name: download pip installer
       get_url:
-        url: https://bootstrap.pypa.io/get-pip.py
+        url: https://bootstrap.pypa.io/2.7/get-pip.py
         dest: /tmp/get-pip.py
         mode: 0440
     - name: install pip
