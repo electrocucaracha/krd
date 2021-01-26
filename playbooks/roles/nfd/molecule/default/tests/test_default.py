@@ -22,8 +22,20 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def test_get_nfd_ready_nodes(host):
-    cmd = host.run("/usr/local/bin/kubectl get daemonset"
-                   " -n node-feature-discovery"
-                   " -o jsonpath='{.items[0].status.numberReady}'")
+    assert host.run("/usr/local/bin/kubectl rollout status"
+                    " deployment/nfd-master"
+                    " --namespace node-feature-discovery"
+                    " --timeout=3m").succeeded
+    assert host.run("/usr/local/bin/kubectl rollout status"
+                    " daemonset/nfd-worker"
+                    " --namespace node-feature-discovery"
+                    " --timeout=3m").succeeded
+    assert host.run("/usr/local/bin/kubectl get deployment"
+                    " --namespace node-feature-discovery"
+                    " -o jsonpath='{.items[0].status."
+                    "readyReplicas}'").stdout == "1"
+    assert host.run("/usr/local/bin/kubectl get daemonset"
+                    " --namespace node-feature-discovery"
+                    " -o jsonpath='{.items[0].status."
+                    "numberReady}'").stdout == "1"
 
-    assert cmd.stdout == "1"
