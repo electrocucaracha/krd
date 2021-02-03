@@ -14,6 +14,7 @@ set -o pipefail
 
 # All-in-One deployments can't take advantage of image caching.
 export KRD_DOWNLOAD_LOCALHOST=false
+krd_actions_list=${KRD_ACTIONS_LIST:-install_k8s}
 
 if [ "${KRD_DEBUG:-false}" == "true" ]; then
     set -o xtrace
@@ -112,13 +113,9 @@ fi
 sudo -E ./node.sh
 
 echo "Deploying KRD project"
-if [ -n "${KRD_ACTIONS_LIST:-}" ]; then
-    for krd_action in ${KRD_ACTIONS_LIST//,/ }; do
-        ./krd_command.sh -a "$krd_action" | tee "krd_${krd_action}.log"
-    done
-else
-    ./krd_command.sh -a install_k8s | tee krd_install_k8s.log
-fi
+for krd_action in ${krd_actions_list//,/ }; do
+    ./krd_command.sh -a "$krd_action" | tee "krd_${krd_action}.log"
+done
 if [ -f /etc/apt/sources.list.d/docker.list ] && [ -f /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list ]; then
     sudo rm /etc/apt/sources.list.d/docker.list
 fi
