@@ -14,28 +14,28 @@ clearlinux:
 centos:
   7:
     name: generic/centos7
-    version: 3.1.22
+    version: 3.2.0
   8:
     name: generic/centos8
-    version: 3.1.22
+    version: 3.2.0
 ubuntu:
   xenial:
     name: generic/ubuntu1604
-    version: 3.1.22
+    version: 3.2.0
   bionic:
     name: generic/ubuntu1804
-    version: 3.1.22
+    version: 3.2.0
   focal:
     name: generic/ubuntu2004
-    version: 3.1.22
+    version: 3.2.0
 opensuse:
   42:
     name: generic/opensuse42
-    version: 3.1.22
+    version: 3.2.0
 fedora:
   32:
     name: generic/fedora32
-    version: 3.1.22
+    version: 3.2.0
   33:
     name: generic/fedora33
-    version: 3.1.22
+    version: 3.2.0
