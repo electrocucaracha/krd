@@ -89,7 +89,7 @@
     var: criproxy_stat
 
 - name: download CRIproxy package
-  command: curl -Ls -o {{ criproxy_dest }}/criproxy {{ criproxy_url }}  # noqa 303
+  command: curl -Ls -o {{ criproxy_dest }}/criproxy {{ criproxy_url }}  # noqa command-instead-of-module
   when: not criproxy_stat.stat.exists
 
 - name: set criproxy execution permissions

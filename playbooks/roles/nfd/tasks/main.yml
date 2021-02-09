@@ -11,7 +11,7 @@
 - name: create NFD k8s resources based on templates
   k8s:
     state: present
-    definition: "{{ lookup('template', 'nfd-{{ item }}.yaml.j2') }}"  # noqa 207
+    definition: "{{ lookup('template', 'nfd-{{ item }}.yaml.j2') }}"  # noqa no-jinja-nesting
   with_items:
     - master
     - worker-daemonset

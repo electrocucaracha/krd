@@ -1,7 +1,20 @@
 skip_list:
-  - '204'
-  - '301'
-  - '305'
-  - '306'
+  - no-changed-when
+  - risky-shell-pipe
+  - command-instead-of-shell
 exclude_paths:
-  - ./roles
+  - .tox/
+  - .github
+  - config
+  - distros_supported.yml
+  - galaxy-requirements.yml
+  - .travis.yml
+  - tests
+  - playbooks/krd-vars.yml
+mock_roles:
+  - andrewrothstein.gcc-toolbox
+  - geerlingguy.docker
+  - andrewrothstein.kind
+  - andrewrothstein.kubectl
+  - andrewrothstein.go
+  - geerlingguy.repo-epel
