@@ -105,14 +105,21 @@ EOF
     if [ -n "${KRD_MANUAL_DNS_SERVER:-}" ]; then
         sed -i "s/^manual_dns_server: .*$/manual_dns_server: $KRD_MANUAL_DNS_SERVER/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
     fi
-    if [ -n "${KRD_REGISTRY_MIRRORS_LIST:-}" ]; then
-        echo "docker_registry_mirrors:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
-            echo "  - $mirror" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        done
+    if [ -n "${KRD_REGISTRY_MIRRORS_LIST:-}" ] && [ "$KRD_CONTAINER_RUNTIME" != "containerd" ]; then
+        if [ "$KRD_CONTAINER_RUNTIME" == "docker" ]; then
+            echo "docker_registry_mirrors:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
+                echo "  - $mirror" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            done
+        elif [ "$KRD_CONTAINER_RUNTIME" == "crio" ]; then
+            echo "crio_registries:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
+                echo "  - ${mirror#*//}" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            done
+        fi
     fi
-    if [ -n "${KRD_INSECURE_REGISTRIES_LIST:-}" ]; then
-        echo "docker_insecure_registries:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+    if [ -n "${KRD_INSECURE_REGISTRIES_LIST:-}" ] && [ "$KRD_CONTAINER_RUNTIME" != "containerd" ]; then
+        echo "${KRD_CONTAINER_RUNTIME}_insecure_registries:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         for registry in ${KRD_INSECURE_REGISTRIES_LIST//,/ }; do
             echo "  - $registry" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         done
@@ -230,7 +237,7 @@ function _run_ansible_cmd {
 }
 
 # Requirements
-if ! command -v curl; then
+if ! command -v curl > /dev/null; then
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
@@ -240,7 +247,7 @@ if ! command -v curl; then
         ;;
     esac
 fi
-if ! command -v bindep; then
+if ! command -v bindep > /dev/null; then
     _install_packages bindep
 fi
 pkgs="$(bindep -b || :)"
