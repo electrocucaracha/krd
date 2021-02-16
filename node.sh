@@ -66,9 +66,11 @@ function enable_hugepages {
     echo 1024 | sudo tee /sys/devices/system/node/node0/hugepages/hugepages-2048kB/nr_hugepages
 }
 
-# enable_rbd() - Rook Ceph requires a Linux kernel built with the RBD module
-function enable_rbd {
-    sudo modprobe rbd
+# ensure_kmod() - Ensures that a specific Kernel module is loaded
+function ensure_kmod {
+    sudo modprobe "$1"
+    sudo mkdir -p /etc/modules-load.d/
+    echo "$1" | sudo tee "/etc/modules-load.d/krd-$1.conf"
 }
 
 # _install_deps() - Install minimal dependencies required
@@ -174,7 +176,11 @@ disable_swap
 if [ "$KRD_HUGEPAGES_ENABLED" == "true" ]; then
     enable_hugepages
 fi
-enable_rbd
+# rbd - Rook Ceph requires a Linux kernel built with the RBD module
+# ip6table_filter - Ensure Filter IP6 table exists
+for kmod in rbd ip6table_filter; do
+    ensure_kmod "$kmod"
+done
 _install_deps
 sync_clock
 mount_partitions
