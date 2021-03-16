@@ -97,14 +97,44 @@ function install_k8s {
     sudo chown -R "$USER" "$HOME/.kube/"
     chmod 600 "$HOME/.kube/config"
 
-    # Configure Kubernetes Dashboard
-    if kubectl get deployment/kubernetes-dashboard -n kube-system --no-headers -o custom-columns=name:.metadata.name; then
-        KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g; s|nodePort\: .*|nodePort\: $KRD_DASHBOARD_PORT|g\"" kubectl -n kube-system edit service kubernetes-dashboard
-    fi
-
     # Update Nginx Ingress CA certificate and key values
     if kubectl get secret/ca-key-pair -n cert-manager --no-headers -o custom-columns=name:.metadata.name; then
         _update_ngnix_ingress_ca
+    fi
+
+    # Configure Kubernetes Dashboard
+    if kubectl get deployment/kubernetes-dashboard -n kube-system --no-headers -o custom-columns=name:.metadata.name; then
+        if kubectl get daemonsets/ingress-nginx-controller -n ingress-nginx --no-headers -o custom-columns=name:.metadata.name; then
+            annotations="
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: \"HTTPS\""
+            if kubectl get secret/ca-key-pair -n cert-manager --no-headers -o custom-columns=name:.metadata.name; then
+            annotations+="
+    cert-manager.io/cluster-issuer: ca-issuer"
+            fi
+            cat <<EOF | kubectl apply -f -
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+$annotations
+  name: dashboard
+  namespace: kube-system
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: kubernetes-dashboard
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+EOF
+        else
+            KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g; s|nodePort\: .*|nodePort\: $KRD_DASHBOARD_PORT|g\"" kubectl -n kube-system edit service kubernetes-dashboard
+        fi
     fi
 
     # Sets Local storage as default Storage class
