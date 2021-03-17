@@ -42,6 +42,18 @@ jobs:
         - pip install tox
       script:
         - tox -e docs
+    - name: All-in-One + Dashboard
+      language: shell
+      script:
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - wget -qO- http://$(ip route get 8.8.8.8 | grep "^8." | awk '{ print $7 }') | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' | grep -q "Kubernetes Dashboard" || exit 1
+      env:
+        - KRD_DEBUG=true
+        - KRD_DASHBOARD_ENABLED=true
+      after_success:
+        - kubectl get all -A -o wide
+      after_script:
+        - ./krd_command.sh -a uninstall_k8s
     - name: All-in-One + Runtime classes(CRI-O)
       language: shell
       install:
