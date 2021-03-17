@@ -25,8 +25,9 @@ destroy_deployment "$crun_deployment_name"
 # Test
 info "===== Test started ====="
 
-info "+++++ Kata Containers QEMU validation:"
-cat <<EOF | kubectl apply -f -
+if kubectl get runtimeclasses/kata-qemu; then
+    info "+++++ Kata Containers QEMU validation:"
+    cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1 
 kind: Deployment
 metadata:
@@ -50,15 +51,18 @@ spec:
           command: ["sleep"]
           args: ["infity"]
 EOF
-wait_deployment "$kata_deployment_name"
-deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=kata -o jsonpath='{.items[0].metadata.name}')
-info "$deployment_pod assertions:"
-assert_non_empty "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "$deployment_pod is using the default runtime"
-assert_contains "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "kata-qemu" "$deployment_pod is not using the Kata Containers runtime"
-assert_are_not_equal "$(kubectl exec -it "$deployment_pod" -- uname -a)" "$(uname -a)" "$deployment_pod has the same kernel version than the host"
+    wait_deployment "$kata_deployment_name"
+    deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=kata -o jsonpath='{.items[0].metadata.name}')
 
-info "+++++ crun validation:"
-cat <<EOF | kubectl apply -f -
+    info "$deployment_pod assertions:"
+    assert_non_empty "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "$deployment_pod is using the default runtime"
+    assert_contains "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "kata-qemu" "$deployment_pod is not using the Kata Containers runtime"
+    assert_are_not_equal "$(kubectl exec -it "$deployment_pod" -- uname -a)" "$(uname -a)" "$deployment_pod has the same kernel version than the host"
+fi
+
+if kubectl get runtimeclasses/crun; then
+    info "+++++ crun validation:"
+    cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1 
 kind: Deployment
 metadata:
@@ -82,11 +86,13 @@ spec:
           command: ["sleep"]
           args: ["infity"]
 EOF
-wait_deployment "$crun_deployment_name"
-deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=crun -o jsonpath='{.items[0].metadata.name}')
-info "$deployment_pod assertions:"
-assert_non_empty "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "$deployment_pod is using the default runtime"
-assert_contains "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "crun" "$deployment_pod is not using the crun runtime"
+    wait_deployment "$crun_deployment_name"
+    deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=crun -o jsonpath='{.items[0].metadata.name}')
+
+    info "$deployment_pod assertions:"
+    assert_non_empty "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "$deployment_pod is using the default runtime"
+    assert_contains "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "crun" "$deployment_pod is not using the crun runtime"
+fi
 
 info "===== Test completed ====="
 
