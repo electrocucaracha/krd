@@ -33,7 +33,8 @@
     path: /etc/kubernetes/kubelet.env
   register: kubelet_env_stat
 
-- debug:
+- name: print kubelet_env_stat value
+  debug:
     var: kubelet_env_stat
 
 - name: create dockershim service
@@ -47,7 +48,8 @@
       shell: /usr/local/bin/kubelet --version | awk '{ gsub(/v/,""); print $2 }'
       register: kubelet_version
       changed_when: false
-    - debug:
+    - name: print kubelet_version value
+      debug:
         var: kubelet_version
     - name: Stop if kubelet doesn't support --experimental-dockershim option
       assert:
@@ -85,7 +87,8 @@
     path: "{{ criproxy_dest }}/criproxy"
   register: criproxy_stat
 
-- debug:
+- name: print criproxy_stat value
+  debug:
     var: criproxy_stat
 
 - name: download CRIproxy package

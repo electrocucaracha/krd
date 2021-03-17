@@ -18,7 +18,8 @@
     path: /usr/local/bin/cfssljson
   register: cfssljson
 
-- debug:
+- name: print cfssl and cfssljson values
+  debug:
     var: '{{ item }}'
   with_items:
     - cfssl
@@ -72,7 +73,8 @@
     namespace: default
   register: registry_secret
 
-- debug:
+- name: print node and registry values
+  debug:
     var: '{{ item }}_secret'
   with_items:
     - node

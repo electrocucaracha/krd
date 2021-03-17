@@ -13,7 +13,8 @@
   register: intel_qat_version
   changed_when: false
 
-- debug:
+- name: print intel_qat_version value
+  debug:
     var: intel_qat_version
 
 - include: cleanup.yml

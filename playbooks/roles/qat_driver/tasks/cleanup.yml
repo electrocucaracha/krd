@@ -23,7 +23,8 @@
   register: intel_qat_deps
   changed_when: false
 
-- debug:
+- name: print intel_qat_deps value
+  debug:
     var: intel_qat_deps
 
 - name: remove intel_qat kernel module dependencies

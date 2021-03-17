@@ -36,7 +36,8 @@
       command: '{{ kind_dest }}/kind get clusters --quiet'
       register: kind_cluster
       failed_when: ( kind_cluster.rc not in [ 0, 1 ] )
-    - debug:
+    - name: print kind_cluster value
+      debug:
         var: kind_cluster
     - name: create k8s cluster
       become: true
