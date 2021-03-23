@@ -56,23 +56,19 @@ jobs:
         - ./krd_command.sh -a uninstall_k8s
     - name: All-in-One + Runtime classes(CRI-O)
       language: shell
-      install:
-        - systemctl --all --type service | grep -q docker && sudo systemctl stop docker --now
-        - sudo apt-get purge -y docker-ce
-        - sudo rm -f $(sudo netstat -npl | grep docker | awk '{print $NF}')
       script:
-        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-        - cd tests; ./runtimeclasses.sh
+        - ./check.sh centos 7 # NOTE: https://github.com/kubernetes-sigs/kubespray
       env:
-        - KRD_KUBESPRAY_VERSION=master
         - KRD_DEBUG=true
+        - KRD_KUBE_VERSION=v1.19.7
+        - KRD_KUBESPRAY_VERSION=v2.15.0
         - KRD_CONTAINER_RUNTIME=crio
         - KRD_KATA_CONTAINERS_ENABLED=true
         - KRD_CRUN_ENABLED=true
       after_success:
         - kubectl get all -A -o wide
       after_script:
-        - ./krd_command.sh -a uninstall_k8s
+        - cd tests; ./runtimeclasses.sh
     - name: All-in-One + Runtime classes(ContainerD)
       language: shell
       install:
@@ -83,7 +79,6 @@ jobs:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - cd tests; ./runtimeclasses.sh
       env:
-        - KRD_KUBESPRAY_VERSION=master
         - KRD_DEBUG=true
         - KRD_CONTAINER_RUNTIME=containerd
         - KRD_KATA_CONTAINERS_ENABLED=true

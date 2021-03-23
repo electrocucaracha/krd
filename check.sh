@@ -12,11 +12,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-function die {
-    echo >&2 "$@"
-    exit 1
-}
-
 function msg {
     echo "$(date +%H:%M:%S) - $1: $2"
 }
@@ -39,7 +34,7 @@ function asserts {
     fi
 }
 
-exit_trap() {
+function exit_trap {
     printf "CPU usage: "
     grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage " %"}'
     printf "Memory free(Kb):"
@@ -52,7 +47,7 @@ exit_trap() {
     fi
 }
 
-[ "$#" -eq 2 ] || die "2 arguments required, $# provided"
+[ "$#" -eq 2 ] || error "2 arguments required, $# provided"
 
 info "Configure SSH keys"
 sudo mkdir -p /root/.ssh/
@@ -108,7 +103,6 @@ trap exit_trap ERR
 trap ERR
 
 info "Validate Kubernetes execution"
-kubectl get nodes -o wide
 asserts "$KRD_KUBE_VERSION" "$(kubectl version --short | awk 'FNR==2{print $3}')"
 pushd /opt/kubespray > /dev/null
 asserts "$KRD_KUBESPRAY_VERSION" "$(git describe --abbrev=0 --tags)"
