@@ -22,7 +22,11 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-      - name: Lint Code Base
-        uses: docker://github/super-linter:v2.0.0
+      - name: Run linter
+        uses: github/super-linter@v3
         env:
-          VALIDATE_BASH: false
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LINTER_RULES_PATH: /
+          VALIDATE_KUBERNETES_KUBEVAL: false
+          VALIDATE_PYTHON_PYLINT: false
+          PYTHON_FLAKE8_CONFIG_FILE: tox.ini

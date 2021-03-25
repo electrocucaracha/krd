@@ -6,13 +6,13 @@
 # are updated with new certificates when running it again.
 
 # The script needs a functional kubectl that uses the target cluster.
-: ${KUBECTL:=kubectl}
+: "${KUBECTL:=kubectl}"
 
 # The directory containing setup-ca*.sh.
-: ${TEST_DIRECTORY:=$(dirname $(readlink -f $0))}
+: "${TEST_DIRECTORY:="$(dirname "$(readlink -f "$0")")"}"
 
 
-tmpdir=`mktemp -d`
+tmpdir="$(mktemp -d)"
 trap 'rm -r $tmpdir' EXIT
 
 # Generate certificates. They are not going to be needed again and will

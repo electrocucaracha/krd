@@ -14,17 +14,14 @@ import os.path
 
 import diagrams
 import diagrams.k8s.infra as k8s_infra
-from diagrams.generic.os import Ubuntu
-from diagrams.generic.os import Centos
-from diagrams.generic.os import Suse
-
 import yaml
+from diagrams.generic.os import Centos, Suse, Ubuntu
 
 with diagrams.Diagram(filename="krd", direction="BT"):
     try:
-        config_nodes = yaml.load(open(r'config/default.yml'), Loader=yaml.FullLoader)
-        if os.path.isfile('config/pdf.yml'):
-             config_nodes = yaml.load(open(r'config/pdf.yml'), Loader=yaml.FullLoader)
+        config_nodes = yaml.load(open(r"config/default.yml"), Loader=yaml.FullLoader)
+        if os.path.isfile("config/pdf.yml"):
+            config_nodes = yaml.load(open(r"config/pdf.yml"), Loader=yaml.FullLoader)
     except IOError:
         print("File not accessible")
 
@@ -33,13 +30,15 @@ with diagrams.Diagram(filename="krd", direction="BT"):
         ips = ""
         for net in node["networks"]:
             ips += net["ip"] + "\n"
-        with diagrams.Cluster(f'{node["name"]} ({node["cpus"]} vCPUs, {node["memory"]} KB)\n{ips[:-1]}'):
+        with diagrams.Cluster(
+            f'{node["name"]} ({node["cpus"]} vCPUs, {node["memory"]} KB)\n{ips[:-1]}'
+        ):
             if node["os"]["name"] == "ubuntu":
-                 nodes.append(Ubuntu())
+                nodes.append(Ubuntu())
             elif node["os"]["name"] == "centos":
-                 nodes.append(Centos())
+                nodes.append(Centos())
             elif node["os"]["name"] == "opensuse":
-                 nodes.append(Suse())
+                nodes.append(Suse())
             with diagrams.Cluster("Kubernetes Roles"):
                 roles = []
                 if "kube-master" in node["roles"]:

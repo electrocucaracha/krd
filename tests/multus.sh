@@ -20,6 +20,17 @@ bridge_net_name=bridge-test
 subnet_prefix="10.10.10"
 subnet="${subnet_prefix}.0/24"
 cni_version="0.4.0"
+container_spec=$(cat <<EOF
+    spec:
+      containers:
+        - name: instance
+          image: busybox
+          command:
+            - sleep
+          args:
+            - infinity
+EOF
+)
 
 # Setup
 destroy_deployment "$multus_deployment_name"
@@ -66,14 +77,7 @@ spec:
           { "name": "$bridge_net_name", "interfaceRequest": "eth1" },
           { "name": "$bridge_net_name", "interfaceRequest": "eth2" }
         ]'
-    spec:
-      containers:
-      - name: instance
-        image: busybox
-        command:
-          - sleep
-        args:
-          - infinity
+$container_spec
 EOF
 wait_deployment "$multus_deployment_name"
 deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=multus -o jsonpath='{.items[0].metadata.name}')
@@ -121,14 +125,7 @@ spec:
         app.kubernetes.io/name: multus
       annotations:
         v1.multus-cni.io/default-network: $bridge_net_name
-    spec:
-      containers:
-      - name: instance
-        image: busybox
-        command:
-          - sleep
-        args:
-          - infinity
+$container_spec
 EOF
 wait_deployment "$multus_deployment_name"
 deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=multus -o jsonpath='{.items[0].metadata.name}')

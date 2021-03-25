@@ -10,9 +10,9 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import random
 import os
+import random
 
-for i in range(random.randint(600,3600)):
-    os.system("sleep 1") 
-    print("Running for %s secs" % (i+1))
+for i in range(random.randint(600, 3600)):
+    os.system("sleep 1")
+    print("Running for %s secs" % (i + 1))

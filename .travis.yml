@@ -57,7 +57,7 @@ jobs:
     - name: All-in-One + Runtime classes(CRI-O)
       language: shell
       script:
-        - ./check.sh centos 7 # NOTE: https://github.com/kubernetes-sigs/kubespray
+        - ./check.sh centos 7  # NOTE: https://github.com/kubernetes-sigs/kubespray
       env:
         - KRD_DEBUG=true
         - KRD_KUBE_VERSION=v1.19.7

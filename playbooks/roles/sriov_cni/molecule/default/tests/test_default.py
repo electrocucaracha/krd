@@ -18,26 +18,32 @@ import os
 import testinfra.utils.ansible_runner
 
 testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
-    os.environ['MOLECULE_INVENTORY_FILE']).get_hosts('all')
+    os.environ["MOLECULE_INVENTORY_FILE"]
+).get_hosts("all")
 
 
 def test_sriov_cni_ready(host):
-    cmd = host.run("/usr/local/bin/kubectl rollout status"
-                   " daemonset/kube-sriov-cni-ds-amd64 -n kube-system")
+    cmd = host.run(
+        "/usr/local/bin/kubectl rollout status"
+        " daemonset/kube-sriov-cni-ds-amd64 -n kube-system"
+    )
 
     assert cmd.rc == 0
     assert "successfully rolled out" in cmd.stdout
 
+
 def test_sriov_bin_copied(host):
-    cmd = host.run("/usr/bin/docker exec molecule-control-plane"
-                   " ls /opt/cni/bin/")
+    cmd = host.run("/usr/bin/docker exec molecule-control-plane" " ls /opt/cni/bin/")
 
     assert cmd.rc == 0
     assert "sriov" in cmd.stdout
 
+
 def test_sriov_net_created(host):
-    cmd = host.run("/usr/local/bin/kubectl get net-attach-def"
-                   " sriov-net -n kube-system --no-headers")
+    cmd = host.run(
+        "/usr/local/bin/kubectl get net-attach-def"
+        " sriov-net -n kube-system --no-headers"
+    )
 
     assert cmd.rc == 0
     assert "sriov-net" in cmd.stdout

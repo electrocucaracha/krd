@@ -3,12 +3,12 @@
 # Directory to use for storing intermediate files.
 CA=${CA:="pmem-ca"}
 WORKDIR=${WORKDIR:-$(mktemp -d -u -t pmem-XXXX)}
-mkdir -p $WORKDIR
-cd $WORKDIR
+mkdir -p "$WORKDIR"
+cd "$WORKDIR" || exit
 
 # Check for cfssl utilities.
 cfssl_found=1
-(command -v cfssl 2>&1 >/dev/null && command -v cfssljson 2>&1 >/dev/null) || cfssl_found=0
+(command -v cfssl > /dev/null && command -v cfssljson > /dev/null) || cfssl_found=0
 if [ $cfssl_found -eq 0 ]; then
     echo "cfssl tools not found, Please install cfssl and cfssljson."
     exit 1
@@ -29,7 +29,7 @@ EOF
 DEFAULT_CNS="pmem-registry pmem-node-controller"
 CNS="${DEFAULT_CNS} ${EXTRA_CNS:=""}"
 for name in ${CNS}; do
-  <<EOF cfssl gencert -loglevel=3 -ca=ca.pem -ca-key=ca-key.pem - | cfssljson -bare $name
+  <<EOF cfssl gencert -loglevel=3 -ca=ca.pem -ca-key=ca-key.pem - | cfssljson -bare "$name"
 {
     "CN": "$name",
     "hosts": [
