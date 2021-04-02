@@ -1,4 +1,7 @@
-molecule==3.0.8 # MIT
-molecule_vagrant==0.3 # MIT
-docker # Apache-2.0
+ansible # GPLv3
+ansible-lint # MIT
+molecule # MIT
+molecule-vagrant # MIT
+python-vagrant # MIT
 pytest-testinfra # Apache-2.0
+yamllint # GPLv3
