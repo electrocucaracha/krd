@@ -16,17 +16,20 @@ on:
       - 'master'
 
 jobs:
-  build:
-    name: Lint Code Base
+  lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Run linter
-        uses: github/super-linter@v3
+      - uses: actions/checkout@v2
+      - uses: github/super-linter@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: /
           VALIDATE_KUBERNETES_KUBEVAL: false
           VALIDATE_PYTHON_PYLINT: false
           PYTHON_FLAKE8_CONFIG_FILE: tox.ini
+      - name: Install tox
+        run: pip install tox
+      - name: Run tox lint validation
+        run: tox -e lint
+      - name: Run tox documents validation
+        run: tox -e docs

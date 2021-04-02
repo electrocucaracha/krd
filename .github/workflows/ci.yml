@@ -1,0 +1,101 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2021
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+name: Check Bare-Metal installations
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  check-dashboard:
+    runs-on: ubuntu-18.04
+    env:
+      KRD_DEBUG: true
+      KRD_DASHBOARD_ENABLED: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy services
+        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+      - name: Run tests
+        run: wget -qO- http://$(ip route get 8.8.8.8 | grep "^8." | awk '{ print $7 }') | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' | grep -q "Kubernetes Dashboard" || exit 1
+      - if: ${{ failure() }}
+        run: kubectl get all -A -o wide
+  check-containerd:
+    runs-on: ubuntu-18.04
+    env:
+      KRD_DEBUG: true
+      KRD_CONTAINER_RUNTIME: containerd
+      KRD_KATA_CONTAINERS_ENABLED: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Remove Docker dependencies
+        run: |
+          systemctl --all --type service | grep -q docker && sudo systemctl stop docker --now
+          sudo apt-get purge -y docker-ce
+          sudo rm -f $(sudo netstat -npl | grep docker | awk '{print $NF}')
+      - name: Deploy services
+        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+      - name: Run tests
+        run: cd tests; ./runtimeclasses.sh
+      - if: ${{ failure() }}
+        run: kubectl get all -A -o wide
+  check-kubevirt-with-multus:
+    runs-on: ubuntu-18.04
+    env:
+      KRD_DEBUG: true
+      KRD_MULTUS_ENABLED: true
+      KRD_CERT_MANAGER_ENABLED: false
+      KRD_INGRESS_NGINX_ENABLED: false
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy services
+        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+      - name: Deploy Kubevirt services
+        run: ./krd_command.sh -a install_kubevirt
+      - name: Run tests
+        run: cd tests; ./multus.sh
+      - if: ${{ failure() }}
+        run: kubectl get all -A -o wide
+  check-istio:
+    runs-on: ubuntu-18.04
+    env:
+      KRD_DEBUG: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy services
+        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+      - name: Deploy Kubevirt services
+        run: ./krd_command.sh -a install_istio
+      - if: ${{ failure() }}
+        run: kubectl get all -A -o wide
+      - name: Undeploy services
+        run: ./krd_command.sh -a uninstall_k8s
+  check-virtlet-with-metrics-server:
+    runs-on: ubuntu-18.04
+    env:
+      KRD_DEBUG: true
+      KRD_ACTIONS_LIST: "install_k8s,install_k8s_addons"
+      KRD_ENABLE_TESTS: true
+      KRD_ADDONS_LIST: virtlet
+      KRD_KUBE_VERSION: v1.18.10
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy services
+        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+      - name: Deploy Metrics server services
+        run: ./krd_command.sh -a install_metrics_server
+      - if: ${{ failure() }}
+        run: kubectl get all -A -o wide
+      - name: Validate top node command
+        run: kubectl top node
+      - name: Validate top node command
+        run: kubectl top pod

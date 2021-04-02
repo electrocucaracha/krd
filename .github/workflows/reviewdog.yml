@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Run misspell with reviewdog
+name: Run misspell
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -16,14 +16,10 @@ on:
       - 'master'
 
 jobs:
-  build:
-    name: Lint Code Base
+  check:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-      - name: Run misspell
-        uses: reviewdog/action-misspell@v1
+      - uses: actions/checkout@v2
+      - uses: reviewdog/action-misspell@v1
         with:
           github_token: ${{ secrets.github_token }}
-          locale: "US"

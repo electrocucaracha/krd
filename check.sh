@@ -99,11 +99,11 @@ sudo vagrant up
 
 info "Provision Kubernetes cluster"
 trap exit_trap ERR
-./krd_command.sh -a install_k8s
+KRD_DEBUG=true ./krd_command.sh -a install_k8s
 trap ERR
 
 info "Validate Kubernetes execution"
-asserts "$KRD_KUBE_VERSION" "$(kubectl version --short | awk 'FNR==2{print $3}')"
+asserts "${KRD_KUBE_VERSION:-v1.19.7}" "$(kubectl version --short | awk 'FNR==2{print $3}')"
 pushd /opt/kubespray > /dev/null
-asserts "$KRD_KUBESPRAY_VERSION" "$(git describe --abbrev=0 --tags)"
+asserts "${KRD_KUBESPRAY_VERSION:-v2.15.0}" "$(git describe --abbrev=0 --tags)"
 popd > /dev/null
