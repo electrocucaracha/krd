@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GitHub Super-Linter](https://github.com/electrocucaracha/krd/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
+![visitors](https://visitor-badge.glitch.me/badge?page_id=electrocucaracha.krd)
 
 ## Summary
 
@@ -17,6 +18,7 @@ or Virtual Machines.
 | Ubuntu     | 16.04/18.04/20.04 |
 | CentOS     | 7/8               |
 | openSUSE   | Tumbleweed        |
+| Fedora     | 32/33             |
 
 ## Components
 
