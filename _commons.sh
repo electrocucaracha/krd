@@ -58,13 +58,19 @@ function _install_kubespray {
         if [ "$kubespray_version" != "master" ]; then
             git checkout -b "${kubespray_version#"origin/"}" "$kubespray_version"
         fi
+
         PIP_CMD="sudo -E $(command -v pip)"
+
         # This ensures that ansible is previously not installed
-        if command -v ansible; then
-            sitepackages_path=$(pip show ansible | grep Location | awk '{ print $2 }')
+        if pip show ansible; then
+            ansible_path="$(pip show ansible | grep Location | awk '{ print $2 }')/ansible"
             $PIP_CMD uninstall ansible -y
-            sudo rm -rf "$sitepackages_path/ansible"
+            sudo rm -rf "$ansible_path"
         fi
+        if command -v pipx && pipx list | grep -q ansible-base; then
+            sudo -E "$(command -v pipx)" uninstall ansible-base
+        fi
+
         $PIP_CMD install --no-cache-dir -r ./requirements.txt
         make mitogen
         popd
