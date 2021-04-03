@@ -97,12 +97,18 @@ EOF
     fi
     KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE="docker"
     if [ "$KRD_CONTAINER_RUNTIME" != "docker" ]; then
+        # https://github.com/kubernetes-sigs/kubespray/pull/6997
+        # https://github.com/kubernetes-sigs/kubespray/pull/6998
+        if [ "$kubespray_version" != "master" ] && _vercmp "${kubespray_version#*v}" '<' "2.15"; then
+            export KRD_DOWNLOAD_RUN_ONCE=false
+        fi
         echo "download_container: false" | tee --append "$krd_inventory_folder/group_vars/all.yml"
         KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE="host"
         if [ "$KRD_CONTAINER_RUNTIME" == "containerd" ]; then
             export KRD_CRUN_ENABLED=false
         fi
     fi
+    export KRD_DOWNLOAD_LOCALHOST=$KRD_DOWNLOAD_RUN_ONCE
     export KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE
     envsubst < k8s-cluster.tpl > "$krd_inventory_folder/group_vars/k8s-cluster.yml"
     if [ -n "${KRD_KUBE_VERSION:-}" ]; then
