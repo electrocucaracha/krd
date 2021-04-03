@@ -41,7 +41,7 @@ function _install_kubespray {
     if [ "$KRD_DOWNLOAD_LOCALHOST" == "true" ] && ! command -v docker; then
         pkgs+=" docker"
     fi
-    if ! command -v kubectl; then
+    if ! command -v kubectl || ! kubectl krew version &>/dev/null; then
         pkgs+=" kubectl"
     fi
     if [ -n "$pkgs" ]; then
