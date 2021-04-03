@@ -37,11 +37,6 @@ jobs:
       KRD_KATA_CONTAINERS_ENABLED: true
     steps:
       - uses: actions/checkout@v2
-      - name: Remove Docker dependencies
-        run: |
-          systemctl --all --type service | grep -q docker && sudo systemctl stop docker --now
-          sudo apt-get purge -y docker-ce
-          sudo rm -f $(sudo netstat -npl | grep docker | awk '{print $NF}')
       - name: Deploy services
         run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
       - name: Run tests

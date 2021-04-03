@@ -112,10 +112,27 @@ fi
 
 sudo -E ./node.sh
 
+# Resolving Docker previous installation issues
+if [ "${KRD_CONTAINER_RUNTIME:-docker}" == "docker" ] && command -v docker; then
+    echo "Removing docker previous installation"
+    # shellcheck disable=SC1091
+    source /etc/os-release || source /usr/lib/os-release
+    case ${ID,,} in
+        ubuntu|debian)
+            systemctl --all --type service | grep -q docker && sudo systemctl stop docker --now
+            sudo apt-get purge -y docker-ce docker-ce-cli moby-engine moby-cli moby-buildx || true
+            sudo rm -rf /var/lib/docker /etc/docker
+            sudo rm -rf /var/run/docker.sock
+            sudo rm -f "$(sudo netstat -npl | grep docker | awk '{print $NF}')"
+        ;;
+    esac
+fi
+
 echo "Deploying KRD project"
 for krd_action in ${krd_actions_list//,/ }; do
     ./krd_command.sh -a "$krd_action" | tee "krd_${krd_action}.log"
 done
+
 if [ -f /etc/apt/sources.list.d/docker.list ] && [ -f /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list ]; then
     sudo rm /etc/apt/sources.list.d/docker.list
 fi
