@@ -12,6 +12,8 @@ dependency:
   name: galaxy
 driver:
   name: vagrant
+  provider:
+    name: libvirt
 lint: |
   set -e
   PATH=${PATH}
