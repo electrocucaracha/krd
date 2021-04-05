@@ -45,6 +45,50 @@ jobs:
         - kubectl get all -A -o wide
       after_script:
         - cd tests; ./runtimeclasses.sh
+    - name: All-in-One + Runtime classes(ContainerD)
+      language: shell
+      install: skip
+      script:
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - cd tests; ./runtimeclasses.sh
+      env:
+        - KRD_DEBUG=true
+        - KRD_CONTAINER_RUNTIME=containerd
+        - KRD_KATA_CONTAINERS_ENABLED=true
+        - KRD_CRUN_ENABLED=true
+      after_success:
+        - kubectl get all -A -o wide
+      after_script:
+        - ./krd_command.sh -a uninstall_k8s
+    - name: All-in-One + Kubevirt validation
+      language: shell
+      install: skip
+      script:
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+        - ./krd_command.sh -a install_kubevirt
+      env:
+        - KRD_DEBUG=true
+        - KRD_CERT_MANAGER_ENABLED=false
+        - KRD_INGRESS_NGINX_ENABLED=false
+      after_success:
+        - kubectl get all -A -o wide
+      after_script:
+        - ./krd_command.sh -a uninstall_k8s
+    - name: All-in-One + Virtlet role validation
+      language: shell
+      install: skip
+      script:
+        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+      env:
+        - KRD_DEBUG=true
+        - KRD_ACTIONS_LIST="install_k8s,install_k8s_addons"
+        - KRD_ENABLE_TESTS=true
+        - KRD_ADDONS_LIST=virtlet
+        - KRD_KUBE_VERSION=v1.18.10
+      after_failure:
+        - kubectl get all -A -o wide
+      after_script:
+        - ./krd_command.sh -a uninstall_k8s
     - name: Pod Definition File validation (CentOS 8)
       language: shell
       script:

@@ -29,21 +29,7 @@ jobs:
         run: wget -qO- http://$(ip route get 8.8.8.8 | grep "^8." | awk '{ print $7 }') | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' | grep -q "Kubernetes Dashboard" || exit 1
       - if: ${{ failure() }}
         run: kubectl get all -A -o wide
-  check-containerd:
-    runs-on: ubuntu-18.04
-    env:
-      KRD_DEBUG: true
-      KRD_CONTAINER_RUNTIME: containerd
-      KRD_KATA_CONTAINERS_ENABLED: true
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy services
-        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-      - name: Run tests
-        run: cd tests; ./runtimeclasses.sh
-      - if: ${{ failure() }}
-        run: kubectl get all -A -o wide
-  check-kubevirt-with-multus:
+  check-multus:
     runs-on: ubuntu-18.04
     env:
       KRD_DEBUG: true
@@ -54,8 +40,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Deploy services
         run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-      - name: Deploy Kubevirt services
-        run: ./krd_command.sh -a install_kubevirt
       - name: Run tests
         run: cd tests; ./multus.sh
       - if: ${{ failure() }}
@@ -74,14 +58,10 @@ jobs:
         run: kubectl get all -A -o wide
       - name: Undeploy services
         run: ./krd_command.sh -a uninstall_k8s
-  check-virtlet-with-metrics-server:
+  check-metrics-server:
     runs-on: ubuntu-18.04
     env:
       KRD_DEBUG: true
-      KRD_ACTIONS_LIST: "install_k8s,install_k8s_addons"
-      KRD_ENABLE_TESTS: true
-      KRD_ADDONS_LIST: virtlet
-      KRD_KUBE_VERSION: v1.18.10
     steps:
       - uses: actions/checkout@v2
       - name: Deploy services
