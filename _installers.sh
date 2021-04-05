@@ -274,6 +274,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 EOF
         fi
+        sudo mkdir -p /home/helm/.kube/
         sudo cp ~/.kube/config /home/helm/.kube/
         sudo chown helm -R /home/helm/
         sudo su helm -c "helm init --wait --tiller-namespace $KRD_TILLER_NAMESPACE"
