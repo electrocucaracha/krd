@@ -236,7 +236,10 @@ function install_helm {
     if ! command -v helm  || _vercmp "$(helm version | awk -F '"' '{print substr($2,2); exit}')" '<' "$helm_version"; then
         curl -fsSL http://bit.ly/install_pkg | PKG="helm" PKG_HELM_VERSION="$helm_version" bash
     fi
-    if [ "$helm_version" == "2" ]; then
+
+    # Configure Tiller for Helm v2
+    helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
+    if _vercmp "${helm_installed_version#*v}" '<' '3'; then
         # Setup Tiller server
         if ! kubectl get "namespaces/$KRD_TILLER_NAMESPACE" --no-headers -o custom-columns=name:.metadata.name; then
             kubectl create namespace "$KRD_TILLER_NAMESPACE"
@@ -535,8 +538,7 @@ function run_cnf_conformance {
     local cnf_conformance_dir="/opt/cnf-conformance"
     local version="v0.6.0"
 
-    KRD_HELM_VERSION=3
-    install_helm
+    KRD_HELM_VERSION=3 install_helm
 
     if [ ! -d "$cnf_conformance_dir" ]; then
         sudo git clone --depth 1 https://github.com/cncf/cnf-conformance "$cnf_conformance_dir" -b "$version"
