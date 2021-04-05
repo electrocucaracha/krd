@@ -20,8 +20,7 @@ install:
   - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
   - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt PKG_VAGRANT_VERSION=2.2.13 bash
 script:
-  - pip install tox
-  - sudo -E $(command -v tox)
+  - curl -fsSL http://bit.ly/install_pkg | PKG="tox" bash
 env:
   - TOXENV=nfd
   - TOXENV=pmem
