@@ -103,8 +103,8 @@ jobs:
       script:
         - ./check.sh ubuntu xenial
       env:
-        - KRD_KUBE_VERSION=v1.17.9
-        - KRD_KUBESPRAY_VERSION=v2.13.3
+        - KRD_KUBE_VERSION=v1.17.12
+        - KRD_KUBESPRAY_VERSION=v2.13.4
     - name: Pod Definition File validation (Ubuntu 18.04 LTS)
       language: shell
       script:
