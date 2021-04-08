@@ -33,7 +33,7 @@ def test_sriov_cni_ready(host):
 
 
 def test_sriov_bin_copied(host):
-    cmd = host.run("/usr/bin/docker exec molecule-control-plane" " ls /opt/cni/bin/")
+    cmd = host.run("/usr/bin/docker exec molecule-control-plane ls /opt/cni/bin/")
 
     assert cmd.rc == 0
     assert "sriov" in cmd.stdout

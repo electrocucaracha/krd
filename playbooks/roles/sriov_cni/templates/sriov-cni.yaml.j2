@@ -22,24 +22,25 @@ spec:
       nodeSelector:
         beta.kubernetes.io/arch: amd64
       tolerations:
-      - key: node-role.kubernetes.io/master
-        operator: Exists
-        effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
       containers:
-      - name: kube-sriov-cni
-        image: nfvpe/sriov-cni:{{ sriov_cni_version }}
-        securityContext:
-          privileged: true
-        resources:
-          requests:
-            cpu: "100m"
-            memory: "50Mi"
-          limits:
-            cpu: "100m"
-            memory: "50Mi"
-        volumeMounts:
-        - name: cnibin
-          mountPath: /host/opt/cni/bin
+        - name: kube-sriov-cni
+          image: nfvpe/sriov-cni:{{ sriov_cni_version }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "50Mi"
+            limits:
+              cpu: "100m"
+              memory: "50Mi"
+          volumeMounts:
+            - name: cnibin
+              mountPath: /host/opt/cni/bin
       volumes:
         - name: cnibin
           hostPath:

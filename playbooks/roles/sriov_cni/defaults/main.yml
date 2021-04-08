@@ -8,9 +8,17 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-sriov_template_folder: /tmp/sriov_k8s
-sriov_resource_name: intel_sriov_netdevice
-sriov_cni_version: v2.3
-sriov_network_name: sriov-net
-sriov_network_subnet: 10.56.206.0/24
-sriov_network_gateway: 10.56.206.1
+sriov_cni_version: v2.6
+network_attachment_definitions:
+  - name: sriov-net
+    resourceName: intel.com/intel_sriov_netdevice
+    config:
+      type: sriov
+      cniVersion: 0.3.1
+      name: sriov-network
+      ipam:
+        type: host-local
+        subnet: 10.56.217.0/24
+        routes:
+          - dst: 0.0.0.0/0
+        gateway: 10.56.217.1

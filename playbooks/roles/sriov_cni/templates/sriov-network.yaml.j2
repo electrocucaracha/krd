@@ -1,18 +1,12 @@
+{% for net_attach_def in network_attachment_definitions %}
+---
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
 metadata:
-  name: {{ sriov_network_name }}
+  name: {{ net_attach_def.name }}
   annotations:
-    k8s.v1.cni.cncf.io/resourceName: intel.com/{{ sriov_resource_name }}
+    k8s.v1.cni.cncf.io/resourceName: {{ net_attach_def.resourceName }}
 spec:
-  config: '{
-    "type": "sriov",
-    "ipam": {
-            "type": "host-local",
-            "subnet": "{{ sriov_network_subnet }}",
-            "routes": [
-                    { "dst": "0.0.0.0/0" }
-            ],
-            "gateway": "{{ sriov_network_gateway }}"
-    }
-  }'
+  config: |
+{{ net_attach_def.config | to_json | safe | indent(4, True) }}
+{% endfor %}
