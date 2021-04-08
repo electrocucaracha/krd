@@ -119,7 +119,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_DOWNLOAD_RUN_ONCE                 | true                                           | Download images and binaries only once and then push them to the cluster nodes  |
 | KRD_DOWNLOAD_LOCALHOST                | true                                           | Make localhost the download delegate                                            |
 | KRD_MANUAL_DNS_SERVER                 |                                                | Set to use a custom cluster DNS                                                 |
-| KRD_KUBESPRAY_VERSION                 |                                                | Specifies the Kubespray version to be used during the upgrade process           |
+| KRD_KUBESPRAY_VERSION                 | v2.15.1                                        | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | `https://github.com/kubernetes-sigs/kubespray` | Specifies the Git repository to fetch the Kubespray's source code               |
 | KRD_ENABLE_TESTS                      | false                                          | Enables the functional tests during the deployment process                      |
 | KRD_HELM_CHART                        |                                                | Specifies the Helm chart to be installed                                        |
