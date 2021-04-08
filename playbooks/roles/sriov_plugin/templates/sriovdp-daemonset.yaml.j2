@@ -4,12 +4,12 @@ kind: ServiceAccount
 metadata:
   name: sriov-device-plugin
   namespace: kube-system
-
+{% for arch in ['amd64', 'arm64', 'ppc64le'] %}
 ---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: kube-sriov-device-plugin-amd64
+  name: kube-sriov-device-plugin-{{ arch }}
   namespace: kube-system
   labels:
     tier: node
@@ -26,30 +26,43 @@ spec:
         app: sriovdp
     spec:
       hostNetwork: true
-      hostPID: true
       nodeSelector:
-        beta.kubernetes.io/arch: amd64
+        beta.kubernetes.io/arch: {{ arch }}
       tolerations:
-      - key: node-role.kubernetes.io/master
-        operator: Exists
-        effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
       serviceAccountName: sriov-device-plugin
       containers:
-      - name: kube-sriovdp
-        image: nfvpe/sriov-device-plugin:{{ sriov_plugin_version }}
-        args:
-        - --log-dir=sriovdp
-        - --log-level=10
-        securityContext:
-          privileged: true
-        volumeMounts:
-        - name: devicesock
-          mountPath: /var/lib/kubelet/
-          readOnly: false
-        - name: log
-          mountPath: /var/log
-        - name: config-volume
-          mountPath: /etc/pcidp
+        - name: kube-sriovdp
+{% if arch == 'amd64' %}
+          image: docker.io/nfvpe/sriov-device-plugin:{{ sriov_plugin_version }}
+{% else %}
+          image: docker.io/nfvpe/sriov-device-plugin:{{ arch }}
+{% endif %}
+          imagePullPolicy: IfNotPresent
+          args:
+            - --log-dir=sriovdp
+            - --log-level=10
+          securityContext:
+            privileged: true
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "40Mi"
+            limits:
+              cpu: 1
+              memory: "200Mi"
+          volumeMounts:
+            - name: devicesock
+              mountPath: /var/lib/kubelet/
+              readOnly: false
+            - name: log
+              mountPath: /var/log
+            - name: config-volume
+              mountPath: /etc/pcidp
+            - name: device-info
+              mountPath: /var/run/k8s.cni.cncf.io/devinfo/dp
       volumes:
         - name: devicesock
           hostPath:
@@ -57,9 +70,14 @@ spec:
         - name: log
           hostPath:
             path: /var/log
+        - name: device-info
+          hostPath:
+            path: /var/run/k8s.cni.cncf.io/devinfo/dp
+            type: DirectoryOrCreate
         - name: config-volume
           configMap:
             name: sriovdp-config
             items:
-            - key: config.json
-              path: config.json
+              - key: config.json
+                path: config.json
+{% endfor %}

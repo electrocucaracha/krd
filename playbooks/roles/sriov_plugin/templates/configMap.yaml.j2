@@ -5,14 +5,4 @@ metadata:
   namespace: kube-system
 data:
   config.json: |
-    {
-        "resourceList": [{
-                "resourceName": "{{ sriov_resource_name }}",
-                "selectors": {
-                    "vendors": ["8086"],
-                    "devices": {{ sriov_devices | map('string') | list | tojson }},
-                    "drivers": {{ sriov_drivers | map('string') | list | tojson }}
-                }
-           }
-        ]
-    }
+{{ sriovdpConfig | to_json | safe | indent(4, True) }}

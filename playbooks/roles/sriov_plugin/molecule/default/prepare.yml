@@ -33,9 +33,18 @@
     - name: print kind_cluster value
       debug:
         var: kind_cluster
+    - name: Creating KinD cluster config
+      copy:
+        mode: preserve
+        dest: "/tmp/kind-config.yml"
+        content: |
+          kind: Cluster
+          apiVersion: kind.x-k8s.io/v1alpha4
+          nodes:
+            - role: control-plane
     - name: create k8s cluster
       become: true
-      command: '{{ kind_dest }}/kind create cluster --name molecule --wait=300s'
+      command: '{{ kind_dest }}/kind create cluster --name molecule --config=/tmp/kind-config.yml --wait=300s'
       when: not 'molecule' in kind_cluster.stdout
     - name: create kubeconfig folder
       file:

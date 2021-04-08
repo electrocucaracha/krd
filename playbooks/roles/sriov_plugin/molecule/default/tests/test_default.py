@@ -42,13 +42,11 @@ def test_allocatable_resources(host):
     )
     time.sleep(10)
 
-    jsonpath = (
-        r"{range .items[*]}{.status.allocatable.intel\.com/intel_sriov_netdevice}"
-    )
-    cmd = host.run("/usr/local/bin/kubectl get nodes" " -o jsonpath='" + jsonpath + "'")
+    jsonpath = r"{range .items[*]}{.status.allocatable.redhat\.com/virtio_net_device}"
+    cmd = host.run("/usr/local/bin/kubectl get nodes -o jsonpath='" + jsonpath + "'")
 
     assert cmd.rc == 0
-    assert cmd.stdout == "0"
+    assert cmd.stdout == "1"
 
 
 def test_capacity_resources(host):
@@ -60,8 +58,8 @@ def test_capacity_resources(host):
     )
     time.sleep(10)
 
-    jsonpath = r"{range .items[*]}{.status.capacity.intel\.com/intel_sriov_netdevice}"
-    cmd = host.run("/usr/local/bin/kubectl get nodes" " -o jsonpath='" + jsonpath + "'")
+    jsonpath = r"{range .items[*]}{.status.capacity.redhat\.com/virtio_net_device}"
+    cmd = host.run("/usr/local/bin/kubectl get nodes -o jsonpath='" + jsonpath + "'")
 
     assert cmd.rc == 0
-    assert cmd.stdout == "0"
+    assert cmd.stdout == "1"

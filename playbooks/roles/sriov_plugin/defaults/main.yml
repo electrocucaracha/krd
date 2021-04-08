@@ -9,9 +9,61 @@
 ##############################################################################
 
 sriov_template_folder: /tmp/sriov_k8s
-sriov_resource_name: intel_sriov_netdevice
-sriov_devices:
-  - 37cd
-sriov_drivers:
-  - i40evf
-sriov_plugin_version: v3.2
+sriov_plugin_version: v3.3
+sriovdpConfig:
+  resourceList:
+    - resourceName: virtio_net_device
+      resourcePrefix: redhat.com
+      selectors:
+        vendors:
+          - 1af4
+        devices:
+          - "1000"
+        drivers:
+          - virtio-pci
+    - resourceName: intel_sriov_netdevice
+      selectors:
+        vendors:
+          - "8086"
+        devices:
+          - 154c
+          - 10ed
+        drivers:
+          - i40evf
+          - iavf
+          - ixgbevf
+    - resourceName: intel_sriov_dpdk
+      resourcePrefix: intel.com
+      selectors:
+        vendors:
+          - "8086"
+        devices:
+          - 154c
+          - 10ed
+        drivers:
+          - vfio-pci
+        pfNames:
+          - enp0s0f0
+          - enp2s2f1
+    - resourceName: mlnx_sriov_rdma
+      resourcePrefix: mellanox.com
+      selectors:
+        vendors:
+          - 15b3
+        devices:
+          - "1018"
+        drivers:
+          - mlx5_ib
+        isRdma: true
+    - resourceName: infiniband_rdma_netdevs
+      selectors:
+        linkTypes:
+          - infiniband
+        isRdma: true
+    - resourceName: intel_fpga
+      deviceType: accelerator
+      selectors:
+        vendors:
+          - "8086"
+        devices:
+          - 0d90
