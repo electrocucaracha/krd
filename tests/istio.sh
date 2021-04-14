@@ -11,31 +11,103 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-set -o xtrace
 
 # shellcheck source=tests/_functions.sh
 source _functions.sh
-pushd ../
-# shellcheck source=_commons.sh
-source _commons.sh
-popd
 
-istio_version=$(_get_version istio)
+server_deployment_name="server"
 
-if ! command -v istioctl; then
-    echo "This funtional test requires istioctl client"
-    exit 1
-fi
+function cleanup {
+    destroy_deployment "$server_deployment_name"
+    kubectl delete pod client --ignore-not-found --now
+    kubectl delete service server --ignore-not-found
+    kubectl label namespace default istio-injection-
+    kubectl delete peerauthentications default --ignore-not-found
+}
 
-#istioctl manifest apply --set gateways.enabled=true
-curl -o /tmp/bookinfo.yaml "https://raw.githubusercontent.com/istio/istio/$istio_version/samples/bookinfo/platform/kube/bookinfo.yaml"
-istioctl kube-inject -f /tmp/bookinfo.yaml | tee /tmp/bookinfo-inject.yml
-kubectl apply -f /tmp/bookinfo-inject.yml
-kubectl apply -f "https://raw.githubusercontent.com/istio/istio/$istio_version/samples/bookinfo/networking/bookinfo-gateway.yaml"
+function create_client {
+    cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client
+spec:
+  containers:
+    - image: gcr.io/google-samples/istio/loadgen:v0.0.1
+      name: main
+      env:
+        - name: SERVER_ADDR
+          value: http://server:80/
+        - name: REQUESTS_PER_SECOND
+          value: '10'
+EOF
+    kubectl wait --for=condition=ready pods client --timeout=3m
+}
 
-for deployment in details-v1 productpage-v1 ratings-v1 reviews-v1 reviews-v2 reviews-v3; do
-    wait_deployment $deployment
-done
-INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o 'jsonpath={.items[0].status.hostIP}')
-curl -o /dev/null -s -w "%{http_code}\n" "http://$INGRESS_HOST:$INGRESS_PORT/productpage"
+trap cleanup EXIT
+
+# Setup
+kubectl label namespace default istio-injection=enabled --overwrite
+kubectl get namespaces --show-labels
+
+# Test
+info "===== Test started ====="
+
+cat <<EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $server_deployment_name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: server
+    spec:
+      containers:
+      - image: gcr.io/google-samples/istio/helloserver:v0.0.1
+        name: main
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: server
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: server
+  type: LoadBalancer
+EOF
+wait_deployment "$server_deployment_name"
+create_client
+
+assert_contains "$(kubectl get pods -l=app.kubernetes.io/name=server -o jsonpath='{range .items[0].spec.containers[*]}{.image}{"\n"}{end}')" "istio/proxy" "Istio proxy wasn't injected into the server's pod"
+
+assert_non_empty "$(kubectl logs client)" "There is no client's logs"
+assert_contains "$(kubectl logs client)" "Starting loadgen" "The client's pod doesn't start it"
+assert_contains "$(kubectl logs client)" "10 request(s) complete to http://server:80/" "The client's pod can't connect to the server"
+
+kubectl delete pod client --ignore-not-found --now
+
+cat <<EOF | kubectl apply -f -
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+spec:
+  mtls:
+    mode: STRICT
+EOF
+create_client
+assert_non_empty "$(kubectl logs client)" "There is no client's logs"
+assert_contains "$(kubectl logs client)" "Starting loadgen" "The client's pod doesn't start it"
+assert_contains "$(kubectl logs client)" "10 request(s) complete to http://server:80/" "The client's pod can't connect to the server"
+
+info "===== Test completed ====="

@@ -54,6 +54,8 @@ jobs:
         run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
       - name: Deploy Kubevirt services
         run: ./krd_command.sh -a install_istio
+      - name: Run tests
+        run: cd tests; ./istio.sh
       - if: ${{ failure() }}
         run: kubectl get all -A -o wide
       - name: Undeploy services
