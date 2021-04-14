@@ -32,8 +32,12 @@ container_spec=$(cat <<EOF
 EOF
 )
 
-# Setup
-destroy_deployment "$multus_deployment_name"
+function cleanup {
+    kubectl delete network-attachment-definitions.k8s.cni.cncf.io -A --selector=app.kubernetes.io/name=multus
+    destroy_deployment "$multus_deployment_name"
+}
+
+trap cleanup EXIT
 
 # Test
 info "===== Test started ====="
@@ -137,7 +141,3 @@ assert_non_empty "$(kubectl exec -it "$deployment_pod" -- ifconfig eth0 | awk '/
 destroy_deployment "$multus_deployment_name"
 
 info "===== Test completed ====="
-
-# Teardown
-kubectl delete network-attachment-definitions.k8s.cni.cncf.io -A --selector=app.kubernetes.io/name=multus
-destroy_deployment "$multus_deployment_name"
