@@ -376,9 +376,28 @@ function install_istio {
     fi
 
     istioctl install --skip-confirmation || :
+    if [[ "$KRD_ENABLE_ISTIO_ADDONS" == "true" ]]; then
+        for addon in grafana prometheus; do
+            echo  "Installing $addon Istio AddOn"
+            kubectl apply -f "https://raw.githubusercontent.com/istio/istio/${istio_version}/samples/addons/${addon}.yaml"
+        done
+
+        # Kiali installation
+        KRD_HELM_VERSION=3 install_helm
+        echo  "Installing Kiali Istio AddOn"
+        if ! helm repo list | grep -e kiali; then
+            helm repo add kiali https://kiali.org/helm-charts
+        fi
+        if ! helm ls -n istio-system | grep -e kiali-server; then
+            helm install --namespace istio-system \
+            --set auth.strategy="anonymous" \
+            kiali-server kiali/kiali-server
+        fi
+    fi
     wait_for_pods istio-system
     istioctl manifest generate > /tmp/generated-manifest.yaml
     istioctl verify-install -f /tmp/generated-manifest.yaml
+
 }
 
 # install_knative() - Function that installs Knative and its dependencies

@@ -141,6 +141,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_KUBESPHERE_DEVOPS_ENABLED         | true                                           | Enable/Disable [KubeSphere DevOps System][14]                                   |
 | KRD_KUBESPHERE_METRICS_SERVER_ENABLED | false                                          | Enable/Disable [Horizontal Pod Autoscaler][15] on KubeSphere                    |
 | KRD_KUBESPHERE_SERVICEMESH_ENABLED    | false                                          | Enable/Disable [KubeSphere Service Mesh][16]                                    |
+| KRD_ENABLE_ISTIO_ADDONS               | false                                          | Enable/Disable Istio AddOns(Grafana, Kiali and Prometheus)                      |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [2]: https://intel.github.io/multus-cni/
