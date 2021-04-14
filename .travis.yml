@@ -105,6 +105,8 @@ jobs:
       env:
         - KRD_KUBE_VERSION=v1.17.12
         - KRD_KUBESPRAY_VERSION=v2.13.4
+        - KRD_CERT_MANAGER_ENABLED=false
+        - KRD_INGRESS_NGINX_ENABLED=false
     - name: Pod Definition File validation (Ubuntu 18.04 LTS)
       language: shell
       script:
@@ -112,6 +114,8 @@ jobs:
       env:
         - KRD_KUBE_VERSION=v1.18.10
         - KRD_KUBESPRAY_VERSION=v2.14.2
+        - KRD_CERT_MANAGER_ENABLED=false
+        - KRD_INGRESS_NGINX_ENABLED=false
     - name: Pod Definition File validation (Ubuntu 20.04 LTS)
       language: shell
       script:

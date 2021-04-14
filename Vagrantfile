@@ -69,6 +69,9 @@ container_runtime = ENV["KRD_CONTAINER_RUNTIME"]
 kube_version = ENV["KRD_KUBE_VERSION"]
 kubespray_version = ENV["KRD_KUBESPRAY_VERSION"]
 kubespray_repo = ENV["KRD_KUBESPRAY_REPO"]
+enable_cert_manager = ENV["KRD_CERT_MANAGER_ENABLED"] || "true"
+enable_ingres_nginx = ENV["KRD_INGRESS_NGINX_ENABLED"] || "true"
+
 installer_ip = "10.10.16.2"
 
 no_proxy = ENV["NO_PROXY"] || ENV["no_proxy"] || "127.0.0.1,localhost"
@@ -321,7 +324,9 @@ Vagrant.configure("2") do |config|
         KRD_CRUN_ENABLED: crun_enabled.to_s,
         KRD_KUBESPRAY_REPO: kubespray_repo.to_s,
         KRD_REGISTRY_MIRRORS_LIST: "http://#{installer_ip}:5000",
-        KRD_INSECURE_REGISTRIES_LIST: "#{installer_ip}:5000"
+        KRD_INSECURE_REGISTRIES_LIST: "#{installer_ip}:5000",
+        KRD_CERT_MANAGER_ENABLED: enable_cert_manager.to_s,
+        KRD_INGRESS_NGINX_ENABLED: enable_ingres_nginx.to_s,
       }
       sh.inline = <<-SHELL
         for krd_var in $(printenv | grep KRD_); do echo "export $krd_var" | sudo tee --append /etc/environment ; done
