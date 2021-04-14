@@ -417,6 +417,11 @@ function install_knative {
     ## Install a Broker
     kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/mt-channel-broker.yaml"
 
+    # Install Knative Client
+    if ! command -v kn > /dev/null; then
+        curl -fsSL http://bit.ly/install_pkg | PKG=kn bash
+    fi
+
     wait_for_pods knative-serving
     wait_for_pods knative-eventing
 }
