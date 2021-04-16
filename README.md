@@ -36,7 +36,7 @@ or Virtual Machines.
 
 ## Deployment
 
-The [installer](installer.sh) bash script contains the minimal
+The [installer](_installers.sh) bash script contains the minimal
 Ubuntu instructions required for running this project.
 
 ### Virtual Machines
