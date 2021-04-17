@@ -33,6 +33,7 @@ or Virtual Machines.
 | PMEM           | Persistent Memory CSI                          | [pmem role][6]                    | Implemented |
 | QAT            | QuickAssist Technology Plugin                  | [qat_plugin role][8]              | Tested      |
 | SR-IOV         | Single Root Input/Output Virtualization Plugin | [sriov_plugin role][9]            | Implemented |
+| Kong           | Ingress Controller                             |                                   | Tested      |
 
 ## Deployment
 

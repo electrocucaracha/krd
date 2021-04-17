@@ -23,17 +23,27 @@ function uninstall_k8s {
     _run_ansible_cmd "$kubespray_folder/reset.yml --extra-vars \"reset_confirmation=yes\"" "destroy-kubernetes.log"
 }
 
-# uninstall_metrics_server() - Uninstall Metrics Server services
-function uninstall_metrics_server {
+function _uninstall_helm {
     helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
+    helm_chart_name="$1"
 
     if _vercmp "${helm_installed_version#*v}" '<' '3'; then
-        if helm ls --all --tiller-namespace "$KRD_TILLER_NAMESPACE" | grep -q metrics-server; then
-            helm delete metrics-server --purge --tiller-namespace "$KRD_TILLER_NAMESPACE"
+        if helm ls --all --tiller-namespace "$KRD_TILLER_NAMESPACE" | grep -q "$helm_chart_name"; then
+            helm delete "$helm_chart_name" --purge --tiller-namespace "$KRD_TILLER_NAMESPACE"
         fi
     else
-        if helm ls --all | grep -q metrics-server; then
-            helm delete metrics-server
+        if helm ls --all | grep -q "$helm_chart_name"; then
+            helm delete "$helm_chart_name"
         fi
     fi
+}
+
+# uninstall_metrics_server() - Uninstall Metrics Server services
+function uninstall_metrics_server {
+    _uninstall_helm metrics-server
+}
+
+# uninstall_kong() - Uninstall Kong ingress services
+function uninstall_kong {
+    _uninstall_helm kong
 }

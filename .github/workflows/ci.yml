@@ -76,3 +76,19 @@ jobs:
         run: kubectl top node
       - name: Validate top node command
         run: kubectl top pod
+  check-kong:
+    runs-on: ubuntu-18.04
+    env:
+      KRD_DEBUG: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy services
+        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+      - name: Deploy Kong services
+        run: ./krd_command.sh -a install_kong
+      - name: Run tests
+        run: cd tests; ./kong.sh
+      - if: ${{ failure() }}
+        run: kubectl get all -A -o wide
+      - name: Undeploy services
+        run: ./krd_command.sh -a uninstall_kong

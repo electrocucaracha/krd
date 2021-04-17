@@ -949,3 +949,17 @@ EOF
     fi
 
 }
+
+# install_kong() - Install Kong ingress services
+function install_kong {
+    KRD_HELM_VERSION=3 install_helm
+
+    if ! helm repo list | grep -e kong; then
+        helm repo add kong https://charts.konghq.com
+    fi
+    if ! helm ls | grep -e kong; then
+        helm upgrade --install kong kong/kong --set proxy.type=NodePort
+    fi
+
+    kubectl rollout status deployment/kong-kong --timeout=5m
+}
