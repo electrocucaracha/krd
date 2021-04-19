@@ -33,6 +33,7 @@ or Virtual Machines.
 | PMEM           | Persistent Memory CSI                          | [pmem role][6]                    | Implemented |
 | QAT            | QuickAssist Technology Plugin                  | [qat_plugin role][8]              | Tested      |
 | SR-IOV         | Single Root Input/Output Virtualization Plugin | [sriov_plugin role][9]            | Implemented |
+| Knative        | Platform for managing serverless workloads     |                                   | Tested      |
 | Kong           | Ingress Controller                             |                                   | Tested      |
 
 ## Deployment
@@ -145,7 +146,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_ENABLE_ISTIO_ADDONS               | false                                          | Enable/Disable Istio AddOns(Grafana, Kiali and Prometheus)                      |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
-[2]: https://intel.github.io/multus-cni/
+[2]: https://github.com/k8snetworkplumbingwg/multus-cni
 [3]: playbooks/configure-virtlet.yml
 [4]: playbooks/roles/nfd
 [5]: https://www.vagrantup.com/

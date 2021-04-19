@@ -16,11 +16,18 @@ on:
       - 'master'
 
 jobs:
+  check-broken-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Check broken links
+        uses: gaurav-nelson/github-action-markdown-link-check@v1
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: github/super-linter@v3
+      - name: Run super-linter validation
+        uses: github/super-linter@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: /
