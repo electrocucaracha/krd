@@ -22,19 +22,20 @@ or Virtual Machines.
 
 ## Components
 
-| Name           | Description                                    | Source                            | Status      |
-|:--------------:|:-----------------------------------------------|:----------------------------------|:-----------:|
-| Kubernetes     | Base Kubernetes deployment                     | [kubespray][1]                    | Done        |
-| Virtlet        | Allows to run VMs                              | [configure-virtlet.yml][3]        | Tested      |
-| Kubevirt       | Allows to run VMs                              |                                   | Tested      |
-| Multus         | Provides Multiple Network support in a pod     |                                   | Tested      |
-| NFD            | Node feature discovery                         | [nfd role][4]                     | Tested      |
-| Istio          | Service Mesh platform                          |                                   | Tested      |
-| PMEM           | Persistent Memory CSI                          | [pmem role][6]                    | Implemented |
-| QAT            | QuickAssist Technology Plugin                  | [qat_plugin role][8]              | Tested      |
-| SR-IOV         | Single Root Input/Output Virtualization Plugin | [sriov_plugin role][9]            | Implemented |
-| Knative        | Platform for managing serverless workloads     |                                   | Tested      |
-| Kong           | Ingress Controller                             |                                   | Tested      |
+| Name           | Description                                     | Source                            | Status      |
+|:--------------:|:------------------------------------------------|:----------------------------------|:-----------:|
+| Kubernetes     | Base Kubernetes deployment                      | [kubespray][1]                    | Done        |
+| Virtlet        | Allows to run VMs                               | [configure-virtlet.yml][3]        | Tested      |
+| Kubevirt       | Allows to run VMs                               |                                   | Tested      |
+| Multus         | Provides Multiple Network support in a pod      |                                   | Tested      |
+| NFD            | Node feature discovery                          | [nfd role][4]                     | Tested      |
+| Istio          | Service Mesh platform                           |                                   | Tested      |
+| PMEM           | Persistent Memory CSI                           | [pmem role][6]                    | Implemented |
+| QAT            | QuickAssist Technology Plugin                   | [qat_plugin role][8]              | Tested      |
+| SR-IOV         | Single Root Input/Output Virtualization Plugin  | [sriov_plugin role][9]            | Implemented |
+| Knative        | Platform for managing serverless workloads      |                                   | Tested      |
+| Kong           | Ingress Controller                              |                                   | Tested      |
+| MetalLB        | Provides a network load-balancer implementation |                                   | Tested      |
 
 ## Deployment
 
@@ -144,6 +145,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_KUBESPHERE_METRICS_SERVER_ENABLED | false                                          | Enable/Disable [Horizontal Pod Autoscaler][15] on KubeSphere                    |
 | KRD_KUBESPHERE_SERVICEMESH_ENABLED    | false                                          | Enable/Disable [KubeSphere Service Mesh][16]                                    |
 | KRD_ENABLE_ISTIO_ADDONS               | false                                          | Enable/Disable Istio AddOns(Grafana, Kiali and Prometheus)                      |
+| KRD_METALLB_ADDRESS_POOLS             |                                                | Specifies a list of L2 address pools for [MetalLB configuration][19]            |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [2]: https://github.com/k8snetworkplumbingwg/multus-cni
@@ -163,3 +165,4 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 [16]: https://kubesphere.io/docs/pluggable-components/service-mesh/
 [17]: https://www.kernel.org/doc/html/latest/admin-guide/mm/hugetlbpage.html
 [18]: https://github.com/containers/crun
+[19]: https://metallb.universe.tf/

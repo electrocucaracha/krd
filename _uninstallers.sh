@@ -47,3 +47,8 @@ function uninstall_metrics_server {
 function uninstall_kong {
     _uninstall_helm kong
 }
+
+# uninstall_metallb() - Uninstall MetalLB services
+function uninstall_metallb {
+    kubectl delete namespace metallb-system
+}

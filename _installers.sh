@@ -947,7 +947,6 @@ spec:
           servicePort: 80
 EOF
     fi
-
 }
 
 # install_kong() - Install Kong ingress services
@@ -962,4 +961,51 @@ function install_kong {
     fi
 
     kubectl rollout status deployment/kong-kong --timeout=5m
+}
+
+# install_metallb() - Install MetalLB services
+function install_metallb {
+    metallb_version=$(_get_version metallb)
+    if [ -z "${KRD_METALLB_ADDRESS_POOLS:-}" ]; then
+        declare -A KRD_METALLB_ADDRESS_POOLS=(
+    ["default"]="10.10.16.110-10.10.16.120,10.10.16.240-10.10.16.250"
+    )
+    fi
+
+    kubectl apply -f "https://raw.githubusercontent.com/metallb/metallb/$metallb_version/manifests/namespace.yaml"
+    kubectl apply -f "https://raw.githubusercontent.com/metallb/metallb/$metallb_version/manifests/metallb.yaml"
+    if ! kubectl get secret/memberlist -n metallb-system --no-headers -o custom-columns=name:.metadata.name; then
+        kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
+    fi
+
+    wait_for_pods metallb-system
+
+    address_pools=""
+    for pool in "${!KRD_METALLB_ADDRESS_POOLS[@]}"; do
+        ranges=""
+        addresses=${KRD_METALLB_ADDRESS_POOLS[$pool]}
+        for range in ${addresses//,/ }; do
+            ranges+="          - ${range}\n"
+        done
+
+        address_pools+=$(cat <<EOF
+      - name: $pool
+        protocol: layer2
+        addresses:
+$(printf '%b' "$ranges")
+EOF
+)
+    done
+
+   cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: metallb-system
+  name: config
+data:
+  config: |
+    address-pools:
+$address_pools
+EOF
 }
