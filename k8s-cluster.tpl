@@ -48,7 +48,7 @@ kube_version: v1.19.9
 # NOTE: Ipvs is based on netfilter hook function, but uses hash table as the underlying data structure and
 # works in the kernel space
 # https://kubernetes.io/docs/concepts/services-networking/service/#proxy-mode-ipvs
-kube_proxy_mode: iptables
+kube_proxy_mode: $KRD_KUBE_PROXY_MODE
 
 # Download container images only once then push to cluster nodes in batches
 download_run_once: $KRD_DOWNLOAD_RUN_ONCE

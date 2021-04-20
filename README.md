@@ -131,6 +131,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_ADDONS_LIST                       | addons                                         | Specifies the Kubernetes AddOns to be installed by install_k8s_addons           |
 | KRD_CONTAINER_RUNTIME                 | docker                                         | Specifies the Container Runtime to be used for deploying kubernetes             |
 | KRD_NETWORK_PLUGIN                    | flannel                                        | Choose network plugin (calico, canal, cilium, contiv, flannel weave)            |
+| KRD_KUBE_PROXY_MODE                   | iptables                                       | Choose kube-proxy mode (iptables, ipvs)                                         |
 | KRD_REGISTRY_MIRRORS_LIST             |                                                | Specifies a list of additional registry mirrors                                 |
 | KRD_INSECURE_REGISTRIES_LIST          |                                                | Specifies a list of insecure-registries (IP address or domain name)             |
 | KRD_HUGEPAGES_ENABLED                 | true                                           | Enable/Disable [HugeTLB Pages][17] on cluster nodes                             |
