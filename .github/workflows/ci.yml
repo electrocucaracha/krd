@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check Bare-Metal installations
+name: Check Installation functions
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -16,20 +16,7 @@ on:
       - 'master'
 
 jobs:
-  check-dashboard:
-    runs-on: ubuntu-18.04
-    env:
-      KRD_DEBUG: true
-      KRD_DASHBOARD_ENABLED: true
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy services
-        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-      - name: Run tests
-        run: wget -qO- http://$(ip route get 8.8.8.8 | grep "^8." | awk '{ print $7 }') | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' | grep -q "Kubernetes Dashboard" || exit 1
-      - if: ${{ failure() }}
-        run: kubectl get all -A -o wide
-  check-multus:
+  check-install-funcs:
     runs-on: ubuntu-18.04
     env:
       KRD_DEBUG: true
@@ -40,19 +27,27 @@ jobs:
       - uses: actions/checkout@v2
       - name: Deploy services
         run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-      - name: Run tests
+      - name: Run Multus tests
         run: cd tests; ./multus.sh
       - if: ${{ failure() }}
         run: kubectl get all -A -o wide
-  check-istio:
-    runs-on: ubuntu-18.04
-    env:
-      KRD_DEBUG: true
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy services
-        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-      - name: Deploy Kubevirt services
+      - name: Deploy Kong services
+        run: ./krd_command.sh -a install_kong
+      - name: Run Kong tests
+        run: cd tests; ./kong.sh
+      - if: ${{ failure() }}
+        run: kubectl get all -A -o wide
+      - name: Undeploy Kong services
+        run: ./krd_command.sh -a uninstall_kong
+      - name: Deploy MetalLB services
+        run: ./krd_command.sh -a install_metallb
+      - name: Run MetalLB tests
+        run: cd tests; ./metallb.sh
+      - name: Undeploy MetalLB services
+        run: ./krd_command.sh -a uninstall_metallb
+      - if: ${{ failure() }}
+        run: kubectl get all -A -o wide
+      - name: Deploy Istio services
         run: ./krd_command.sh -a install_istio
       - name: Run tests
         run: cd tests; ./istio.sh
@@ -60,35 +55,3 @@ jobs:
         run: kubectl get all -A -o wide
       - name: Undeploy services
         run: ./krd_command.sh -a uninstall_k8s
-  check-metrics-server:
-    runs-on: ubuntu-18.04
-    env:
-      KRD_DEBUG: true
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy services
-        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-      - name: Deploy Metrics server services
-        run: ./krd_command.sh -a install_metrics_server
-      - if: ${{ failure() }}
-        run: kubectl get all -A -o wide
-      - name: Validate top node command
-        run: kubectl top node
-      - name: Validate top node command
-        run: kubectl top pod
-  check-kong:
-    runs-on: ubuntu-18.04
-    env:
-      KRD_DEBUG: true
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy services
-        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-      - name: Deploy Kong services
-        run: ./krd_command.sh -a install_kong
-      - name: Run tests
-        run: cd tests; ./kong.sh
-      - if: ${{ failure() }}
-        run: kubectl get all -A -o wide
-      - name: Undeploy services
-        run: ./krd_command.sh -a uninstall_kong
