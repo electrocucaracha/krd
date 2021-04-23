@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check Installation functions
+name: Check Multus installation
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -16,15 +16,16 @@ on:
       - 'master'
 
 jobs:
-  check-install-funcs:
+  check-multuss:
     runs-on: ubuntu-18.04
     env:
       KRD_DEBUG: true
-      KRD_CERT_MANAGER_ENABLED: false
-      KRD_INGRESS_NGINX_ENABLED: false
+      KRD_MULTUS_ENABLED: true
     steps:
       - uses: actions/checkout@v2
       - name: Deploy services
         run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-      - name: Check installation functions
-        run: cd tests; ./check.sh kong metallb istio
+      - name: Run Multus tests
+        run: cd tests; ./multus.sh
+      - name: Undeploy services
+        run: ./krd_command.sh -a uninstall_k8s

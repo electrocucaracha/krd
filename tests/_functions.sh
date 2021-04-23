@@ -105,6 +105,20 @@ function teardown {
     done
 }
 
+# get_status() - Print the current status of the cluster
+function get_status {
+    printf "CPU usage: "
+    grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage " %"}'
+    printf "Memory free(Kb):"
+    awk -v low="$(grep low /proc/zoneinfo | awk '{k+=$2}END{print k}')" '{a[$1]=$2}  END{ print a["MemFree:"]+a["Active(file):"]+a["Inactive(file):"]+a["SReclaimable:"]-(12*low);}' /proc/meminfo
+    echo "Environment variables:"
+    env | grep "KRD"
+    if command -v kubectl; then
+        kubectl get all -A -o wide
+        kubectl get nodes -o wide
+    fi
+}
+
 if ! kubectl version &>/dev/null; then
     echo "This funtional test requires kubectl client"
     exit 1
