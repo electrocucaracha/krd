@@ -25,7 +25,7 @@ function uninstall_k8s {
 
 function _uninstall_helm {
     helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
-    helm_chart_name="$1"
+    local helm_chart_name="$1"
 
     if _vercmp "${helm_installed_version#*v}" '<' '3'; then
         if helm ls --all --tiller-namespace "$KRD_TILLER_NAMESPACE" | grep -q "$helm_chart_name"; then
@@ -36,6 +36,23 @@ function _uninstall_helm {
             helm delete "$helm_chart_name"
         fi
     fi
+}
+
+function _delete_namespace {
+    local namespace="$1"
+    local attempt_counter=0
+    local max_attempts=12
+
+    kubectl delete namespace "$namespace"
+
+    until [ "$(kubectl get all -n "$namespace" --no-headers | wc -l)" == "0" ]; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+            echo "Max attempts reached"
+            exit 1
+        fi
+        attempt_counter=$((attempt_counter+1))
+        sleep 5
+    done
 }
 
 # uninstall_metrics_server() - Uninstall Metrics Server services
@@ -50,5 +67,11 @@ function uninstall_kong {
 
 # uninstall_metallb() - Uninstall MetalLB services
 function uninstall_metallb {
-    kubectl delete namespace metallb-system
+    _delete_namespace metallb-system
+}
+
+# uninstall_istio() - Uninstall Istio services
+function uninstall_istio {
+    istioctl manifest generate | kubectl delete --ignore-not-found=true -f -
+    _delete_namespace istio-system
 }
