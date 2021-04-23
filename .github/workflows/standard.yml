@@ -27,7 +27,21 @@ jobs:
       - name: Deploy services
         run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
       - name: Run Dashboard test
-        run: wget -qO- http://$(ip route get 8.8.8.8 | grep "^8." | awk '{ print $7 }') | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' | grep -q "Kubernetes Dashboard" || exit 1
+        run: |
+          set -o errexit
+          set -o pipefail
+          set -o xtrace
+
+          attempt_counter=0
+          max_attempts=5
+          until wget -qO- http://127.0.0.1 | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' | grep -q "Kubernetes Dashboard"; do
+              if [ ${attempt_counter} -eq ${max_attempts} ];then
+                  echo "Max attempts reached"
+                  exit 1
+              fi
+              attempt_counter=$((attempt_counter+1))
+              sleep 10
+          done
       - if: ${{ failure() }}
         run: kubectl get all -A -o wide
       - name: Deploy Metrics server services
