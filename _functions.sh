@@ -134,7 +134,8 @@ EOL
     kubectl rollout status deployment/iperf3-server-deployment --timeout=3m
 
     # Perform bechmarking
-    kubectl get pods -o wide | tee  "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+    kubectl get nodes -o wide | tee  "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+    kubectl get pods -o wide | tee --append  "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
     for pod in $(kubectl get pods -l app=iperf3-client -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'); do
         ip=$(kubectl get pod "$pod" -o jsonpath='{.status.hostIP}')
         bash -c "kubectl exec -it $pod -- iperf3 -c iperf3-server -T \"Client on $ip\"" | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"

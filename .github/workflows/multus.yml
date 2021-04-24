@@ -16,7 +16,7 @@ on:
       - 'master'
 
 jobs:
-  check-multuss:
+  check-multus:
     runs-on: ubuntu-18.04
     env:
       KRD_DEBUG: true
