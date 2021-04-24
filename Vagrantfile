@@ -60,17 +60,7 @@ end
 puts "Free memory(kb): #{memfree}"
 
 debug = ENV["DEBUG"] || "true"
-network_plugin = ENV["KRD_NETWORK_PLUGIN"]
-enable_multus = ENV["KRD_MULTUS_ENABLED"]
-kata_containers_enabled = ENV["KRD_KATA_CONTAINERS_ENABLED"]
-crun_enabled = ENV["KRD_CRUN_ENABLED"]
 qat_plugin_mode = ENV["KRD_QAT_PLUGIN_MODE"]
-container_runtime = ENV["KRD_CONTAINER_RUNTIME"]
-kube_version = ENV["KRD_KUBE_VERSION"]
-kubespray_version = ENV["KRD_KUBESPRAY_VERSION"]
-kubespray_repo = ENV["KRD_KUBESPRAY_REPO"]
-enable_cert_manager = ENV["KRD_CERT_MANAGER_ENABLED"] || "true"
-enable_ingres_nginx = ENV["KRD_INGRESS_NGINX_ENABLED"] || "true"
 
 installer_ip = "10.10.16.2"
 
@@ -314,19 +304,21 @@ Vagrant.configure("2") do |config|
         KRD_DEBUG: debug.to_s,
         PKG_DEBUG: debug.to_s,
         KRD_ANSIBLE_DEBUG: debug.to_s,
-        KRD_MULTUS_ENABLED: enable_multus.to_s,
+        KRD_MULTUS_ENABLED: ENV["KRD_MULTUS_ENABLED"],
         KRD_QAT_PLUGIN_MODE: qat_plugin_mode.to_s,
-        KRD_NETWORK_PLUGIN: network_plugin.to_s,
-        KRD_CONTAINER_RUNTIME: container_runtime.to_s,
-        KRD_KUBE_VERSION: kube_version.to_s,
-        KRD_KUBESPRAY_VERSION: kubespray_version.to_s,
-        KRD_KATA_CONTAINERS_ENABLED: kata_containers_enabled.to_s,
-        KRD_CRUN_ENABLED: crun_enabled.to_s,
-        KRD_KUBESPRAY_REPO: kubespray_repo.to_s,
+        KRD_NETWORK_PLUGIN: ENV["KRD_NETWORK_PLUGIN"],
+        KRD_CONTAINER_RUNTIME: ENV["KRD_CONTAINER_RUNTIME"],
+        KRD_KUBE_VERSION: ENV["KRD_KUBE_VERSION"],
+        KRD_KUBESPRAY_VERSION: ENV["KRD_KUBESPRAY_VERSION"],
+        KRD_KATA_CONTAINERS_ENABLED: ENV["KRD_KATA_CONTAINERS_ENABLED"],
+        KRD_CRUN_ENABLED: ENV["KRD_CRUN_ENABLED"],
+        KRD_KUBESPRAY_REPO: ENV["KRD_KUBESPRAY_REPO"],
         KRD_REGISTRY_MIRRORS_LIST: "http://#{installer_ip}:5000",
         KRD_INSECURE_REGISTRIES_LIST: "#{installer_ip}:5000",
-        KRD_CERT_MANAGER_ENABLED: enable_cert_manager.to_s,
-        KRD_INGRESS_NGINX_ENABLED: enable_ingres_nginx.to_s,
+        KRD_CERT_MANAGER_ENABLED: ENV["KRD_CERT_MANAGER_ENABLED"],
+        KRD_INGRESS_NGINX_ENABLED: ENV["KRD_INGRESS_NGINX_ENABLED"],
+        KRD_FLANNEL_BACKEND_TYPE: ENV["KRD_FLANNEL_BACKEND_TYPE"],
+        KRD_KUBE_PROXY_MODE: ENV["KRD_KUBE_PROXY_MODE"]
       }
       sh.inline = <<-SHELL
         for krd_var in $(printenv | grep KRD_); do echo "export $krd_var" | sudo tee --append /etc/environment ; done
