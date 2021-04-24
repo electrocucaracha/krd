@@ -14,3 +14,4 @@ Table of contents
    Project Architecture <architecture>
    Bare Metal provisioning <bare_metal_provisioning>
    Benchmark results of Kubernetes network plugins <benchmark_network>
+   Tuning Flannel CNI plugin <tuning_flannel>
