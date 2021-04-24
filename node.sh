@@ -190,4 +190,7 @@ enable_nvdimm_mixed_mode
 
 if [ "$KRD_DEBUG" == "true" ]; then
     lstopo-no-graphics
+    if command -v ipvsadm; then
+        sudo ipvsadm -Ln
+    fi
 fi
