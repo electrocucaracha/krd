@@ -61,22 +61,20 @@ puts "Free memory(kb): #{memfree}"
 
 debug = ENV["DEBUG"] || "true"
 qat_plugin_mode = ENV["KRD_QAT_PLUGIN_MODE"]
-
 installer_ip = "10.10.16.2"
 
+# Collects IP address exceptions for the Proxy
 no_proxy = ENV["NO_PROXY"] || ENV["no_proxy"] || "127.0.0.1,localhost"
 nodes.each do |node|
   next unless node.key? "networks"
-
   node["networks"].each do |network|
     no_proxy += ",#{network['ip']}"
   end
 end
-# NOTE: This range is based on vagrant-libvirt network definition CIDR 192.168.125.0/27
-(1..31).each do |i|
-  no_proxy += ",192.168.125.#{i},10.0.2.#{i}"
+(1..254).each do |i|
+  no_proxy += ",10.0.2.#{i}"
 end
-no_proxy += ",10.0.2.15,10.10.17.2"
+no_proxy += ",#{installer_ip}"
 
 # Discoverying host capabilities
 qat_devices = ""
@@ -97,8 +95,10 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox"
 
   config.vm.provider "libvirt" do |v|
-    v.management_network_address = "192.168.125.0/27"
-    v.management_network_name = "krd-mgmt-net"
+    v.management_network_address = "10.0.2.0/24"
+    # Administration - Provides Internet access for all nodes and is
+    # used for administration to install software packages
+    v.management_network_name = "administration"
     v.random_hostname = true
     v.disk_device = "sda"
   end
