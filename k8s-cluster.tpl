@@ -111,3 +111,11 @@ docker_mount_flags: shared
 
 # Should be set to a cluster IP if using a custom cluster DNS
 manual_dns_server: ""
+
+# Flannel may be paired with several different backends.
+# default - VXLAN is the recommended choice.
+# host-gw is recommended for more experienced users who want the performance
+# improvement and whose infrastructure support it (typically it can't be used in
+# cloud environments).
+# UDP is suggested for debugging only or for very old kernels that don't support VXLAN.
+flannel_backend_type: $KRD_FLANNEL_BACKEND_TYPE
