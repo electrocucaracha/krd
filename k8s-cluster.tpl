@@ -60,9 +60,8 @@ local_release_dir: "/tmp/releases"
 # Helm deployment
 helm_enabled: false
 
-# Enable MountPropagation gate feature
-local_volumes_enabled: true
-local_volume_provisioner_enabled: true
+# Local volume provisioner deployment
+local_volume_provisioner_enabled: $KRD_LOCAL_VOLUME_PROVISIONER_ENABLED
 
 # Makes the installer node a delegate for pushing images while running
 # the deployment with ansible. This maybe the case if cluster nodes
@@ -119,3 +118,6 @@ manual_dns_server: ""
 # cloud environments).
 # UDP is suggested for debugging only or for very old kernels that don't support VXLAN.
 flannel_backend_type: $KRD_FLANNEL_BACKEND_TYPE
+
+# Specify version of Docker to used (should be quoted string).
+docker_version: "$KRD_DOCKER_VERSION"
