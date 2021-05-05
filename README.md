@@ -11,7 +11,12 @@ This project offers a reference for deploying a Kubernetes cluster.
 Its ansible playbooks allow to provision a deployment on Bare-metal
 or Virtual Machines.
 
-## Linux Distros
+The *POD Descriptor File (PDF)* is a YAML file which defines the setup used by
+KRD. The [default PDF file](config/default.yml) can be overwritten to try
+different scenarios. There are different setups located in the
+[samples folder](config/samples) which can be used.
+
+## Linux Distros Supported
 
 | Name       | Version           |
 |:-----------|:-----------------:|
@@ -37,10 +42,13 @@ or Virtual Machines.
 | Kong           | Ingress Controller                              |                                   | Tested      |
 | MetalLB        | Provides a network load-balancer implementation |                                   | Tested      |
 
-## Deployment
+## Quick Deployment
 
-The [installer](_installers.sh) bash script contains the minimal
-Ubuntu instructions required for running this project.
+The [All-in-One bash script](aio.sh) bash script offers the minimal unattended
+instructions required for deploying a KRD in a node. It can be externally
+consumed with one single command.
+
+    curl -fsSL http://bit.ly/KRDaio | bash
 
 ### Virtual Machines
 
@@ -88,7 +96,7 @@ playbook to be executed.
 
     KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
 
-*Note:* Some KRD AddOns have a corresponding validation script in the
+> Note: Some KRD AddOns have a corresponding validation script in the
 [tests](tests) folder.
 
 ### Provision Development environments
