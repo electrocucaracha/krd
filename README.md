@@ -50,20 +50,11 @@ consumed with one single command.
 
     curl -fsSL http://bit.ly/KRDaio | bash
 
-### Virtual Machines
+### Installation
 
-This project uses [Vagrant tool][5] for provisioning Virtual Machines
-automatically. The *setup.sh* script of the
-[bootstrap-vagrant project][7] contains the Linux instructions to
-install dependencies and plugins required for its usage. This script
-supports two Virtualization technologies (Libvirt and VirtualBox).
-
-    curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
-
-Once Vagrant is installed, it's possible to provision a cluster using
-the following instructions:
-
-    vagrant up && vagrant up installer
+The [Environment Setup](CONTRIBUTING.md#environment-setup) section provides the
+steps required to install KRD dependencies and define the Cluster setup before
+its provisioning.
 
 ![Provisioning](docs/src/img/provisioning.png)
 
@@ -99,16 +90,6 @@ playbook to be executed.
 > Note: Some KRD AddOns have a corresponding validation script in the
 [tests](tests) folder.
 
-### Provision Development environments
-
-This project can be also used to provision a Kubespray development
-environment. Through the `KRD_KUBESPRAY_REPO` environment
-variable is possible to specify the Kubespray's fork to fetch source
-code and the `KRD_KUBESPRAY_VERSION` can be used to define the branch
-to be selected.
-
-    KRD_KUBESPRAY_REPO=https://github.com/electrocucaracha/kubespray KRD_KUBESPRAY_VERSION=origin/release-2.9 ./krd_command.sh -a install_k8s
-
 ## Day-2 Operations
 
 The functions defined in this project covers the life-cycle of a
@@ -119,7 +100,9 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 
     KRD_KUBE_VERSION=v1.18.10 KRD_KUBESPRAY_VERSION=v2.14.2 ./krd_command.sh -a upgrade_k8s
 
-### Global Environment variables
+### Environment variables
+
+#### Global
 
 | Name                                  | Default                                        | Description                                                                     |
 |:--------------------------------------|:-----------------------------------------------|:--------------------------------------------------------------------------------|
@@ -142,7 +125,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_ENABLE_ISTIO_ADDONS               | false                                          | Enable/Disable Istio AddOns(Grafana, Kiali and Prometheus)                      |
 | KRD_METALLB_ADDRESS_POOLS             |                                                | Specifies a list of L2 address pools for [MetalLB configuration][19]            |
 
-### Kubespray Environment variables
+#### Kubespray
 
 | Name                                 | Default | Description                                                                     |
 |:-------------------------------------|:--------|:--------------------------------------------------------------------------------|
@@ -168,9 +151,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 [2]: https://github.com/k8snetworkplumbingwg/multus-cni
 [3]: playbooks/configure-virtlet.yml
 [4]: playbooks/roles/nfd
-[5]: https://www.vagrantup.com/
 [6]: playbooks/roles/pmem
-[7]: https://github.com/electrocucaracha/bootstrap-vagrant
 [8]: playbooks/roles/qat_plugin
 [9]: playbooks/roles/sriov_plugin
 [10]: https://cert-manager.io/
