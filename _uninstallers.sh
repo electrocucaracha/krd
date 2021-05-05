@@ -38,23 +38,6 @@ function _uninstall_helm {
     fi
 }
 
-function _delete_namespace {
-    local namespace="$1"
-    local attempt_counter=0
-    local max_attempts=12
-
-    kubectl delete namespace "$namespace"
-
-    until [ "$(kubectl get all -n "$namespace" --no-headers | wc -l)" == "0" ]; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
-            echo "Max attempts reached"
-            exit 1
-        fi
-        attempt_counter=$((attempt_counter+1))
-        sleep 5
-    done
-}
-
 # uninstall_metrics_server() - Uninstall Metrics Server services
 function uninstall_metrics_server {
     _uninstall_helm metrics-server
