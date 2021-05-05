@@ -75,6 +75,29 @@ function run_k8s_iperf {
     _delete_namespace iperf3
 }
 
+# run_k8s_k6() - Function that execute performance tests
+function run_k8s_k6 {
+    # Create resources
+    if ! kubectl get namespaces/k6 --no-headers -o custom-columns=name:.metadata.name; then
+        kubectl create namespace k6
+    fi
+    kubectl apply -f resources/pre_k6.yml
+
+    # Wait for stabilization
+    wait_for_pods k6
+
+    # Perform bechmarking
+    kubectl apply -f resources/post_k6.yml
+    kubectl wait --for=condition=complete job client -n k6 --timeout=3m
+    pod_name=$(kubectl get pods -l=job-name=client -o jsonpath='{.items[0].metadata.name}' -n k6)
+    kubectl get nodes -o wide | tee  "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+    kubectl get deployments/http-server-deployment -n k6 -o wide | tee --append  "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+    kubectl logs -n k6 "$pod_name" | tail -n 19 | tee --append  "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+
+    # Clean up
+    _delete_namespace k6
+}
+
 # wait_for_pods() - Function that waits for the running state
 function wait_for_pods {
     local namespace=$1

@@ -16,18 +16,7 @@ Tuning Kubernetes Flannel CNI deployment
 `Flannel CNI <https://www.cni.dev/plugins/current/meta/flannel/>`_ is a simple
 and easy way to configure a L3 network fabric designed for Kubernetes. It
 supports different backend types for specific scenarios. This document compares
-results obtained with  *vxlan* and *host-gw* backends using kube-proxy *IPVS*
-mode.
-
-**IPVS (IP Virtual Server)**
-
-IPVS running on a host acts as L4 load balancer at the front of a real servers.
-It is built on top of netfilter and utilizes hash table instead of chain,
-therefore it can redirect TCP/UDP based services to the real servers. One
-potential downside is that packets that are handled by IPVS take a very
-different path through the iptables filter hooks than packets under normal
-circumstances. If you plan to use it with other programs that use iptables then
-you will need to research whether they will behave as expected together.
+results obtained with  *vxlan* and *host-gw* backends.
 
 **VXLAN (Virtual Extensible LAN)**
 
