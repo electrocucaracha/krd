@@ -15,3 +15,4 @@ Table of contents
    Bare Metal provisioning <bare_metal_provisioning>
    Benchmark results of Kubernetes network plugins <benchmark_network>
    Tuning Flannel CNI plugin <tuning_flannel>
+   Tuning Kube-proxy <tuning_kube-proxy>
