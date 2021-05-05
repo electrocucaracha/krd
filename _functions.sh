@@ -54,97 +54,25 @@ function upgrade_k8s {
 
 # run_k8s_iperf() - Function that execute networking benchmark
 function run_k8s_iperf {
-    cat << EOL | kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: iperf3-server-deployment
-  labels:
-    app: iperf3-server
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: iperf3-server
-  template:
-    metadata:
-      labels:
-        app: iperf3-server
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: node-role.kubernetes.io/master
-                    operator: Exists
-      tolerations:
-        - key: node-role.kubernetes.io/master
-          operator: Exists
-          effect: NoSchedule
-      containers:
-        - name: iperf3-server
-          image: networkstatic/iperf3
-          args: ['-s']
-          ports:
-            - containerPort: 5201
-              name: server
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: iperf3-server
-spec:
-  selector:
-    app: iperf3-server
-  ports:
-    - protocol: TCP
-      port: 5201
-      targetPort: server
----
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: iperf3-clients
-  labels:
-    app: iperf3-client
-spec:
-  selector:
-    matchLabels:
-      app: iperf3-client
-  template:
-    metadata:
-      labels:
-        app: iperf3-client
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: node-role.kubernetes.io/master
-                    operator: DoesNotExist
-      containers:
-        - name: iperf3-client
-          image: networkstatic/iperf3
-          command: ['/bin/sh', '-c', 'sleep infinity']
-EOL
+    # Create resources
+    if ! kubectl get namespaces/iperf3 --no-headers -o custom-columns=name:.metadata.name; then
+        kubectl create namespace iperf3
+    fi
+    kubectl apply -f resources/iperf.yml
+
     # Wait for stabilization
-    kubectl rollout status daemonset/iperf3-clients --timeout=3m
-    kubectl rollout status deployment/iperf3-server-deployment --timeout=3m
+    wait_for_pods iperf3
 
     # Perform bechmarking
     kubectl get nodes -o wide | tee  "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
-    kubectl get pods -o wide | tee --append  "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
-    for pod in $(kubectl get pods -l app=iperf3-client -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'); do
-        ip=$(kubectl get pod "$pod" -o jsonpath='{.status.hostIP}')
-        bash -c "kubectl exec -it $pod -- iperf3 -c iperf3-server -T \"Client on $ip\"" | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+    kubectl get pods -n iperf3 -o wide | tee --append  "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+    for pod in $(kubectl get pods -n iperf3 -l app=iperf3-client -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'); do
+        ip=$(kubectl get pod "$pod" -n iperf3 -o jsonpath='{.status.hostIP}')
+        bash -c "kubectl exec -it $pod -n iperf3 -- iperf3 -c iperf3-server -T \"Client on $ip\"" | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
     done
 
     # Clean up
-    kubectl delete deployment/iperf3-server-deployment --ignore-not-found
-    kubectl delete service/iperf3-server --ignore-not-found
-    kubectl delete daemonset/iperf3-clients --ignore-not-found
+    _delete_namespace iperf3
 }
 
 # wait_for_pods() - Function that waits for the running state

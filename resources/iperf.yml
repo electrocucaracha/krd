@@ -1,0 +1,86 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2021
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iperf3-server-deployment
+  namespace: iperf3
+  labels:
+    app: iperf3-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iperf3-server
+  template:
+    metadata:
+      labels:
+        app: iperf3-server
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: Exists
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: iperf3-server
+          image: networkstatic/iperf3
+          args: ['-s']
+          ports:
+            - containerPort: 5201
+              name: server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iperf3-server
+  namespace: iperf3
+spec:
+  selector:
+    app: iperf3-server
+  ports:
+    - protocol: TCP
+      port: 5201
+      targetPort: server
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: iperf3-clients
+  namespace: iperf3
+  labels:
+    app: iperf3-client
+spec:
+  selector:
+    matchLabels:
+      app: iperf3-client
+  template:
+    metadata:
+      labels:
+        app: iperf3-client
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: DoesNotExist
+      containers:
+        - name: iperf3-client
+          image: networkstatic/iperf3
+          command: ['/bin/sh', '-c', 'sleep infinity']
