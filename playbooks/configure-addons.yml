@@ -120,7 +120,8 @@
       when: qat_plugin_mode == "kernel"
     - name: remove old qat docker images
       shell: "docker images intel-qat-plugin -q | xargs docker rmi -f"
-      ignore_errors: true
+      register: docker_rmi_result
+      failed_when: "docker_rmi_result.rc != 0 and docker_rmi_result.rc != 123"
       when: qat_plugin_mode == "kernel"
     - name: build docker image
       command: "docker build --build-arg TAGS_KERNELDRV=kerneldrv --pull -t intel/intel-qat-plugin:{{ qat_plugin_version }} -f {{ qat_plugin_repo_folder }}/build/docker/intel-qat-plugin.Dockerfile {{ qat_plugin_repo_folder }}/"
