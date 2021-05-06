@@ -253,7 +253,10 @@ function _delete_namespace {
     local attempt_counter=0
     local max_attempts=12
 
-    kubectl delete namespace "$namespace"
+    if ! kubectl get namespaces 2>/dev/null | grep  "$namespace"; then
+        return
+    fi
+    kubectl delete namespace "$namespace" --wait=false
 
     until [ "$(kubectl get all -n "$namespace" --no-headers | wc -l)" == "0" ]; do
         if [ ${attempt_counter} -eq ${max_attempts} ];then

@@ -38,6 +38,16 @@ function _uninstall_helm {
     fi
 }
 
+function _uninstall_krew_plugin {
+    local plugin=$1
+
+    # shellcheck disable=SC1091
+    source /etc/profile.d/krew_path.sh
+    if kubectl krew search "$plugin" | grep -q "${plugin}.*yes"; then
+        kubectl krew uninstall "$plugin"
+    fi
+}
+
 # uninstall_metrics_server() - Uninstall Metrics Server services
 function uninstall_metrics_server {
     _uninstall_helm metrics-server
@@ -57,4 +67,17 @@ function uninstall_metallb {
 function uninstall_istio {
     istioctl manifest generate | kubectl delete --ignore-not-found=true -f -
     _delete_namespace istio-system
+}
+
+# uninstall_kubevirt() - Uninstall KubeVirt servcies
+function uninstall_kubevirt {
+    kubevirt_version=$(_get_version kubevirt)
+
+    if kubectl api-resources | grep -q kubevirt; then
+        kubectl delete -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-cr.yaml"
+    fi
+    kubectl delete -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-operator.yaml" --ignore-not-found --wait=false
+
+    _uninstall_krew_plugin virt
+    _delete_namespace kubevirt
 }

@@ -47,15 +47,21 @@ function install_local_registry {
     done < /tmp/kubespray_images.txt
 }
 
+function _install_krew_plugin {
+    local plugin=$1
+
+    # shellcheck disable=SC1091
+    source /etc/profile.d/krew_path.sh
+    if kubectl krew search "$plugin" | grep -q "${plugin}.*no"; then
+        kubectl krew install "$plugin"
+    fi
+}
+
 function _update_ngnix_ingress_ca {
     local cert_dir=/opt/cert-manager/certs
     local cfssl_version=1.4.1
 
-    # shellcheck disable=SC1091
-    source /etc/profile.d/krew_path.sh
-    if [ "$(kubectl krew search cert-manager | awk 'FNR==2{ print $NF}')" == "no" ]; then
-        kubectl krew install cert-manager
-    fi
+    _install_krew_plugin cert-manager
     if ! command -v cfssl; then
         sudo curl -sLo /usr/bin/cfssl "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/cfssl_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" > /dev/null
         sudo chmod +x /usr/bin/cfssl
@@ -766,18 +772,8 @@ function install_kubevirt {
         kubectl create configmap kubevirt-config -n kubevirt --from-literal debug.useEmulation=true
     fi
     kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-cr.yaml"
-    # shellcheck disable=SC1091
-    source /etc/profile.d/krew_path.sh
-    if [ "$(kubectl krew search virt | awk 'FNR==2{ print $NF}')" == "no" ]; then
-        kubectl krew install virt
-    fi
-    for deployment in operator api controller; do
-        if kubectl get "deployment/virt-$deployment" -n kubevirt --no-headers -o custom-columns=name:.metadata.name; then
-            kubectl rollout status "deployment/virt-$deployment" -n kubevirt --timeout=5m
-            sleep 5
-        fi
-    done
-    kubectl rollout status daemonset/virt-handler -n kubevirt --timeout=5m
+    _install_krew_plugin virt
+    wait_for_pods kubevirt
     until [ "$(kubectl api-resources --api-group kubevirt.io --no-headers | wc -l)" == "6" ]; do
         sleep 5
     done
