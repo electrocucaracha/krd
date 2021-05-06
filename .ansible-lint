@@ -27,5 +27,4 @@ mock_roles:
   - geerlingguy.docker
   - andrewrothstein.kind
   - andrewrothstein.kubectl
-  - andrewrothstein.go
   - geerlingguy.repo-epel

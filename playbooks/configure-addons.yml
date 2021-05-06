@@ -56,8 +56,6 @@
   tags: pmem
   roles:
     - role: andrewrothstein.gcc-toolbox
-    - role: andrewrothstein.go
-      go_ver: "{{ go_version }}"
     - pmem
 
 - name: install QuickAssist drivers

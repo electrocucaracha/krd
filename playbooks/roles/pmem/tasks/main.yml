@@ -8,41 +8,11 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: check if cfssl binary exists
-  stat:
-    path: /usr/local/bin/cfssl
-  register: cfssl
-
-- name: check if cfssljson binary exists
-  stat:
-    path: /usr/local/bin/cfssljson
-  register: cfssljson
-
-- name: print cfssl and cfssljson values
-  debug:
-    var: '{{ item }}'
+- name: deploy cfssl binaries
+  include: bootstrap.yml binary={{ item }}
   with_items:
     - cfssl
     - cfssljson
-
-- name: deploy cfssl binaries
-  block:
-    - name: install go get dependencies
-      become: true
-      package:
-        name: git
-        state: present
-    - name: install CloudFlare's PKI/TLS toolkit
-      command: "/usr/local/go/bin/go get -u github.com/cloudflare/cfssl/cmd/..."
-    - name: move CloudFlare's PKI/TLS toolkit binaries to PATH
-      command: "mv {{ ansible_env.HOME }}/go/bin/{{ item }} /usr/local/bin/"
-      become: true
-      with_items:
-        - cfssl
-        - cfssljson
-  when:
-    - not cfssl.stat.exists
-    - not cfssljson.stat.exists
 
 - name: ensure destination folder exists
   file:

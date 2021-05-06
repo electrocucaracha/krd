@@ -10,3 +10,4 @@
 
 pmem_template_folder: "/tmp/pmem_k8s"
 pmem_version: v0.7.6
+cfssl_version: 1.4.1
