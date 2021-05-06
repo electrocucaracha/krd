@@ -72,6 +72,7 @@ jobs:
       after_success:
         - kubectl get all -A -o wide
       after_script:
+        - ./krd_command.sh -a uninstall_kubevirt
         - ./krd_command.sh -a uninstall_k8s
     - name: All-in-One + Virtlet role validation
       language: shell
