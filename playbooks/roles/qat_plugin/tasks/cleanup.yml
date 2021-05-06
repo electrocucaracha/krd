@@ -13,11 +13,7 @@
   register: intel_qat_plugin_pod
 
 - name: cleanup | delete qat plugin daemonset
-  command: "/usr/local/bin/kubectl delete daemonsets intel-qat-plugin --now --force"
-  ignore_errors: true
+  command: "/usr/local/bin/kubectl delete daemonsets intel-qat-plugin --now --force --ignore-not-found"
 
 - name: cleanup | wait for destroying qat plugin
-  shell: "/usr/local/bin/kubectl get pods {{ intel_qat_plugin_pod.stdout }}"
-  register: kubectl_get_intel_qat_plugin_pod
-  until: '"not found" in kubectl_get_intel_qat_plugin_pod.stdout'
-  ignore_errors: true
+  shell: "/usr/local/bin/kubectl rollout status daemonsets/intel-qat-plugin --timeout=5m"
