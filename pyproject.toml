@@ -1,0 +1,2 @@
+[tool.vulture]
+exclude = ["docs/src/conf.py"]
