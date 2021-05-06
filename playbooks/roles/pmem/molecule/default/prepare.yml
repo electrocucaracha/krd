@@ -23,8 +23,6 @@
     - role: geerlingguy.docker
       docker_install_compose: false
       become: true
-    - role: andrewrothstein.go
-      go_version: "{{ go_version }}"
   tasks:
     - name: add existing user ansible's user to docker's group
       become: true

@@ -9,8 +9,6 @@
 ##############################################################################
 
 roles:
-  - name: andrewrothstein.go
-    version: v2.1.48
   - name: geerlingguy.docker
     version: 3.1.2
   - name: geerlingguy.repo-epel
