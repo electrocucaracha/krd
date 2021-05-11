@@ -29,10 +29,12 @@ nodes = YAML.load_file(pdf)
 vagrant_boxes = YAML.load_file("#{File.dirname(__FILE__)}/distros_supported.yml")
 
 # Inventory file creation
+etchosts_dict=""
 File.open("#{File.dirname(__FILE__)}/inventory/hosts.ini", "w") do |inventory_file|
   inventory_file.puts("[all]")
   nodes.each do |node|
     inventory_file.puts(node["name"])
+    etchosts_dict+="#{node['networks'][0]['ip']}-#{node['name']},"
   end
   %w[kube-master kube-node etcd qat-node criu].each do |group|
     inventory_file.puts("\n[#{group}]")
@@ -318,7 +320,8 @@ Vagrant.configure("2") do |config|
         KRD_CERT_MANAGER_ENABLED: ENV["KRD_CERT_MANAGER_ENABLED"],
         KRD_INGRESS_NGINX_ENABLED: ENV["KRD_INGRESS_NGINX_ENABLED"],
         KRD_FLANNEL_BACKEND_TYPE: ENV["KRD_FLANNEL_BACKEND_TYPE"],
-        KRD_KUBE_PROXY_MODE: ENV["KRD_KUBE_PROXY_MODE"]
+        KRD_KUBE_PROXY_MODE: ENV["KRD_KUBE_PROXY_MODE"],
+        KRD_DNS_ETCHOSTS_DICT: etchosts_dict.to_s
       }
       sh.inline = <<-SHELL
         for krd_var in $(printenv | grep KRD_); do echo "export $krd_var" | sudo tee --append /etc/environment ; done
