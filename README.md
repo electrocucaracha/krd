@@ -147,6 +147,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_LOCAL_VOLUME_PROVISIONER_ENABLED | true    | Enable/Disable [Local volume provisioner][20]                                   |
 | KRD_DOCKER_VERSION                   | 19.03   | Specifies the Docker version to be used for deploying Kubernetes                |
 | KRD_ENABLE_NODELOCALDNS              | true    | Enable/Disable [NodeLocal DNSCache][5]                                          |
+| KRD_NDOTS                            | 1       | Threshold for the number of dots which must appear in name resolution           |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [2]: https://github.com/k8snetworkplumbingwg/multus-cni
