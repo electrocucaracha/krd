@@ -128,3 +128,9 @@ calico_mtu: 1500
 # Enable nodelocal to make pods reach out to the dns (core-dns) caching agent
 # running on the same node, thereby avoiding iptables DNAT rules and connection tracking.
 enable_nodelocaldns: $KRD_ENABLE_NODELOCALDNS
+
+# sets a threshold for the number of dots which must appear in a name before an
+# initial absolute query will be made. The default for n is 1, meaning that if
+# there are any dots in a name, the name will be tried first as an absolute name
+# before any search list elements are appended to it.
+ndots: $KRD_NDOTS
