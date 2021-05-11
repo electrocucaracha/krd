@@ -136,6 +136,12 @@ EOF
             echo "  - $registry" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         done
     fi
+    if [ -n "${KRD_DNS_ETCHOSTS_DICT:-}" ]; then
+        echo "dns_etchosts: |" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        for etchost_entry in ${KRD_DNS_ETCHOSTS_DICT//,/ }; do
+            echo "  ${etchost_entry%-*} ${etchost_entry#*-}" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        done
+    fi
 }
 
 # update_repos() - Function that updates linux repositories
