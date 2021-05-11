@@ -146,11 +146,13 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_INSECURE_REGISTRIES_LIST         |         | Specifies a list of insecure-registries (IP address or domain name)             |
 | KRD_LOCAL_VOLUME_PROVISIONER_ENABLED | true    | Enable/Disable [Local volume provisioner][20]                                   |
 | KRD_DOCKER_VERSION                   | 19.03   | Specifies the Docker version to be used for deploying Kubernetes                |
+| KRD_ENABLE_NODELOCALDNS              | true    | Enable/Disable [NodeLocal DNSCache][5]                                          |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [2]: https://github.com/k8snetworkplumbingwg/multus-cni
 [3]: playbooks/configure-virtlet.yml
 [4]: playbooks/roles/nfd
+[5]: https://kubernetes.io/docs/tasks/administer-cluster/nodelocaldns/
 [6]: playbooks/roles/pmem
 [8]: playbooks/roles/qat_plugin
 [9]: playbooks/roles/sriov_plugin
