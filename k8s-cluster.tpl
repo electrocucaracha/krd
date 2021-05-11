@@ -124,3 +124,7 @@ docker_version: "$KRD_DOCKER_VERSION"
 
 # Override auto-detection of MTU by providing an explicit value if needed.
 calico_mtu: 1500
+
+# Enable nodelocal to make pods reach out to the dns (core-dns) caching agent
+# running on the same node, thereby avoiding iptables DNAT rules and connection tracking.
+enable_nodelocaldns: $KRD_ENABLE_NODELOCALDNS
