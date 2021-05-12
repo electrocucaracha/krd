@@ -134,3 +134,6 @@ enable_nodelocaldns: $KRD_ENABLE_NODELOCALDNS
 # there are any dots in a name, the name will be tried first as an absolute name
 # before any search list elements are appended to it.
 ndots: $KRD_NDOTS
+
+# configures how will be setup DNS for `hostNetwork: true` PODs and non-k8s containers.
+resolvconf_mode: $KRD_RESOLVCONF_MODE
