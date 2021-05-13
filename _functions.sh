@@ -75,16 +75,24 @@ function run_k8s_iperf {
     _delete_namespace iperf3
 }
 
-# run_k8s_k6() - Function that execute performance tests
-function run_k8s_k6 {
+function _setup_demo_app {
+    local namespace=$1
+
     # Create resources
-    if ! kubectl get namespaces/k6 --no-headers -o custom-columns=name:.metadata.name; then
-        kubectl create namespace k6
+    if ! kubectl get "namespaces/$namespace" --no-headers -o custom-columns=name:.metadata.name; then
+        kubectl create namespace "$namespace"
     fi
-    kubectl apply -f resources/pre_k6.yml
+    kubectl apply -f resources/demo_app.yml -n "$namespace"
 
     # Wait for stabilization
-    wait_for_pods k6
+    wait_for_pods "$namespace"
+}
+
+# run_internal_k6() - Function that execute performance HTTP benchmark from the cluster
+function run_internal_k6 {
+    # Setup
+    _setup_demo_app k6
+    kubectl apply -f resources/pre_k6.yml
 
     # Perform bechmarking
     kubectl apply -f resources/post_k6.yml
