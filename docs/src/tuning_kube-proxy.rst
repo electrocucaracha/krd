@@ -40,6 +40,24 @@ different path through the iptables filter hooks than packets under normal
 circumstances. If you plan to use it with other programs that use iptables then
 you will need to research whether they will behave as expected together.
 
+IPVS provides different algorithms for allocating TCP connections and UDP
+datagrams to real servers. Scheduling algorithms are implemented as
+kernel modules. *Kubespray* supports the following methods:
+
+- Round Robin: distributes jobs equally amongst the available real servers.
+- Least-Connection: assigns more jobs to real servers with fewer active jobs.
+- Destination Hashing: assigns jobs to servers through looking up a statically
+  assigned hash table by their destination IP addresses.
+- Source Hashing: assigns jobs to servers through looking up a statically
+  assigned hash table by their source IP addresses.
+- Shortest Expected Delay: assigns an incoming job to the server with the
+  shortest expected delay. The expected delay that the job will experience is
+  (Ci + 1) / Ui if sent to the ith server, in which Ci is the number of jobs on
+  the ith server and Ui is the fixed service rate (weight) of the ith server.
+- Never Queue: assigns an incoming job to an idle server if there is, instead of
+  waiting for a fast one; if all the servers are busy, it adopts the Shortest
+  Expected Delay policy to assign the job.
+
 Setup
 #####
 
@@ -59,8 +77,8 @@ Setup
 | worker           | 1     | 4 GB   | Ubuntu 18.04.7 LTS | 4.15.0-142-generic | docker://19.3.14  | v1.2.1       | v1.6.1           |
 +------------------+-------+--------+--------------------+--------------------+-------------------+--------------+------------------+
 
-Results (95 percentile)
-#######################
+iptables vs IPVS
+################
 
 +-----------------------+------------+-------------+
 | Measurement           | iptables   | IPVS        |
@@ -71,3 +89,37 @@ Results (95 percentile)
 +-----------------------+------------+-------------+
 | HTTP Requests per sec | 3575.62904 | 3632.013667 |
 +-----------------------+------------+-------------+
+
+.. note::
+
+   The following results were obtained running `k6`_ tool using
+   1 virtual user connecting to 100 NGINX webservers during 1 minute. These are
+   the 95 percentile value of the results collected by the tool.
+
+IPVS scheduling methods
+#######################
+
++-------------------------+----------+---------+---------------+
+| Method                  | Duration | Waiting | Requests      |
++=========================+==========+=========+===============+
+| Round Robin             | 53.84ms  | 12.82µs | 4206.677073/s |
++-------------------------+----------+---------+---------------+
+| Least-Connection        | 49.51ms  | 12.23µs | 4478.541861/s |
++-------------------------+----------+---------+---------------+
+| Destination Hashing     | 51.38ms  | 13.23µs | 4362.282114/s |
++-------------------------+----------+---------+---------------+
+| Source Hashing          | 44.04ms  | 12µs    | 4731.799579/s |
++-------------------------+----------+---------+---------------+
+| Shortest Expected Delay | 46.91ms  | 11.27µs | 4782.159376/s |
++-------------------------+----------+---------+---------------+
+| Never Queue             | 50.81ms  | 12.21µs | 4331.884239/s |
++-------------------------+----------+---------+---------------+
+
+.. note::
+
+   The following results were obtained running `k6`_ tool using
+   500 virtual user connecting (no reusing connections) to 10 NGINX webservers
+   (simulating 1 sec slow responses) during 1 minute. These are the 90
+   percentile value of the results collected by the tool.
+
+.. _k6: https://k6.io/
