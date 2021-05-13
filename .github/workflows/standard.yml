@@ -11,9 +11,8 @@
 name: Check Kubernetes Dashboard + Metrics Server
 # yamllint disable-line rule:truthy
 on:
-  push:
-    branches:
-      - 'master'
+  schedule:
+    - cron: '0 0 * * 5'
 
 jobs:
   check-dashboard-and-metrics:
