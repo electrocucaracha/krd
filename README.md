@@ -149,6 +149,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_ENABLE_NODELOCALDNS              | true    | Enable/Disable [NodeLocal DNSCache][5]                                          |
 | KRD_NDOTS                            | 1       | Threshold for the number of dots which must appear in name resolution           |
 | KRD_RESOLVCONF_MODE                  | none    | Specifies the DNS setup for non-k8s containers.                                 |
+| KRD_KUBE_PROXY_SCHEDULER             | sh      | Specifies the [IPVS scheduling algorithm][7] for allocating connections         |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [2]: https://github.com/k8snetworkplumbingwg/multus-cni
@@ -157,6 +158,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 [5]: https://kubernetes.io/docs/tasks/administer-cluster/nodelocaldns/
 [6]: playbooks/roles/pmem
 [8]: playbooks/roles/qat_plugin
+[7]: https://man.cx/?page=ipvsadm(8)
 [9]: playbooks/roles/sriov_plugin
 [10]: https://cert-manager.io/
 [11]: https://kubernetes.github.io/ingress-nginx/

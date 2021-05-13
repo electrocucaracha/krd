@@ -137,3 +137,12 @@ ndots: $KRD_NDOTS
 
 # configures how will be setup DNS for `hostNetwork: true` PODs and non-k8s containers.
 resolvconf_mode: $KRD_RESOLVCONF_MODE
+
+# The ipvs scheduler type when proxy mode is ipvs
+# rr: Round Robin distributes jobs equally amongst the available real servers.
+# lc: Least-Connection assigns more jobs to real servers with fewer active jobs.
+# dh: Destination Hashing assigns jobs to servers through looking up a statically assigned hash table by their destination IP addresses.
+# sh: Source Hashing assigns jobs to servers through looking up a statically assigned hash table by their source IP addresses.
+# sed: Shortest Expected Delay assigns an incoming job to the server with the shortest expected delay.
+# nq: Never Queue assigns an incoming job to an idle server if there is, instead of waiting for a fast one; if all the servers are busy, it adopts the Shortest Expected Delay policy to assign the job.
+kube_proxy_scheduler: $KRD_KUBE_PROXY_SCHEDULER
