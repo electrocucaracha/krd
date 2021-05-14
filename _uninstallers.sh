@@ -58,6 +58,11 @@ function uninstall_kong {
     _uninstall_helm kong
 }
 
+# uninstall_haproxy() - Uninstall HAProxy ingress services
+function uninstall_haproxy {
+    _uninstall_helm haproxy
+}
+
 # uninstall_metallb() - Uninstall MetalLB services
 function uninstall_metallb {
     _delete_namespace metallb-system

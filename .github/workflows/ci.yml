@@ -27,4 +27,4 @@ jobs:
       - name: Deploy services
         run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
       - name: Check installation functions
-        run: cd tests; ./check.sh kong metallb istio
+        run: cd tests; ./check.sh kong metallb istio haproxy

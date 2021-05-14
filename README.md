@@ -40,6 +40,7 @@ different scenarios. There are different setups located in the
 | SR-IOV         | Single Root Input/Output Virtualization Plugin  | [sriov_plugin role][9]            | Implemented |
 | Knative        | Platform for managing serverless workloads      |                                   | Tested      |
 | Kong           | Ingress Controller                              |                                   | Tested      |
+| HAProxy        | Ingress Controller                              |                                   | Tested      |
 | MetalLB        | Provides a network load-balancer implementation |                                   | Tested      |
 
 ## Quick Deployment

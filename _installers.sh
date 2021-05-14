@@ -1004,3 +1004,18 @@ data:
 $address_pools
 EOF
 }
+
+# install_haproxy() - Install HAProxy ingress services
+function install_haproxy {
+    KRD_HELM_VERSION=3 install_helm
+
+    if ! helm repo list | grep -e haproxytech; then
+        helm repo add haproxytech https://haproxytech.github.io/helm-charts
+    fi
+    if ! helm ls | grep -e haproxy; then
+        helm upgrade --install haproxy haproxytech/kubernetes-ingress
+    fi
+
+    kubectl rollout status deployment/haproxy-kubernetes-ingress --timeout=5m
+    kubectl rollout status deployment/haproxy-kubernetes-ingress-default-backend --timeout=5m
+}
