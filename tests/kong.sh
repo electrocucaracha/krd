@@ -29,8 +29,8 @@ function cleanup {
 trap cleanup EXIT
 
 # Setup
-HOST=$(kubectl get nodes --namespace default -o jsonpath='{.items[0].status.addresses[0].address}')
-PORT=$(kubectl get svc --namespace default kong-kong-proxy -o jsonpath='{.spec.ports[0].nodePort}')
+HOST=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}')
+PORT=$(kubectl get svc kong-kong-proxy -o jsonpath='{.spec.ports[0].nodePort}')
 CURL_PROXY_CMD="curl -s http://${HOST}:${PORT}"
 
 # Test
@@ -72,27 +72,27 @@ spec:
         app: echo
     spec:
       containers:
-      - image: gcr.io/kubernetes-e2e-test-images/echoserver:2.2
-        name: echo
-        ports:
-          - containerPort: 8080
-        env:
-          - name: NODE_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: spec.nodeName
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: POD_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: POD_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
+        - image: gcr.io/kubernetes-e2e-test-images/echoserver:2.2
+          name: echo
+          ports:
+            - containerPort: 8080
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
 EOF
 wait_deployment "$echo_deployment_name"
 
@@ -100,7 +100,7 @@ assert_non_empty "$($CURL_PROXY_CMD)" "There is no output from Kong's proxy"
 assert_contains "$($CURL_PROXY_CMD)" '{"message":"no Route matched with those values"}' "Routes has been defined for this service"
 
 cat <<EOF | kubectl apply -f -
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: demo
@@ -108,12 +108,15 @@ metadata:
     kubernetes.io/ingress.class: kong
 spec:
   rules:
-  - http:
-      paths:
-      - path: /foo
-        backend:
-          serviceName: echo
-          servicePort: 80
+    - http:
+        paths:
+          - path: /foo
+            pathType: Prefix
+            backend:
+              service:
+                name: echo
+                port:
+                  number: 80
 EOF
 sleep 5 # TODO: Improve the waiting method
 assert_contains "$(eval "$CURL_PROXY_CMD/foo")" "Pod Information:" "The server response doesn't have pod's info"
@@ -127,22 +130,25 @@ config:
   header_name: my-request-id
 plugin: correlation-id
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: demo-example-com
+  name: demo
   annotations:
     konghq.com/plugins: request-id
     kubernetes.io/ingress.class: kong
 spec:
   rules:
-  - host: example.com
-    http:
-      paths:
-      - path: /bar
-        backend:
-          serviceName: echo
-          servicePort: 80
+    - host: example.com
+      http:
+        paths:
+          - path: /bar
+            pathType: Prefix
+            backend:
+              service:
+                name: echo
+                port:
+                  number: 80
 EOF
 sleep 5
 assert_contains "$(eval "$CURL_PROXY_CMD/bar/sample -H 'Host: example.com'")" "Pod Information:" "The server response doesn't have pod's info for example.com host"
