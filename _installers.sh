@@ -114,33 +114,8 @@ function install_k8s {
     # Configure Kubernetes Dashboard
     if kubectl get deployment/kubernetes-dashboard -n kube-system --no-headers -o custom-columns=name:.metadata.name; then
         if kubectl get daemonsets/ingress-nginx-controller -n ingress-nginx --no-headers -o custom-columns=name:.metadata.name; then
-            annotations="
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/backend-protocol: \"HTTPS\""
-            if kubectl get secret/ca-key-pair -n cert-manager --no-headers -o custom-columns=name:.metadata.name; then
-            annotations+="
-    cert-manager.io/cluster-issuer: ca-issuer"
-            fi
-            cat <<EOF | kubectl apply -f -
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-$annotations
-  name: dashboard
-  namespace: kube-system
-spec:
-  rules:
-  - http:
-      paths:
-      - backend:
-          service:
-            name: kubernetes-dashboard
-            port:
-              number: 443
-        path: /
-        pathType: Prefix
-EOF
+            # Create an ingress route for the dashboard
+            kubectl apply -f resources/dashboard-ingress.yml
         else
             KUBE_EDITOR="sed -i \"s|type\: ClusterIP|type\: NodePort|g; s|nodePort\: .*|nodePort\: $KRD_DASHBOARD_PORT|g\"" kubectl -n kube-system edit service kubernetes-dashboard
         fi
