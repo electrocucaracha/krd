@@ -98,10 +98,14 @@ function _install_deps {
         ;;
     esac
 
-    PATH="$PATH:/usr/local/bin/"
-    export PATH
-    curl -fsSL http://bit.ly/install_pkg | PKG=bindep bash
-    curl -fsSL http://bit.ly/install_pkg | PKG="$(bindep node -b)" bash
+    if ! command -v bindep > /dev/null; then
+        curl -fsSL http://bit.ly/install_bin | PKG_BINDEP_PROFILE=node bash
+    else
+        pkgs="$(bindep node -b|| :)"
+        if [ "$pkgs" ]; then
+            curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
+        fi
+    fi
     if systemctl list-unit-files tuned.service | grep "1 unit"; then
         sudo sed -i "s|#\!/usr/bin/python |#\!$(command -v python2) |g" /usr/sbin/tuned
         sudo systemctl start tuned

@@ -286,11 +286,12 @@ if ! command -v curl > /dev/null; then
     esac
 fi
 if ! command -v bindep > /dev/null; then
-    _install_packages bindep
-fi
-pkgs="$(bindep -b || :)"
-if [ "$pkgs" ]; then
-    curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
+    curl -fsSL http://bit.ly/install_bin | bash
+else
+    pkgs="$(bindep -b || :)"
+    if [ "$pkgs" ]; then
+        curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
+    fi
 fi
 
 # Configuration values
