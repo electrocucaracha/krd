@@ -22,7 +22,6 @@ function cleanup {
     kubectl delete service echo --ignore-not-found
     kubectl delete kongplugin request-id --ignore-not-found
     kubectl delete ingress demo --ignore-not-found
-    kubectl delete ingress demo-example-com --ignore-not-found
     kubectl delete kongplugin request-id --ignore-not-found
 }
 
@@ -104,9 +103,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: demo
-  annotations:
-    kubernetes.io/ingress.class: kong
 spec:
+  ingressClassName: kong
   rules:
     - http:
         paths:
@@ -136,8 +134,8 @@ metadata:
   name: demo
   annotations:
     konghq.com/plugins: request-id
-    kubernetes.io/ingress.class: kong
 spec:
+  ingressClassName: kong
   rules:
     - host: example.com
       http:

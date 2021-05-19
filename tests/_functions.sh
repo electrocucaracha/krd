@@ -11,6 +11,9 @@
 set -o errexit
 set -o nounset
 set -o pipefail
+if [[ "$KRD_DEBUG" == "true" ]]; then
+    set -o xtrace
+fi
 
 # info() - This function prints an information message in the standard output
 function info {

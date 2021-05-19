@@ -93,9 +93,6 @@ spec:
 EOF
 wait_deployment "$echo_deployment_name"
 
-assert_non_empty "$($CURL_PROXY_CMD)" "There is no output from HAproxy's proxy"
-assert_contains "$($CURL_PROXY_CMD)" 'default backend - 404' "Routes has been defined for this service"
-
 cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -104,6 +101,7 @@ metadata:
   annotations:
     haproxy.org/path-rewrite: "/"
 spec:
+  ingressClassName: haproxy
   rules:
     - http:
         paths:

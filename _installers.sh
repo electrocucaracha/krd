@@ -108,6 +108,9 @@ function install_k8s {
         _update_ngnix_ingress_ca
     fi
 
+    # Define ingress classes supported by KRD
+    kubectl apply -f resources/ingress-class.yml
+
     # Configure Kubernetes Dashboard
     if kubectl get deployment/kubernetes-dashboard -n kube-system --no-headers -o custom-columns=name:.metadata.name; then
         if kubectl get daemonsets/ingress-nginx-controller -n ingress-nginx --no-headers -o custom-columns=name:.metadata.name; then
