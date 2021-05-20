@@ -8,15 +8,46 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k6-config
+data:
+  config: |
+    import http from "k6/http";
+    import { check, sleep } from "k6";
+    export let options = {
+      vus: 500,
+      noConnectionReuse: true,
+      duration: "1m"
+    };
+    export default function() {
+      let res = http.get("http://test.k6.svc.cluster.local:8080");
+      check(res, {
+        "status was 200": (r) => r.status == 200,
+        "transaction time OK": (r) => r.timings.duration < 200
+      });
+    };
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: client
-  namespace: k6
 spec:
   template:
     spec:
       restartPolicy: Never
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: Exists
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
       containers:
         - name: k6-test
           image: loadimpact/k6

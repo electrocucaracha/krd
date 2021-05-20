@@ -92,11 +92,10 @@ function _setup_demo_app {
 function run_internal_k6 {
     # Setup
     _setup_demo_app k6
-    kubectl apply -f resources/pre_k6.yml
-
-    # Perform bechmarking
-    kubectl apply -f resources/post_k6.yml
+    kubectl apply -f resources/k6.yml -n k6
     kubectl wait --for=condition=complete job client -n k6 --timeout=3m
+
+    # Collecting results
     pod_name=$(kubectl get pods -l=job-name=client -o jsonpath='{.items[0].metadata.name}' -n k6)
     kubectl get nodes -o wide | tee  "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}-${KRD_KUBE_PROXY_SCHEDULER}.log"
     kubectl get deployments/http-server-deployment -n k6 -o wide | tee --append  "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}-${KRD_KUBE_PROXY_SCHEDULER}.log"
