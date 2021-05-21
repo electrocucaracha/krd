@@ -85,7 +85,8 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - http:
+    - host: test.krd.com
+      http:
         paths:
           - path: /
             pathType: Prefix

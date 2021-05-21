@@ -97,9 +97,55 @@ function run_internal_k6 {
 
     # Collecting results
     pod_name=$(kubectl get pods -l=job-name=client -o jsonpath='{.items[0].metadata.name}' -n k6)
-    kubectl get nodes -o wide | tee  "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}-${KRD_KUBE_PROXY_SCHEDULER}.log"
-    kubectl get deployments/http-server-deployment -n k6 -o wide | tee --append  "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}-${KRD_KUBE_PROXY_SCHEDULER}.log"
-    kubectl logs -n k6 "$pod_name" | tail -n 19 | tee --append  "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}-${KRD_KUBE_PROXY_SCHEDULER}.log"
+    kubectl get nodes -o wide | tee "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}-${KRD_KUBE_PROXY_SCHEDULER}.log"
+    kubectl get deployments/http-server-deployment -n k6 -o wide | tee --append "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}-${KRD_KUBE_PROXY_SCHEDULER}.log"
+    kubectl logs -n k6 "$pod_name" | tail -n 19 | tee --append "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}-${KRD_KUBE_PROXY_SCHEDULER}.log"
+
+    # Clean up
+    _delete_namespace k6
+}
+
+# run_external_k6() - Function that execute performance HTTP benchmark to the cluster
+function run_external_k6 {
+    install_metallb
+
+    # Setup
+    _setup_demo_app k6
+    KUBE_EDITOR='sed -i "s|  type\: .*|  type\: LoadBalancer|g"' kubectl edit svc test -n k6
+    until [ -n "$(kubectl get service test -o jsonpath='{.status.loadBalancer.ingress[0].ip}' -n k6)" ]; do
+        sleep 1
+    done
+
+    # Perform bechmarking
+    docker rm k6 || :
+    pushd "$(mktemp -d)" > /dev/null
+    cat << EOF > script.js
+    import http from "k6/http";
+    import { check, sleep } from "k6";
+    export let options = {
+      vus: 500,
+      noConnectionReuse: true,
+      duration: "1m"
+    };
+    export default function() {
+      let params = {
+        headers: { 'Host': 'test.krd.com' },
+      };
+      let res = http.get('http://$(kubectl get svc -n k6 test -o jsonpath='{.status.loadBalancer.ingress[0].ip}')', params);
+      check(res, {
+        "status was 200": (r) => r.status == 200,
+        "transaction time OK": (r) => r.timings.duration < 200
+      });
+    };
+EOF
+    docker run --name k6 -i loadimpact/k6 run - <script.js
+    popd > /dev/null
+
+    # Collecting results
+    default_ingress_class="$(kubectl get ingressclasses.networking.k8s.io -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.annotations}{"\n"}{end}' | grep '"ingressclass.kubernetes.io/is-default-class":"true"' | awk '{ print $1}')"
+    kubectl get nodes -o wide | tee "$HOME/k6-${default_ingress_class}.log"
+    kubectl get deployments/http-server-deployment -n k6 -o wide | tee --append "$HOME/k6-${default_ingress_class}.log"
+    docker logs k6 | tail -n 19 | tee --append "$HOME/k6-${default_ingress_class}.log"
 
     # Clean up
     _delete_namespace k6

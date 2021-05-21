@@ -13,6 +13,7 @@ Table of contents
 
    Project Architecture <architecture>
    Bare Metal provisioning <bare_metal_provisioning>
-   Benchmark results of Kubernetes network plugins <benchmark_network>
+   Benchmark results of Kubernetes Network plugins <benchmark_network>
+   Benchmark results of Kubernetes Ingress controllers <benchmark_ingress>
    Tuning Flannel CNI plugin <tuning_flannel>
    Tuning Kube-proxy <tuning_kube-proxy>
