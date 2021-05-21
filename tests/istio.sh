@@ -87,6 +87,7 @@ spec:
 EOF
 wait_deployment "$server_deployment_name"
 create_client
+sleep 2
 
 assert_contains "$(kubectl get pods -l=app.kubernetes.io/name=server -o jsonpath='{range .items[0].spec.containers[*]}{.image}{"\n"}{end}')" "istio/proxy" "Istio proxy wasn't injected into the server's pod"
 
@@ -106,6 +107,8 @@ spec:
     mode: STRICT
 EOF
 create_client
+sleep 2
+
 assert_non_empty "$(kubectl logs client)" "There is no client's logs"
 assert_contains "$(kubectl logs client)" "Starting loadgen" "The client's pod doesn't start it"
 assert_contains "$(kubectl logs client)" "10 request(s) complete to http://server:80/" "The client's pod can't connect to the server"
