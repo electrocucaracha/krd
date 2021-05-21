@@ -20,8 +20,8 @@ echo_deployment_name="echo"
 function cleanup {
     destroy_deployment "$echo_deployment_name"
     kubectl delete service echo --ignore-not-found
-    kubectl delete kongplugin request-id --ignore-not-found
     kubectl delete ingress demo --ignore-not-found
+    kubectl delete ingress demo-example --ignore-not-found
     kubectl delete kongplugin request-id --ignore-not-found
 }
 
@@ -98,7 +98,25 @@ wait_deployment "$echo_deployment_name"
 assert_non_empty "$($CURL_PROXY_CMD)" "There is no output from Kong's proxy"
 assert_contains "$($CURL_PROXY_CMD)" '{"message":"no Route matched with those values"}' "Routes has been defined for this service"
 
-cat <<EOF | kubectl apply -f -
+if [[ "$(_get_kube_version)" == *"v1.18"* ]]; then
+    cat <<EOF | kubectl apply -f -
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: demo
+  annotations:
+    kubernetes.io/ingress.class: "kong"
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /foo
+            backend:
+              serviceName: echo
+              servicePort: 80
+EOF
+else
+    cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -116,7 +134,8 @@ spec:
                 port:
                   number: 80
 EOF
-sleep 5 # TODO: Improve the waiting method
+fi
+wait_ingress demo
 assert_contains "$(eval "$CURL_PROXY_CMD/foo")" "Pod Information:" "The server response doesn't have pod's info"
 
 cat <<EOF | kubectl apply -f -
@@ -127,11 +146,32 @@ metadata:
 config:
   header_name: my-request-id
 plugin: correlation-id
----
+EOF
+if [[ "$(_get_kube_version)" == *"v1.18"* ]]; then
+    cat <<EOF | kubectl apply -f -
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: demo-example
+  annotations:
+    kubernetes.io/ingress.class: "kong"
+    konghq.com/plugins: request-id
+spec:
+  rules:
+    - host: example.com
+      http:
+        paths:
+          - path: /bar
+            backend:
+              serviceName: echo
+              servicePort: 80
+EOF
+else
+    cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: demo
+  name: demo-example
   annotations:
     konghq.com/plugins: request-id
 spec:
@@ -148,7 +188,8 @@ spec:
                 port:
                   number: 80
 EOF
-sleep 5
-assert_contains "$(eval "$CURL_PROXY_CMD/bar/sample -H 'Host: example.com'")" "Pod Information:" "The server response doesn't have pod's info for example.com host"
+fi
+wait_ingress demo-example
+assert_contains "$(eval "$CURL_PROXY_CMD/bar -H 'Host: example.com'")" "Pod Information:" "The server response doesn't have pod's info for example.com host"
 
 info "===== Test completed ====="

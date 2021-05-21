@@ -93,7 +93,27 @@ spec:
 EOF
 wait_deployment "$echo_deployment_name"
 
-cat <<EOF | kubectl apply -f -
+if [[ "$(_get_kube_version)" == *"v1.18"* ]]; then
+    cat <<EOF | kubectl apply -f -
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: demo
+  annotations:
+    haproxy.org/path-rewrite: "/"
+spec:
+  ingressClassName: haproxy
+  rules:
+    - http:
+        paths:
+          - path: /foo
+            pathType: Prefix
+            backend:
+              serviceName: echo
+              servicePort: 80
+EOF
+else
+    cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -113,7 +133,8 @@ spec:
                 port:
                   number: 80
 EOF
-sleep 5 # TODO: Improve the waiting method
+fi
+wait_ingress demo
 assert_contains "$(eval "$CURL_PROXY_CMD/foo")" "Pod Information:" "The server response doesn't have pod's info"
 
 info "===== Test completed ====="

@@ -91,6 +91,23 @@ function wait_deployment {
     kubectl rollout status "deployment/$deployment_name" --timeout=5m > /dev/null
 }
 
+# wait_ingress() - Wait process for IP address asignment on Ingress resources
+function wait_ingress {
+    local ingress_name=$1
+    local attempt_counter=0
+    local max_attempts=12
+
+    info "Waiting for $ingress_name ingress..."
+    until [ -n "$(kubectl get ingress "$ingress_name" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" ]; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+            echo "Max attempts reached"
+            exit 1
+        fi
+        attempt_counter=$((attempt_counter+1))
+        sleep 10
+    done
+}
+
 # setup() - Base testing setup shared among functional tests
 function setup {
     for deployment_name in "$@"; do
@@ -122,7 +139,11 @@ function get_status {
     fi
 }
 
-if ! kubectl version &>/dev/null; then
+# _get_kube_version() - Get the Kubernetes version used or installed on the remote cluster
+function _get_kube_version {
+    kubectl version -o json | jq -r '.serverVersion.gitVersion'
+}
+if ! command -v kubectl > /dev/null; then
     echo "This funtional test requires kubectl client"
     exit 1
 fi

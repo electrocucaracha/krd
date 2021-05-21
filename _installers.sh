@@ -109,7 +109,12 @@ function install_k8s {
     fi
 
     # Define ingress classes supported by KRD
-    kubectl apply -f resources/ingress-class.yml
+    kube_version=$(_get_kube_version)
+    if _vercmp "${kube_version#*v}" '>=' "1.19"; then
+        kubectl apply -f resources/ingress-class.yml
+    elif _vercmp "${kube_version#*v}" '>=' "1.18"; then
+        kubectl apply -f resources/ingress-class_v1beta1.yml
+    fi
 
     # Configure Kubernetes Dashboard
     if kubectl get deployment/kubernetes-dashboard -n kube-system --no-headers -o custom-columns=name:.metadata.name; then
@@ -882,7 +887,7 @@ function install_longhorn {
             exit 1
         fi
     done
-    if _vercmp "${kube_version#*v}" '=>' "1.19"; then
+    if _vercmp "${kube_version#*v}" '>=' "1.19"; then
         cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1
 kind: Ingress
