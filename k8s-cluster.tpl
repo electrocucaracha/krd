@@ -149,3 +149,10 @@ kube_proxy_scheduler: $KRD_KUBE_PROXY_SCHEDULER
 
 kube_feature_gates:
   - EphemeralContainers=$KRD_EPHEMERAL_CONTAINERS_ENABLED # Ability to add ephemeral containers to running pods.
+
+# configure arp_ignore and arp_announce to avoid answering ARP queries from kube-ipvs0 interface
+# must be set to true for MetalLB to work
+kube_proxy_strict_arp: $KRD_METALLB_ENABLED
+
+# Enable MetalLB deployment
+metallb_enabled: $KRD_METALLB_ENABLED

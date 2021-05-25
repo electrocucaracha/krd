@@ -142,16 +142,17 @@ EOF
             echo "  ${etchost_entry%-*} ${etchost_entry#*-}" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         done
     fi
+    if [ "$kubespray_version" != "master" ] && _vercmp "${kubespray_version#*v}" '>' "2.15" && [ "$KRD_METALLB_ENABLED" == "true" ] && [ -n "${KRD_METALLB_ADDRESS_POOLS_LIST:-}" ]; then
+        echo "metallb_ip_range:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        for pool in ${KRD_METALLB_ADDRESS_POOLS_LIST//,/ }; do
+            echo "  - $pool" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+        done
+    fi
 }
 
 # install_metallb() - Install MetalLB services
 function install_metallb {
     metallb_version=$(_get_version metallb)
-    if [ -z "${KRD_METALLB_ADDRESS_POOLS:-}" ]; then
-        declare -A KRD_METALLB_ADDRESS_POOLS=(
-    ["default"]="10.10.16.110-10.10.16.120,10.10.16.240-10.10.16.250"
-    )
-    fi
 
     if ! kubectl get namespaces/metallb-system --no-headers -o custom-columns=name:.metadata.name; then
         kubectl apply -f "https://raw.githubusercontent.com/metallb/metallb/$metallb_version/manifests/namespace.yaml"
@@ -163,24 +164,12 @@ function install_metallb {
 
     wait_for_pods metallb-system
 
-    address_pools=""
-    for pool in "${!KRD_METALLB_ADDRESS_POOLS[@]}"; do
+    if [ -n "${KRD_METALLB_ADDRESS_POOLS_LIST:-}" ]; then
         ranges=""
-        addresses=${KRD_METALLB_ADDRESS_POOLS[$pool]}
-        for range in ${addresses//,/ }; do
+        for range in ${KRD_METALLB_ADDRESS_POOLS_LIST//,/ }; do
             ranges+="          - ${range}\n"
         done
-
-        address_pools+=$(cat <<EOF
-      - name: $pool
-        protocol: layer2
-        addresses:
-$(printf '%b' "$ranges")
-EOF
-)
-    done
-
-   cat <<EOF | kubectl apply -f -
+        cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -189,8 +178,12 @@ metadata:
 data:
   config: |
     address-pools:
-$address_pools
+      - name: loadbalanced
+        protocol: layer2
+        addresses:
+$(printf '%b' "$ranges")
 EOF
+    fi
 }
 
 # update_repos() - Function that updates linux repositories
