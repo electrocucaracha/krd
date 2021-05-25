@@ -35,8 +35,8 @@ jobs:
       script:
         - ./check.sh centos 7
       env:
-        - KRD_KUBE_VERSION=v1.18.10
-        - KRD_KUBESPRAY_VERSION=v2.14.2
+        - KRD_KUBE_VERSION=v1.19.9
+        - KRD_KUBESPRAY_VERSION=v2.15.1
         - KRD_CONTAINER_RUNTIME=crio
         - KRD_KATA_CONTAINERS_ENABLED=true
         - KRD_CRUN_ENABLED=true
@@ -85,6 +85,7 @@ jobs:
         - KRD_ENABLE_TESTS=true
         - KRD_ADDONS_LIST=virtlet
         - KRD_KUBE_VERSION=v1.18.10
+        - KRD_KUBESPRAY_VERSION=v2.14.2
       after_failure:
         - kubectl get all -A -o wide
       after_script:
@@ -104,8 +105,8 @@ jobs:
       script:
         - ./check.sh ubuntu xenial
       env:
-        - KRD_KUBE_VERSION=v1.17.12
-        - KRD_KUBESPRAY_VERSION=v2.13.4
+        - KRD_KUBE_VERSION=v1.18.10
+        - KRD_KUBESPRAY_VERSION=v2.14.2
         - KRD_CERT_MANAGER_ENABLED=false
         - KRD_INGRESS_NGINX_ENABLED=false
     - name: Pod Definition File validation (Ubuntu 18.04 LTS)
@@ -113,10 +114,11 @@ jobs:
       script:
         - ./check.sh ubuntu bionic
       env:
-        - KRD_KUBE_VERSION=v1.18.10
-        - KRD_KUBESPRAY_VERSION=v2.14.2
+        - KRD_KUBE_VERSION=v1.19.9
+        - KRD_KUBESPRAY_VERSION=v2.15.1
         - KRD_CERT_MANAGER_ENABLED=false
         - KRD_INGRESS_NGINX_ENABLED=false
+        - KRD_CONTAINER_RUNTIME=containerd
     - name: Pod Definition File validation (Ubuntu 20.04 LTS)
       language: shell
       script:
@@ -128,8 +130,9 @@ jobs:
       script:
         - ./check.sh fedora 32
       env:
-        - KRD_KUBE_VERSION=v1.18.10
-        - KRD_KUBESPRAY_VERSION=v2.14.2
+        - KRD_KUBE_VERSION=v1.19.9
+        - KRD_KUBESPRAY_VERSION=v2.15.1
+        - KRD_CONTAINER_RUNTIME=containerd
     - name: Pod Definition File validation (Fedora 33)
       language: shell
       script:
