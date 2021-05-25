@@ -146,3 +146,6 @@ resolvconf_mode: $KRD_RESOLVCONF_MODE
 # sed: Shortest Expected Delay assigns an incoming job to the server with the shortest expected delay.
 # nq: Never Queue assigns an incoming job to an idle server if there is, instead of waiting for a fast one; if all the servers are busy, it adopts the Shortest Expected Delay policy to assign the job.
 kube_proxy_scheduler: $KRD_KUBE_PROXY_SCHEDULER
+
+kube_feature_gates:
+  - EphemeralContainers=$KRD_EPHEMERAL_CONTAINERS_ENABLED # Ability to add ephemeral containers to running pods.
