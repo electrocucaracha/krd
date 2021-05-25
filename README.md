@@ -152,6 +152,8 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_RESOLVCONF_MODE                  | none    | Specifies the DNS setup for non-k8s containers.                                 |
 | KRD_KUBE_PROXY_SCHEDULER             | sh      | Specifies the [IPVS scheduling algorithm][7] for allocating connections         |
 | KRD_EPHEMERAL_CONTAINERS_ENABLED     | true    | Enable/Disable [Ephemeral Containers][21]                                       |
+| KRD_METALLB_ENABLED                  | false   | Enable/Disable [MetalLB load-balancer][22]                                      |
+| KRD_METALLB_ADDRESS_POOLS_LIST       |         | Specifies a lists of Layer 2 Address pools for MetalLB                          |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [2]: https://github.com/k8snetworkplumbingwg/multus-cni
@@ -174,3 +176,4 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 [19]: https://metallb.universe.tf/
 [20]: https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner
 [21]: https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/
+[22]: https://metallb.universe.tf/
