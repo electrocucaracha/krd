@@ -85,6 +85,7 @@ jobs:
         - KRD_ENABLE_TESTS=true
         - KRD_ADDONS_LIST=virtlet
         - KRD_KUBE_VERSION=v1.18.10
+        - KRD_KUBESPRAY_VERSION=v2.14.2
       after_failure:
         - kubectl get all -A -o wide
       after_script:

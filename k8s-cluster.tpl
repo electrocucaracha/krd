@@ -156,3 +156,6 @@ kube_proxy_strict_arp: $KRD_METALLB_ENABLED
 
 # Enable MetalLB deployment
 metallb_enabled: $KRD_METALLB_ENABLED
+
+kube_kubeadm_controller_extra_args:
+  controllers: "*,-cloud-node-lifecycle"
