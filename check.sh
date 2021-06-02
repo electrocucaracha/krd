@@ -136,4 +136,8 @@ else
 
     assert_contains "${KRD_KUBE_VERSION:-v1.20.7}" "$($VAGRANT_CMD_SSH_INSTALLER "kubectl version --short | awk 'FNR==2{print \$3}'")"
     assert_contains "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")"
+
+    if [[ "${KRD_KATA_CONTAINERS_ENABLED:-false}" == "true" ]] || [[ "${KRD_CRUN_ENABLED:-false}" == "true" ]]; then
+        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/tests; ./runtimeclasses.sh"
+    fi
 fi

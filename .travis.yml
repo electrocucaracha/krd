@@ -15,38 +15,6 @@ git:
 dist: bionic
 jobs:
   include:
-    - name: All-in-One + Runtime classes(CRI-O)
-      language: shell
-      install:
-        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
-        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
-      script:
-        - ./check.sh centos 7
-      env:
-        - KRD_KUBE_VERSION=v1.19.9
-        - KRD_KUBESPRAY_VERSION=v2.15.1
-        - KRD_CONTAINER_RUNTIME=crio
-        - KRD_KATA_CONTAINERS_ENABLED=true
-        - KRD_CRUN_ENABLED=true
-        - SUDO_VAGRANT_CMD=true
-      after_success:
-        - kubectl get all -A -o wide
-      after_script:
-        - cd tests; ./runtimeclasses.sh
-    - name: All-in-One + Runtime classes(ContainerD)
-      language: shell
-      script:
-        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-        - cd tests; ./runtimeclasses.sh
-      env:
-        - KRD_DEBUG=true
-        - KRD_CONTAINER_RUNTIME=containerd
-        - KRD_KATA_CONTAINERS_ENABLED=true
-        - KRD_CRUN_ENABLED=true
-      after_success:
-        - kubectl get all -A -o wide
-      after_script:
-        - ./krd_command.sh -a uninstall_k8s
     - name: All-in-One + Kubevirt validation
       language: shell
       script:
