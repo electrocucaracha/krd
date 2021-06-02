@@ -29,12 +29,12 @@ nodes = YAML.load_file(pdf)
 vagrant_boxes = YAML.load_file("#{File.dirname(__FILE__)}/distros_supported.yml")
 
 # Inventory file creation
-etchosts_dict=""
+etchosts_dict = ""
 File.open("#{File.dirname(__FILE__)}/inventory/hosts.ini", "w") do |inventory_file|
   inventory_file.puts("[all]")
   nodes.each do |node|
     inventory_file.puts(node["name"])
-    etchosts_dict+="#{node['networks'][0]['ip']}-#{node['name']},"
+    etchosts_dict += "#{node['networks'][0]['ip']}-#{node['name']},"
   end
   %w[kube-master kube-node etcd qat-node criu].each do |group|
     inventory_file.puts("\n[#{group}]")
@@ -69,6 +69,7 @@ installer_ip = "10.10.16.2"
 no_proxy = ENV["NO_PROXY"] || ENV["no_proxy"] || "127.0.0.1,localhost"
 nodes.each do |node|
   next unless node.key? "networks"
+
   node["networks"].each do |network|
     no_proxy += ",#{network['ip']}"
   end
@@ -148,9 +149,9 @@ Vagrant.configure("2") do |config|
           end
         end
         if node.key? "volumes"
-          port = 0
+          port = false
+          device = true
           node["volumes"].each do |volume|
-            port += 1
             controller = "IDE Controller"
             controller = (volume["controller"]).to_s if volume.key? "controller"
             volume_file = "#{node['name']}-#{volume['name']}.vdi"
@@ -158,8 +159,10 @@ Vagrant.configure("2") do |config|
               v.customize ["createmedium", "disk", "--filename", volume_file, "--size",
                            (volume["size"] * 1024)]
             end
-            v.customize ["storageattach", :id, "--storagectl", controller, "--port", port.to_s, "--type", "hdd",
-                         "--medium", volume_file]
+            v.customize ["storageattach", :id, "--storagectl", controller, "--port", port ? "1" : "0", "--type", "hdd",
+                         "--medium", volume_file, "--device", device ? "1" : "0"]
+            port |= device
+            device = !device
           end
         end
       end
