@@ -25,12 +25,24 @@ function error {
     exit 1
 }
 
-function asserts {
+# assert_equals() - This assertion checks if the input is equal to another value
+function asserts_equals {
     local expected=$1
     local current=$2
 
     if [ " $expected " != " $current " ]; then
         error "got $current, want $expected"
+    fi
+}
+
+
+# assert_contains() - This assertion checks if the input contains another value
+function assert_contains {
+    local expected=$1
+    local input=$2
+
+    if [[ "$input" != *"$expected"* ]]; then
+        error "$input doesn't contains $expected"
     fi
 }
 
@@ -49,13 +61,15 @@ function exit_trap {
 
 [ "$#" -eq 2 ] || error "2 arguments required, $# provided"
 
-info "Configure SSH keys"
-sudo mkdir -p /root/.ssh/
-sudo cp insecure_keys/key /root/.ssh/id_rsa
-cp insecure_keys/key ~/.ssh/id_rsa
-sudo chmod 400 /root/.ssh/id_rsa
-chown "$USER" ~/.ssh/id_rsa
-chmod 400 ~/.ssh/id_rsa
+if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
+    info "Configure SSH keys"
+    sudo mkdir -p /root/.ssh/
+    sudo cp insecure_keys/key /root/.ssh/id_rsa
+    cp insecure_keys/key ~/.ssh/id_rsa
+    sudo chmod 400 /root/.ssh/id_rsa
+    chown "$USER" ~/.ssh/id_rsa
+    chmod 400 ~/.ssh/id_rsa
+fi
 
 info "Define target node"
 cat <<EOL > config/pdf.yml
@@ -66,15 +80,15 @@ cat <<EOL > config/pdf.yml
   networks:
     - name: public-net
       ip: "10.10.16.3"
-  memory: 6144
+  memory: ${MEMORY:-6144}
   cpus: 2
   numa_nodes: # Total memory for NUMA nodes must be equal to RAM size
     - cpus: 0-1
-      memory: 6144
+      memory: ${MEMORY:-6144}
   pmem:
-    size: 6G # This value may affect the currentMemory libvirt tag
+    size: ${MEMORY:-6144}M # This value may affect the currentMemory libvirt tag
     slots: 2
-    max_size: 8G
+    max_size: 128G
     vNVDIMMs:
       - mem_id: mem0
         id: nv0
@@ -95,15 +109,31 @@ cat <<EOL > config/pdf.yml
 EOL
 
 info "Provision target node"
-sudo vagrant up
+VAGRANT_CMD=""
+if [[ "${SUDO_VAGRANT_CMD:-false}" == "true" ]]; then
+    VAGRANT_CMD="sudo -H"
+fi
+VAGRANT_CMD+=" $(command -v vagrant)"
+VAGRANT_CMD_UP="$VAGRANT_CMD up --no-destroy-on-error"
+VAGRANT_CMD_SSH_INSTALLER="$VAGRANT_CMD ssh installer --"
+
+$VAGRANT_CMD_UP
 
 info "Provision Kubernetes cluster"
-trap exit_trap ERR
-KRD_DEBUG=true ./krd_command.sh -a install_k8s
-trap ERR
+if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
+    trap exit_trap ERR
+    KRD_DEBUG=true ./krd_command.sh -a install_k8s
+    trap ERR
 
-info "Validate Kubernetes execution"
-asserts "${KRD_KUBE_VERSION:-v1.20.7}" "$(kubectl version --short | awk 'FNR==2{print $3}')"
-pushd /opt/kubespray > /dev/null
-asserts "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$(git describe --abbrev=0 --tags)"
-popd > /dev/null
+    info "Validate Kubernetes execution"
+    asserts_equals "${KRD_KUBE_VERSION:-v1.20.7}" "$(kubectl version --short | awk 'FNR==2{print $3}')"
+    pushd /opt/kubespray > /dev/null
+    asserts_equals "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$(git describe --abbrev=0 --tags)"
+    popd > /dev/null
+else
+    $VAGRANT_CMD_UP installer
+    info "Validate Kubernetes execution"
+
+    assert_contains "${KRD_KUBE_VERSION:-v1.20.7}" "$($VAGRANT_CMD_SSH_INSTALLER "kubectl version --short | awk 'FNR==2{print \$3}'")"
+    assert_contains "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")"
+fi
