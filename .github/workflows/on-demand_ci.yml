@@ -1,0 +1,79 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2021
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+name: Check All
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - 'master'
+  pull_request:
+    branches:
+      - 'master'
+
+jobs:
+  check-pdfs:
+    runs-on: macos-10.15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runtime: containerd
+            os: fedora
+            release: 33
+          - runtime: containerd
+            os: fedora
+            release: 32
+            kube_version: v1.19.9
+            kubespray_version: v2.15.1
+          - runtime: containerd
+            os: ubuntu
+            release: focal
+          - runtime: containerd
+            os: ubuntu
+            release: bionic
+            kube_version: v1.19.9
+            kubespray_version: v2.15.1
+            cert_manager_enabled: false
+            ingress_nginx_enabled: false
+          - os: ubuntu
+            release: xenial
+            kube_version: v1.18.10
+            kubespray_version: v2.14.2
+            cert_manager_enabled: false
+            ingress_nginx_enabled: false
+          - os: opensuse
+            release: 42
+          - runtime: containerd
+            os: centos
+            release: 8
+    steps:
+      - uses: actions/checkout@v2
+      - name: Cache Vagrant boxes
+        uses: actions/cache@v2
+        with:
+          path: ~/.vagrant.d/boxes
+          key: ${{ runner.os }}-vagrant-${{ hashFiles('Vagrantfile') }}
+          restore-keys: |
+            ${{ runner.os }}-vagrant-
+      - name: Replace shorten links
+        run: find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
+      - name: Run integration tests
+        env:
+          VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
+          MEMORY: 12288
+          OS: ${{ matrix.os }}
+          RELEASE: ${{ matrix.release }}
+          KRD_CONTAINER_RUNTIME: ${{ matrix.runtime }}
+          KRD_KUBE_VERSION: ${{ matrix.kube_version }}
+          KRD_KUBESPRAY_VERSION: ${{ matrix.kubespray_version }}
+          KRD_CERT_MANAGER_ENABLED: ${{ matrix.cert_manager_enabled }}
+          KRD_INGRESS_NGINX_ENABLED: ${{ matrix.ingress_nginx_enabled }}
+        run: ./check.sh $OS $RELEASE
