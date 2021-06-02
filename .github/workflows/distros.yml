@@ -8,11 +8,11 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check Lastest CI versions
+name: Check Lastest Distros
 # yamllint disable-line rule:truthy
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '0 0 1 * *'
   pull_request:
     types: [opened, synchronize, reopened, closed]
 
@@ -24,8 +24,8 @@ jobs:
       - uses: technote-space/create-pr-action@v2
         with:
           EXECUTE_COMMANDS: |
-            ./update_versions.sh
-          COMMIT_MESSAGE: 'Upgrade galaxy requirements and krd versions files'
+            ./update_distros.sh
+          COMMIT_MESSAGE: 'Upgrade distro list versions'
           COMMIT_NAME: 'electrocucaracha bot'
           PR_BRANCH_NAME: "versions-update-${PR_ID}"
-          PR_TITLE: 'chore: update versions'
+          PR_TITLE: 'chore: update distro versions'
