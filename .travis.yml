@@ -13,25 +13,13 @@ os: linux
 git:
   depth: 1
 dist: bionic
-cache:
-  directories:
-    - /home/travis/.vagrant.d/boxes
-install:
-  - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
-  - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt PKG_VAGRANT_VERSION=2.2.13 bash
-script:
-  - curl -fsSL http://bit.ly/install_pkg | PKG="tox" bash
-env:
-  - TOXENV=nfd
-  - TOXENV=pmem
-  - TOXENV=qat_driver
-  - TOXENV=sriov_cni
-  - TOXENV=sriov_plugin
-  - TOXENV=criproxy
 jobs:
   include:
     - name: All-in-One + Runtime classes(CRI-O)
       language: shell
+      install:
+        - sudo apt update; sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 --no-install-recommends curl qemu
+        - curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
       script:
         - ./check.sh centos 7
       env:
@@ -47,7 +35,6 @@ jobs:
         - cd tests; ./runtimeclasses.sh
     - name: All-in-One + Runtime classes(ContainerD)
       language: shell
-      install: skip
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - cd tests; ./runtimeclasses.sh
@@ -62,7 +49,6 @@ jobs:
         - ./krd_command.sh -a uninstall_k8s
     - name: All-in-One + Kubevirt validation
       language: shell
-      install: skip
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
         - ./krd_command.sh -a install_kubevirt
@@ -77,7 +63,6 @@ jobs:
         - ./krd_command.sh -a uninstall_k8s
     - name: All-in-One + Virtlet role validation
       language: shell
-      install: skip
       script:
         - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
       env:
