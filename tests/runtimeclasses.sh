@@ -18,9 +18,13 @@ source _functions.sh
 kata_deployment_name=kata-deployment-demo
 crun_deployment_name=crun-deployment-demo
 
-# Setup
-destroy_deployment "$kata_deployment_name"
-destroy_deployment "$crun_deployment_name"
+function cleanup {
+    destroy_deployment "$kata_deployment_name"
+    destroy_deployment "$crun_deployment_name"
+}
+
+trap cleanup EXIT
+trap get_status ERR
 
 # Test
 info "===== Test started ====="
@@ -95,7 +99,3 @@ EOF
 fi
 
 info "===== Test completed ====="
-
-# Teardown
-destroy_deployment "$kata_deployment_name"
-destroy_deployment "$crun_deployment_name"
