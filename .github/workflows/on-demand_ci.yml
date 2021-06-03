@@ -10,13 +10,7 @@
 
 name: Check All
 # yamllint disable-line rule:truthy
-on:
-  push:
-    branches:
-      - 'master'
-  pull_request:
-    branches:
-      - 'master'
+on: [push, pull_request]
 
 jobs:
   check-pdfs:
@@ -41,14 +35,10 @@ jobs:
             release: bionic
             kube_version: v1.19.9
             kubespray_version: v2.15.1
-            cert_manager_enabled: false
-            ingress_nginx_enabled: false
           - os: ubuntu
             release: xenial
             kube_version: v1.18.10
             kubespray_version: v2.14.2
-            cert_manager_enabled: false
-            ingress_nginx_enabled: false
           - os: opensuse
             release: 42
           - runtime: containerd
@@ -74,8 +64,10 @@ jobs:
           KRD_CONTAINER_RUNTIME: ${{ matrix.runtime }}
           KRD_KUBE_VERSION: ${{ matrix.kube_version }}
           KRD_KUBESPRAY_VERSION: ${{ matrix.kubespray_version }}
-          KRD_CERT_MANAGER_ENABLED: ${{ matrix.cert_manager_enabled }}
-          KRD_INGRESS_NGINX_ENABLED: ${{ matrix.ingress_nginx_enabled }}
+          KRD_CERT_MANAGER_ENABLED: false
+          KRD_INGRESS_NGINX_ENABLED: false
+          KRD_KATA_CONTAINERS_ENABLED: ${{ matrix.kata_containers_enabled }}
+          KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
         run: ./check.sh $OS $RELEASE
   check-molecule:
     runs-on: macos-10.15
