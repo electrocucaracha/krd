@@ -16,6 +16,23 @@
 import time
 
 
+def test_pmem_nodes_ready(host):
+    cmd = host.run(
+        "/usr/local/bin/kubectl get node -o jsonpath='{range .items[*]}{.metadata.name}{\",\"}{end}'"
+    )
+
+    assert cmd.rc == 0
+
+    nodes = cmd.stdout[:-1].split(",")
+    for node in nodes:
+        cmd = host.run(
+            "/usr/local/bin/kubectl wait --for=condition=ready node/%s --timeout=3m"
+            % node
+        )
+        assert cmd.rc == 0
+        assert "condition met" in cmd.stdout
+
+
 def test_sriov_device_plugin_ready(host):
     cmd = host.run(
         "/usr/local/bin/kubectl rollout status"
