@@ -15,8 +15,6 @@ dependency:
     requirements-file: ../../../galaxy-requirements.yml
 driver:
   name: vagrant
-  provider:
-    name: libvirt
 lint: |
   set -e
   PATH=${PATH}
@@ -26,6 +24,8 @@ platforms:
     box: generic/centos7
     memory: 6144
     cpus: 2
+    provider_raw_config_args:
+      - "customize ['modifyvm', :id, '--nictype1', 'virtio', '--cableconnected1', 'on']"
 provisioner:
   name: ansible
 verifier:

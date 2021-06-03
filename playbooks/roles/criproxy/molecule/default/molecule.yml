@@ -12,8 +12,6 @@ dependency:
   name: galaxy
 driver:
   name: vagrant
-  provider:
-    name: libvirt
 lint: |
   set -e
   PATH=${PATH}
@@ -23,10 +21,14 @@ platforms:
     box: generic/centos7
     memory: 3072
     cpus: 1
+    provider_raw_config_args:
+      - "customize ['modifyvm', :id, '--nictype1', 'virtio', '--cableconnected1', 'on']"
   - name: bionic
     box: generic/ubuntu1804
     memory: 3072
     cpus: 1
+    provider_raw_config_args:
+      - "customize ['modifyvm', :id, '--nictype1', 'virtio', '--cableconnected1', 'on']"
 provisioner:
   name: ansible
 verifier:
