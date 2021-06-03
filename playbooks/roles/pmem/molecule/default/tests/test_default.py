@@ -16,8 +16,25 @@
 import time
 
 
+def test_pmem_nodes_ready(host):
+    cmd = host.run(
+        "/usr/local/bin/kubectl get node -o jsonpath='{range .items[*]}{.metadata.name}{\",\"}{end}'"
+    )
+
+    assert cmd.rc == 0
+
+    nodes = cmd.stdout[:-1].split(",")
+    for node in nodes:
+        cmd = host.run(
+            "/usr/local/bin/kubectl wait --for=condition=ready node/%s --timeout=3m"
+            % node
+        )
+        assert cmd.rc == 0
+        assert "condition met" in cmd.stdout
+
+
 def test_pmem_device_plugin_ready(host):
-    cmd = host.run("/usr/local/bin/kubectl rollout status" " daemonset/pmem-csi-node")
+    cmd = host.run("/usr/local/bin/kubectl rollout status daemonset/pmem-csi-node")
 
     assert cmd.rc == 0
     assert "successfully rolled out" in cmd.stdout
@@ -25,7 +42,7 @@ def test_pmem_device_plugin_ready(host):
 
 def test_pmem_statefulset_ready(host):
     cmd = host.run(
-        "/usr/local/bin/kubectl rollout status" " statefulset/pmem-csi-controller"
+        "/usr/local/bin/kubectl rollout status statefulset/pmem-csi-controller"
     )
 
     assert cmd.rc == 0
@@ -43,6 +60,6 @@ def test_get_pmem_node_annotation(host):
     jsonpath = (
         r"{range .items[*]}{.metadata.annotations.csi\.volume\.kubernetes\.io/nodeid}"
     )
-    cmd = host.run("/usr/local/bin/kubectl get nodes" " -o jsonpath='" + jsonpath + "'")
+    cmd = host.run("/usr/local/bin/kubectl get nodes -o jsonpath='" + jsonpath + "'")
 
     assert "pmem-csi.intel.com" in cmd.stdout
