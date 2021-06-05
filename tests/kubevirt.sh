@@ -15,8 +15,22 @@ set -o pipefail
 # shellcheck source=tests/_functions.sh
 source _functions.sh
 
-# Setup
-kubectl delete vm testvm --ignore-not-found=true
+function cleanup {
+    attempt_counter=0
+    max_attempts=5
+
+    kubectl delete vm testvm --ignore-not-found=true
+
+    while kubectl get pods -l kubevirt.io=virt-launcher | grep -q "virt-launcher"; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+            error "Max attempts reached"
+        fi
+        attempt_counter=$((attempt_counter+1))
+        sleep 10
+    done
+}
+
+trap cleanup EXIT
 
 # Test
 info "===== Test started ====="
@@ -62,6 +76,7 @@ spec:
 EOL
 
 kubectl get vms
+[[ "$PATH" != *.krew* ]] && export PATH="$PATH:${KREW_ROOT:-$HOME/.krew}/bin"
 kubectl virt start testvm
 kubectl wait --for=condition=ready vmis testvm --timeout=5m > /dev/null
 vm_pod=$(kubectl get pods -o jsonpath='{.items[0].metadata.name}' | grep virt-launcher-testvm)
@@ -72,6 +87,3 @@ assert_non_empty "$(kubectl logs "$vm_pod" -c compute | grep 'Successfully conne
 #kubectl virt console testvm
 
 info "===== Test completed ====="
-
-# Teardown
-kubectl delete vm testvm

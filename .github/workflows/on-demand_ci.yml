@@ -44,6 +44,9 @@ jobs:
           - runtime: containerd
             os: centos
             release: 8
+          - os: ubuntu
+            release: bionic
+            tests_enabled: true
     steps:
       - uses: actions/checkout@v2
       - name: Cache Vagrant boxes
@@ -68,6 +71,7 @@ jobs:
           KRD_INGRESS_NGINX_ENABLED: false
           KRD_KATA_CONTAINERS_ENABLED: ${{ matrix.kata_containers_enabled }}
           KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
+          KRD_ENABLE_TESTS: ${{ matrix.tests_enabled }}
         run: ./check.sh $OS $RELEASE
   check-molecule:
     runs-on: macos-10.15
@@ -93,18 +97,6 @@ jobs:
           VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
           TOXENV: ${{ matrix.tox_env }}
         run: tox
-  check-install-funcs:
-    runs-on: ubuntu-18.04
-    env:
-      KRD_DEBUG: true
-      KRD_CERT_MANAGER_ENABLED: false
-      KRD_INGRESS_NGINX_ENABLED: false
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy services
-        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-      - name: Check installation functions
-        run: cd tests; ./check.sh kong metallb istio haproxy
   check-multus:
     runs-on: ubuntu-18.04
     env:
