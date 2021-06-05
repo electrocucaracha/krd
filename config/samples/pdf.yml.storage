@@ -36,6 +36,9 @@
   roles:
     - kube-node
   storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
     - name: AHCI Controller
       type: sata
       controller: IntelAhci
@@ -43,16 +46,23 @@
     - name: sda
       size: 25
       mount: /var/lib/docker/
-    - name: sdb
-      size: 50
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
     - name: sdc
+      size: 10
+    - name: sdd
       size: 20
       mount: /mnt/disks/vol1
       controller: AHCI Controller
-    - name: sdd
+      port: 1
+      device: 0
+    - name: sde
       size: 20
       mount: /mnt/disks/vol2
       controller: AHCI Controller
+      port: 2
+      device: 0
 - name: "minion02"
   os:
     name: ubuntu
@@ -65,6 +75,9 @@
   roles:
     - kube-node
   storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
     - name: AHCI Controller
       type: sata
       controller: IntelAhci
@@ -72,16 +85,23 @@
     - name: sda
       size: 25
       mount: /var/lib/docker/
-    - name: sdb
-      size: 50
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
     - name: sdc
+      size: 10
+    - name: sdd
       size: 20
       mount: /mnt/disks/vol1
       controller: AHCI Controller
-    - name: sdd
+      port: 1
+      device: 0
+    - name: sde
       size: 20
       mount: /mnt/disks/vol2
       controller: AHCI Controller
+      port: 2
+      device: 0
 - name: "minion03"
   os:
     name: ubuntu
@@ -94,6 +114,9 @@
   roles:
     - kube-node
   storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
     - name: AHCI Controller
       type: sata
       controller: IntelAhci
@@ -101,16 +124,23 @@
     - name: sda
       size: 25
       mount: /var/lib/docker/
-    - name: sdb
-      size: 50
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
     - name: sdc
+      size: 10
+    - name: sdd
       size: 20
       mount: /mnt/disks/vol1
       controller: AHCI Controller
-    - name: sdd
+      port: 1
+      device: 0
+    - name: sde
       size: 20
       mount: /mnt/disks/vol2
       controller: AHCI Controller
+      port: 2
+      device: 0
 - name: "minion04"
   os:
     name: ubuntu
@@ -123,6 +153,9 @@
   roles:
     - kube-node
   storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
     - name: AHCI Controller
       type: sata
       controller: IntelAhci
@@ -130,16 +163,23 @@
     - name: sda
       size: 25
       mount: /var/lib/docker/
-    - name: sdb
-      size: 50
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
     - name: sdc
+      size: 10
+    - name: sdd
       size: 20
       mount: /mnt/disks/vol1
       controller: AHCI Controller
-    - name: sdd
+      port: 1
+      device: 0
+    - name: sde
       size: 20
       mount: /mnt/disks/vol2
       controller: AHCI Controller
+      port: 2
+      device: 0
 - name: "minion05"
   os:
     name: ubuntu
@@ -152,6 +192,9 @@
   roles:
     - kube-node
   storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
     - name: AHCI Controller
       type: sata
       controller: IntelAhci
@@ -159,13 +202,20 @@
     - name: sda
       size: 25
       mount: /var/lib/docker/
-    - name: sdb
-      size: 50
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
     - name: sdc
+      size: 10
+    - name: sdd
       size: 20
       mount: /mnt/disks/vol1
       controller: AHCI Controller
-    - name: sdd
+      port: 1
+      device: 0
+    - name: sde
       size: 20
       mount: /mnt/disks/vol2
       controller: AHCI Controller
+      port: 2
+      device: 0
