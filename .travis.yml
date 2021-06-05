@@ -47,18 +47,3 @@ jobs:
         - kubectl get all -A -o wide
       after_script:
         - ./krd_command.sh -a uninstall_k8s
-    - name: All-in-One + Virtlet role validation
-      language: shell
-      script:
-        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-      env:
-        - KRD_DEBUG=true
-        - KRD_ACTIONS_LIST="install_k8s,install_k8s_addons"
-        - KRD_ENABLE_TESTS=true
-        - KRD_ADDONS_LIST=virtlet
-        - KRD_KUBE_VERSION=v1.18.10
-        - KRD_KUBESPRAY_VERSION=v2.14.2
-      after_failure:
-        - kubectl get all -A -o wide
-      after_script:
-        - ./krd_command.sh -a uninstall_k8s
