@@ -95,12 +95,17 @@ cat <<EOL > config/pdf.yml
         share: "on"
         path: /dev/shm
         size: 2G
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
   volumes:
     - name: sdb
       size: 25
       mount: /var/lib/docker/
-    - name: sdc
-      size: 10
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
   roles:
     - kube-master
     - etcd
