@@ -61,6 +61,11 @@ function exit_trap {
 
 [ "$#" -eq 2 ] || error "2 arguments required, $# provided"
 
+if ! command -v vagrant > /dev/null; then
+    # NOTE: Shorten link -> https://github.com/electrocucaracha/bootstrap-vagrant
+    curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
+fi
+
 if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
     info "Configure SSH keys"
     sudo mkdir -p /root/.ssh/
