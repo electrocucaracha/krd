@@ -142,27 +142,38 @@ Vagrant.configure("2") do |config|
         if node.key? "storage_controllers"
           node["storage_controllers"].each do |storage_controller|
             # Add VirtualBox storage controllers if they weren't added before
-            unless `VBoxManage showvminfo $(VBoxManage list vms | awk '/#{node["name"]}/{gsub(".*{","");gsub("}.*","");print}') --machinereadable 2>&1 | grep storagecontrollername`.include? storage_controller["name"]
-              v.customize ["storagectl", :id, "--name", storage_controller["name"], "--add",
-                           storage_controller["type"], "--controller", storage_controller["controller"]]
-            end
+            v.customize ["storagectl", :id, "--name", storage_controller["name"], "--add", storage_controller["type"], "--controller", storage_controller["controller"], "--portcount", "5"] unless `VBoxManage showvminfo $(VBoxManage list vms | awk '/#{node["name"]}/{gsub(".*{","");gsub("}.*","");print}') --machinereadable 2>&1 | grep storagecontrollername`.include? storage_controller["name"]
           end
         end
         if node.key? "volumes"
-          port = false
-          device = true
+          port = 0
+          device = 1
           node["volumes"].each do |volume|
+            # Setup user values
+            port = volume["port"] if volume.key? "port"
+            device = volume["device"] if volume.key? "device"
             controller = "IDE Controller"
             controller = (volume["controller"]).to_s if volume.key? "controller"
+
+            # Storage Controller validations
+            raise "#{node['name']} volume uses the main port and device IDs" if port.zero? && device.zero?
+
+            if controller.eql? "IDE Controller"
+              raise "#{node['name']} volume uses the port #{port} which is out of range" unless port.between?(0, 1)
+              raise "#{node['name']} volume uses the device #{device} which is out of range" unless device.between?(0, 1)
+            else
+              raise "#{node['name']} volume uses the port #{port} which is out of range" unless port.between?(0, 4)
+              raise "#{node['name']} volume uses the device #{device} which is not valid" if device != 0
+            end
             volume_file = "#{node['name']}-#{volume['name']}.vdi"
             unless File.exist?(volume_file)
               v.customize ["createmedium", "disk", "--filename", volume_file, "--size",
                            (volume["size"] * 1024)]
             end
-            v.customize ["storageattach", :id, "--storagectl", controller, "--port", port ? "1" : "0", "--type", "hdd",
-                         "--medium", volume_file, "--device", device ? "1" : "0"]
-            port |= device
-            device = !device
+            v.customize ["storageattach", :id, "--storagectl", controller, "--port", port, "--type", "hdd",
+                         "--medium", volume_file, "--device", device]
+            port += 1 unless volume.key? "port"
+            device += 1 unless volume.key? "device"
           end
         end
       end
