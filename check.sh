@@ -108,7 +108,7 @@ cat <<EOL > config/pdf.yml
     - name: sdb
       size: 25
       mount: /var/lib/docker/
-      controller: Virtual I/O Device SCSI controller
+      controller: ${VBOX_CONTROLLER:-Virtual I/O Device SCSI controller}
       port: 1
       device: 0
   roles:

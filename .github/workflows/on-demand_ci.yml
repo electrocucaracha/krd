@@ -41,6 +41,7 @@ jobs:
             kubespray_version: v2.14.2
           - os: opensuse
             release: 42
+            vbox_controller: IDE Controller
           - runtime: containerd
             os: centos
             release: 8
@@ -78,6 +79,7 @@ jobs:
           KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
           KRD_ENABLE_TESTS: ${{ matrix.tests_enabled }}
           TEST_VIRTLET: ${{ matrix.test_virtlet }}
+          VBOX_CONTROLLER: ${{ matrix.vbox_controller }}
         run: ./check.sh $OS $RELEASE
   check-molecule:
     runs-on: macos-10.15
