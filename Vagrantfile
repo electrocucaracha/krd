@@ -119,6 +119,15 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |v|
     v.gui = false
     v.customize ["modifyvm", :id, "--nictype1", "virtio", "--cableconnected1", "on"]
+    # https://bugs.launchpad.net/cloud-images/+bug/1829625/comments/2
+    v.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
+    v.customize ["modifyvm", :id, "--uartmode1", "file", File::NULL]
+    # Enable nested paging for memory management in hardware
+    v.customize ["modifyvm", :id, "--nestedpaging", "on"]
+    # Use large pages to reduce Translation Lookaside Buffers usage
+    v.customize ["modifyvm", :id, "--largepages", "on"]
+    # Use virtual processor identifiers  to accelerate context switching
+    v.customize ["modifyvm", :id, "--vtxvpid", "on"]
   end
 
   nodes.each do |node|
@@ -142,7 +151,7 @@ Vagrant.configure("2") do |config|
         if node.key? "storage_controllers"
           node["storage_controllers"].each do |storage_controller|
             # Add VirtualBox storage controllers if they weren't added before
-            v.customize ["storagectl", :id, "--name", storage_controller["name"], "--add", storage_controller["type"], "--controller", storage_controller["controller"], "--portcount", "5"] unless `VBoxManage showvminfo $(VBoxManage list vms | awk '/#{node["name"]}/{gsub(".*{","");gsub("}.*","");print}') --machinereadable 2>&1 | grep storagecontrollername`.include? storage_controller["name"]
+            v.customize ["storagectl", :id, "--name", storage_controller["name"], "--add", storage_controller["type"], "--controller", storage_controller["controller"], "--portcount", "5"] if which("VBoxManage") && (!`VBoxManage showvminfo $(VBoxManage list vms | awk '/#{node["name"]}/{gsub(".*{","");gsub("}.*","");print}') --machinereadable 2>&1 | grep storagecontrollername`.include? storage_controller["name"])
           end
         end
         if node.key? "volumes"
