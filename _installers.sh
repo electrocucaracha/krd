@@ -756,10 +756,11 @@ function install_kubevirt {
     fi
     kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-cr.yaml"
     _install_krew_plugin virt
-    wait_for_pods kubevirt
+
     until [ "$(kubectl api-resources --api-group kubevirt.io --no-headers | wc -l)" == "6" ]; do
         sleep 5
     done
+    wait_for_pods kubevirt
 }
 
 # install_kubesphere() - Installs KubeSphere services
