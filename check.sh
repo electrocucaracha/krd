@@ -140,10 +140,20 @@ if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
     pushd /opt/kubespray > /dev/null
     asserts_equals "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$(git describe --abbrev=0 --tags)"
     popd > /dev/null
+
+    if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
+        pushd tests > /dev/null
+        KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt
+        popd > /dev/null
+    fi
 else
     $VAGRANT_CMD_UP installer
     info "Validate Kubernetes execution"
 
     assert_contains "${KRD_KUBE_VERSION:-v1.20.7}" "$($VAGRANT_CMD_SSH_INSTALLER "kubectl version --short | awk 'FNR==2{print \$3}'")"
     assert_contains "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")"
+
+    if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
+        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/tests; KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt"
+    fi
 fi

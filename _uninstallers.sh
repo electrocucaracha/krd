@@ -78,10 +78,11 @@ function uninstall_istio {
 function uninstall_kubevirt {
     kubevirt_version=$(_get_version kubevirt)
 
+    kubectl delete kubevirt kubevirt -n kubevirt
+    kubectl delete -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-operator.yaml" --ignore-not-found --wait=false
     if kubectl api-resources | grep -q kubevirt; then
         kubectl delete -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-cr.yaml"
     fi
-    kubectl delete -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-operator.yaml" --ignore-not-found --wait=false
 
     _uninstall_krew_plugin virt
     _delete_namespace kubevirt

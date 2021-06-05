@@ -47,20 +47,6 @@ jobs:
         - kubectl get all -A -o wide
       after_script:
         - ./krd_command.sh -a uninstall_k8s
-    - name: All-in-One + Kubevirt validation
-      language: shell
-      script:
-        - KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
-        - ./krd_command.sh -a install_kubevirt
-      env:
-        - KRD_DEBUG=true
-        - KRD_CERT_MANAGER_ENABLED=false
-        - KRD_INGRESS_NGINX_ENABLED=false
-      after_success:
-        - kubectl get all -A -o wide
-      after_script:
-        - ./krd_command.sh -a uninstall_kubevirt
-        - ./krd_command.sh -a uninstall_k8s
     - name: All-in-One + Virtlet role validation
       language: shell
       script:
