@@ -47,6 +47,11 @@ jobs:
           - os: ubuntu
             release: bionic
             tests_enabled: true
+          - os: ubuntu
+            release: bionic
+            test_virtlet: true
+            kube_version: v1.18.10
+            kubespray_version: v2.15.1
     steps:
       - uses: actions/checkout@v2
       - name: Cache Vagrant boxes
@@ -72,6 +77,7 @@ jobs:
           KRD_KATA_CONTAINERS_ENABLED: ${{ matrix.kata_containers_enabled }}
           KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
           KRD_ENABLE_TESTS: ${{ matrix.tests_enabled }}
+          TEST_VIRTLET: ${{ matrix.test_virtlet }}
         run: ./check.sh $OS $RELEASE
   check-molecule:
     runs-on: macos-10.15

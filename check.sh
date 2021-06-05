@@ -146,6 +146,9 @@ if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
         KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt
         popd > /dev/null
     fi
+    if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
+        KRD_ENABLE_TESTS=true KRD_DEBUG=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
+    fi
 else
     $VAGRANT_CMD_UP installer
     info "Validate Kubernetes execution"
@@ -155,5 +158,8 @@ else
 
     if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
         $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/tests; KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt"
+    fi
+    if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
+        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/; KRD_ENABLE_TESTS=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons"
     fi
 fi
