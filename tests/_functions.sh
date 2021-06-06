@@ -41,6 +41,18 @@ function assert_non_empty {
     fi
 }
 
+# assert_are_equal() - This assertion checks if the inputs are equal
+function assert_are_equal {
+    local input=$1
+    local expected=$2
+    local error_msg=$3
+
+    info "Are equal Assertion - value: $1 expected: $2"
+    if [ "$input" != "$expected" ]; then
+        error "$error_msg"
+    fi
+}
+
 # assert_are_not_equal() - This assertion checks if the inputs are not equal
 function assert_are_not_equal {
     local input=$1
