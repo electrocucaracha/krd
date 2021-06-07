@@ -29,7 +29,7 @@ trap get_status ERR
 # Test
 info "===== Test started ====="
 
-if kubectl get runtimeclasses/kata-qemu; then
+if kubectl get runtimeclasses/kata-qemu > /dev/null; then
     info "+++++ Kata Containers QEMU validation:"
     cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1 
@@ -62,9 +62,10 @@ EOF
     assert_non_empty "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "$deployment_pod is using the default runtime"
     assert_contains "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "kata-qemu" "$deployment_pod is not using the Kata Containers runtime"
     assert_are_not_equal "$(kubectl exec -it "$deployment_pod" -- uname -a)" "$(uname -a)" "$deployment_pod has the same kernel version than the host"
+    destroy_deployment "$kata_deployment_name"
 fi
 
-if kubectl get runtimeclasses/crun; then
+if kubectl get runtimeclasses/crun > /dev/null; then
     info "+++++ crun validation:"
     cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1 
@@ -96,6 +97,7 @@ EOF
     info "$deployment_pod assertions:"
     assert_non_empty "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "$deployment_pod is using the default runtime"
     assert_contains "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "crun" "$deployment_pod is not using the crun runtime"
+    destroy_deployment "$crun_deployment_name"
 fi
 
 info "===== Test completed ====="

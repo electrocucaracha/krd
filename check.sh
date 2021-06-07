@@ -149,6 +149,11 @@ if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
     if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
         KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_DEBUG=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
     fi
+    if [[ "${TEST_RUNTIMECLASSES:-false}" == "true" ]]; then
+        pushd tests > /dev/null
+        KRD_DEBUG=false ./runtimeclasses.sh
+        popd > /dev/null
+    fi
 else
     $VAGRANT_CMD_UP installer
     info "Validate Kubernetes execution"
@@ -161,5 +166,8 @@ else
     fi
     if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
         $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/; KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons"
+    fi
+    if [[ "${TEST_RUNTIMECLASSES:-false}" == "true" ]]; then
+        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/tests; KRD_DEBUG=false ./runtimeclasses.sh"
     fi
 fi
