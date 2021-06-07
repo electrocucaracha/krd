@@ -53,6 +53,19 @@ jobs:
             test_virtlet: true
             kube_version: v1.18.10
             kubespray_version: v2.15.1
+          - runtime: crio
+            os: ubuntu
+            release: bionic
+            kube_version: v1.19.9
+            kubespray_version: v2.15.1
+            kata_containers_enabled: true
+            crun_enabled: true
+            test_runtimeclasses: true
+          - runtime: containerd
+            os: ubuntu
+            release: bionic
+            kata_containers_enabled: true
+            test_runtimeclasses: true
     steps:
       - uses: actions/checkout@v2
       - name: Cache Vagrant boxes
@@ -79,6 +92,7 @@ jobs:
           KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
           KRD_ENABLE_TESTS: ${{ matrix.tests_enabled }}
           TEST_VIRTLET: ${{ matrix.test_virtlet }}
+          TEST_RUNTIMECLASSES: ${{ matrix.test_runtimeclasses }}
           VBOX_CONTROLLER: ${{ matrix.vbox_controller }}
         run: ./check.sh $OS $RELEASE
   check-molecule:
