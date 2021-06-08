@@ -100,7 +100,10 @@ function wait_deployment {
     local deployment_name=$1
 
     info "Waiting for $deployment_name deployment..."
-    kubectl rollout status "deployment/$deployment_name" --timeout=5m > /dev/null
+    if ! kubectl rollout status "deployment/$deployment_name" --timeout=5m > /dev/null; then
+        get_status
+        error "Timeout reached"
+    fi
 }
 
 # wait_ingress() - Wait process for IP address asignment on Ingress resources
@@ -112,8 +115,8 @@ function wait_ingress {
     info "Waiting for $ingress_name ingress..."
     until [ -n "$(kubectl get ingress "$ingress_name" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" ]; do
         if [ ${attempt_counter} -eq ${max_attempts} ];then
-            echo "Max attempts reached"
-            exit 1
+            get_status
+            error "Max attempts reached"
         fi
         attempt_counter=$((attempt_counter+1))
         sleep 10
@@ -146,8 +149,12 @@ function get_status {
     echo "Environment variables:"
     env | grep "KRD"
     if command -v kubectl; then
+        echo "Kubernetes Resources:"
         kubectl get all -A -o wide
-        kubectl get nodes -o wide
+        echo "Kubernetes Pods:"
+        kubectl describe pods
+        echo "Kubernetes Nodes:"
+        kubectl describe nodes
     fi
 }
 
@@ -156,6 +163,5 @@ function _get_kube_version {
     kubectl version -o json | jq -r '.serverVersion.gitVersion'
 }
 if ! command -v kubectl > /dev/null; then
-    echo "This funtional test requires kubectl client"
-    exit 1
+    error "This functional test requires kubectl client"
 fi
