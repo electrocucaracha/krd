@@ -47,19 +47,28 @@ function assert_contains {
 }
 
 function exit_trap {
-    printf "CPU usage: "
-    grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage " %"}'
+    if [ -f  /proc/stat ]; then
+        printf "CPU usage: "
+        grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage " %"}'
+    fi
     printf "Memory free(Kb):"
-    awk -v low="$(grep low /proc/zoneinfo | awk '{k+=$2}END{print k}')" '{a[$1]=$2}  END{ print a["MemFree:"]+a["Active(file):"]+a["Inactive(file):"]+a["SReclaimable:"]-(12*low);}' /proc/meminfo
+    if [ -f /proc/zoneinfo ]; then
+        awk -v low="$(grep low /proc/zoneinfo | awk '{k+=$2}END{print k}')" '{a[$1]=$2}  END{ print a["MemFree:"]+a["Active(file):"]+a["Inactive(file):"]+a["SReclaimable:"]-(12*low);}' /proc/meminfo
+    fi
+    if command -v vm_stat; then
+        vm_stat | awk '/Pages free/ {print $3 * 4 }'
+    fi
     echo "Environment variables:"
     env | grep "KRD"
-    if command -v kubectl; then
-        kubectl get all -A -o wide
-        kubectl get nodes -o wide
+    echo "Kubelet Errors:"
+    $VAGRANT_CMD_SSH_AIO "sudo journalctl -u kubelet --since -5m | grep -E 'E[0-9]+|error|Error'"
+    echo "${KRD_CONTAINER_RUNTIME:-docker} Errors:"
+    $VAGRANT_CMD_SSH_AIO "sudo journalctl -u ${KRD_CONTAINER_RUNTIME:-docker} --since -5m | grep -E 'E[0-9]+|error|Error'"
+    if [[ "${KRD_KATA_CONTAINERS_ENABLED:-false}"  == "true" ]]; then
+         $VAGRANT_CMD_SSH_AIO "/opt/kata/bin/kata-runtime kata-env"
+         $VAGRANT_CMD_SSH_AIO "sudo journalctl --since -5m | grep 'kata-runtime'"
     fi
 }
-
-[ "$#" -eq 2 ] || error "2 arguments required, $# provided"
 
 if ! command -v vagrant > /dev/null; then
     # NOTE: Shorten link -> https://github.com/electrocucaracha/bootstrap-vagrant
@@ -80,8 +89,8 @@ info "Define target node"
 cat <<EOL > config/pdf.yml
 - name: aio
   os:
-    name: $1
-    release: $2
+    name: ${OS:-ubuntu}
+    release: ${RELEASE:-bionic}
   networks:
     - name: public-net
       ip: "10.10.16.3"
@@ -126,14 +135,14 @@ fi
 VAGRANT_CMD+=" $(command -v vagrant)"
 VAGRANT_CMD_UP="$VAGRANT_CMD up --no-destroy-on-error"
 VAGRANT_CMD_SSH_INSTALLER="$VAGRANT_CMD ssh installer --"
+VAGRANT_CMD_SSH_AIO="$VAGRANT_CMD ssh aio --"
 
 $VAGRANT_CMD_UP
+trap exit_trap ERR
 
 info "Provision Kubernetes cluster"
 if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
-    trap exit_trap ERR
     KRD_DEBUG=true ./krd_command.sh -a install_k8s
-    trap ERR
 
     info "Validate Kubernetes execution"
     asserts_equals "${KRD_KUBE_VERSION:-v1.20.7}" "$(kubectl version --short | awk 'FNR==2{print $3}')"

@@ -28,15 +28,11 @@ jobs:
             kube_version: v1.19.9
             kubespray_version: v2.15.1
           - runtime: containerd
-            os: ubuntu
             release: focal
           - runtime: containerd
-            os: ubuntu
-            release: bionic
             kube_version: v1.19.9
             kubespray_version: v2.15.1
-          - os: ubuntu
-            release: xenial
+          - release: xenial
             kube_version: v1.18.10
             kubespray_version: v2.14.2
           - os: opensuse
@@ -45,25 +41,19 @@ jobs:
           - runtime: containerd
             os: centos
             release: 8
-          - os: ubuntu
-            release: bionic
-            tests_enabled: true
-          - os: ubuntu
-            release: bionic
-            test_virtlet: true
+          - tests_enabled: true
+          - test_virtlet: true
             kube_version: v1.18.10
             kubespray_version: v2.15.1
           - runtime: crio
-            os: ubuntu
-            release: bionic
             kube_version: v1.19.9
             kubespray_version: v2.15.1
-            kata_containers_enabled: true
             crun_enabled: true
             test_runtimeclasses: true
+          - runtime: crio
+            kata_containers_enabled: true
+            test_runtimeclasses: true
           - runtime: containerd
-            os: ubuntu
-            release: bionic
             kata_containers_enabled: true
             test_runtimeclasses: true
     steps:
@@ -94,7 +84,7 @@ jobs:
           TEST_VIRTLET: ${{ matrix.test_virtlet }}
           TEST_RUNTIMECLASSES: ${{ matrix.test_runtimeclasses }}
           VBOX_CONTROLLER: ${{ matrix.vbox_controller }}
-        run: ./check.sh $OS $RELEASE
+        run: ./check.sh
   check-molecule:
     runs-on: macos-10.15
     strategy:

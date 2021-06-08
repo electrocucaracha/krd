@@ -18,8 +18,7 @@ source _functions.sh
 service_name="helloworld-go"
 
 if ! command -v kn; then
-    echo "This funtional test requires Knative client"
-    exit 1
+    error "This funtional test requires Knative client"
 fi
 
 # Setup
