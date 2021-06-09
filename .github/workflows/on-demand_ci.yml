@@ -50,12 +50,13 @@ jobs:
             kubespray_version: v2.15.1
             crun_enabled: true
             test_runtimeclasses: true
-          - runtime: crio
-            kata_containers_enabled: true
-            test_runtimeclasses: true
-          - runtime: containerd
-            kata_containers_enabled: true
-            test_runtimeclasses: true
+# Disable Kata Containers given kataShim comunication issues
+#          - runtime: crio
+#            kata_containers_enabled: true
+#            test_runtimeclasses: true
+#          - runtime: containerd
+#            kata_containers_enabled: true
+#            test_runtimeclasses: true
     steps:
       - uses: actions/checkout@v2
       - name: Cache Vagrant boxes
