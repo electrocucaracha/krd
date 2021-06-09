@@ -48,8 +48,10 @@ jobs:
           - runtime: crio
             kube_version: v1.19.9
             kubespray_version: v2.15.1
-            kata_containers_enabled: true
             crun_enabled: true
+            test_runtimeclasses: true
+          - runtime: crio
+            kata_containers_enabled: true
             test_runtimeclasses: true
           - runtime: containerd
             kata_containers_enabled: true
