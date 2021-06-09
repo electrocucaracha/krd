@@ -27,7 +27,7 @@ ubuntu:
     version: 3.2.20
   focal:
     name: generic/ubuntu2004
-    version: 3.2.24
+    version: 3.2.20
 opensuse:
   42:
     name: generic/opensuse42
