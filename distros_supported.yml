@@ -38,4 +38,4 @@ fedora:
     version: 3.2.20
   33:
     name: generic/fedora33
-    version: 3.2.24
+    version: 3.2.20
