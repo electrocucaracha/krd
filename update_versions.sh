@@ -69,7 +69,7 @@ sed -i "s/kube-ovn_version:.*/kube-ovn_version: v$(get_github_latest_release kub
 sed -i "s/prometheus-operator_version:.*/prometheus-operator_version: v$(get_github_latest_tag prometheus-operator/prometheus-operator)/g" ./playbooks/krd-vars.yml
 sed -i "s/kubevirt_version:.*/kubevirt_version: v$(get_github_latest_release kubevirt/kubevirt)/g" ./playbooks/krd-vars.yml
 sed -i "s/kubesphere_version:.*/kubesphere_version: v$(get_github_latest_release kubesphere/kubesphere)/g" ./playbooks/krd-vars.yml
-sed -i "s/metallb_version:.*/metallb_version: v$(get_github_latest_release metallb/metallb)/g" ./playbooks/krd-vars.yml
+sed -i "s/metallb_version:.*/metallb_version: v$(get_github_latest_tag metallb/metallb)/g" ./playbooks/krd-vars.yml
 
 cat << EOT > galaxy-requirements.yml
 ---
