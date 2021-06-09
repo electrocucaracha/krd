@@ -65,8 +65,8 @@ function exit_trap {
     echo "${KRD_CONTAINER_RUNTIME:-docker} Errors:"
     $VAGRANT_CMD_SSH_AIO "sudo journalctl -u ${KRD_CONTAINER_RUNTIME:-docker} --since -5m | grep -E 'E[0-9]+|error|Error'"
     if [[ "${KRD_KATA_CONTAINERS_ENABLED:-false}"  == "true" ]]; then
-         $VAGRANT_CMD_SSH_AIO "/opt/kata/bin/kata-runtime kata-env"
-         $VAGRANT_CMD_SSH_AIO "sudo journalctl --since -5m | grep 'kata-runtime'"
+        $VAGRANT_CMD_SSH_AIO "/opt/kata/bin/kata-runtime kata-env"
+        $VAGRANT_CMD_SSH_AIO "sudo journalctl --since -5m | grep 'kata-runtime'"
     fi
 }
 
