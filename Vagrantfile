@@ -118,6 +118,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |v|
     v.gui = false
+    # it will cause the NAT gateway to accept DNS traffic and the gateway will
+    # read the query and use the host's operating system APIs to resolve it
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/network_performance.html
     v.customize ["modifyvm", :id, "--nictype1", "virtio", "--cableconnected1", "on"]
     # https://bugs.launchpad.net/cloud-images/+bug/1829625/comments/2
     v.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
