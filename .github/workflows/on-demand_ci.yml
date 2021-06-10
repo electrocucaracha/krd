@@ -67,7 +67,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-vagrant-
       - name: Replace shorten links
-        run: find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
+        run: |
+          find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
+          find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_bin|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/bindep_install.sh|g' {} \;
       - name: Run integration tests
         env:
           VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
@@ -103,8 +105,6 @@ jobs:
             ${{ runner.os }}-vagrant-
       - name: Install Tox tool
         run: brew install tox
-      - name: Replace shorten links
-        run: find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
       - name: Run molecule tests
         env:
           VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
