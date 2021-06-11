@@ -757,10 +757,15 @@ function install_kubevirt {
     kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-cr.yaml"
     _install_krew_plugin virt
 
+    echo "Wait for Kubevirt resources to be ready"
     until [ "$(kubectl api-resources --api-group kubevirt.io --no-headers | wc -l)" == "6" ]; do
         sleep 5
     done
     wait_for_pods kubevirt
+    sleep 30
+    for resource in daemonset/virt-handler deployment/virt-api deployment/virt-controller deployment/virt-operator; do
+        kubectl rollout status "$resource" -n kubevirt --timeout=5m
+    done
 }
 
 # install_kubesphere() - Installs KubeSphere services
