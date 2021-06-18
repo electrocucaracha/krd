@@ -961,3 +961,19 @@ function install_haproxy {
     kubectl rollout status deployment/haproxy-kubernetes-ingress --timeout=5m
     kubectl rollout status deployment/haproxy-kubernetes-ingress-default-backend --timeout=5m
 }
+
+# install_falco() - Install Falco services
+function install_falco {
+    KRD_HELM_VERSION=3 install_helm
+
+    if ! helm repo list | grep -e falcosecurity; then
+        helm repo add falcosecurity https://falcosecurity.github.io/charts
+    fi
+    if ! helm ls | grep -e falco; then
+        helm upgrade -f helm/falco/custom-rules.yml \
+        --set auditLog.enabled=true \
+        --install falco falcosecurity/falco
+    fi
+
+    kubectl rollout status daemonset/falco --timeout=5m
+}

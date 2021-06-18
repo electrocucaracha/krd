@@ -63,6 +63,11 @@ function uninstall_haproxy {
     _uninstall_helm haproxy
 }
 
+# uninstall_falco() - Uninstall Falco services
+function uninstall_falco {
+    _uninstall_helm falco
+}
+
 # uninstall_metallb() - Uninstall MetalLB services
 function uninstall_metallb {
     _delete_namespace metallb-system
