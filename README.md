@@ -41,6 +41,7 @@ different scenarios. There are different setups located in the
 | Kong           | Ingress Controller                              |                                   | Tested      |
 | HAProxy        | Ingress Controller                              |                                   | Tested      |
 | MetalLB        | Provides a network load-balancer implementation |                                   | Tested      |
+| Falco          | Deploys a Falco services                        |                                   | Tested      |
 
 ## Quick Deployment
 
