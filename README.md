@@ -153,6 +153,9 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_EPHEMERAL_CONTAINERS_ENABLED     | true    | Enable/Disable [Ephemeral Containers][21]                                       |
 | KRD_METALLB_ENABLED                  | false   | Enable/Disable [MetalLB load-balancer][22]                                      |
 | KRD_METALLB_ADDRESS_POOLS_LIST       |         | Specifies a lists of Layer 2 Address pools for MetalLB                          |
+| KRD_KUBERNETES_AUDIT                 | false   | Enable/Disable [Auditing][23]                                                   |
+| KRD_KUBERNETES_AUDIT_WEBHOOK         | false   | Enable/Disable [Audit Webhook][23]                                              |
+| KRD_AUDIT_WEBHOOK_SERVER_URL         |         | Audit Webhook server URL                                                        |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [2]: https://github.com/k8snetworkplumbingwg/multus-cni
@@ -160,8 +163,8 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 [4]: playbooks/roles/nfd
 [5]: https://kubernetes.io/docs/tasks/administer-cluster/nodelocaldns/
 [6]: playbooks/roles/pmem
-[8]: playbooks/roles/qat_plugin
 [7]: https://man.cx/?page=ipvsadm(8)
+[8]: playbooks/roles/qat_plugin
 [9]: playbooks/roles/sriov_plugin
 [10]: https://cert-manager.io/
 [11]: https://kubernetes.github.io/ingress-nginx/
@@ -176,3 +179,4 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 [20]: https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner
 [21]: https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/
 [22]: https://metallb.universe.tf/
+[23]: https://kubernetes.io/docs/tasks/debug-application-cluster/audit/
