@@ -154,5 +154,12 @@ kube_feature_gates:
 # must be set to true for MetalLB to work
 kube_proxy_strict_arp: $KRD_METALLB_ENABLED
 
-# Enable MetalLB deployment
+# Enables MetalLB deployment
 metallb_enabled: $KRD_METALLB_ENABLED
+
+# Enables Kubernetes Auditing
+kubernetes_audit: $KRD_KUBERNETES_AUDIT
+
+# Enables Kubernetes Webhook Audit backend
+kubernetes_audit_webhook: $KRD_KUBERNETES_AUDIT_WEBHOOK
+audit_webhook_server_url: $KRD_AUDIT_WEBHOOK_SERVER_URL
