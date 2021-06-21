@@ -28,3 +28,4 @@ mock_roles:
   - andrewrothstein.kind
   - andrewrothstein.kubectl
   - geerlingguy.repo-epel
+  - geerlingguy.pip

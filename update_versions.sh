@@ -87,6 +87,8 @@ roles:
     version: $(get_github_latest_tag geerlingguy/ansible-role-docker)
   - name: geerlingguy.repo-epel
     version: $(get_github_latest_tag geerlingguy/ansible-role-repo-epel)
+  - name: geerlingguy.pip
+    version: $(get_github_latest_tag geerlingguy/ansible-role-pip)
   - name: andrewrothstein.gcc-toolbox
     version: v$(get_github_latest_tag andrewrothstein/ansible-gcc-toolbox)
   - name: andrewrothstein.kind
