@@ -13,6 +13,9 @@
   collections:
     - community.kubernetes
   tasks:
+    - name: enforce python3 for ansible
+      set_fact:
+        ansible_python_interpreter: /usr/bin/python3
     - name: "Include sriov_cni"
       include_role:
         name: "sriov_cni"
