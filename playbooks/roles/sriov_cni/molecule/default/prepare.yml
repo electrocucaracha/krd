@@ -34,6 +34,9 @@
       vars:
         pip_install_packages:
           - name: kubernetes
+            version: 17.17.0
+          - name: openshift
+            version: 0.12.0
   tasks:
     - name: add existing user ansible's user to docker's group
       become: true
