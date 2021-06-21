@@ -34,7 +34,9 @@ def test_pmem_nodes_ready(host):
 
 
 def test_pmem_device_plugin_ready(host):
-    cmd = host.run("/usr/local/bin/kubectl rollout status daemonset/pmem-csi-node")
+    cmd = host.run(
+        "/usr/local/bin/kubectl rollout status daemonset/pmem-csi-intel-com-node -n pmem-csi"
+    )
 
     assert cmd.rc == 0
     assert "successfully rolled out" in cmd.stdout
@@ -42,7 +44,7 @@ def test_pmem_device_plugin_ready(host):
 
 def test_pmem_statefulset_ready(host):
     cmd = host.run(
-        "/usr/local/bin/kubectl rollout status statefulset/pmem-csi-controller"
+        "/usr/local/bin/kubectl rollout status statefulset/pmem-csi-intel-com-controller -n pmem-csi"
     )
 
     assert cmd.rc == 0
@@ -53,8 +55,12 @@ def test_get_pmem_node_annotation(host):
     host.run(
         "/usr/local/bin/kubectl wait --for=condition=ready node/molecule-control-plane --timeout=120s"
     )
-    host.run("/usr/local/bin/kubectl rollout status daemonset/pmem-csi-node")
-    host.run("/usr/local/bin/kubectl rollout status statefulset/pmem-csi-controller")
+    host.run(
+        "/usr/local/bin/kubectl rollout status daemonset/pmem-csi-intel-com-node -n pmem-csi"
+    )
+    host.run(
+        "/usr/local/bin/kubectl rollout status statefulset/pmem-csi-intel-com-controller -n pmem-csi"
+    )
     time.sleep(10)
 
     jsonpath = (
