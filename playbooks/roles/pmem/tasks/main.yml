@@ -28,19 +28,27 @@
   with_items:
     - setup-ca-kubernetes
     - setup-ca
+    - test-config
+
+- name: create a PMEM namespace
+  k8s:
+    name: "{{ pmem_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
 
 - name: get PMEM CSI node secret
   k8s_info:
     kind: Secret
-    name: pmem-csi-node-secrets
-    namespace: default
+    name: pmem-csi-intel-com-controller-secret
+    namespace: "{{ pmem_namespace }}"
   register: node_secret
 
 - name: get PMEM CSI registry secret
   k8s_info:
     kind: Secret
-    name: pmem-csi-registry-secrets
-    namespace: default
+    name: pmem-csi-intel-com-controller-secret
+    namespace: "{{ pmem_namespace }}"
   register: registry_secret
 
 - name: print node and registry values
@@ -53,6 +61,8 @@
 - name: create PMEM secrets
   become: true
   shell: 'PATH=$PATH:/usr/local/bin/ {{ pmem_template_folder }}/setup-ca-kubernetes.sh'
+  environment:
+    TEST_DRIVER_NAMESPACE: "{{ pmem_namespace }}"
   args:
     chdir: '{{ pmem_template_folder }}'
   when:
