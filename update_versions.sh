@@ -98,5 +98,5 @@ roles:
 
 collections:
   - name: community.kubernetes
-    version: ">=0.10.0"
+    version: 1.2.1
 EOT
