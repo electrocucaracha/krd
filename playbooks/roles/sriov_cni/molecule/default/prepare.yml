@@ -12,6 +12,16 @@
   hosts: all
   vars:
     kind_dest: /usr/local/bin
+  pre_tasks:
+    - name: install python3 packages
+      become: true
+      package:
+        name: python3
+        state: present
+      when: ansible_os_family == "RedHat"
+    - name: enforce python3 for ansible
+      set_fact:
+        ansible_python_interpreter: /usr/bin/python3
   roles:
     - role: andrewrothstein.kind
       kind_install_dir: '{{ kind_dest }}'
@@ -19,6 +29,11 @@
     - role: geerlingguy.docker
       docker_install_compose: false
       become: true
+    - role: geerlingguy.pip
+      become: true
+      vars:
+        pip_install_packages:
+          - name: kubernetes
   tasks:
     - name: add existing user ansible's user to docker's group
       become: true
@@ -51,20 +66,3 @@
         remote_src: true
         owner: '{{ ansible_ssh_user }}'
         group: '{{ ansible_ssh_user }}'
-    - name: download pip installer
-      get_url:
-        url: https://bootstrap.pypa.io/pip/2.7/get-pip.py
-        dest: /tmp/get-pip.py
-        mode: 0440
-    - name: install pip
-      become: true
-      command: /usr/bin/python /tmp/get-pip.py
-    - name: install python dependencies
-      become: true
-      pip:
-        name: "{{ item.name | default(item) }}"
-        version: "{{ item.version | default(omit) }}"
-      with_items:
-        - name: kubernetes
-          version: 11.0.0
-        - openshift
