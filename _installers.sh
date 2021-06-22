@@ -749,6 +749,8 @@ function install_velero {
 # install_kubevirt() - Installs KubeVirt solution
 function install_kubevirt {
     kubevirt_version=$(_get_version kubevirt)
+    attempt_counter=0
+    max_attempts=5
 
     kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-operator.yaml"
     if ! grep 'svm\|vmx' /proc/cpuinfo && ! kubectl get configmap -n kubevirt kubevirt-config; then
@@ -758,14 +760,16 @@ function install_kubevirt {
     _install_krew_plugin virt
 
     echo "Wait for Kubevirt resources to be ready"
-    until [ "$(kubectl api-resources --api-group kubevirt.io --no-headers | wc -l)" == "6" ]; do
-        sleep 5
+    kubectl rollout status deployment/virt-operator -n kubevirt --timeout=5m
+    until kubectl logs -n kubevirt -l kubevirt.io=virt-operator | grep "All KubeVirt components ready"; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+            echo "Max attempts reached"
+            exit 1
+        fi
+        attempt_counter=$((attempt_counter+1))
+        sleep $((attempt_counter*15))
     done
     wait_for_pods kubevirt
-    sleep 30
-    for resource in daemonset/virt-handler deployment/virt-api deployment/virt-controller deployment/virt-operator; do
-        kubectl rollout status "$resource" -n kubevirt --timeout=5m
-    done
 }
 
 # install_kubesphere() - Installs KubeSphere services
