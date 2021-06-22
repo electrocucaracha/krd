@@ -55,6 +55,15 @@ function get_github_latest_tag {
     echo "${version#*v}"
 }
 
+function update_pip_pkg {
+    local pkg="$1"
+    local version="$2"
+
+    while IFS= read -r playbook; do
+        sed -i "s/$pkg==.*/$pkg==$version/g" "$playbook"
+    done < <(grep -r "$pkg==" ./playbooks/roles/ | awk -F ':' '{ print $1}')
+}
+
 kubespray_version="$(get_github_latest_release kubernetes-sigs/kubespray)"
 sed -i "s/kubespray_version:.*/kubespray_version: v$kubespray_version/g" ./playbooks/krd-vars.yml
 sed -i "s/KRD_KUBESPRAY_VERSION                 |.*/KRD_KUBESPRAY_VERSION                 | v$kubespray_version                                        | Specifies the Kubespray version to be used during the upgrade process           |/g" README.md
@@ -100,3 +109,19 @@ collections:
   - name: community.kubernetes
     version: 1.2.1
 EOT
+
+# Udpate Playbook default versions
+# NOTE: There is no images released for minor versions https://hub.docker.com/r/nfvpe/sriov-cni/tags
+#sed -i "s/sriov_cni_version:.*/sriov_cni_version: v$(get_github_latest_tag k8snetworkplumbingwg/sriov-cni)/g" ./playbooks/roles/sriov_cni/defaults/main.yml
+sed -i "s/criproxy_version:.*/criproxy_version: $(get_github_latest_tag Mirantis/criproxy)/g" ./playbooks/roles/criproxy/defaults/main.yml
+sed -i "s/pmem_version:.*/pmem_version: v$(get_github_latest_tag intel/pmem-csi)/g" ./playbooks/roles/pmem/defaults/main.yml
+sed -i "s/driver_registrar_version:.*/driver_registrar_version: v$(get_github_latest_tag kubernetes-csi/node-driver-registrar)/g" ./playbooks/roles/pmem/defaults/main.yml
+sed -i "s/csi_provisioner_version:.*/csi_provisioner_version: v$(get_github_latest_tag kubernetes-csi/external-provisioner)/g" ./playbooks/roles/pmem/defaults/main.yml
+sed -i "s/cfssl_version:.*/cfssl_version: $(get_github_latest_tag cloudflare/cfssl)/g" ./playbooks/roles/pmem/defaults/main.yml
+sed -i "s/virtlet_version:.*/virtlet_version: $(get_github_latest_tag Mirantis/virtlet)/g" ./playbooks/roles/virtlet/defaults/main.yml
+sed -i "s/sriov_plugin_version:.*/sriov_plugin_version: v$(get_github_latest_release k8snetworkplumbingwg/sriov-network-device-plugin)/g" ./playbooks/roles/sriov_plugin/defaults/main.yml
+sed -i "s/nfd_version:.*/nfd_version: v$(get_github_latest_release kubernetes-sigs/node-feature-discovery)/g" ./playbooks/roles/nfd/defaults/main.yml
+
+# Update Kubernetes Collection dependencies
+update_pip_pkg "kubernetes" "$(get_github_latest_release kubernetes-client/python)"
+update_pip_pkg "openshift" "$(get_github_latest_release openshift/openshift-restclient-python)"
