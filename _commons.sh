@@ -312,7 +312,7 @@ function _delete_namespace {
             exit 1
         fi
         attempt_counter=$((attempt_counter+1))
-        sleep 5
+        sleep $((attempt_counter*5))
     done
 }
 

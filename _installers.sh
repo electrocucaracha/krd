@@ -693,7 +693,7 @@ EOF
             exit 1
         fi
         attempt_counter=$((attempt_counter+1))
-        sleep 60
+        sleep $((attempt_counter*60))
     done
     attempt_counter=0
     until kubectl top pod 2> /dev/null; do
@@ -702,7 +702,7 @@ EOF
             exit 1
         fi
         attempt_counter=$((attempt_counter+1))
-        sleep 60
+        sleep $((attempt_counter*60))
     done
 }
 

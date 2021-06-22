@@ -29,7 +29,7 @@ function get_github_latest_release {
             exit 1
         fi
         attempt_counter=$((attempt_counter+1))
-        sleep 2
+        sleep $((attempt_counter*2))
     done
     echo "${version#v}"
 }
@@ -49,7 +49,7 @@ function get_github_latest_tag {
             exit 1
         fi
         attempt_counter=$((attempt_counter+1))
-        sleep 2
+        sleep $((attempt_counter*2))
     done
 
     echo "${version#*v}"
