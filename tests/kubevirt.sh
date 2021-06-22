@@ -26,7 +26,7 @@ function cleanup {
             error "Max attempts reached"
         fi
         attempt_counter=$((attempt_counter+1))
-        sleep 10
+        sleep $((attempt_counter*10))
     done
 }
 
