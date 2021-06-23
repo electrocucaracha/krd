@@ -10,8 +10,7 @@
 
 name: Triage
 # yamllint disable-line rule:truthy
-on:
-  - pull_request_target
+on: [pull_request]
 
 jobs:
   assign-label:
