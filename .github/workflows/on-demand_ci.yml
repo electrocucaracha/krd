@@ -10,7 +10,23 @@
 
 name: Check All
 # yamllint disable-line rule:truthy
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - '**.sh'
+      - '!update_*.sh'
+      - '*.yml'
+      - '*.tpl'
+      - '*.env'
+      - 'resources/*'
+  pull_request:
+    paths:
+      - '**.sh'
+      - '!update_*.sh'
+      - '*.yml'
+      - '*.tpl'
+      - '*.env'
+      - 'resources/*'
 
 jobs:
   check-pdfs:
@@ -70,6 +86,7 @@ jobs:
         run: |
           find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
           find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_bin|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/bindep_install.sh|g' {} \;
+          find . -type f -name "*.bak" -delete
       - name: Run integration tests
         env:
           VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
@@ -88,28 +105,6 @@ jobs:
           TEST_RUNTIMECLASSES: ${{ matrix.test_runtimeclasses }}
           VBOX_CONTROLLER: ${{ matrix.vbox_controller }}
         run: ./check.sh
-  check-molecule:
-    runs-on: macos-10.15
-    strategy:
-      fail-fast: false
-      matrix:
-        tox_env: [nfd, pmem, qat_driver, sriov_cni, sriov_plugin, criproxy]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Cache Vagrant boxes
-        uses: actions/cache@v2
-        with:
-          path: ~/.vagrant.d/boxes
-          key: ${{ runner.os }}-vagrant-${{ hashFiles('Vagrantfile') }}
-          restore-keys: |
-            ${{ runner.os }}-vagrant-
-      - name: Install Tox tool
-        run: brew install tox
-      - name: Run molecule tests
-        env:
-          VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
-          TOXENV: ${{ matrix.tox_env }}
-        run: tox
   check-multus:
     runs-on: ubuntu-18.04
     env:
