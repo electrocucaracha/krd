@@ -10,11 +10,6 @@
 
 version: 3
 
-pullapprove_conditions:
-  - '"base.ref" == "master"'
-  - condition: "'*travis*' in statuses.successful"
-    unmet_status: "failure"
-    explanation: "Tests must pass before review starts"
 notifications:
   - when: pull_request.opened
     if: "author_association == 'FIRST_TIME_CONTRIBUTOR'"
@@ -33,6 +28,4 @@ groups:
     reviews:
       required: 1
       request: 1
-      request_order: random
-    labels:
-      approved: "Code review approved"
+      request_order: shuffle
