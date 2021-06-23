@@ -157,6 +157,8 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_KUBERNETES_AUDIT                 | false   | Enable/Disable [Auditing][23]                                                   |
 | KRD_KUBERNETES_AUDIT_WEBHOOK         | false   | Enable/Disable [Audit Webhook][23]                                              |
 | KRD_AUDIT_WEBHOOK_SERVER_URL         |         | Audit Webhook server URL                                                        |
+| KRD_KUBELET_LOGFILES_MAX_NR          | 5       | Maximum number of [container log][24] files that can be present for a container |
+| KRD_KUBELET_LOGFILES_MAX_SIZE        | 10Mi    | Maximum size of the [container log][24] file before it is rotated               |
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [2]: https://github.com/k8snetworkplumbingwg/multus-cni
@@ -181,3 +183,4 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 [21]: https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/
 [22]: https://metallb.universe.tf/
 [23]: https://kubernetes.io/docs/tasks/debug-application-cluster/audit/
+[24]: https://kubernetes.io/docs/concepts/cluster-administration/logging/

@@ -163,3 +163,9 @@ kubernetes_audit: $KRD_KUBERNETES_AUDIT
 # Enables Kubernetes Webhook Audit backend
 kubernetes_audit_webhook: $KRD_KUBERNETES_AUDIT_WEBHOOK
 audit_webhook_server_url: $KRD_AUDIT_WEBHOOK_SERVER_URL
+
+# Maximum number of container log files that can be present for a container.
+kubelet_logfiles_max_nr: $KRD_KUBELET_LOGFILES_MAX_NR
+
+# Maximum size of the container log file before it is rotated
+kubelet_logfiles_max_size: $KRD_KUBELET_LOGFILES_MAX_SIZE
