@@ -97,7 +97,9 @@ Vagrant.configure("2") do |config|
   config.vm.provider "libvirt"
   config.vm.provider "virtualbox"
 
-  config.vm.provider "libvirt" do |v|
+  config.vm.synced_folder "./", "/vagrant"
+  config.vm.provider "libvirt" do |v, override|
+    override.vm.synced_folder "./", "/vagrant", type: "nfs"
     v.management_network_address = "10.0.2.0/24"
     # Administration - Provides Internet access for all nodes and is
     # used for administration to install software packages
@@ -106,7 +108,6 @@ Vagrant.configure("2") do |config|
     v.disk_device = "sda"
   end
   config.ssh.insert_key = false
-  config.vm.synced_folder "./", "/vagrant"
   config.vm.box_check_update = false
 
   if !ENV["http_proxy"].nil? && !ENV["https_proxy"].nil? && Vagrant.has_plugin?("vagrant-proxyconf")
