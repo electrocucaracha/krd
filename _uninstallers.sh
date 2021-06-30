@@ -79,6 +79,14 @@ function uninstall_istio {
     _delete_namespace istio-system
 }
 
+# uninstall_knative() - Uninstall Knative services
+function uninstall_knative {
+    _delete_namespace knative-serving
+    _delete_namespace knative-eventing
+
+    uninstall_istio
+}
+
 # uninstall_kubevirt() - Uninstall KubeVirt servcies
 function uninstall_kubevirt {
     kubevirt_version=$(_get_version kubevirt)
