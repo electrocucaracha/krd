@@ -24,6 +24,7 @@ gcc [kubespray]
 glibc-devel [kubespray platform:rpm]
 libc-dev [kubespray platform:dpkg]
 python-setuptools [kubespray platform:dpkg]
+python3-setuptools [kubespray platform:dpkg]
 python3-dev [kubespray platform:dpkg]
 build-essential [kubespray platform:dpkg]
 jq
