@@ -60,6 +60,9 @@ function _install_kubespray {
         fi
 
         PIP_CMD="sudo -E $(command -v pip)"
+        if [[ "$(pip -V)" == *"python2"* ]] && command -v pip3; then
+            PIP_CMD="sudo -E $(command -v pip3)"
+        fi
 
         # This ensures that ansible is previously not installed
         if pip show ansible; then
