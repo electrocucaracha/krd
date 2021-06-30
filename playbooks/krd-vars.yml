@@ -11,7 +11,7 @@
 go_version: 1.15.3
 kubespray_version: v2.16.0
 istio_version: 1.10.2
-knative_version: v0.23.1
+knative_version: v0.24.0
 octant_version: 0.21.0
 rook_version: v1.6.6
 kube-ovn_version: v1.6.3
