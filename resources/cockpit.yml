@@ -1,0 +1,48 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2021
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cockpit
+  labels:
+    app: cockpit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cockpit
+  template:
+    metadata:
+      labels:
+        app: cockpit
+    spec:
+      containers:
+        - name: cockpit
+          image: cockpit/kubernetes:latest
+          ports:
+            - containerPort: 9090
+              name: server
+          env:
+            - name: KUBE_INSECURE
+              value: "false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cockpit
+spec:
+  selector:
+    name: cockpit
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: server
