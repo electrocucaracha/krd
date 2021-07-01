@@ -42,6 +42,7 @@ spec:
           value: '10'
 EOF
     kubectl wait --for=condition=ready pods client --timeout=3m
+    kubectl logs -n istio-system -l app=istiod | grep default/client
 }
 
 trap cleanup EXIT
@@ -83,9 +84,10 @@ spec:
       targetPort: 8080
   selector:
     app.kubernetes.io/name: server
-  type: LoadBalancer
+  type: ClusterIP
 EOF
 wait_deployment "$server_deployment_name"
+kubectl logs -n istio-system -l app=istiod | grep default/server
 create_client
 sleep 2
 
@@ -93,24 +95,7 @@ assert_contains "$(kubectl get pods -l=app.kubernetes.io/name=server -o jsonpath
 
 assert_non_empty "$(kubectl logs client)" "There is no client's logs"
 assert_contains "$(kubectl logs client)" "Starting loadgen" "The client's pod doesn't start it"
-assert_contains "$(kubectl logs client)" "10 request(s) complete to http://server:80/" "The client's pod can't connect to the server"
-
-kubectl delete pod client --ignore-not-found --now
-
-cat <<EOF | kubectl apply -f -
-apiVersion: security.istio.io/v1beta1
-kind: PeerAuthentication
-metadata:
-  name: default
-spec:
-  mtls:
-    mode: STRICT
-EOF
-create_client
-sleep 2
-
-assert_non_empty "$(kubectl logs client)" "There is no client's logs"
-assert_contains "$(kubectl logs client)" "Starting loadgen" "The client's pod doesn't start it"
+assert_contains "$(kubectl logs -n istio-system -l app=istiod)" "Sidecar injection request for default/client" "The Client's sidecar injection request wasn't received"
 assert_contains "$(kubectl logs client)" "10 request(s) complete to http://server:80/" "The client's pod can't connect to the server"
 
 info "===== Test completed ====="
