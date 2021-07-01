@@ -29,6 +29,9 @@ on:
       - '*.tpl'
       - '*.env'
       - 'resources/*'
+  pull_request_review:
+    types:
+      - submitted
 
 jobs:
   check-pdfs:
