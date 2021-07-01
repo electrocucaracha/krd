@@ -389,48 +389,65 @@ function install_istio {
 }
 
 # install_knative() - Function that installs Knative and its dependencies
-# Resources requests (1,050m CPU + 840Mi):
-#  - Eventing 420m CPU + 420Mi
-#  - Serving 630m CPU + 420Mi
-# Resources limits (4,400m CPU + 4,300Mi):
-#  - Eventing 600m CPU + 600Mi
-#  - Serving 3,800m CPU + 3,700Mi
 function install_knative {
     knative_version=$(_get_version knative)
 
-    install_istio
-
-    # Using Istio mTLS feature
-    if ! kubectl get namespaces/knative-serving --no-headers -o custom-columns=name:.metadata.name; then
-        kubectl create namespace knative-serving
-    fi
-    if kubectl get service cluster-local-gateway -n istio-system; then
-        kubectl apply -f "https://raw.githubusercontent.com/knative-sandbox/net-istio/master/third_party/istio-stable/istio-knative-extras.yaml"
-    fi
-
-    # Install the Serving component
-    kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_version}/serving-crds.yaml"
-    kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_version}/serving-core.yaml"
-    kubectl apply -f "https://github.com/knative/net-istio/releases/download/${knative_version}/release.yaml"
-    kubectl apply -f "https://github.com/knative/net-certmanager/releases/download/${knative_version}/release.yaml"
-
-    # Install the Eventing component
-    kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/eventing-crds.yaml"
-    kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/eventing-core.yaml"
-
-    ## Install a default Channel
-    kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/in-memory-channel.yaml"
-
-    ## Install a Broker
-    kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/mt-channel-broker.yaml"
 
     # Install Knative Client
     if ! command -v kn > /dev/null; then
-        curl -fsSL http://bit.ly/install_pkg | PKG=kn bash
+        curl -fsSL http://bit.ly/install_pkg | PKG=kn PKG_KN_VERSION="${knative_version#*v}" bash
     fi
 
-    wait_for_pods knative-serving
-    wait_for_pods knative-eventing
+    # Install the Serving component
+    # Resources requests:
+    #  - Serving 630m CPU + 420Mi
+    # Resources limits:
+    #  - Serving 3,800m CPU + 3,700Mi
+    if [[ "${KRD_KNATIVE_SERVING_ENABLED}" == "true" ]]; then
+        if ! kubectl get namespaces/knative-serving --no-headers -o custom-columns=name:.metadata.name; then
+            kubectl create namespace knative-serving
+        fi
+        kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_version}/serving-crds.yaml"
+        kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_version}/serving-core.yaml"
+        case ${KRD_KNATIVE_SERVING_NET} in
+            kourier)
+                kubectl apply -f "https://github.com/knative/net-kourier/releases/download/${knative_version}/kourier.yaml"
+                kubectl patch configmap/config-network -n knative-serving \
+                --type merge --patch '{"data":{"ingress.class":"kourier.ingress.networking.knative.dev"}}'
+            ;;
+            istio)
+                install_istio
+                # Using Istio mTLS feature
+                if kubectl get service cluster-local-gateway -n istio-system; then
+                    kubectl apply -f "https://raw.githubusercontent.com/knative-sandbox/net-istio/master/third_party/istio-stable/istio-knative-extras.yaml"
+                fi
+                kubectl apply -f "https://github.com/knative/net-istio/releases/download/${knative_version}/release.yaml"
+            ;;
+        esac
+        if [[ "${KRD_KNATIVE_SERVING_CERT_MANAGER_ENABLED}" == "true" ]]; then
+            kubectl apply -f "https://github.com/knative/net-certmanager/releases/download/${knative_version}/release.yaml"
+        fi
+
+        wait_for_pods knative-serving
+    fi
+
+    # Install the Eventing component
+    # Resources requests:
+    #  - Eventing 420m CPU + 420Mi
+    # Resources limits:
+    #  - Eventing 600m CPU + 600Mi
+    if [[ "${KRD_KNATIVE_EVENTING_ENABLED}" == "true" ]]; then
+        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/eventing-crds.yaml"
+        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/eventing-core.yaml"
+
+        ## Install a default Channel
+        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/in-memory-channel.yaml"
+
+        ## Install a Broker
+        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/mt-channel-broker.yaml"
+
+        wait_for_pods knative-eventing
+    fi
 }
 
 # install_harbor() - Function that installs Harbor Cloud Native registry project

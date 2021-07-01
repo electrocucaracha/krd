@@ -81,10 +81,18 @@ function uninstall_istio {
 
 # uninstall_knative() - Uninstall Knative services
 function uninstall_knative {
-    _delete_namespace knative-serving
-    _delete_namespace knative-eventing
+    if [[ "${KRD_KNATIVE_SERVING_ENABLED}" == "true" ]]; then
+        _delete_namespace knative-serving
+    fi
+    if [[ "${KRD_KNATIVE_EVENTING_ENABLED}" == "true" ]]; then
+        _delete_namespace knative-eventing
+    fi
 
-    uninstall_istio
+    case ${KRD_KNATIVE_SERVING_NET} in
+        istio)
+            uninstall_istio
+        ;;
+    esac
 }
 
 # uninstall_kubevirt() - Uninstall KubeVirt servcies
