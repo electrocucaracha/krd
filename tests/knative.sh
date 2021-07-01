@@ -17,9 +17,15 @@ source _functions.sh
 
 service_name="helloworld-go"
 
+function cleanup {
+    kn service delete "$service_name" ||:
+}
+
 if ! command -v kn; then
     error "This funtional test requires Knative client"
 fi
+
+trap cleanup EXIT
 
 # Setup
 kn service create "$service_name" --image gcr.io/knative-samples/helloworld-go --env TARGET="Go Sample v1"
@@ -32,6 +38,3 @@ assert_contains "$(kn service describe "$service_name")" "++ ConfigurationsReady
 assert_contains "$(kn service describe "$service_name")" "++ RoutesReady" "$service_name app's routes is no ready"
 
 info "===== Test completed ====="
-
-# Teardown
-kn service delete "$service_name"
