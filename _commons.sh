@@ -317,6 +317,12 @@ function _delete_namespace {
         attempt_counter=$((attempt_counter+1))
         sleep $((attempt_counter*5))
     done
+    if kubectl get namespaces 2>/dev/null | grep  "$namespace"; then
+        # NOTE: https://stackoverflow.com/a/59667608/2727227
+        kubectl get namespace "$namespace" -o json | tr -d "\n" | \
+        sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" | \
+        kubectl replace --raw "/api/v1/namespaces/$namespace/finalize" -f -
+    fi
 }
 
 # Requirements
