@@ -120,6 +120,11 @@ cat <<EOL > config/pdf.yml
       controller: ${VBOX_CONTROLLER:-Virtual I/O Device SCSI controller}
       port: 1
       device: 0
+    - name: sdc
+      size: 50
+      controller: Virtual I/O Device SCSI controller
+      port: 2
+      device: 0
   roles:
     - kube-master
     - etcd
@@ -152,7 +157,7 @@ if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
 
     if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
         pushd tests > /dev/null
-        KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt falco knative
+        KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt falco knative rook
         popd > /dev/null
     fi
     if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
@@ -171,7 +176,7 @@ else
     assert_contains "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")"
 
     if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
-        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/tests; KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt falco knative"
+        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/tests; KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt falco knative rook"
     fi
     if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
         $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/; KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons"
