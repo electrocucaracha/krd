@@ -42,6 +42,7 @@ different scenarios. There are different setups located in the
 | HAProxy        | Ingress Controller                              |                                   | Tested      |
 | MetalLB        | Provides a network load-balancer implementation |                                   | Tested      |
 | Falco          | Deploys a Falco services                        |                                   | Tested      |
+| Rook           | Storage Operator                                |                                   | Tested      |
 
 ## Quick Deployment
 
