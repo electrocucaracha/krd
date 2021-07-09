@@ -464,34 +464,27 @@ function install_harbor {
 
 # install_rook() - Function that install Rook Ceph operator
 function install_rook {
-    rook_version=$(_get_version rook)
-    install_helm
+    KRD_HELM_VERSION=3 install_helm
 
     if ! helm repo list | grep -e rook-release; then
         helm repo add rook-release https://charts.rook.io/release
     fi
-    if ! helm ls | grep -e rook-ceph; then
+    if ! kubectl get namespaces 2>/dev/null | grep rook-ceph; then
+        kubectl create namespace rook-ceph
+    fi
+    if ! helm ls -qA | grep -q rook-ceph; then
         kubectl label nodes --all role=storage --overwrite
-        helm install --namespace rook-ceph --name rook-ceph rook-release/rook-ceph --wait --set csi.enableRbdDriver=false --set agent.nodeAffinity="role=storage"
-        for file in common cluster-test toolbox; do
-            kubectl apply -f "https://raw.githubusercontent.com/rook/rook/$rook_version/cluster/examples/kubernetes/ceph/$file.yaml"
+        helm upgrade --install rook-ceph rook-release/rook-ceph \
+        --namespace rook-ceph \
+        --wait \
+        --set agent.nodeAffinity="role=storage"
+        wait_for_pods rook-ceph
+
+        for class in $(kubectl get storageclasses --no-headers -o custom-columns=name:.metadata.name); do
+            kubectl patch storageclass "$class" -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
         done
 
-        printf "Waiting for Ceph cluster ..."
-        until kubectl get pods -n rook-ceph | grep "csi-.*Running" > /dev/null; do
-            printf "."
-            sleep 2
-        done
-
-        touch ~/.bash_aliases
-        if ! grep -q "alias ceph=" ~/.bash_aliases; then
-            echo "alias ceph=\"kubectl -n rook-ceph exec -it \\\$(kubectl -n rook-ceph get pod -l 'app=rook-ceph-tools' -o jsonpath='{.items[0].metadata.name}') ceph\"" >> ~/.bash_aliases
-        fi
-        if ! grep -q "alias rados=" ~/.bash_aliases; then
-            echo "alias rados=\"kubectl -n rook-ceph exec -it \\\$(kubectl -n rook-ceph get pod -l 'app=rook-ceph-tools' -o jsonpath='{.items[0].metadata.name}') rados\"" >> ~/.bash_aliases
-        fi
-
-        kubectl apply -f "https://raw.githubusercontent.com/rook/rook/$rook_version/cluster/examples/kubernetes/ceph/flex/storageclass.yaml"
+        kubectl apply -f resources/storageclass.yaml
         kubectl patch storageclass rook-ceph-block -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     fi
 }
