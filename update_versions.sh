@@ -73,7 +73,6 @@ sed -i "s/KRD_KUBESPRAY_VERSION:-.* \"\$(\$VAGRANT_CMD_SSH_INSTALLER \"cd \/opt\
 sed -i "s/istio_version:.*/istio_version: $(get_github_latest_release istio/istio)/g" ./playbooks/krd-vars.yml
 sed -i "s/knative_version:.*/knative_version: v$(get_github_latest_tag knative/serving)/g" ./playbooks/krd-vars.yml
 sed -i "s/octant_version:.*/octant_version: $(get_github_latest_release vmware-tanzu/octant)/g" ./playbooks/krd-vars.yml
-sed -i "s/rook_version:.*/rook_version: v$(get_github_latest_release rook/rook)/g" ./playbooks/krd-vars.yml
 sed -i "s/kube-ovn_version:.*/kube-ovn_version: v$(get_github_latest_release kubeovn/kube-ovn)/g" ./playbooks/krd-vars.yml
 sed -i "s/prometheus-operator_version:.*/prometheus-operator_version: v$(get_github_latest_tag prometheus-operator/prometheus-operator)/g" ./playbooks/krd-vars.yml
 sed -i "s/kubevirt_version:.*/kubevirt_version: v$(get_github_latest_release kubevirt/kubevirt)/g" ./playbooks/krd-vars.yml
