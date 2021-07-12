@@ -35,7 +35,9 @@ until [[ "$(kubectl get CephCluster -n rook-ceph my-cluster -o jsonpath='{.statu
     attempt_counter=$((attempt_counter+1))
     sleep $((attempt_counter*15))
 done
+wait_deployment rook-ceph-tools rook-ceph
 
+info "Ceph Stats:"
 # Rook Toolbox - Common tools used for rook debugging and testing
 toolbox_cmd="kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l 'app=rook-ceph-tools' -o jsonpath='{.items[0].metadata.name}') -- "
 
