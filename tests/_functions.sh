@@ -98,9 +98,10 @@ function recreate_deployment {
 # wait_deployment() - Wait process to Running status on the Deployment's pods
 function wait_deployment {
     local deployment_name=$1
+    local namespace_name=${2:-default}
 
     info "Waiting for $deployment_name deployment..."
-    if ! kubectl rollout status "deployment/$deployment_name" --timeout=5m > /dev/null; then
+    if ! kubectl rollout status "deployment/$deployment_name" -n "$namespace_name" --timeout=5m > /dev/null; then
         get_status
         error "Timeout reached"
     fi
