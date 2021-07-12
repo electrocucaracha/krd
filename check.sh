@@ -150,6 +150,7 @@ if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
     KRD_DEBUG=true ./krd_command.sh -a install_k8s
 
     info "Validate Kubernetes execution"
+    assert_contains "kubectl" "$(command -v kubectl)"
     asserts_equals "${KRD_KUBE_VERSION:-v1.20.7}" "$(kubectl version --short | awk 'FNR==2{print $3}')"
     pushd /opt/kubespray > /dev/null
     asserts_equals "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$(git describe --abbrev=0 --tags)"
@@ -172,6 +173,7 @@ else
     $VAGRANT_CMD_UP installer
     info "Validate Kubernetes execution"
 
+    assert_contains "kubectl" "$($VAGRANT_CMD_SSH_INSTALLER "command -v kubectl")"
     assert_contains "${KRD_KUBE_VERSION:-v1.20.7}" "$($VAGRANT_CMD_SSH_INSTALLER "kubectl version --short | awk 'FNR==2{print \$3}'")"
     assert_contains "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")"
 
