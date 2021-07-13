@@ -62,6 +62,9 @@ jobs:
           - runtime: containerd
             os: centos
             release: 8
+          - runtime: containerd
+            os: centos
+            release: 7
           - tests_enabled: true
           - test_virtlet: true
             kube_version: v1.18.10
