@@ -193,8 +193,10 @@ create_pmem_namespaces
 enable_nvdimm_mixed_mode
 
 if [ "$KRD_DEBUG" == "true" ]; then
-    lstopo-no-graphics
-    if command -v ipvsadm; then
+    if command -v lstopo-no-graphics > /dev/null; then
+        lstopo-no-graphics
+    fi
+    if command -v ipvsadm > /dev/null; then
         sudo ipvsadm -Ln
     fi
 fi
