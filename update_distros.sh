@@ -73,8 +73,8 @@ opensuse:
     version: $robox_latest_version
 fedora:
   32:
-    name: generic/fedora32
-    version: $robox_latest_version
+    name: fedora/32-cloud-base
+    version: 32.20200422.0
   33:
     name: generic/fedora33
     version: $robox_latest_version
