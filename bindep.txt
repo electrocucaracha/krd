@@ -1,7 +1,7 @@
 cockpit [node !platform:suse]
 ethtool [node]
 hwloc [node]
-hwloc-lstopo [node platform:suse]
+hwloc-lstopo [node platform:opensuse-42]
 lvm2 [node]
 tuned [node !platform:ubuntu-xenial]
 libselinux-python [node platform:centos-7]
