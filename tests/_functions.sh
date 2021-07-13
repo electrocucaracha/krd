@@ -150,6 +150,8 @@ function get_status {
     echo "Environment variables:"
     env | grep "KRD"
     if command -v kubectl; then
+        echo "Kubernetes Events:"
+        kubectl get events -A --sort-by=".metadata.managedFields[0].time"
         echo "Kubernetes Resources:"
         kubectl get all -A -o wide
         echo "Kubernetes Pods:"
