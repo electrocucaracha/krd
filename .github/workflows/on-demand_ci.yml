@@ -56,9 +56,10 @@ jobs:
           - release: xenial
             kube_version: v1.18.10
             kubespray_version: v2.14.2
-          - os: opensuse
-            release: tumbleweed
-            vbox_controller: IDE Controller
+# Disable openSuSE Tumbleweed given vagrant box issues
+#          - os: opensuse
+#            release: tumbleweed
+#            vbox_controller: IDE Controller
           - os: opensuse
             release: leap
             vbox_controller: IDE Controller
