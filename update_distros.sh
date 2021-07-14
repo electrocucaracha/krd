@@ -71,6 +71,9 @@ opensuse:
   42:
     name: generic/opensuse42
     version: $robox_latest_version
+  leap:
+    name: generic/opensuse15
+    version: $robox_latest_version
 fedora:
   32:
     name: fedora/32-cloud-base
