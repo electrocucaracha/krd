@@ -68,8 +68,11 @@ ubuntu:
     name: generic/ubuntu2004
     version: $robox_latest_version
 opensuse:
-  42:
+  tumbleweed:
     name: generic/opensuse42
+    version: $robox_latest_version
+  leap:
+    name: generic/opensuse15
     version: $robox_latest_version
 fedora:
   32:
