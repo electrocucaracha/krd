@@ -289,6 +289,7 @@ function _vercmp {
 function _run_ansible_cmd {
     local playbook=$1
     local log=$2
+    local krd_log_dir="/var/log/krd"
 
     ansible_cmd="ANSIBLE_ROLES_PATH=/tmp/galaxy-roles sudo -E $(command -v ansible-playbook) --become "
     if [[ "$KRD_ANSIBLE_DEBUG" == "true" ]]; then
@@ -296,7 +297,8 @@ function _run_ansible_cmd {
     fi
     ansible_cmd+="-i $krd_inventory "
     echo "$ansible_cmd $playbook"
-    eval "$ansible_cmd $playbook" | tee "$log"
+    sudo mkdir -p "$krd_log_dir"
+    eval "$ansible_cmd $playbook" | sudo tee "$krd_log_dir/$log"
 }
 
 function _delete_namespace {
