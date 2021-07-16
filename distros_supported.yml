@@ -17,7 +17,7 @@ centos:
     version: 3.2.24
   8:
     name: generic/centos8
-    version: 3.3.0
+    version: 3.2.20
 ubuntu:
   xenial:
     name: generic/ubuntu1604
