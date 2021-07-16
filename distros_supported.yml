@@ -29,7 +29,7 @@ ubuntu:
     name: generic/ubuntu2004
     version: 3.2.24
 opensuse:
-  42:
+  tumbleweed:
     name: generic/opensuse42
     version: 3.3.0
   leap:
