@@ -10,10 +10,10 @@
 
 go_version: 1.15.3
 kubespray_version: v2.16.0
-istio_version: 1.10.2
+istio_version: 1.10.3
 knative_version: v0.24.0
-octant_version: 0.21.0
-kube-ovn_version: v1.6.3
+octant_version: 0.22.0
+kube-ovn_version: v1.7.1
 prometheus-operator_version: v0.49.0
 kubevirt_version: v0.43.0
 kubesphere_version: v3.1.1
