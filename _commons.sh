@@ -70,8 +70,12 @@ function _install_kubespray {
             $PIP_CMD uninstall ansible -y
             sudo rm -rf "$ansible_path"
         fi
-        if command -v pipx && pipx list | grep -q ansible-base; then
-            sudo -E "$(command -v pipx)" uninstall ansible-base
+        if command -v pipx; then
+            for pkg in ansible-base ansible-core; do
+                if pipx list | grep -q "$pkg"; then
+                    sudo -E "$(command -v pipx)" uninstall "$pkg"
+                fi
+            done
         fi
 
         $PIP_CMD install --no-cache-dir -r ./requirements.txt
