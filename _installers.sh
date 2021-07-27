@@ -470,13 +470,11 @@ function install_rook {
     if ! helm repo list | grep -e rook-release; then
         helm repo add rook-release https://charts.rook.io/release
     fi
-    if ! kubectl get namespaces 2>/dev/null | grep rook-ceph; then
-        kubectl create namespace rook-ceph
-    fi
     if ! helm ls -qA | grep -q rook-ceph; then
         kubectl label nodes --all role=storage --overwrite
         helm upgrade --install rook-ceph rook-release/rook-ceph \
         --namespace rook-ceph \
+        --create-namespace \
         --wait \
         --set agent.nodeAffinity="role=storage"
         wait_for_pods rook-ceph
@@ -886,12 +884,10 @@ function install_longhorn {
         helm repo add longhorn https://charts.longhorn.io
         helm repo update
     fi
-    if ! kubectl get namespaces/longhorn-system --no-headers -o custom-columns=name:.metadata.name; then
-        kubectl create namespace longhorn-system
-    fi
     if ! helm ls --namespace longhorn-system | grep -q longhorn; then
         helm upgrade --install longhorn longhorn/longhorn \
         --timeout 600s \
+        --create-namespace \
         --namespace longhorn-system
     fi
     for daemonset in $(kubectl get daemonset -n longhorn-system --no-headers -o custom-columns=name:.metadata.name); do
