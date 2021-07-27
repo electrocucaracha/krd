@@ -86,7 +86,8 @@ if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
 fi
 
 info "Define target node"
-cat <<EOL > config/pdf.yml
+if [[ "${TEST_MULTINODE:-false}" == "false" ]]; then
+    cat <<EOL > config/pdf.yml
 - name: aio
   os:
     name: ${OS:-ubuntu}
@@ -131,6 +132,59 @@ cat <<EOL > config/pdf.yml
     - kube-node
     - qat-node
 EOL
+else
+    cat <<EOL > config/pdf.yml
+- name: controller
+  os:
+    name: ${OS:-ubuntu}
+    release: ${RELEASE:-bionic}
+  networks:
+    - name: public-net
+      ip: "10.10.16.3"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: ${VBOX_CONTROLLER:-Virtual I/O Device SCSI controller}
+      port: 1
+      device: 0
+  roles:
+    - kube-master
+    - etcd
+EOL
+    for i in {1..2}; do
+        cat <<EOL >> config/pdf.yml
+- name: worker0${i}
+  os:
+    name: ${OS:-ubuntu}
+    release: ${RELEASE:-bionic}
+  networks:
+    - name: public-net
+      ip: "10.10.16.$((i+3))"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: ${VBOX_CONTROLLER:-Virtual I/O Device SCSI controller}
+      port: 1
+      device: 0
+  roles:
+    - kube-node
+EOL
+done
+fi
 
 info "Provision target node"
 VAGRANT_CMD=""
