@@ -68,6 +68,12 @@ function uninstall_falco {
     _uninstall_helm falco
 }
 
+# uninstall_gatekeeper() - Uninstall Gatekeeper services
+function uninstall_gatekeeper {
+    _uninstall_helm gatekeeper
+    _delete_namespace opa-system
+}
+
 # uninstall_metallb() - Uninstall MetalLB services
 function uninstall_metallb {
     _delete_namespace metallb-system

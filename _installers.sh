@@ -988,3 +988,20 @@ function install_falco {
 
     kubectl rollout status daemonset/falco --timeout=5m
 }
+
+# install_gatekeeper() - Install OPA Gatekeeper controller
+function install_gatekeeper {
+    KRD_HELM_VERSION=3 install_helm
+
+    if ! helm repo list | grep -e gatekeeper; then
+        helm repo add gatekeeper https://open-policy-agent.github.io/gatekeeper/charts
+    fi
+    if ! helm ls | grep -e gatekeeper; then
+        helm upgrade --create-namespace \
+        --namespace opa-system \
+        --wait \
+        --install gatekeeper gatekeeper/gatekeeper
+    fi
+
+    wait_for_pods opa-system
+}

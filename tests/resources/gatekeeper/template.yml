@@ -1,0 +1,30 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2021
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+apiVersion: templates.gatekeeper.sh/v1beta1
+kind: ConstraintTemplate
+metadata:
+  name: loadbalancerconstraint
+spec:
+  crd:
+    spec:
+      names:
+        kind: LoadBalancerConstraint
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package insomniacoder.constraint
+
+        violation[{"msg": msg}] {
+          input.review.kind.kind = "Service"
+          input.review.operation = "CREATE"
+          input.review.object.spec.type = "LoadBalancer"
+          msg := "Service type LoadBalancer are restricted"
+        }
