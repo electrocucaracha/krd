@@ -8,37 +8,37 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: "master"
+- name: master
   os:
     name: centos
     release: 7
   networks:
     - name: public-net
       ip: "10.10.16.3"
-  memory: 8192
-  cpus: 2
+  memory: 4096
+  cpus: 1
   roles:
     - kube-master
     - etcd
-- name: "minion01"
+- name: minion01
   os:
     name: centos
     release: 7
   networks:
     - name: public-net
       ip: "10.10.16.4"
-  memory: 65536
-  cpus: 16
+  memory: 4096
+  cpus: 1
   roles:
     - kube-node
-- name: "minion02"
+- name: minion02
   os:
     name: centos
     release: 7
   networks:
     - name: public-net
       ip: "10.10.16.5"
-  memory: 65536
-  cpus: 16
+  memory: 4096
+  cpus: 1
   roles:
     - kube-node
