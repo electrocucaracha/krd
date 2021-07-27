@@ -43,6 +43,7 @@ different scenarios. There are different setups located in the
 | MetalLB        | Provides a network load-balancer implementation |                                   | Tested      |
 | Falco          | Deploys a Falco services                        |                                   | Tested      |
 | Rook           | Storage Operator                                |                                   | Tested      |
+| OPA Gatekeeper | Policy Controller                               |                                   | Tested      |
 
 ## Quick Deployment
 

@@ -212,7 +212,7 @@ if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
 
     if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
         pushd tests > /dev/null
-        KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt falco knative rook
+        KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt falco knative rook gatekeeper
         popd > /dev/null
     fi
     if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
@@ -232,7 +232,7 @@ else
     assert_contains "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")"
 
     if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
-        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/tests; KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt falco knative rook"
+        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/tests; KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt falco knative rook gatekeeper"
     fi
     if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
         $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/; KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons"
