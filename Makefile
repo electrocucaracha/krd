@@ -17,5 +17,6 @@ lint:
 	-e VALIDATE_KUBERNETES_KUBEVAL=false \
 	-e VALIDATE_PYTHON_PYLINT=false \
 	-e PYTHON_FLAKE8_CONFIG_FILE=tox.ini \
+	-e VALIDATE_PYTHON_MYPY=false \
 	github/super-linter
 	tox -e lint

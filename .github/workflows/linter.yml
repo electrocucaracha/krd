@@ -30,13 +30,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run super-linter validation
-        uses: github/super-linter@v3
+        uses: github/super-linter@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: /
           VALIDATE_KUBERNETES_KUBEVAL: false
           VALIDATE_PYTHON_PYLINT: false
           PYTHON_FLAKE8_CONFIG_FILE: tox.ini
+          VALIDATE_PYTHON_MYPY: false
   check-tox:
     runs-on: ubuntu-latest
     steps:
