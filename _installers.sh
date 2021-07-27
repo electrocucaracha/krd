@@ -36,7 +36,8 @@ function install_local_registry {
     if [[ -z $(sudo docker ps -aqf "name=registry") ]]; then
         sudo mkdir -p /var/lib/registry
         sudo -E docker run -d --name registry --restart=always \
-        -p "$KRD_DOCKER_LOCAL_REGISTRY_PORT":5000 -v /var/lib/registry:/var/lib/registry registry:2
+        -p "$KRD_DOCKER_LOCAL_REGISTRY_PORT":5000 --userns=host \
+        -v /var/lib/registry:/var/lib/registry registry:2
     fi
 
     # Preload Kubespray images
