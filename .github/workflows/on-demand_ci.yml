@@ -78,6 +78,7 @@ jobs:
             kubespray_version: v2.15.1
             crun_enabled: true
             test_runtimeclasses: true
+          - test_multinode: true
 # Disable Kata Containers given kataShim comunication issues
 #          - runtime: crio
 #            kata_containers_enabled: true
@@ -115,6 +116,7 @@ jobs:
           KRD_ENABLE_TESTS: ${{ matrix.tests_enabled }}
           TEST_VIRTLET: ${{ matrix.test_virtlet }}
           TEST_RUNTIMECLASSES: ${{ matrix.test_runtimeclasses }}
+          TEST_MULTINODE: ${{ matrix.test_multinode }}
           VBOX_CONTROLLER: ${{ matrix.vbox_controller }}
         run: ./check.sh
   check-multus:
