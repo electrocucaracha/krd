@@ -10,3 +10,4 @@ docs/build/
 OVMF.fd
 *.pyc
 krd.png
+*.dic
