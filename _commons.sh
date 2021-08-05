@@ -327,7 +327,7 @@ function _delete_namespace {
         # NOTE: https://stackoverflow.com/a/59667608/2727227
         kubectl get namespace "$namespace" -o json | tr -d "\n" | \
         sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" | \
-        kubectl replace --raw "/api/v1/namespaces/$namespace/finalize" -f -
+        kubectl replace --raw "/api/v1/namespaces/$namespace/finalize" -f - ||:
     fi
 }
 
