@@ -15,7 +15,7 @@ knative_version: v0.24.0
 octant_version: 0.23.0
 kube-ovn_version: v1.7.1
 prometheus-operator_version: v0.49.0
-kubevirt_version: v0.43.0
+kubevirt_version: v0.44.0
 kubesphere_version: v3.1.1
 metallb_version: v0.10.2
 
