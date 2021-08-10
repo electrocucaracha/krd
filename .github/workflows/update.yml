@@ -24,7 +24,7 @@ jobs:
       - uses: technote-space/create-pr-action@v2
         with:
           EXECUTE_COMMANDS: |
-            ./update_versions.sh
+            ./ci/update_versions.sh
           COMMIT_MESSAGE: 'Upgrade galaxy requirements and krd versions files'
           COMMIT_NAME: 'electrocucaracha bot'
           PR_BRANCH_NAME: "versions-update-${PR_ID}"

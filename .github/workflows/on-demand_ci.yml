@@ -118,7 +118,7 @@ jobs:
           TEST_RUNTIMECLASSES: ${{ matrix.test_runtimeclasses }}
           TEST_MULTINODE: ${{ matrix.test_multinode }}
           VBOX_CONTROLLER: ${{ matrix.vbox_controller }}
-        run: ./check.sh
+        run: ./ci/check.sh
   check-multus:
     runs-on: ubuntu-18.04
     env:
