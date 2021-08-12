@@ -15,67 +15,8 @@ if [[ "$KRD_DEBUG" == "true" ]]; then
     set -o xtrace
 fi
 
-# info() - This function prints an information message in the standard output
-function info {
-    _print_msg "INFO" "$1"
-}
-
-# error() - This function prints an error message in the standard output
-function error {
-    _print_msg "ERROR" "$1"
-    exit 1
-}
-
-function _print_msg {
-    echo "$(date +%H:%M:%S) - $1: $2"
-}
-
-# assert_non_empty() - This assertion checks if the expected value is not empty
-function assert_non_empty {
-    local input=$1
-    local error_msg=$2
-
-    info "NonEmpty Assertion - value: $1"
-    if [ -z "$input" ]; then
-        error "$error_msg"
-    fi
-}
-
-# assert_are_equal() - This assertion checks if the inputs are equal
-function assert_are_equal {
-    local input=$1
-    local expected=$2
-    local error_msg=$3
-
-    info "Are equal Assertion - value: $1 expected: $2"
-    if [ "$input" != "$expected" ]; then
-        error "$error_msg"
-    fi
-}
-
-# assert_are_not_equal() - This assertion checks if the inputs are not equal
-function assert_are_not_equal {
-    local input=$1
-    local expected=$2
-    local error_msg=$3
-
-    info "Are not equal Assertion - value: $1 expected: $2"
-    if [ "$input" == "$expected" ]; then
-        error "$error_msg"
-    fi
-}
-
-# assert_contains() - This assertion checks if the input contains another value
-function assert_contains {
-    local input=$1
-    local expected=$2
-    local error_msg=$3
-
-    info "Contains Assertion - value: $1 expected: $2"
-    if [[ "$input" != *"$expected"* ]]; then
-        error "$error_msg"
-    fi
-}
+# shellcheck source=tests/_utils.sh
+source _utils.sh
 
 # destroy_deployment() - This function ensures that a specific deployment is
 # destroyed in Kubernetes

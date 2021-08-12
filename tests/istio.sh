@@ -14,6 +14,8 @@ set -o pipefail
 
 # shellcheck source=tests/_functions.sh
 source _functions.sh
+# shellcheck source=tests/_assertions.sh
+source _assertions.sh
 
 server_deployment_name="server"
 

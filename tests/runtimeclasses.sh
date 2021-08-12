@@ -14,6 +14,8 @@ set -o pipefail
 
 # shellcheck source=tests/_functions.sh
 source _functions.sh
+# shellcheck source=tests/_assertions.sh
+source _assertions.sh
 
 kata_deployment_name=kata-deployment-demo
 crun_deployment_name=crun-deployment-demo
