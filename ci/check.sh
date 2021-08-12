@@ -12,41 +12,17 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-function msg {
-    echo "$(date +%H:%M:%S) - $1: $2"
-}
+# shellcheck source=ci/_common.sh
+source _common.sh
+pushd ../tests > /dev/null
+# shellcheck source=tests/_assertions.sh
+source _assertions.sh
+popd > /dev/null
 
-function info {
-    msg "INFO" "$1"
-}
+VAGRANT_CMD_SSH_INSTALLER="$VAGRANT_CMD ssh installer --"
+VAGRANT_CMD_SSH_AIO="$VAGRANT_CMD ssh aio --"
 
-function error {
-    msg "ERROR" "$1"
-    exit 1
-}
-
-# assert_equals() - This assertion checks if the input is equal to another value
-function asserts_equals {
-    local expected=$1
-    local current=$2
-
-    if [ " $expected " != " $current " ]; then
-        error "got $current, want $expected"
-    fi
-}
-
-
-# assert_contains() - This assertion checks if the input contains another value
-function assert_contains {
-    local expected=$1
-    local input=$2
-
-    if [[ "$input" != *"$expected"* ]]; then
-        error "$input doesn't contains $expected"
-    fi
-}
-
-function exit_trap {
+function _exit_trap {
     if [ -f  /proc/stat ]; then
         printf "CPU usage: "
         grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage " %"}'
@@ -70,13 +46,66 @@ function exit_trap {
     fi
 }
 
-if ! command -v vagrant > /dev/null; then
-    # NOTE: Shorten link -> https://github.com/electrocucaracha/bootstrap-vagrant
-    curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
-fi
+function _provision_installer {
+    info "Provisioning Kubernetes cluster"
+
+    if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
+        KRD_DEBUG=true ./krd_command.sh -a install_k8s
+    else
+        $VAGRANT_CMD_UP installer
+    fi
+}
+
+function _run_assertions {
+    info "Running Assertions"
+
+    if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
+        assert_contains "$(command -v kubectl)" "kubectl"
+        assert_are_equal "${KRD_KUBE_VERSION:-v1.20.7}" "$(kubectl version --short | awk 'FNR==2{print $3}')"
+        pushd /opt/kubespray > /dev/null
+        assert_are_equal "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$(git describe --abbrev=0 --tags)"
+        popd > /dev/null
+    else
+        assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "command -v kubectl")" "kubectl"
+        assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "kubectl version --short | awk 'FNR==2{print \$3}'")" "${KRD_KUBE_VERSION:-v1.20.7}"
+        assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")" "${KRD_KUBESPRAY_VERSION:-v2.16.0}"
+    fi
+}
+
+function _run_installer_cmd {
+    if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
+        pushd "${1}" > /dev/null
+        "${@:2}"
+        popd > /dev/null
+    else
+        # shellcheck disable=SC2145
+        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/${1}; ${@:2}"
+    fi
+}
+
+function _run_integration_tests {
+    local int_test=("${KRD_INT_TESTS:-kong metallb istio haproxy kubevirt falco knative rook gatekeeper}")
+
+    info "Running Integration tests (${int_test[*]})"
+
+    _run_installer_cmd tests KRD_DEBUG=false ./check.sh "${int_test[@]}"
+}
+
+function _test_virtlet {
+    info "Testing Virtlet services"
+
+    _run_installer_cmd . KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_DEBUG=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
+}
+
+function _test_runtime_classes {
+    info "Testing Kubernetes Runtime Classes"
+
+    _run_installer_cmd tests KRD_DEBUG=false ./runtimeclasses.sh
+}
 
 if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
     info "Configure SSH keys"
+
     sudo mkdir -p /root/.ssh/
     sudo cp insecure_keys/key /root/.ssh/id_rsa
     cp insecure_keys/key ~/.ssh/id_rsa
@@ -85,159 +114,15 @@ if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
     chmod 400 ~/.ssh/id_rsa
 fi
 
-info "Define target node"
-if [[ "${TEST_MULTINODE:-false}" == "false" ]]; then
-    cat <<EOL > config/pdf.yml
-- name: aio
-  os:
-    name: ${OS:-ubuntu}
-    release: ${RELEASE:-bionic}
-  networks:
-    - name: public-net
-      ip: "10.10.16.3"
-  memory: ${MEMORY:-6144}
-  cpus: 2
-  numa_nodes: # Total memory for NUMA nodes must be equal to RAM size
-    - cpus: 0-1
-      memory: ${MEMORY:-6144}
-  pmem:
-    size: ${MEMORY:-6144}M # This value may affect the currentMemory libvirt tag
-    slots: 2
-    max_size: 128G
-    vNVDIMMs:
-      - mem_id: mem0
-        id: nv0
-        share: "on"
-        path: /dev/shm
-        size: 2G
-  storage_controllers:
-    - name: Virtual I/O Device SCSI controller
-      type: virtio-scsi
-      controller: VirtIO
-  volumes:
-    - name: sdb
-      size: 25
-      mount: /var/lib/docker/
-      controller: ${VBOX_CONTROLLER:-Virtual I/O Device SCSI controller}
-      port: 1
-      device: 0
-    - name: sdc
-      size: 50
-      controller: Virtual I/O Device SCSI controller
-      port: 2
-      device: 0
-  roles:
-    - kube-master
-    - etcd
-    - kube-node
-    - qat-node
-EOL
-else
-    cat <<EOL > config/pdf.yml
-- name: controller
-  os:
-    name: ${OS:-ubuntu}
-    release: ${RELEASE:-bionic}
-  networks:
-    - name: public-net
-      ip: "10.10.16.3"
-  memory: 4096
-  cpus: 1
-  storage_controllers:
-    - name: Virtual I/O Device SCSI controller
-      type: virtio-scsi
-      controller: VirtIO
-  volumes:
-    - name: sdb
-      size: 25
-      mount: /var/lib/docker/
-      controller: ${VBOX_CONTROLLER:-Virtual I/O Device SCSI controller}
-      port: 1
-      device: 0
-  roles:
-    - kube-master
-    - etcd
-EOL
-    for i in {1..2}; do
-        cat <<EOL >> config/pdf.yml
-- name: worker0${i}
-  os:
-    name: ${OS:-ubuntu}
-    release: ${RELEASE:-bionic}
-  networks:
-    - name: public-net
-      ip: "10.10.16.$((i+3))"
-  memory: 4096
-  cpus: 1
-  storage_controllers:
-    - name: Virtual I/O Device SCSI controller
-      type: virtio-scsi
-      controller: VirtIO
-  volumes:
-    - name: sdb
-      size: 25
-      mount: /var/lib/docker/
-      controller: ${VBOX_CONTROLLER:-Virtual I/O Device SCSI controller}
-      port: 1
-      device: 0
-  roles:
-    - kube-node
-EOL
-done
+trap _exit_trap ERR
+_provision_installer
+_run_assertions
+if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
+    _run_integration_tests
 fi
-
-info "Provision target node"
-VAGRANT_CMD=""
-if [[ "${SUDO_VAGRANT_CMD:-false}" == "true" ]]; then
-    VAGRANT_CMD="sudo -H"
+if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
+    _test_virtlet
 fi
-VAGRANT_CMD+=" $(command -v vagrant)"
-VAGRANT_CMD_UP="$VAGRANT_CMD up --no-destroy-on-error"
-VAGRANT_CMD_SSH_INSTALLER="$VAGRANT_CMD ssh installer --"
-VAGRANT_CMD_SSH_AIO="$VAGRANT_CMD ssh aio --"
-
-$VAGRANT_CMD_UP
-trap exit_trap ERR
-
-info "Provision Kubernetes cluster"
-if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
-    KRD_DEBUG=true ./krd_command.sh -a install_k8s
-
-    info "Validate Kubernetes execution"
-    assert_contains "kubectl" "$(command -v kubectl)"
-    asserts_equals "${KRD_KUBE_VERSION:-v1.20.7}" "$(kubectl version --short | awk 'FNR==2{print $3}')"
-    pushd /opt/kubespray > /dev/null
-    asserts_equals "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$(git describe --abbrev=0 --tags)"
-    popd > /dev/null
-
-    if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
-        pushd tests > /dev/null
-        KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt falco knative rook gatekeeper
-        popd > /dev/null
-    fi
-    if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
-        KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_DEBUG=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
-    fi
-    if [[ "${TEST_RUNTIMECLASSES:-false}" == "true" ]]; then
-        pushd tests > /dev/null
-        KRD_DEBUG=false ./runtimeclasses.sh
-        popd > /dev/null
-    fi
-else
-    $VAGRANT_CMD_UP installer
-    info "Validate Kubernetes execution"
-
-    assert_contains "kubectl" "$($VAGRANT_CMD_SSH_INSTALLER "command -v kubectl")"
-    assert_contains "${KRD_KUBE_VERSION:-v1.20.7}" "$($VAGRANT_CMD_SSH_INSTALLER "kubectl version --short | awk 'FNR==2{print \$3}'")"
-    assert_contains "${KRD_KUBESPRAY_VERSION:-v2.16.0}" "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")"
-
-    if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
-        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/tests; KRD_DEBUG=false ./check.sh kong metallb istio haproxy kubevirt falco knative rook gatekeeper"
-    fi
-    if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
-        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/; KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons"
-    fi
-    if [[ "${TEST_RUNTIMECLASSES:-false}" == "true" ]]; then
-        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/tests; KRD_DEBUG=false ./runtimeclasses.sh"
-    fi
+if [[ "${TEST_RUNTIMECLASSES:-false}" == "true" ]]; then
+    _test_runtime_classes
 fi
