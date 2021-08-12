@@ -25,6 +25,8 @@ jobs:
         with:
           EXECUTE_COMMANDS: |
             ./ci/update_versions.sh
+            pip install pip-tools
+            pip-compile test-requirements.in --output-file test-requirements.txt --upgrade
           COMMIT_MESSAGE: 'Upgrade galaxy requirements and krd versions files'
           COMMIT_NAME: 'electrocucaracha bot'
           PR_BRANCH_NAME: "versions-update-${PR_ID}"

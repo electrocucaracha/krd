@@ -1,0 +1,7 @@
+ansible # GPLv3
+ansible-lint # MIT
+molecule # MIT
+molecule-vagrant # MIT
+python-vagrant # MIT
+pytest-testinfra # Apache-2.0
+yamllint # GPLv3
