@@ -163,6 +163,11 @@ function enable_nvdimm_mixed_mode {
     fi
 }
 
+# change_ip_precedence() - Prefer IPv4 over IPv6 in dual-stack environment
+function change_ip_precedence {
+    sudo sed -i "s|^#precedence ::ffff:0:0/96  100$|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+}
+
 while getopts "h?v:" opt; do
     case $opt in
         v)
@@ -175,6 +180,7 @@ while getopts "h?v:" opt; do
     esac
 done
 
+change_ip_precedence
 disable_swap
 # Some containers doesn't support Hugepages (https://github.com/docker-library/postgres/issues/451#issuecomment-447472044)
 if [ "$KRD_HUGEPAGES_ENABLED" == "true" ]; then
