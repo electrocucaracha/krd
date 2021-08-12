@@ -14,15 +14,18 @@ if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
     set -o xtrace
 fi
 
-function get_github_latest_tag {
+PROVIDER=${KRD_PROVIDER:-virtualbox}
+msg=""
+
+function _get_box_current_version {
     version=""
     attempt_counter=0
     max_attempts=5
 
     until [ "$version" ]; do
-        tags="$(curl -s "https://api.github.com/repos/$1/tags")"
+        tags="$(curl -s "https://app.vagrantup.com/api/v1/box/$1")"
         if [ "$tags" ]; then
-            version="$(echo "$tags" | grep -Po '"name":.*?[^\\]",' | awk -F  "\"" 'NR==1{print $4}')"
+            version="$(echo "$tags" | python -c 'import json,sys;print(json.load(sys.stdin)["current_version"]["version"])')"
             break
         elif [ ${attempt_counter} -eq ${max_attempts} ];then
             echo "Max attempts reached"
@@ -35,8 +38,34 @@ function get_github_latest_tag {
     echo "${version#*v}"
 }
 
-robox_latest_version="$(get_github_latest_tag lavabit/robox)"
-cat << EOT > distros_supported.yml
+function _vagrant_pull {
+    local alias="$1"
+    local name="$2"
+
+    version=$(_get_box_current_version "$name")
+
+    if [ "$(curl "https://app.vagrantup.com/${name%/*}/boxes/${name#*/}/versions/$version/providers/$PROVIDER.box" -o /dev/null -w '%{http_code}\n' -s)" == "302" ] && [ "$(vagrant box list | grep -c "$name .*$PROVIDER, $version")" != "1" ]; then
+        vagrant box remove --provider "$PROVIDER" --all --force "$name" ||:
+        vagrant box add --provider "$PROVIDER" --box-version "$version" "$name"
+    elif [ "$(vagrant box list | grep -c "$name .*$PROVIDER, $version")" == "1" ]; then
+        echo "$name($version, $PROVIDER) box is already present in the host"
+    else
+        msg+="$name($version, $PROVIDER) box doesn't exist\n"
+        return
+    fi
+    cat << EOT >> .distros_supported.yml
+  $alias:
+    name: $name
+    version: $version
+EOT
+}
+
+if ! command -v vagrant > /dev/null; then
+    # NOTE: Shorten link -> https://github.com/electrocucaracha/bootstrap-vagrant
+    curl -fsSL http://bit.ly/initVagrant | bash
+fi
+
+cat << EOT > .distros_supported.yml
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
@@ -50,35 +79,32 @@ cat << EOT > distros_supported.yml
 clearlinux:
   latest:
     name: AntonioMeireles/ClearLinux
-centos:
-  7:
-    name: generic/centos7
-    version: $robox_latest_version
-  8:
-    name: generic/centos8
-    version: $robox_latest_version
-ubuntu:
-  xenial:
-    name: generic/ubuntu1604
-    version: $robox_latest_version
-  bionic:
-    name: generic/ubuntu1804
-    version: $robox_latest_version
-  focal:
-    name: generic/ubuntu2004
-    version: $robox_latest_version
-opensuse:
-  tumbleweed:
-    name: generic/opensuse42
-    version: $robox_latest_version
-  leap:
-    name: generic/opensuse15
-    version: $robox_latest_version
-fedora:
-  32:
-    name: fedora/32-cloud-base
-    version: 32.20200422.0
-  33:
-    name: generic/fedora33
-    version: $robox_latest_version
 EOT
+
+echo "centos:" >> .distros_supported.yml
+_vagrant_pull "7" "generic/centos7"
+_vagrant_pull "8" "generic/centos8"
+echo "ubuntu:" >> .distros_supported.yml
+_vagrant_pull "xenial" "generic/ubuntu1604"
+_vagrant_pull "bionic" "generic/ubuntu1804"
+_vagrant_pull "focal" "generic/ubuntu2004"
+echo "opensuse:" >> .distros_supported.yml
+_vagrant_pull "tumbleweed" "generic/opensuse42"
+_vagrant_pull "leap" "generic/opensuse15"
+echo "fedora:" >> .distros_supported.yml
+_vagrant_pull "32" "fedora/32-cloud-base"
+_vagrant_pull "33" "generic/fedora33"
+
+if [ "$msg" ]; then
+    echo -e "$msg"
+    rm .distros_supported.yml
+else
+    version=$(_get_box_current_version "generic/ubuntu1804")
+    if sed --version > /dev/null; then
+        find ./playbooks/roles -type f -name 'molecule.yml' -exec sed -i "s/box_version: .*/box_version: $version/g" {} \;
+    else
+        find ./playbooks/roles -type f -name 'molecule.yml' -exec sed -i '.bak' "s/box_version: .*/box_version: $version/g" {} \;
+        find . -type f -name "*.bak" -delete
+    fi
+    mv .distros_supported.yml distros_supported.yml
+fi
