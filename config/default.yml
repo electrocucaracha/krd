@@ -77,8 +77,12 @@
     - name: sdb
       size: 25
       mount: /var/lib/docker/
+      port: 1
+      device: 0
     - name: sdc
       size: 50
+      port: 1
+      device: 1
   roles:
     - kube-node
     - qat-node
@@ -110,7 +114,11 @@
     - name: sdc
       size: 25
       mount: /var/lib/docker/
+      port: 1
+      device: 0
     - name: sdd
       size: 50
+      port: 1
+      device: 1
   roles:
     - kube-node
