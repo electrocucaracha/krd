@@ -13,13 +13,34 @@ name: Check All Molecule tests
 on:
   push:
     paths:
+      - galaxy-requirements.yml
+      - test-requirements.txt
       - playbooks/roles/**
   pull_request:
     paths:
+      - galaxy-requirements.yml
+      - test-requirements.txt
       - playbooks/roles/**
 
 jobs:
+  bootstrap:
+    runs-on: macos-10.15
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: syphar/restore-virtualenv@v1.2
+        id: cache-tox-molecule
+        with:
+          requirement_files: test-requirements.txt
+          custom_virtualenv_dir: .tox/molecule
+      - uses: syphar/restore-pip-download-cache@v1
+        if: steps.cache-tox-molecule.outputs.cache-hit != 'true'
+        with:
+          requirement_files: test-requirements.txt
+      - run: pip install -r test-requirements.txt
+        if: steps.cache-tox-molecule.outputs.cache-hit != 'true'
   check-molecule:
+    needs: bootstrap
     runs-on: macos-10.15
     strategy:
       fail-fast: false
@@ -27,6 +48,18 @@ jobs:
         tox_env: [nfd, pmem, qat_driver, sriov_cni, sriov_plugin, criproxy]
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: syphar/restore-virtualenv@v1.2
+        id: cache-tox-molecule
+        with:
+          requirement_files: test-requirements.txt
+          custom_virtualenv_dir: .tox/molecule
+      - uses: actions/cache@v2
+        with:
+          path: ~/.vagrant.d/boxes
+          key: ${{ runner.os }}-vagrant-${{ hashFiles('distros_supported.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-vagrant-
       - name: Install Tox tool
         run: brew install tox
       - name: Run molecule tests
