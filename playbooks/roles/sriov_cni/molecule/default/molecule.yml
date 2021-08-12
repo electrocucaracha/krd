@@ -20,8 +20,9 @@ lint: |
   PATH=${PATH}
   yamllint -c ../../../.yamllint .
 platforms:
-  - name: instance
+  - name: centos7
     box: generic/centos7
+    box_version: 3.3.2
     memory: 6144
     cpus: 2
     provider_raw_config_args:
