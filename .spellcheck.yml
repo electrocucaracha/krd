@@ -17,3 +17,5 @@ matrix:
       - pyspelling.filters.markdown:
     sources:
       - '**/*.md'
+    aspell:
+      ignore-case: true
