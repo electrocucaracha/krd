@@ -6,7 +6,7 @@
 #
 ansible==4.4.0
     # via -r test-requirements.in
-ansible-core==2.11.3
+ansible-core==2.11.4
     # via ansible
 ansible-lint==5.1.2
     # via
@@ -98,7 +98,7 @@ py==1.10.0
     # via pytest
 pycparser==2.20
     # via cffi
-pygments==2.9.0
+pygments==2.10.0
     # via rich
 pynacl==1.4.0
     # via paramiko
@@ -130,7 +130,7 @@ rich==10.7.0
     #   ansible-lint
     #   enrich
     #   molecule
-ruamel.yaml==0.17.10
+ruamel.yaml==0.17.11
     # via ansible-lint
 ruamel.yaml.clib==0.2.6
     # via ruamel.yaml
