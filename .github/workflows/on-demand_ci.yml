@@ -92,9 +92,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.vagrant.d/boxes
-          key: ${{ runner.os }}-vagrant-${{ hashFiles('distros_supported.yml') }}
+          key: ${{ runner.os }}-vagrant-${{ matrix.os }}-${{ matrix.release }}-${{ hashFiles('distros_supported.yml') }}
           restore-keys: |
-            ${{ runner.os }}-vagrant-
+            ${{ runner.os }}-vagrant-${{ matrix.os }}-${{ matrix.release }}-
       - name: Replace shorten links
         run: |
           find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;

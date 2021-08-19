@@ -89,7 +89,7 @@ else
     - etcd
 EOL
     for i in {1..2}; do
-        cat <<EOL >> config/pdf.yml
+        cat <<EOL >> ../config/pdf.yml
 - name: worker0${i}
   os:
     name: ${OS:-ubuntu}

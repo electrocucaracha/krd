@@ -165,7 +165,9 @@ function enable_nvdimm_mixed_mode {
 
 # change_ip_precedence() - Prefer IPv4 over IPv6 in dual-stack environment
 function change_ip_precedence {
-    sudo sed -i "s|^#precedence ::ffff:0:0/96  100$|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+    if [ -f /etc/gai.conf ]; then
+        sudo sed -i "s|^#precedence ::ffff:0:0/96  100$|precedence ::ffff:0:0/96  100|g" /etc/gai.conf
+    fi
 }
 
 while getopts "h?v:" opt; do
