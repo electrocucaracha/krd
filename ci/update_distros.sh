@@ -14,26 +14,31 @@ if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
     set -o xtrace
 fi
 
-PROVIDER=${KRD_PROVIDER:-virtualbox}
+PROVIDER=${PROVIDER:-virtualbox}
 msg=""
 
 function _get_box_current_version {
     version=""
     attempt_counter=0
     max_attempts=5
+    name="$1"
 
-    until [ "$version" ]; do
-        tags="$(curl -s "https://app.vagrantup.com/api/v1/box/$1")"
-        if [ "$tags" ]; then
-            version="$(echo "$tags" | python -c 'import json,sys;print(json.load(sys.stdin)["current_version"]["version"])')"
-            break
-        elif [ ${attempt_counter} -eq ${max_attempts} ];then
-            echo "Max attempts reached"
-            exit 1
-        fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*2))
-    done
+    if [ -f ./ci/pinned_vagrant_boxes.txt ] && grep -q "^${name} .*$PROVIDER" ./ci/pinned_vagrant_boxes.txt; then
+        version=$(grep "^${name} .*$PROVIDER" ./ci/pinned_vagrant_boxes.txt | awk '{ print $2 }')
+    else
+        until [ "$version" ]; do
+            metadata="$(curl -s "https://app.vagrantup.com/api/v1/box/$name")"
+            if [ "$metadata" ]; then
+                version="$(echo "$metadata" | python -c 'import json,sys;print(json.load(sys.stdin)["current_version"]["version"])')"
+                break
+            elif [ ${attempt_counter} -eq ${max_attempts} ];then
+                echo "Max attempts reached"
+                exit 1
+            fi
+            attempt_counter=$((attempt_counter+1))
+            sleep $((attempt_counter*2))
+        done
+    fi
 
     echo "${version#*v}"
 }
@@ -56,7 +61,7 @@ function _vagrant_pull {
     cat << EOT >> .distros_supported.yml
   $alias:
     name: $name
-    version: $version
+    version: "$version"
 EOT
 }
 
