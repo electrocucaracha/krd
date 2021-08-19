@@ -56,7 +56,7 @@ jobs:
           - release: xenial
             kube_version: v1.18.10
             kubespray_version: v2.14.2
-# Disable openSuSE Tumbleweed given vagrant box issues
+# TODO: Disable openSuSE Tumbleweed given vagrant box issues
 #          - os: opensuse
 #            release: tumbleweed
 #            vbox_controller: IDE Controller
@@ -79,7 +79,7 @@ jobs:
             crun_enabled: true
             test_runtimeclasses: true
           - test_multinode: true
-# Disable Kata Containers given kataShim comunication issues
+# TODO: Disable Kata Containers given kataShim comunication issues
 #          - runtime: crio
 #            kata_containers_enabled: true
 #            test_runtimeclasses: true
@@ -118,6 +118,7 @@ jobs:
           TEST_RUNTIMECLASSES: ${{ matrix.test_runtimeclasses }}
           TEST_MULTINODE: ${{ matrix.test_multinode }}
           VBOX_CONTROLLER: ${{ matrix.vbox_controller }}
+          KRD_INT_TESTS: "metallb istio haproxy kubevirt falco knative rook gatekeeper"  # TODO: Investigate about the Kong ingress creation issue
         run: |
           cd ci
           ./bootstrap.sh
