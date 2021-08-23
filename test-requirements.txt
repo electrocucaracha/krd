@@ -130,7 +130,7 @@ rich==10.7.0
     #   ansible-lint
     #   enrich
     #   molecule
-ruamel.yaml==0.17.11
+ruamel.yaml==0.17.13
     # via ansible-lint
 ruamel.yaml.clib==0.2.6
     # via ruamel.yaml
@@ -156,7 +156,7 @@ urllib3==1.26.6
     # via requests
 wcmatch==8.2
     # via ansible-lint
-yamllint==1.26.2
+yamllint==1.26.3
     # via -r test-requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
