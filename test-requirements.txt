@@ -125,12 +125,12 @@ requests==2.26.0
     # via cookiecutter
 resolvelib==0.5.4
     # via ansible-core
-rich==10.7.0
+rich==10.8.0
     # via
     #   ansible-lint
     #   enrich
     #   molecule
-ruamel.yaml==0.17.14
+ruamel.yaml==0.17.15
     # via ansible-lint
 ruamel.yaml.clib==0.2.6
     # via ruamel.yaml
