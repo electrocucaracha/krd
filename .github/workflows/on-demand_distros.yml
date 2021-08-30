@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check Corner cases
+name: Check Linux Distros Supported
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -36,35 +36,54 @@ on:
       - submitted
 
 jobs:
-  check-ubuntu:
+  check-pdfs:
     runs-on: macos-10.15
     strategy:
       fail-fast: false
       matrix:
         include:
-          - tests_enabled: true
-          - runtime: crio
+# NOTE: Fedora 33/32 - ContainerD
+          - runtime: containerd
+            os: fedora
+            release: 33
+          - runtime: containerd
+            os: fedora
+            release: 32
             kube_version: v1.19.9
             kubespray_version: v2.15.1
-            crun_enabled: true
-            test_runtimeclasses: true
-# TODO: Disable Kata Containers given kataShim comunication issues
-#          - runtime: crio
-#            kata_containers_enabled: true
-#            test_runtimeclasses: true
-#          - runtime: containerd
-#            kata_containers_enabled: true
-#            test_runtimeclasses: true
-          - test_multinode: true
+# NOTE: Ubuntu Focal/Xenial - ContainerD/Dockershim
+          - runtime: containerd
+            release: focal
+          - runtime: containerd
+            kube_version: v1.19.9
+            kubespray_version: v2.15.1
+          - release: xenial
+            kube_version: v1.18.10
+            kubespray_version: v2.14.2
+# NOTE: openSUSE Tumbleweed/Leap - ContainerD/Dockershim
+# TODO: Disable openSuSE Tumbleweed given vagrant box issues
+#          - os: opensuse
+#            release: tumbleweed
+#            vbox_controller: IDE Controller
+          - os: opensuse
+            release: leap
+            vbox_controller: IDE Controller
+# NOTE: CentOS 8/7 - ContainerD
+          - runtime: containerd
+            os: centos
+            release: 8
+          - runtime: containerd
+            os: centos
+            release: 7
     steps:
       - uses: actions/checkout@v2
       - name: Cache Vagrant boxes
         uses: actions/cache@v2
         with:
           path: ~/.vagrant.d/boxes
-          key: ${{ runner.os }}-vagrant-ubuntu-bionic-${{ hashFiles('distros_supported.yml') }}
+          key: ${{ runner.os }}-vagrant-${{ matrix.os }}-${{ matrix.release }}-${{ hashFiles('distros_supported.yml') }}
           restore-keys: |
-            ${{ runner.os }}-vagrant-ubuntu-bionic-
+            ${{ runner.os }}-vagrant-${{ matrix.os }}-${{ matrix.release }}-
       - name: Replace shorten links
         run: |
           find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
@@ -74,17 +93,14 @@ jobs:
         env:
           VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
           MEMORY: 12288
+          OS: ${{ matrix.os }}
+          RELEASE: ${{ matrix.release }}
           KRD_CONTAINER_RUNTIME: ${{ matrix.runtime }}
           KRD_KUBE_VERSION: ${{ matrix.kube_version }}
           KRD_KUBESPRAY_VERSION: ${{ matrix.kubespray_version }}
           KRD_CERT_MANAGER_ENABLED: false
           KRD_INGRESS_NGINX_ENABLED: false
-          KRD_ENABLE_TESTS: ${{ matrix.tests_enabled }}
-#          KRD_KATA_CONTAINERS_ENABLED: ${{ matrix.kata_containers_enabled }}
-          KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
-          TEST_RUNTIMECLASSES: ${{ matrix.test_runtimeclasses }}
-          TEST_MULTINODE: ${{ matrix.test_multinode }}
-          KRD_INT_TESTS: "metallb istio haproxy kubevirt falco knative rook gatekeeper"  # TODO: Investigate about the Kong ingress creation issue
+          VBOX_CONTROLLER: ${{ matrix.vbox_controller }}
         run: |
           cd ci
           ./bootstrap.sh
