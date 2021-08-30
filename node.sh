@@ -170,6 +170,21 @@ function change_ip_precedence {
     fi
 }
 
+# set_dns_server - Change default DNS server configuration
+function set_dns_server {
+    if command -v systemd-resolve && sudo systemd-resolve --status --interface eth0; then
+        sudo systemd-resolve --interface eth0 --set-dns 1.1.1.1 --flush-caches
+        sudo systemd-resolve --status --interface eth0
+    fi
+    if [ -f /etc/netplan/01-netcfg.yaml ]; then
+        sudo sed -i "s/addresses: .*/addresses: [1.1.1.1, 8.8.8.8, 8.8.4.4]/g" /etc/netplan/01-netcfg.yaml
+        sudo netplan apply
+    fi
+    if [ -f /etc/resolv.conf ]; then
+        grep "^nameserver" /etc/resolv.conf
+    fi
+}
+
 while getopts "h?v:" opt; do
     case $opt in
         v)
@@ -183,6 +198,7 @@ while getopts "h?v:" opt; do
 done
 
 change_ip_precedence
+set_dns_server
 disable_swap
 # Some containers doesn't support Hugepages (https://github.com/docker-library/postgres/issues/451#issuecomment-447472044)
 if [ "$KRD_HUGEPAGES_ENABLED" == "true" ]; then
