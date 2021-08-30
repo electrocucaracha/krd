@@ -186,3 +186,11 @@ function wait_for_pods {
         fi
     done
 }
+
+# run_kubescape() - Installs and runs Kubescape tool for verifying Kubernetes deployments
+function run_kubescape {
+    if ! command -v kubescape; then
+        curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | /bin/bash
+    fi
+    kubescape scan framework nsa --exclude-namespaces kube-system,kube-public
+}
