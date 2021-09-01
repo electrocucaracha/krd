@@ -1,7 +1,6 @@
 AddOns
 aio
 allocatable
-ammend
 ansible
 autoscale
 Autoscaler

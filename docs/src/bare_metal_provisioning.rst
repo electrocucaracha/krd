@@ -71,7 +71,7 @@ installs additional management tools.
 
 **Configuration**
 
-Ansible works agains multiple systems, the way for selecting them is
+Ansible works against multiple systems, the way for selecting them is
 through the usage of the inventory. The inventory file is a static
 source for determining the target servers used for the execution of
 ansible tasks. The *aio.sh* script creates an inventory file for

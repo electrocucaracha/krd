@@ -72,7 +72,7 @@ functionality changes.
 For example, when you change dependencies and check in vendor, do that in a
 separate commit.
 
-😅 Make requested changes in new commits. Please don't ammend or rebase commits
+😅 Make requested changes in new commits. Please don't amend or rebase commits
 that we have already reviewed. When your pull request is ready to merge, you can
 rebase your commits yourself, or we can squash when we merge. Just let us know
 what you are more comfortable with.
