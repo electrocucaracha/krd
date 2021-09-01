@@ -4,11 +4,11 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible==4.4.0
+ansible==4.5.0
     # via -r test-requirements.in
 ansible-core==2.11.4
     # via ansible
-ansible-lint==5.1.2
+ansible-lint==5.1.3
     # via
     #   -r test-requirements.in
     #   molecule
