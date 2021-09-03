@@ -51,4 +51,5 @@ jobs:
         run: |
           cd ci
           ./bootstrap.sh
+          ./provision_installer.sh
           ./check.sh

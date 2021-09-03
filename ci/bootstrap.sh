@@ -62,6 +62,7 @@ if [[ "${TEST_MULTINODE:-false}" == "false" ]]; then
     - kube-node
     - qat-node
 EOL
+    $VAGRANT_CMD destroy aio -f
 else
     cat <<EOL > ../config/pdf.yml
 - name: controller
@@ -113,9 +114,12 @@ EOL
   roles:
     - kube-node
 EOL
-done
+    done
+    $VAGRANT_CMD destroy controller -f
+    for i in {1..2}; do
+        $VAGRANT_CMD destroy "worker0${i}" -f
+    done
 fi
 
 info "Provision target node"
-$VAGRANT_CMD destroy -f
 $VAGRANT_CMD_UP

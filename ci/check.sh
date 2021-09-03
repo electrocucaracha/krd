@@ -19,10 +19,9 @@ pushd ../tests > /dev/null
 source _assertions.sh
 popd > /dev/null
 
-VAGRANT_CMD_SSH_INSTALLER="$VAGRANT_CMD ssh installer --"
-VAGRANT_CMD_SSH_AIO="$VAGRANT_CMD ssh aio --"
-
 function _exit_trap {
+    VAGRANT_CMD_SSH_AIO="$VAGRANT_CMD ssh aio --"
+
     if [ -f  /proc/stat ]; then
         printf "CPU usage: "
         grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage " %"}'
@@ -46,16 +45,6 @@ function _exit_trap {
     fi
 }
 
-function _provision_installer {
-    info "Provisioning Kubernetes cluster"
-
-    if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
-        KRD_DEBUG=true ./krd_command.sh -a install_k8s
-    else
-        $VAGRANT_CMD_UP installer
-    fi
-}
-
 function _run_assertions {
     info "Running Assertions"
 
@@ -72,35 +61,24 @@ function _run_assertions {
     fi
 }
 
-function _run_installer_cmd {
-    if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
-        pushd "${1}" > /dev/null
-        "${@:2}"
-        popd > /dev/null
-    else
-        # shellcheck disable=SC2145
-        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/${1}; ${@:2}"
-    fi
-}
-
 function _run_integration_tests {
     local int_test=("${KRD_INT_TESTS:-kong metallb istio haproxy kubevirt falco knative rook gatekeeper}")
 
     info "Running Integration tests (${int_test[*]})"
 
-    _run_installer_cmd tests KRD_DEBUG=false ./check.sh "${int_test[@]}"
+    run_installer_cmd tests KRD_DEBUG=false ./check.sh "${int_test[@]}"
 }
 
 function _test_virtlet {
     info "Testing Virtlet services"
 
-    _run_installer_cmd . KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_DEBUG=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
+    run_installer_cmd . KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_DEBUG=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
 }
 
 function _test_runtime_classes {
     info "Testing Kubernetes Runtime Classes"
 
-    _run_installer_cmd tests KRD_DEBUG=false ./runtimeclasses.sh
+    run_installer_cmd tests KRD_DEBUG=false ./runtimeclasses.sh
 }
 
 if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
@@ -115,7 +93,6 @@ if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
 fi
 
 trap _exit_trap ERR
-_provision_installer
 _run_assertions
 if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
     _run_integration_tests

@@ -36,72 +36,40 @@ on:
       - submitted
 
 jobs:
-  check-pdfs:
+  check-all:
     runs-on: macos-10.15
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-# NOTE: Fedora 33/32 - ContainerD
-          - runtime: containerd
-            os: fedora
-            release: 33
-          - runtime: containerd
-            os: fedora
-            release: 32
-            kube_version: v1.19.9
-            kubespray_version: v2.15.1
-# NOTE: Ubuntu Focal/Xenial - ContainerD/Dockershim
-          - runtime: containerd
-            release: focal
-          - runtime: containerd
-            kube_version: v1.19.9
-            kubespray_version: v2.15.1
-          - release: xenial
-            kube_version: v1.18.10
-            kubespray_version: v2.14.2
-# NOTE: openSUSE Tumbleweed/Leap - ContainerD/Dockershim
-# TODO: Disable openSuSE Tumbleweed given vagrant box issues
-#          - os: opensuse
-#            release: tumbleweed
-#            vbox_controller: IDE Controller
-          - os: opensuse
-            release: leap
-            vbox_controller: IDE Controller
-# NOTE: CentOS 8/7 - ContainerD
-          - runtime: containerd
-            os: centos
-            release: 8
-          - runtime: containerd
-            os: centos
-            release: 7
+    env:
+      VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
+      MEMORY: 12288
+      KRD_CERT_MANAGER_ENABLED: false
+      KRD_INGRESS_NGINX_ENABLED: false
     steps:
       - uses: actions/checkout@v2
       - name: Cache Vagrant boxes
         uses: actions/cache@v2
         with:
           path: ~/.vagrant.d/boxes
-          key: ${{ runner.os }}-vagrant-${{ matrix.os }}-${{ matrix.release }}-${{ hashFiles('distros_supported.yml') }}
+          key: ${{ runner.os }}-vagrant-${{ hashFiles('distros_supported.yml') }}
           restore-keys: |
-            ${{ runner.os }}-vagrant-${{ matrix.os }}-${{ matrix.release }}-
+            ${{ runner.os }}-vagrant-
       - name: Replace shorten links
         run: |
           find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
           find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_bin|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/bindep_install.sh|g' {} \;
           find . -type f -name "*.bak" -delete
-      - name: Run integration tests
+      - name: Run openSUSE Leap - integration tests
         env:
-          VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
-          MEMORY: 12288
-          OS: ${{ matrix.os }}
-          RELEASE: ${{ matrix.release }}
-          KRD_CONTAINER_RUNTIME: ${{ matrix.runtime }}
-          KRD_KUBE_VERSION: ${{ matrix.kube_version }}
-          KRD_KUBESPRAY_VERSION: ${{ matrix.kubespray_version }}
-          KRD_CERT_MANAGER_ENABLED: false
-          KRD_INGRESS_NGINX_ENABLED: false
-          VBOX_CONTROLLER: ${{ matrix.vbox_controller }}
+          OS: opensuse
+          RELEASE: leap
+          VBOX_CONTROLLER: IDE Controller
         run: |
           cd ci
           ./bootstrap.sh
+          ./provision_installer.sh
           ./check.sh
+      - name: Run all integration tests
+        env:
+          KRD_CONTAINER_RUNTIME: containerd
+        run: |
+          cd ci
+          ./check_all.sh
