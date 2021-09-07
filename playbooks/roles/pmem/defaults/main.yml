@@ -12,5 +12,5 @@ pmem_template_folder: "/tmp/pmem_k8s"
 pmem_version: v1.0.0
 driver_registrar_version: v2.3.0
 csi_provisioner_version: v3.0.0
-cfssl_version: 1.6.0
+cfssl_version: 1.6.1
 pmem_namespace: pmem-csi
