@@ -17,12 +17,13 @@ source _functions.sh
 # shellcheck source=tests/_assertions.sh
 source _assertions.sh
 
-server_deployment_name="server"
+deployment_name="istio-server"
+service_name="istio-server"
 
 function cleanup {
-    destroy_deployment "$server_deployment_name"
+    destroy_deployment "$deployment_name"
     kubectl delete pod client --ignore-not-found --now
-    kubectl delete service server --ignore-not-found
+    kubectl delete service "$service_name" --ignore-not-found
     kubectl label namespace default istio-injection-
     kubectl delete peerauthentications default --ignore-not-found
 }
@@ -60,7 +61,7 @@ cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: $server_deployment_name
+  name: $deployment_name
 spec:
   replicas: 1
   selector:
@@ -78,7 +79,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: server
+  name: $service_name
 spec:
   ports:
     - name: http
@@ -88,10 +89,9 @@ spec:
     app.kubernetes.io/name: server
   type: ClusterIP
 EOF
-wait_deployment "$server_deployment_name"
-kubectl logs -n istio-system -l app=istiod | grep default/server
+wait_deployment "$deployment_name"
+wait_service "$service_name"
 create_client
-sleep 2
 
 assert_contains "$(kubectl get pods -l=app.kubernetes.io/name=server -o jsonpath='{range .items[0].spec.containers[*]}{.image}{"\n"}{end}')" "istio/proxy" "Istio proxy wasn't injected into the server's pod"
 

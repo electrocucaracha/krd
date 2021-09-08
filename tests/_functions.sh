@@ -52,13 +52,44 @@ function wait_deployment {
 function wait_ingress {
     local ingress_name=$1
     local attempt_counter=0
-    local max_attempts=12
+    readonly max_attempts=12
 
     info "Waiting for $ingress_name ingress..."
     until [ -n "$(kubectl get ingress "$ingress_name" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" ]; do
         if [ ${attempt_counter} -eq ${max_attempts} ];then
+            kubectl get ingress "$ingress_name" -o yaml
             get_status
-            error "Max attempts reached"
+            error "Max attempts reached on waiting for $ingress_name ingress resource"
+        fi
+        attempt_counter=$((attempt_counter+1))
+        sleep $((attempt_counter*10))
+    done
+}
+
+# wait_service() - Wait process for IP address asignment on Service resources
+function wait_service {
+    local service_name=$1
+    local attempt_counter=0
+    readonly max_attempts=12
+
+    info "Waiting for $service_name service..."
+    until [ -n "$(kubectl get service "$service_name" -o jsonpath='{.spec.clusterIP}')" ]; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+            kubectl get service "$service_name" -o yaml
+            get_status
+            error "Max attempts reached on waiting for $service_name service resource"
+        fi
+        attempt_counter=$((attempt_counter+1))
+        sleep $((attempt_counter*10))
+    done
+
+    attempt_counter=0
+    info "Waiting for $service_name endpoints..."
+    until [ -n "$(kubectl get endpoints "$service_name" -o jsonpath='{.subsets[0].addresses[0].ip}' )" ]; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+            kubectl get endpoints "$service_name" -o yaml
+            get_status
+            error "Max attempts reached on waiting for $service_name service's endpoint resources"
         fi
         attempt_counter=$((attempt_counter+1))
         sleep $((attempt_counter*10))
