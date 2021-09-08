@@ -144,7 +144,7 @@ six==1.16.0
     #   cookiecutter
     #   pynacl
     #   python-dateutil
-subprocess-tee==0.3.3
+subprocess-tee==0.3.2
     # via molecule
 tenacity==8.0.1
     # via ansible-lint
