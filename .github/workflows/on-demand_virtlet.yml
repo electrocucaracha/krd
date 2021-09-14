@@ -16,7 +16,9 @@ on:
       - 'playbooks/roles/virtlet/**'
       - 'playbooks/roles/criproxy/**'
       - '!**.md'
-  pull_request:
+  pull_request_review:
+    types:
+      - submitted
     paths:
       - 'playbooks/roles/virtlet/**'
       - 'playbooks/roles/criproxy/**'
@@ -24,6 +26,12 @@ on:
 
 jobs:
   check-ubuntu:
+    if: >-
+      (
+        github.event_name == 'pull_request_review' &&
+        github.event.review.state == 'approved'
+      ) ||
+      github.event_name != 'pull_request_review'
     runs-on: macos-10.15
     steps:
       - uses: actions/checkout@v2

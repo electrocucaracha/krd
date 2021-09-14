@@ -16,7 +16,9 @@ on:
       - galaxy-requirements.yml
       - test-requirements.txt
       - playbooks/roles/**
-  pull_request:
+  pull_request_review:
+    types:
+      - submitted
     paths:
       - galaxy-requirements.yml
       - test-requirements.txt
@@ -24,6 +26,12 @@ on:
 
 jobs:
   bootstrap:
+    if: >-
+      (
+        github.event_name == 'pull_request_review' &&
+        github.event.review.state == 'approved'
+      ) ||
+      github.event_name != 'pull_request_review'
     runs-on: macos-10.15
     steps:
       - uses: actions/checkout@v2

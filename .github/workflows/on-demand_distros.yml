@@ -21,7 +21,9 @@ on:
       - '*.env'
       - 'resources/*'
       - '!**.md'
-  pull_request:
+  pull_request_review:
+    types:
+      - submitted
     paths:
       - '**.sh'
       - '!ci/update_*.sh'
@@ -31,12 +33,15 @@ on:
       - '*.env'
       - 'resources/*'
       - '!**.md'
-  pull_request_review:
-    types:
-      - submitted
 
 jobs:
   check-all:
+    if: >-
+      (
+        github.event_name == 'pull_request_review' &&
+        github.event.review.state == 'approved'
+      ) ||
+      github.event_name != 'pull_request_review'
     runs-on: macos-10.15
     env:
       VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
