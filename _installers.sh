@@ -391,12 +391,10 @@ function install_istio {
 
 # install_knative() - Function that installs Knative and its dependencies
 function install_knative {
-    knative_version=$(_get_version knative)
-
-
     # Install Knative Client
     if ! command -v kn > /dev/null; then
-        curl -fsSL http://bit.ly/install_pkg | PKG=kn PKG_KN_VERSION="${knative_version#*v}" bash
+        kn_version=$(_get_version kn)
+        curl -fsSL http://bit.ly/install_pkg | PKG=kn PKG_KN_VERSION="${kn_version#*v}" bash
     fi
 
     # Install the Serving component
@@ -405,14 +403,15 @@ function install_knative {
     # Resources limits:
     #  - Serving 3,800m CPU + 3,700Mi
     if [[ "${KRD_KNATIVE_SERVING_ENABLED}" == "true" ]]; then
+        knative_serving_version=$(_get_version knative_serving)
         if ! kubectl get namespaces/knative-serving --no-headers -o custom-columns=name:.metadata.name; then
             kubectl create namespace knative-serving
         fi
-        kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_version}/serving-crds.yaml"
-        kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_version}/serving-core.yaml"
+        kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_serving_version}/serving-crds.yaml"
+        kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_serving_version}/serving-core.yaml"
         case ${KRD_KNATIVE_SERVING_NET} in
             kourier)
-                kubectl apply -f "https://github.com/knative/net-kourier/releases/download/${knative_version}/kourier.yaml"
+                kubectl apply -f "https://github.com/knative/net-kourier/releases/download/$(_get_version net_kourier)/kourier.yaml"
                 kubectl patch configmap/config-network -n knative-serving \
                 --type merge --patch '{"data":{"ingress.class":"kourier.ingress.networking.knative.dev"}}'
             ;;
@@ -422,11 +421,11 @@ function install_knative {
                 if kubectl get service cluster-local-gateway -n istio-system; then
                     kubectl apply -f "https://raw.githubusercontent.com/knative-sandbox/net-istio/master/third_party/istio-stable/istio-knative-extras.yaml"
                 fi
-                kubectl apply -f "https://github.com/knative/net-istio/releases/download/${knative_version}/release.yaml"
+                kubectl apply -f "https://github.com/knative/net-istio/releases/download/$(_get_version net_istio)/release.yaml"
             ;;
         esac
         if [[ "${KRD_KNATIVE_SERVING_CERT_MANAGER_ENABLED}" == "true" ]]; then
-            kubectl apply -f "https://github.com/knative/net-certmanager/releases/download/${knative_version}/release.yaml"
+            kubectl apply -f "https://github.com/knative/net-certmanager/releases/download/$(_get_version net_certmanager)/release.yaml"
         fi
 
         wait_for_pods knative-serving
@@ -438,14 +437,15 @@ function install_knative {
     # Resources limits:
     #  - Eventing 600m CPU + 600Mi
     if [[ "${KRD_KNATIVE_EVENTING_ENABLED}" == "true" ]]; then
-        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/eventing-crds.yaml"
-        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/eventing-core.yaml"
+        knative_eventing_version=$(_get_version knative_eventing)
+        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_eventing_version}/eventing-crds.yaml"
+        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_eventing_version}/eventing-core.yaml"
 
         ## Install a default Channel
-        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/in-memory-channel.yaml"
+        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_eventing_version}/in-memory-channel.yaml"
 
         ## Install a Broker
-        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_version}/mt-channel-broker.yaml"
+        kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_eventing_version}/mt-channel-broker.yaml"
 
         wait_for_pods knative-eventing
     fi
