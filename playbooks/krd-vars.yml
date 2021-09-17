@@ -13,7 +13,7 @@ kubespray_version: v2.16.0
 istio_version: 1.11.2
 
 # Knative versions
-kn_version: v0.25.0
+kn_version: v0.25.1
 knative_serving_version: v0.25.1
 knative_eventing_version: v0.25.1
 ## Knative Sandbox versions
