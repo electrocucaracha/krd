@@ -53,7 +53,9 @@ function disable_swap {
             sudo swapon --show
             sudo blkid
         fi
-        sudo swapoff "$(sudo swapon --show=NAME --noheadings)"
+        for dev in $(sudo swapon --show=NAME --noheadings); do
+            sudo swapoff "$dev"
+        done
         sudo sed -i -e '/swap/d' /etc/fstab
     fi
 }

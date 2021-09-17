@@ -42,7 +42,7 @@ kube_network_plugin: $KRD_NETWORK_PLUGIN
 kubeconfig_localhost: true
 
 # Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.20.7
+kube_version: v1.21.5
 
 # Kube-proxy proxyMode configuration.
 # NOTE: Ipvs is based on netfilter hook function, but uses hash table as the underlying data structure and
@@ -102,6 +102,9 @@ kata_containers_enabled: $KRD_KATA_CONTAINERS_ENABLED
 
 # crun is a container runtime which has lower footprint, better performance and cgroup2 support
 crun_enabled: $KRD_CRUN_ENABLED
+
+# gVisor is an application kernel, written in Go, that implements a substantial portion of the Linux system call interface.
+gvisor_enabled: $KRD_GVISOR_ENABLED
 
 # The Mount propagation feature allows for sharing volumes mounted by
 # a container to other containers in the same pod, or even to other

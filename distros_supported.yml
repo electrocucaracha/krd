@@ -36,9 +36,9 @@ opensuse:
     name: generic/opensuse15
     version: "3.4.0"
 fedora:
-  32:
-    name: fedora/32-cloud-base
-    version: "32.20200422.0"
   33:
     name: generic/fedora33
     version: "3.4.0"
+  34:
+    name: fedora/34-cloud-base
+    version: "34.20210423.0"

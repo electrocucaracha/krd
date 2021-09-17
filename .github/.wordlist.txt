@@ -19,6 +19,7 @@ CSI
 cURL
 cx
 datasets
+dev
 DevOps
 Distros
 DNS
@@ -32,6 +33,7 @@ fsSL
 github
 GPUs
 Grafana
+gVisor
 gw
 HAProxy
 href

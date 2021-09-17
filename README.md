@@ -113,7 +113,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_ANSIBLE_DEBUG                     | false                                          | Enables ansible verbose execution                                               |
 | PKG_DEBUG                             | false                                          | Enables cURL package installer verbose execution                                |
 | KRD_KUBE_VERSION                      |                                                | Specifies the Kubernetes version to be upgraded                                 |
-| KRD_KUBESPRAY_VERSION                 | v2.16.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
+| KRD_KUBESPRAY_VERSION                 | v2.17.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | `https://github.com/kubernetes-sigs/kubespray` | Specifies the Git repository to fetch the Kubespray's source code               |
 | KRD_ENABLE_TESTS                      | false                                          | Enables the functional tests during the deployment process                      |
 | KRD_HELM_CHART                        |                                                | Specifies the Helm chart to be installed                                        |
@@ -143,6 +143,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_INGRESS_NGINX_ENABLED            | true    | Enable/Disable [NGINX Ingress Controller][11]                                   |
 | KRD_KATA_CONTAINERS_ENABLED          | false   | Enable/Disable [Kata Containers Runtime][13]                                    |
 | KRD_CRUN_ENABLED                     | false   | Enable/Disable [crun][18]                                                       |
+| KRD_GVISOR_ENABLED                   | false   | Enable/Disable [gVisor][25]                                                     |
 | KRD_FLANNEL_BACKEND_TYPE             | host-gw | Type of flannel backend to use (vxlan, host-gw, udp)                            |
 | KRD_MANUAL_DNS_SERVER                |         | Set to use a custom cluster DNS                                                 |
 | KRD_REGISTRY_MIRRORS_LIST            |         | Specifies a list of additional registry mirrors                                 |
@@ -186,3 +187,4 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 [22]: https://metallb.universe.tf/
 [23]: https://kubernetes.io/docs/tasks/debug-application-cluster/audit/
 [24]: https://kubernetes.io/docs/concepts/cluster-administration/logging/
+[25]: https://gvisor.dev/docs/
