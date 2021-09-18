@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check Linux Distros Supported
+name: Check Runtime Classes
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -35,8 +35,8 @@ on:
       - '!**.md'
 
 jobs:
-  check-all-distros:
-    name: Check all Linux Distributions supported in an All-in-One setup
+  check-runtimeclasses:
+    name: Check Container Runtime Classes in an Ubuntu Focal All-in-One setup
     if: >-
       (
         github.event_name == 'pull_request_review' &&
@@ -44,38 +44,40 @@ jobs:
       ) ||
       github.event_name != 'pull_request_review'
     runs-on: macos-10.15
-    env:
-      VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
-      MEMORY: 12288
-      KRD_CERT_MANAGER_ENABLED: false
-      KRD_INGRESS_NGINX_ENABLED: false
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runtime: crio
+            crun_enabled: true
+          - runtime: containerd
+            gvisor_enabled: true
     steps:
       - uses: actions/checkout@v2
       - name: Cache Vagrant boxes
         uses: actions/cache@v2
         with:
           path: ~/.vagrant.d/boxes
-          key: ${{ runner.os }}-vagrant-${{ hashFiles('distros_supported.yml') }}
+          key: ${{ runner.os }}-vagrant-ubuntu-bionic-${{ hashFiles('distros_supported.yml') }}
           restore-keys: |
-            ${{ runner.os }}-vagrant-
+            ${{ runner.os }}-vagrant-ubuntu-bionic-
       - name: Replace shorten links
         run: |
           find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
           find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_bin|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/bindep_install.sh|g' {} \;
           find . -type f -name "*.bak" -delete
-      - name: Run openSUSE Leap - integration tests
+      - name: Run integration tests
         env:
-          OS: opensuse
-          RELEASE: leap
-          VBOX_CONTROLLER: IDE Controller
+          VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
+          MEMORY: 12288
+          KRD_CONTAINER_RUNTIME: ${{ matrix.runtime }}
+          KRD_CERT_MANAGER_ENABLED: false
+          KRD_INGRESS_NGINX_ENABLED: false
+          KRD_KATA_CONTAINERS_ENABLED: true
+          KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
+          KRD_GVISOR_ENABLED: ${{ matrix.gvisor_enabled }}
         run: |
           cd ci
           ./bootstrap.sh
           ./provision_installer.sh
           ./check.sh
-      - name: Run all integration tests
-        env:
-          KRD_CONTAINER_RUNTIME: containerd
-        run: |
-          cd ci
-          ./check_all.sh

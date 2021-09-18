@@ -25,7 +25,8 @@ on:
       - '!**.md'
 
 jobs:
-  check-ubuntu:
+  check-virtlet:
+    name: Check Mirantis Virtlet solution in an Ubuntu Bionic All-in-One setup
     if: >-
       (
         github.event_name == 'pull_request_review' &&
@@ -56,6 +57,9 @@ jobs:
           KRD_CERT_MANAGER_ENABLED: false
           KRD_INGRESS_NGINX_ENABLED: false
           TEST_VIRTLET: true
+          KRD_CONTAINER_RUNTIME: docker
+          KRD_DOCKER_VERSION: latest
+          KRD_CONTAINERD_VERSION: latest
         run: |
           cd ci
           ./bootstrap.sh
