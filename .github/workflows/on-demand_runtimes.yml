@@ -1,0 +1,71 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2021
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+name: Check Runtime Classes
+# yamllint disable-line rule:truthy
+on:
+  push:
+    paths:
+      - '**.sh'
+      - '!ci/update_*.sh'
+      - '*.yml'
+      - '!playbooks/**/*.yml'
+      - '*.tpl'
+      - '*.env'
+      - 'resources/*'
+      - '!**.md'
+  pull_request_review:
+    types:
+      - submitted
+    paths:
+      - '**.sh'
+      - '!ci/update_*.sh'
+      - '*.yml'
+      - '!playbooks/**/*.yml'
+      - '*.tpl'
+      - '*.env'
+      - 'resources/*'
+      - '!**.md'
+
+jobs:
+  check-runtimeclasses:
+    name: Check Container Runtime Classes in an Ubuntu Focal All-in-One setup
+    if: >-
+      (
+        github.event_name == 'pull_request_review' &&
+        github.event.review.state == 'approved'
+      ) ||
+      github.event_name != 'pull_request_review'
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runtime: crio
+            crun_enabled: true
+          - runtime: containerd
+            gvisor_enabled: true
+    env:
+      KRD_DEBUG: true
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy services
+        env:
+          KRD_CONTAINER_RUNTIME: ${{ matrix.runtime }}
+          KRD_CERT_MANAGER_ENABLED: false
+          KRD_INGRESS_NGINX_ENABLED: false
+          KRD_KATA_CONTAINERS_ENABLED: true
+          KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
+          KRD_GVISOR_ENABLED: ${{ matrix.gvisor_enabled }}
+        run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+      - name: Run RuntimeClasses tests
+        run: cd tests; ./runtimeclasses.sh
+      - name: Undeploy services
+        run: ./krd_command.sh -a uninstall_k8s

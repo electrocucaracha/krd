@@ -8,25 +8,35 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check Virtlet service
+name: Check Multinode
 # yamllint disable-line rule:truthy
 on:
   push:
     paths:
-      - 'playbooks/roles/virtlet/**'
-      - 'playbooks/roles/criproxy/**'
+      - '**.sh'
+      - '!ci/update_*.sh'
+      - '*.yml'
+      - '!playbooks/**/*.yml'
+      - '*.tpl'
+      - '*.env'
+      - 'resources/*'
       - '!**.md'
   pull_request_review:
     types:
       - submitted
     paths:
-      - 'playbooks/roles/virtlet/**'
-      - 'playbooks/roles/criproxy/**'
+      - '**.sh'
+      - '!ci/update_*.sh'
+      - '*.yml'
+      - '!playbooks/**/*.yml'
+      - '*.tpl'
+      - '*.env'
+      - 'resources/*'
       - '!**.md'
 
 jobs:
-  check-virtlet:
-    name: Check Mirantis Virtlet solution in an Ubuntu Bionic All-in-One setup
+  check-noha:
+    name: Check Ubuntu Bionic No High Availability setup
     if: >-
       (
         github.event_name == 'pull_request_review' &&
@@ -51,13 +61,9 @@ jobs:
       - name: Run integration tests
         env:
           VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
-          MEMORY: 12288
-          KRD_KUBE_VERSION: v1.18.10
-          KRD_KUBESPRAY_VERSION: v2.15.1
-          KRD_DOCKER_VERSION: 19.03
           KRD_CERT_MANAGER_ENABLED: false
           KRD_INGRESS_NGINX_ENABLED: false
-          TEST_VIRTLET: true
+          TEST_MULTINODE: true
         run: |
           cd ci
           ./bootstrap.sh

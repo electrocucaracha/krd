@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check All-in-One
+name: Check Multus CNI
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -36,6 +36,7 @@ on:
 
 jobs:
   check-multus:
+    name: Check Multus CNI in an Ubuntu Bionic All-in-One setup
     if: >-
       (
         github.event_name == 'pull_request_review' &&
