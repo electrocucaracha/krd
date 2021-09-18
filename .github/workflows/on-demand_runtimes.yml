@@ -8,25 +8,35 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check Virtlet service
+name: Check Runtime Classes
 # yamllint disable-line rule:truthy
 on:
   push:
     paths:
-      - 'playbooks/roles/virtlet/**'
-      - 'playbooks/roles/criproxy/**'
+      - '**.sh'
+      - '!ci/update_*.sh'
+      - '*.yml'
+      - '!playbooks/**/*.yml'
+      - '*.tpl'
+      - '*.env'
+      - 'resources/*'
       - '!**.md'
   pull_request_review:
     types:
       - submitted
     paths:
-      - 'playbooks/roles/virtlet/**'
-      - 'playbooks/roles/criproxy/**'
+      - '**.sh'
+      - '!ci/update_*.sh'
+      - '*.yml'
+      - '!playbooks/**/*.yml'
+      - '*.tpl'
+      - '*.env'
+      - 'resources/*'
       - '!**.md'
 
 jobs:
-  check-virtlet:
-    name: Check Mirantis Virtlet solution in an Ubuntu Bionic All-in-One setup
+  check-runtimeclasses:
+    name: Check Container Runtime Classes in an Ubuntu Focal All-in-One setup
     if: >-
       (
         github.event_name == 'pull_request_review' &&
@@ -34,6 +44,14 @@ jobs:
       ) ||
       github.event_name != 'pull_request_review'
     runs-on: macos-10.15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runtime: crio
+            crun_enabled: true
+          - runtime: containerd
+            gvisor_enabled: true
     steps:
       - uses: actions/checkout@v2
       - name: Cache Vagrant boxes
@@ -52,12 +70,12 @@ jobs:
         env:
           VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
           MEMORY: 12288
-          KRD_KUBE_VERSION: v1.18.10
-          KRD_KUBESPRAY_VERSION: v2.15.1
+          KRD_CONTAINER_RUNTIME: ${{ matrix.runtime }}
           KRD_CERT_MANAGER_ENABLED: false
           KRD_INGRESS_NGINX_ENABLED: false
-          TEST_VIRTLET: true
-          KRD_CONTAINER_RUNTIME: docker
+          KRD_KATA_CONTAINERS_ENABLED: true
+          KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
+          KRD_GVISOR_ENABLED: ${{ matrix.gvisor_enabled }}
         run: |
           cd ci
           ./bootstrap.sh

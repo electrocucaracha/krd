@@ -26,6 +26,7 @@ on:
 
 jobs:
   bootstrap:
+    name: Pull python dependencies
     if: >-
       (
         github.event_name == 'pull_request_review' &&
@@ -48,6 +49,7 @@ jobs:
       - run: pip install -r test-requirements.txt
         if: steps.cache-tox-molecule.outputs.cache-hit != 'true'
   check-molecule:
+    name: Check Ansible Molecule role tests
     needs: bootstrap
     runs-on: macos-10.15
     strategy:

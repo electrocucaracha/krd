@@ -35,7 +35,8 @@ on:
       - '!**.md'
 
 jobs:
-  check-ubuntu:
+  check-corner-cases:
+    name: Check K8s Plugins installation methods in an Ubuntu Bionic All-in-One setup
     if: >-
       (
         github.event_name == 'pull_request_review' &&
@@ -43,24 +44,6 @@ jobs:
       ) ||
       github.event_name != 'pull_request_review'
     runs-on: macos-10.15
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - tests_enabled: true
-          - runtime: crio
-            kube_version: v1.19.9
-            kubespray_version: v2.15.1
-            crun_enabled: true
-            test_runtimeclasses: true
-# TODO: Disable Kata Containers given kataShim comunication issues
-#          - runtime: crio
-#            kata_containers_enabled: true
-#            test_runtimeclasses: true
-#          - runtime: containerd
-#            kata_containers_enabled: true
-#            test_runtimeclasses: true
-          - test_multinode: true
     steps:
       - uses: actions/checkout@v2
       - name: Cache Vagrant boxes
@@ -79,17 +62,12 @@ jobs:
         env:
           VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
           MEMORY: 12288
-          KRD_CONTAINER_RUNTIME: ${{ matrix.runtime }}
-          KRD_KUBE_VERSION: ${{ matrix.kube_version }}
-          KRD_KUBESPRAY_VERSION: ${{ matrix.kubespray_version }}
           KRD_CERT_MANAGER_ENABLED: false
           KRD_INGRESS_NGINX_ENABLED: false
-          KRD_ENABLE_TESTS: ${{ matrix.tests_enabled }}
-#          KRD_KATA_CONTAINERS_ENABLED: ${{ matrix.kata_containers_enabled }}
-          KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
-          TEST_RUNTIMECLASSES: ${{ matrix.test_runtimeclasses }}
-          TEST_MULTINODE: ${{ matrix.test_multinode }}
-          KRD_INT_TESTS: "metallb istio haproxy kubevirt falco knative rook gatekeeper"  # TODO: Investigate about the Kong ingress creation issue
+          KRD_ENABLE_TESTS: true
+# TODO: Investigate about the Kong ingress creation issue
+# TODO: Investigate about the Rook resource release issue
+          KRD_INT_TESTS: "metallb istio haproxy kubevirt falco knative gatekeeper"
         run: |
           cd ci
           ./bootstrap.sh

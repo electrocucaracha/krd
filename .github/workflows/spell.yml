@@ -15,18 +15,16 @@ on:
     paths:
       - '**.md'
       - '!.github/*'
-  pull_request:
-    branches:
-      - master
-    paths:
-      - '**.md'
-      - '!.github/*'
   pull_request_review:
     types:
       - submitted
+    paths:
+      - '**.md'
+      - '!.github/*'
 
 jobs:
   check-reviewdog:
+    name: Check spelling (reviewdog)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -34,6 +32,7 @@ jobs:
         with:
           github_token: ${{ secrets.github_token }}
   check-spellcheck:
+    name: Check spelling (pyspelling)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

@@ -35,7 +35,8 @@ on:
       - '!**.md'
 
 jobs:
-  check-all:
+  check-all-distros:
+    name: Check all Linux Distributions supported in an All-in-One setup
     if: >-
       (
         github.event_name == 'pull_request_review' &&
