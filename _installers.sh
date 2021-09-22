@@ -297,7 +297,7 @@ function install_openstack {
     echo "Deploying openstack"
     local dest_folder=/opt
 
-    install_helm
+    KRD_HELM_VERSION=2 install_helm
     pkgs=""
     for pkg in git make jq nmap curl bc; do
         if ! command -v "$pkg"; then
@@ -373,7 +373,7 @@ function install_istio {
         done
 
         # Kiali installation
-        KRD_HELM_VERSION=3 install_helm
+        install_helm
         echo  "Installing Kiali Istio AddOn"
         if ! helm repo list | grep -e kiali; then
             helm repo add kiali https://kiali.org/helm-charts
@@ -458,14 +458,15 @@ function install_harbor {
     if ! helm repo list | grep -e harbor; then
         helm repo add harbor https://helm.goharbor.io
     fi
-    if ! helm ls | grep -e harbor; then
-        helm install --name harbor harbor/harbor
+    if ! helm ls -qA | grep -q harbor; then
+        helm upgrade --install harbor harbor/harbor \
+        --wait
     fi
 }
 
 # install_rook() - Function that install Rook Ceph operator
 function install_rook {
-    KRD_HELM_VERSION=3 install_helm
+    install_helm
 
     if ! helm repo list | grep -e rook-release; then
         helm repo add rook-release https://charts.rook.io/release
@@ -559,7 +560,7 @@ function run_cnf_conformance {
     local cnf_conformance_dir="/opt/cnf-conformance"
     local version="v0.6.0"
 
-    KRD_HELM_VERSION=3 install_helm
+    install_helm
 
     if [ ! -d "$cnf_conformance_dir" ]; then
         sudo git clone --depth 1 https://github.com/cncf/cnf-conformance "$cnf_conformance_dir" -b "$version"
@@ -614,7 +615,7 @@ function install_ovn_metrics_dashboard {
     kube_ovn_version=$(_get_version kube-ovn)
     prometheus_operator_version=$(_get_version prometheus-operator)
 
-    install_helm
+    KRD_HELM_VERSION=2 install_helm
 
     if ! helm ls | grep -e metrics-dashboard; then
         helm install stable/grafana --name metrics-dashboard -f ./helm/kube-ovn/grafana.yml
@@ -630,7 +631,7 @@ function install_ovn_metrics_dashboard {
 
 # install_metrics_server() - Installs Metrics Server services
 function install_metrics_server {
-    install_helm
+    KRD_HELM_VERSION=2 install_helm
     helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
 
     if _vercmp "${helm_installed_version#*v}" '<' '3'; then
@@ -717,7 +718,7 @@ EOF
 
 # install_nsm() - Installs Network Service Mesh
 function install_nsm {
-    install_helm
+    KRD_HELM_VERSION=2 install_helm
 
     # Add helm chart release repositories
     if ! helm repo list | grep -e nsm; then
@@ -750,8 +751,9 @@ function install_velero {
     fi
 
     # Install the nsm chart
-    if ! helm ls | grep -e velero; then
-        helm install vmware-tanzu/velero --name velero
+    if ! helm ls -qA | grep -q velero; then
+        helm upgrade --install velero vmware-tanzu/velero \
+        --wait
     fi
 }
 
@@ -878,7 +880,7 @@ EOF
 # and easy-to-use distributed block storage system
 function install_longhorn {
     kube_version=$(_get_kube_version)
-    KRD_HELM_VERSION=3 install_helm
+    install_helm
 
     if ! helm repo list | grep -e longhorn; then
         helm repo add longhorn https://charts.longhorn.io
@@ -946,7 +948,7 @@ EOF
 
 # install_kong() - Install Kong ingress services
 function install_kong {
-    KRD_HELM_VERSION=3 install_helm
+    install_helm
 
     if ! helm repo list | grep -e kong; then
         helm repo add kong https://charts.konghq.com
@@ -960,7 +962,7 @@ function install_kong {
 
 # install_haproxy() - Install HAProxy ingress services
 function install_haproxy {
-    KRD_HELM_VERSION=3 install_helm
+    install_helm
 
     if ! helm repo list | grep -e haproxytech; then
         helm repo add haproxytech https://haproxytech.github.io/helm-charts
@@ -975,7 +977,7 @@ function install_haproxy {
 
 # install_falco() - Install Falco services
 function install_falco {
-    KRD_HELM_VERSION=3 install_helm
+    install_helm
 
     if ! helm repo list | grep -e falcosecurity; then
         helm repo add falcosecurity https://falcosecurity.github.io/charts
@@ -991,7 +993,7 @@ function install_falco {
 
 # install_gatekeeper() - Install OPA Gatekeeper controller
 function install_gatekeeper {
-    KRD_HELM_VERSION=3 install_helm
+    install_helm
 
     if ! helm repo list | grep -e gatekeeper; then
         helm repo add gatekeeper https://open-policy-agent.github.io/gatekeeper/charts
@@ -1004,4 +1006,28 @@ function install_gatekeeper {
     fi
 
     wait_for_pods opa-system
+}
+
+# install_kyverno() - Install Kyverno dynamic admission controller
+function install_kyverno {
+    install_gatekeeper
+    install_helm
+
+    if ! helm repo list | grep -e kyverno; then
+        helm repo add kyverno https://kyverno.github.io/kyverno/
+    fi
+    if ! helm ls | grep -e kyverno-crds; then
+        helm upgrade --create-namespace \
+        --namespace kyverno-system \
+        --wait \
+        --install kyverno-crds kyverno/kyverno-crds
+    fi
+    if ! helm ls | grep -e kyverno; then
+        helm upgrade --create-namespace \
+        --namespace kyverno-system \
+        --wait \
+        --install kyverno kyverno/kyverno
+    fi
+
+    wait_for_pods kyverno-system
 }

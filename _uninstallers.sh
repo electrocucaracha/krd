@@ -125,3 +125,20 @@ function uninstall_rook {
         kubectl patch storageclass "$class" -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     fi
 }
+
+# uninstall_harbor() - Uninstall Harbor services
+function uninstall_harbor {
+    _uninstall_helm harbor
+}
+
+# uninstall_velero() - Uninstall Velero services
+function uninstall_velero {
+    _uninstall_helm velero
+}
+
+# uninstall_kyverno() - Uninstall Kyverno services
+function uninstall_kyverno {
+    _uninstall_helm kyverno
+    _uninstall_helm kyverno-crds
+    _delete_namespace kyverno-system
+}
