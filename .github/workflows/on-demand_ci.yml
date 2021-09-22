@@ -67,7 +67,7 @@ jobs:
           KRD_ENABLE_TESTS: true
 # TODO: Investigate about the Kong ingress creation issue
 # TODO: Investigate about the Rook resource release issue
-          KRD_INT_TESTS: "metallb istio haproxy kubevirt falco knative gatekeeper"
+          KRD_INT_TESTS: "metallb istio haproxy kubevirt falco knative kyverno gatekeeper"
         run: |
           cd ci
           ./bootstrap.sh

@@ -1007,3 +1007,27 @@ function install_gatekeeper {
 
     wait_for_pods opa-system
 }
+
+# install_kyverno() - Install Kyverno dynamic admission controller
+function install_kyverno {
+    install_gatekeeper
+    install_helm
+
+    if ! helm repo list | grep -e kyverno; then
+        helm repo add kyverno https://kyverno.github.io/kyverno/
+    fi
+    if ! helm ls | grep -e kyverno-crds; then
+        helm upgrade --create-namespace \
+        --namespace kyverno-system \
+        --wait \
+        --install kyverno-crds kyverno/kyverno-crds
+    fi
+    if ! helm ls | grep -e kyverno; then
+        helm upgrade --create-namespace \
+        --namespace kyverno-system \
+        --wait \
+        --install kyverno kyverno/kyverno
+    fi
+
+    wait_for_pods kyverno-system
+}
