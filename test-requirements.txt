@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible==4.5.0
+ansible==4.6.0
     # via -r test-requirements.in
 ansible-compat==0.5.0
     # via molecule
