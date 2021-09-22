@@ -58,8 +58,6 @@ jobs:
           KRD_INGRESS_NGINX_ENABLED: false
           TEST_VIRTLET: true
           KRD_CONTAINER_RUNTIME: docker
-          KRD_DOCKER_VERSION: latest
-          KRD_CONTAINERD_VERSION: latest
         run: |
           cd ci
           ./bootstrap.sh

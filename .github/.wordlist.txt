@@ -66,6 +66,7 @@ kubespray
 Kubespray's
 Kubevirt
 KVM
+Kyverno
 li
 libndctl
 Libvirt

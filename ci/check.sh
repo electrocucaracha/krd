@@ -62,7 +62,7 @@ function _run_assertions {
 }
 
 function _run_integration_tests {
-    local int_test=("${KRD_INT_TESTS:-kong metallb istio haproxy kubevirt falco knative rook gatekeeper}")
+    local int_test=("${KRD_INT_TESTS:-kong metallb istio haproxy kubevirt falco knative rook kyverno gatekeeper}")
 
     info "Running Integration tests (${int_test[*]})"
 
