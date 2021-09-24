@@ -72,7 +72,7 @@ function _run_integration_tests {
 function _test_virtlet {
     info "Testing Virtlet services"
 
-    run_installer_cmd . KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_DEBUG=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
+    run_installer_cmd . KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
 }
 
 function _test_runtime_classes {
