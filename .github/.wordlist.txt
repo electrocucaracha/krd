@@ -11,6 +11,7 @@ brightgreen
 CentOS
 CNI
 config
+ContainerD
 contiv
 CRI
 criproxy
