@@ -19,11 +19,11 @@ source ../tests/_utils.sh
 function run_installer_cmd {
     if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
         pushd "${1}" > /dev/null
-        "${@:2}"
+        KRD_DEBUG=false "${@:2}"
         popd > /dev/null
     else
         # shellcheck disable=SC2145
-        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/${1}; ${@:2}"
+        $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/${1}; KRD_DEBUG=false ${@:2}"
     fi
 }
 

@@ -66,19 +66,19 @@ function _run_integration_tests {
 
     info "Running Integration tests (${int_test[*]})"
 
-    run_installer_cmd tests KRD_DEBUG=false ./check.sh "${int_test[@]}"
+    run_installer_cmd tests ./check.sh "${int_test[@]}"
 }
 
 function _test_virtlet {
     info "Testing Virtlet services"
 
-    run_installer_cmd . KRD_DEBUG=false KRD_ENABLE_TESTS=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
+    run_installer_cmd . KRD_ENABLE_TESTS=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
 }
 
 function _test_runtime_classes {
     info "Testing Kubernetes Runtime Classes"
 
-    run_installer_cmd tests KRD_DEBUG=false ./runtimeclasses.sh
+    run_installer_cmd tests ./runtimeclasses.sh
 }
 
 if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
