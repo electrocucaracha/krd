@@ -14,6 +14,7 @@ set -o nounset
 
 source _functions.sh
 source _installers.sh
+source _chart_installers.sh
 source _uninstallers.sh
 
 if [[ "$KRD_DEBUG" == "true" ]]; then
