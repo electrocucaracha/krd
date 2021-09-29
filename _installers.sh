@@ -63,14 +63,12 @@ function _update_ngnix_ingress_ca {
     cfssl_version=$(_get_version cfssl)
 
     _install_krew_plugin cert-manager
-    if ! command -v cfssl; then
-        sudo curl -sLo /usr/bin/cfssl "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/cfssl_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" > /dev/null
-        sudo chmod +x /usr/bin/cfssl
-    fi
-    if ! command -v cfssljson; then
-        sudo curl -sLo /usr/bin/cfssljson "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/cfssljson_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" > /dev/null
-        sudo chmod +x /usr/bin/cfssljson
-    fi
+    for binary in cfssl cfssljson; do
+        if ! command -v "$binary"; then
+            sudo curl -sLo "/usr/bin/$binary" "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/${binary}_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" > /dev/null
+            sudo chmod +x "/usr/bin/$binary"
+        fi
+    done
     sudo mkdir -p "$cert_dir"
     sudo chown -R "$USER:" "$cert_dir"
     pushd "$cert_dir" > /dev/null
