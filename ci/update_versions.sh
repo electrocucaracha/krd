@@ -67,6 +67,7 @@ sed -i "s/KRD_KUBESPRAY_VERSION:-.* \"\$(\$VAGRANT_CMD_SSH_INSTALLER \"cd \/opt\
 
 sed -i "s/istio_version:.*/istio_version: $(get_version release istio/istio)/g" ./playbooks/krd-vars.yml
 sed -i "s/cfssl_version:.*/cfssl_version: $(get_version release cloudflare/cfssl)/g" ./playbooks/krd-vars.yml
+sed -i "s/sonobuoy_version:.*/sonobuoy_version: $(get_version release vmware-tanzu/sonobuoy)/g" ./playbooks/krd-vars.yml
 
 # Knative versions
 sed -i "s/kn_version:.*/kn_version: v$(get_version tag knative/client)/g" ./playbooks/krd-vars.yml

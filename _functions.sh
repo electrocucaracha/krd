@@ -189,8 +189,29 @@ function wait_for_pods {
 
 # run_kubescape() - Installs and runs Kubescape tool for verifying Kubernetes deployments
 function run_kubescape {
-    if ! command -v kubescape; then
-        curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | /bin/bash
+    if ! command -v kubescape > /dev/null; then
+        curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | bash
     fi
-    kubescape scan framework nsa --exclude-namespaces kube-system,kube-public
+    kubescape scan framework nsa --exclude-namespaces kube-system,kube-public --silent
+}
+
+# run_sonobuoy - Installs and runs Sonobuoy conformance tool
+function run_sonobuoy {
+    version=$(_get_version sonobuoy)
+
+    if ! command -v sonobuoy > /dev/null; then
+        pushd "$(mktemp -d)" > /dev/null
+        curl -L -o sonobuoy.tgz "https://github.com/vmware-tanzu/sonobuoy/releases/download/v$version/sonobuoy_${version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch).tar.gz" > /dev/null
+        tar xzf sonobuoy.tgz
+        sudo mv sonobuoy /usr/local/bin/
+        popd
+    fi
+    if sonobuoy run --wait --level warn 2> /dev/null; then
+        sonobuoy results "$(sonobuoy retrieve)"
+        rm -f ./*_sonobuoy_*.tar.gz
+    else
+        sonobuoy status ||:
+        sonobuoy logs
+    fi
+    sonobuoy delete --wait --level warn
 }

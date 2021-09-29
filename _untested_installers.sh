@@ -245,23 +245,6 @@ function run_cnf_conformance {
     popd
 }
 
-# run_sonobuoy - Installs and runs Sonobuoy conformance tool
-function run_sonobuoy {
-    local sonobuoy_dir="/opt/sonobuoy"
-    local version="0.18.3"
-
-    if [ ! -d "$sonobuoy_dir" ]; then
-        pushd "$(mktemp -d)" > /dev/null
-        curl -L -o sonobuoy.tgz "https://github.com/vmware-tanzu/sonobuoy/releases/download/v$version/sonobuoy_${version}_linux_amd64.tar.gz"
-        tar xzf sonobuoy.tgz
-        sudo mv sonobuoy /usr/local/bin/
-        popd
-    fi
-    sonobuoy run --wait
-    sonobuoy results "$(sonobuoy retrieve)"
-    sonobuoy delete --wait
-}
-
 # install_ovn_metrics_dashboard() - Enables a Grafana dashboard
 function install_ovn_metrics_dashboard {
     kube_ovn_version=$(_get_version kube-ovn)
