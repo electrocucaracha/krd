@@ -11,3 +11,4 @@ OVMF.fd
 *.pyc
 krd.png
 *.dic
+insecure_keys/key*

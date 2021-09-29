@@ -54,6 +54,8 @@ loader = if File.exist?("/usr/share/qemu/OVMF.fd")
          end
 system("curl -O https://download.clearlinux.org/image/OVMF.fd") unless File.exist?(loader)
 
+system("echo -e \"\n\n\n\" | ssh-keygen -f #{File.dirname(__FILE__)}/insecure_keys/key -t rsa -N ''") unless File.exist?("#{File.dirname(__FILE__)}/insecure_keys/key")
+
 if which "vm_stat"
   memfree = `vm_stat | awk '/Pages free/ {print $3 * 4 }'`
 elsif File.exist?("/proc/zoneinfo") && File.exist?("/proc/meminfo")
