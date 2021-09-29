@@ -60,7 +60,7 @@ function _install_krew_plugin {
 
 function _update_ngnix_ingress_ca {
     local cert_dir=/opt/cert-manager/certs
-    local cfssl_version=1.5.0
+    cfssl_version=$(_get_version cfssl)
 
     _install_krew_plugin cert-manager
     if ! command -v cfssl; then

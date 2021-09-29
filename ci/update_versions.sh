@@ -66,6 +66,7 @@ sed -i "s/KRD_KUBESPRAY_VERSION:-.* \"\$(git describe --abbrev=0 --tags)\"/KRD_K
 sed -i "s/KRD_KUBESPRAY_VERSION:-.* \"\$(\$VAGRANT_CMD_SSH_INSTALLER \"cd \/opt\/kubespray; git describe --abbrev=0 --tags\")\"/KRD_KUBESPRAY_VERSION:-v$kubespray_version}\" \"\$(\$VAGRANT_CMD_SSH_INSTALLER \"cd \/opt\/kubespray; git describe --abbrev=0 --tags\")\"/g" ./ci/check.sh
 
 sed -i "s/istio_version:.*/istio_version: $(get_version release istio/istio)/g" ./playbooks/krd-vars.yml
+sed -i "s/cfssl_version:.*/cfssl_version: $(get_version release cloudflare/cfssl)/g" ./playbooks/krd-vars.yml
 
 # Knative versions
 sed -i "s/kn_version:.*/kn_version: v$(get_version tag knative/client)/g" ./playbooks/krd-vars.yml
