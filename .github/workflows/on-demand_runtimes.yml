@@ -76,6 +76,7 @@ jobs:
           KRD_KATA_CONTAINERS_ENABLED: true
           KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
           KRD_GVISOR_ENABLED: ${{ matrix.gvisor_enabled }}
+          PKG_KREW_PLUGINS_LIST: " "
         run: |
           cd ci
           ./bootstrap.sh

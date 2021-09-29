@@ -47,6 +47,7 @@ jobs:
     env:
       KRD_DEBUG: true
       KRD_MULTUS_ENABLED: true
+      PKG_KREW_PLUGINS_LIST: "cert-manager"
     steps:
       - uses: actions/checkout@v2
       - name: Deploy services

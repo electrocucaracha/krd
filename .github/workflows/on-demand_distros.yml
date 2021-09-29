@@ -49,6 +49,7 @@ jobs:
       MEMORY: 12288
       KRD_CERT_MANAGER_ENABLED: false
       KRD_INGRESS_NGINX_ENABLED: false
+      PKG_KREW_PLUGINS_LIST: " "
     steps:
       - uses: actions/checkout@v2
       - name: Cache Vagrant boxes

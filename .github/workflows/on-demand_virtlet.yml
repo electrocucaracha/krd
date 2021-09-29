@@ -58,6 +58,7 @@ jobs:
           KRD_INGRESS_NGINX_ENABLED: false
           TEST_VIRTLET: true
           KRD_CONTAINER_RUNTIME: docker
+          PKG_KREW_PLUGINS_LIST: " "
         run: |
           cd ci
           ./bootstrap.sh

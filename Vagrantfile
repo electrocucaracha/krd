@@ -351,6 +351,7 @@ Vagrant.configure("2") do |config|
         KRD_INGRESS_NGINX_ENABLED: ENV["KRD_INGRESS_NGINX_ENABLED"],
         KRD_FLANNEL_BACKEND_TYPE: ENV["KRD_FLANNEL_BACKEND_TYPE"],
         KRD_KUBE_PROXY_MODE: ENV["KRD_KUBE_PROXY_MODE"],
+        PKG_KREW_PLUGINS_LIST: ENV["PKG_KREW_PLUGINS_LIST"],
         KRD_DNS_ETCHOSTS_DICT: etchosts_dict.to_s
       }
       sh.inline = <<-SHELL
