@@ -11,38 +11,12 @@
 name: Check Linux Distros Supported
 # yamllint disable-line rule:truthy
 on:
-  push:
-    paths:
-      - '**.sh'
-      - '!ci/update_*.sh'
-      - '*.yml'
-      - '!playbooks/**/*.yml'
-      - '*.tpl'
-      - '*.env'
-      - 'resources/*'
-      - '!**.md'
-  pull_request_review:
-    types:
-      - submitted
-    paths:
-      - '**.sh'
-      - '!ci/update_*.sh'
-      - '*.yml'
-      - '!playbooks/**/*.yml'
-      - '*.tpl'
-      - '*.env'
-      - 'resources/*'
-      - '!**.md'
+  schedule:
+    - cron: '0 0 * * 1'
 
 jobs:
   check-all-distros:
     name: Check all Linux Distributions supported in an All-in-One setup
-    if: >-
-      (
-        github.event_name == 'pull_request_review' &&
-        github.event.review.state == 'approved'
-      ) ||
-      github.event_name != 'pull_request_review'
     runs-on: macos-10.15
     env:
       VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1

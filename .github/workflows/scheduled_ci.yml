@@ -16,6 +16,7 @@ on:
 
 jobs:
   check-dashboard-and-metrics:
+    name: Check All-in-One setup in a Ubuntu Bionic virtual environment
     runs-on: ubuntu-20.04
     env:
       KRD_DEBUG: true
