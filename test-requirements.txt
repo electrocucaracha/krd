@@ -62,7 +62,7 @@ idna==3.2
     # via requests
 iniconfig==1.1.1
     # via pytest
-jinja2==3.0.1
+jinja2==3.0.2
     # via
     #   ansible-core
     #   cookiecutter
@@ -145,7 +145,7 @@ six==1.16.0
     #   cookiecutter
     #   pynacl
     #   python-dateutil
-subprocess-tee==0.3.4
+subprocess-tee==0.3.5
     # via molecule
 tenacity==8.0.1
     # via ansible-lint
