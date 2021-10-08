@@ -10,7 +10,7 @@
 
 go_version: 1.15.3
 kubespray_version: v2.17.0
-istio_version: 1.11.3
+istio_version: 1.10.5
 cfssl_version: 1.6.1
 sonobuoy_version: 0.53.2
 
@@ -28,7 +28,7 @@ kube-ovn_version: v1.8.0
 prometheus-operator_version: v0.51.2
 kubevirt_version: v0.45.0
 kubesphere_version: v3.1.1
-metallb_version: v0.10.2
+metallb_version: v0.10.3
 
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
