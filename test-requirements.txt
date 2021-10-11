@@ -24,7 +24,7 @@ bracex==2.1.1
     # via wcmatch
 cerberus==1.3.2
     # via molecule
-certifi==2021.5.30
+certifi==2021.10.8
     # via requests
 cffi==1.14.6
     # via
@@ -35,7 +35,7 @@ chardet==4.0.0
     # via binaryornot
 charset-normalizer==2.0.6
     # via requests
-click==8.0.1
+click==8.0.3
     # via
     #   click-help-colors
     #   cookiecutter
@@ -84,7 +84,7 @@ packaging==21.0
     #   ansible-lint
     #   molecule
     #   pytest
-paramiko==2.7.2
+paramiko==2.8.0
     # via molecule
 pathspec==0.9.0
     # via yamllint
