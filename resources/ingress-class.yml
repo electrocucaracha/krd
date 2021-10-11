@@ -11,15 +11,19 @@
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
 metadata:
+  labels:
+    app.kubernetes.io/component: controller
   name: nginx
   annotations:
     ingressclass.kubernetes.io/is-default-class: "true"
 spec:
-  controller: nginx.org/ingress-controller
+  controller: k8s.io/ingress-nginx
 ---
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
 metadata:
+  labels:
+    app.kubernetes.io/component: controller
   name: haproxy
 spec:
   controller: haproxy.org/ingress-controller
@@ -27,6 +31,8 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: IngressClass
 metadata:
+  labels:
+    app.kubernetes.io/component: controller
   name: kong
 spec:
   controller: ingress-controllers.konghq.com/kong
