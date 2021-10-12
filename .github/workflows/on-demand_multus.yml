@@ -52,6 +52,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Deploy services
         run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
+      - name: Run Sonobuoy tool
+        run: ./krd_command.sh -a run_kubescape
       - name: Run Multus tests
         run: cd tests; ./multus.sh
       - name: Undeploy services
