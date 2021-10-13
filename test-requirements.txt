@@ -58,7 +58,7 @@ enrich==1.2.6
     # via
     #   ansible-lint
     #   molecule
-idna==3.2
+idna==3.3
     # via requests
 iniconfig==1.1.1
     # via pytest
