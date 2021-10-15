@@ -5,7 +5,7 @@ advertises hardware and software capabilities of a platform that can,
 in turn, be used to facilitate intelligent scheduling of a workload.
 
 This is a SIG-node subproject, hosted under the Kubernetes SIGs
-[organization in Github][1]. The project was established in 2016 as a
+[organization in GitHub][1]. The project was established in 2016 as a
 Kubernetes Incubator project and migrated to Kubernetes SIGs in 2018.
 
 In a standard deployment, Kubernetes reveals very few details about

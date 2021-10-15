@@ -96,7 +96,7 @@ playbook to be executed.
 
 ## Day-2 Operations
 
-The functions defined in this project covers the life-cycle of a
+The functions defined in this project covers the lifecycle of a
 Kubernetes cluster. In other words, its possible to add more nodes,
 upgrade the existing deployment or remove the services.  The following
 instruction shows how to upgrade the existing Kubernetes cluster to

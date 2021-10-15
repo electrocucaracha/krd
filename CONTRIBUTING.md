@@ -18,7 +18,7 @@ We welcome many different types of contributions including:
 
 * New features
 * Builds, CI/CD
-* Bug fixes
+* Bugfixes
 * Documentation
 
 ## When to open a pull request

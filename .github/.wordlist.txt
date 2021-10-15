@@ -8,6 +8,7 @@ backend
 balancer
 blockquote
 brightgreen
+Bugfixes
 CentOS
 CNI
 config

@@ -9,6 +9,6 @@ implementations, too.
 
 Below is a diagram depicting the way CRI Proxy works. The basic idea
 is forwarding the requests to different runtimes based on prefixes of
-image name / pod id / container id prefixes.
+image name / pod ID / container ID prefixes.
 
 ![CRI Request Path](../../../docs/src/img/criproxy.png)
