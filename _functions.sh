@@ -206,7 +206,7 @@ function run_sonobuoy {
         sudo mv sonobuoy /usr/local/bin/
         popd
     fi
-    if sonobuoy run --wait --level warn 2> /dev/null; then
+    if sonobuoy run --wait --mode quick 2> /dev/null; then
         sonobuoy results "$(sonobuoy retrieve)"
         rm -f ./*_sonobuoy_*.tar.gz
     else
