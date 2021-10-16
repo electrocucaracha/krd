@@ -272,12 +272,6 @@ function install_kyverno {
     if ! helm repo list | grep -e kyverno; then
         helm repo add kyverno https://kyverno.github.io/kyverno/
     fi
-    if ! helm ls | grep -e kyverno-crds; then
-        helm upgrade --create-namespace \
-        --namespace kyverno-system \
-        --wait \
-        --install kyverno-crds kyverno/kyverno-crds
-    fi
     if ! helm ls | grep -e kyverno; then
         helm upgrade --create-namespace \
         --namespace kyverno-system \

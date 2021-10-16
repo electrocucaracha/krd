@@ -139,6 +139,5 @@ function uninstall_velero {
 # uninstall_kyverno() - Uninstall Kyverno services
 function uninstall_kyverno {
     _uninstall_helm kyverno
-    _uninstall_helm kyverno-crds
     _delete_namespace kyverno-system
 }
