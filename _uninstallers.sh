@@ -32,9 +32,9 @@ function _uninstall_helm {
             helm delete "$helm_chart_name" --purge --tiller-namespace "$KRD_TILLER_NAMESPACE"
         fi
     else
-        if helm ls --all | grep -q "$helm_chart_name"; then
-            helm delete "$helm_chart_name"
-        fi
+        for namespace in $(helm ls -A -f "$helm_chart_name" --deployed | grep deployed | awk '{ print $2}'); do
+            helm delete "$helm_chart_name" -n "$namespace"
+        done
     fi
 }
 
