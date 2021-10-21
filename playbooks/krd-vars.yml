@@ -26,7 +26,7 @@ net_certmanager_version: v0.26.0
 octant_version: 0.24.0
 kube-ovn_version: v1.7.3
 prometheus-operator_version: v0.51.2
-kubevirt_version: v0.46.0
+kubevirt_version: v0.46.1
 kubesphere_version: v3.1.1
 metallb_version: v0.10.3
 
