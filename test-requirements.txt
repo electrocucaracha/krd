@@ -12,7 +12,7 @@ ansible-core==2.11.6
     # via ansible
 ansible-lint==5.2.1
     # via -r test-requirements.in
-arrow==1.2.0
+arrow==1.2.1
     # via jinja2-time
 attrs==21.2.0
     # via pytest
@@ -102,7 +102,7 @@ pygments==2.10.0
     # via rich
 pynacl==1.4.0
     # via paramiko
-pyparsing==2.4.7
+pyparsing==3.0.1
     # via packaging
 pytest==6.2.5
     # via pytest-testinfra
