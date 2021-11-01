@@ -78,7 +78,7 @@ molecule==3.5.2
     #   molecule-vagrant
 molecule-vagrant==0.6.3
     # via -r test-requirements.in
-packaging==21.0
+packaging==21.2
     # via
     #   ansible-core
     #   ansible-lint
@@ -102,7 +102,7 @@ pygments==2.10.0
     # via rich
 pynacl==1.4.0
     # via paramiko
-pyparsing==3.0.1
+pyparsing==2.4.7
     # via packaging
 pytest==6.2.5
     # via pytest-testinfra
@@ -131,7 +131,7 @@ rich==10.12.0
     #   ansible-lint
     #   enrich
     #   molecule
-ruamel.yaml==0.17.16
+ruamel.yaml==0.17.17
     # via ansible-lint
 ruamel.yaml.clib==0.2.6
     # via ruamel.yaml
