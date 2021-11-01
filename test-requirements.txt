@@ -131,7 +131,7 @@ rich==10.12.0
     #   ansible-lint
     #   enrich
     #   molecule
-ruamel.yaml==0.17.16
+ruamel.yaml==0.17.17
     # via ansible-lint
 ruamel.yaml.clib==0.2.6
     # via ruamel.yaml
