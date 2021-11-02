@@ -50,14 +50,14 @@ function _run_assertions {
 
     if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
         assert_contains "$(command -v kubectl)" "kubectl"
-        assert_are_equal "${KRD_KUBE_VERSION:-v1.21.5}" "$(kubectl version --short | awk 'FNR==2{print $3}')"
+        assert_are_equal "${KRD_KUBE_VERSION:-v1.21.6}" "$(kubectl version --short | awk 'FNR==2{print $3}')"
         pushd /opt/kubespray > /dev/null
-        assert_are_equal "${KRD_KUBESPRAY_VERSION:-v2.17.0}" "$(git describe --abbrev=0 --tags)"
+        assert_are_equal "${KRD_KUBESPRAY_VERSION:-v2.17.1}" "$(git describe --abbrev=0 --tags)"
         popd > /dev/null
     else
         assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "command -v kubectl")" "kubectl"
-        assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "kubectl version --short | awk 'FNR==2{print \$3}'")" "${KRD_KUBE_VERSION:-v1.21.5}"
-        assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")" "${KRD_KUBESPRAY_VERSION:-v2.17.0}"
+        assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "kubectl version --short | awk 'FNR==2{print \$3}'")" "${KRD_KUBE_VERSION:-v1.21.6}"
+        assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")" "${KRD_KUBESPRAY_VERSION:-v2.17.1}"
     fi
 }
 
