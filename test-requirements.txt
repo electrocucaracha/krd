@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible==4.7.0
+ansible==4.8.0
     # via -r test-requirements.in
 ansible-compat==0.5.0
     # via molecule
@@ -155,7 +155,7 @@ toml==0.10.2
     # via pytest
 urllib3==1.26.7
     # via requests
-wcmatch==8.2
+wcmatch==8.3
     # via ansible-lint
 yamllint==1.26.3
     # via -r test-requirements.in
