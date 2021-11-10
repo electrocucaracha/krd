@@ -62,7 +62,7 @@ idna==3.3
     # via requests
 iniconfig==1.1.1
     # via pytest
-jinja2==3.0.2
+jinja2==3.0.3
     # via
     #   ansible-core
     #   cookiecutter
