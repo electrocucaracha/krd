@@ -15,6 +15,15 @@ set -o pipefail
 # shellcheck source=ci/_common.sh
 source _common.sh
 
+function destroy_vm {
+    local vm="$1"
+
+    info "Destroying $vm instance..."
+    # NOTE: Shutdown instances avoids VBOX_E_INVALID_OBJECT_STATE issues
+    $VAGRANT_CMD halt "$vm"
+    $VAGRANT_CMD destroy "$vm" -f
+}
+
 info "Define target node"
 if [[ "${TEST_MULTINODE:-false}" == "false" ]]; then
     cat <<EOL > ../config/pdf.yml
@@ -62,7 +71,7 @@ if [[ "${TEST_MULTINODE:-false}" == "false" ]]; then
     - kube-node
     - qat-node
 EOL
-    $VAGRANT_CMD destroy aio -f
+    destroy_vm aio
 else
     cat <<EOL > ../config/pdf.yml
 - name: controller
@@ -115,9 +124,9 @@ EOL
     - kube-node
 EOL
     done
-    $VAGRANT_CMD destroy controller -f
+    destroy_vm controller
     for i in {1..2}; do
-        $VAGRANT_CMD destroy "worker0${i}" -f
+        destroy_vm "worker0${i}"
     done
 fi
 
