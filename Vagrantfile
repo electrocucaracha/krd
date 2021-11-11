@@ -142,7 +142,7 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.hostname = node["name"]
       if node.key? "networks"
         node["networks"].each do |network|
-          nodeconfig.vm.network :private_network, ip: network["ip"], type: :static, libvirt__network_name: network["name"], nic_type: "virtio"
+          nodeconfig.vm.network :private_network, ip: network["ip"], type: :static, libvirt__network_name: network["name"], nic_type: "virtio", virtualbox__intnet: true
         end
       end
       %i[virtualbox libvirt].each do |provider|
@@ -321,7 +321,7 @@ Vagrant.configure("2") do |config|
 
     # NOTE: A private network set up is required by NFS. This is due
     # to a limitation of VirtualBox's built-in networking.
-    installer.vm.network "private_network", ip: installer_ip, nic_type: "virtio"
+    installer.vm.network "private_network", ip: installer_ip, nic_type: "virtio", virtualbox__intnet: true
     installer.vm.provision "shell", privileged: false, inline: <<-SHELL
       cd /vagrant
       sudo mkdir -p /root/.ssh/
