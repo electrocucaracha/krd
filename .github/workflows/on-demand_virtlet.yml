@@ -43,6 +43,11 @@ jobs:
           key: ${{ runner.os }}-vagrant-ubuntu-bionic-${{ hashFiles('distros_supported.yml') }}
           restore-keys: |
             ${{ runner.os }}-vagrant-ubuntu-bionic-
+      # TODO: Remove this once https://www.virtualbox.org/ticket/20636 is released
+      - name: Apply workaround for VBoxHeadless in macOS
+        run: |
+          find . -type f -iname "Vagrantfile" -exec sed -i '.bak' 's|v.gui = .*|v.gui = true|g' {} \;
+          find . -type f -name "*.bak" -delete
       - name: Replace shorten links
         run: |
           find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;

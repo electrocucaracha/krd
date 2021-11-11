@@ -22,6 +22,8 @@ platforms:
     box_version: 3.5.0
     memory: 3072
     cpus: 1
+    provider_options:
+      gui: false
     provider_raw_config_args:
       - "customize ['modifyvm', :id, '--nictype1', 'virtio', '--cableconnected1', 'on']"
   - name: xenial
@@ -29,6 +31,8 @@ platforms:
     box_version: 3.5.0
     memory: 3072
     cpus: 1
+    provider_options:
+      gui: false
     provider_raw_config_args:
       - "customize ['modifyvm', :id, '--nictype1', 'virtio', '--cableconnected1', 'on']"
 provisioner:
