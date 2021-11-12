@@ -1,1 +1,0 @@
-generic/ubuntu2004 3.2.20 virtualbox

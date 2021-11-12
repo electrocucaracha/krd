@@ -27,7 +27,7 @@ ubuntu:
     version: "3.5.0"
   focal:
     name: generic/ubuntu2004
-    version: "3.2.20"
+    version: "3.5.0"
 opensuse:
   tumbleweed:
     name: generic/opensuse42
