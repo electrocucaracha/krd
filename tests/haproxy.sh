@@ -103,8 +103,8 @@ metadata:
   name: demo
   annotations:
     haproxy.org/path-rewrite: "/"
+    ingress.class: haproxy
 spec:
-  ingressClassName: haproxy
   rules:
     - http:
         paths:
@@ -122,8 +122,8 @@ metadata:
   name: demo
   annotations:
     haproxy.org/path-rewrite: "/"
+    ingress.class: haproxy
 spec:
-  ingressClassName: haproxy
   rules:
     - http:
         paths:
