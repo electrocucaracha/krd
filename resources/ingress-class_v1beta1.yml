@@ -20,13 +20,6 @@ spec:
 apiVersion: networking.k8s.io/v1beta1
 kind: IngressClass
 metadata:
-  name: haproxy
-spec:
-  controller: haproxy.org/ingress-controller
----
-apiVersion: networking.k8s.io/v1beta1
-kind: IngressClass
-metadata:
   name: kong
 spec:
   controller: ingress-controllers.konghq.com/kong

@@ -34,6 +34,10 @@ CURL_PROXY_CMD="curl -s http://${HOST}:${PORT}"
 
 # Test
 info "===== Test started ====="
+
+info "Ensure HAProxy Ingress Class"
+kubectl get ingressclasses.networking.k8s.io haproxy
+
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Service
