@@ -226,7 +226,8 @@ function install_knative {
         kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_serving_version}/serving-core.yaml"
         case ${KRD_KNATIVE_SERVING_NET} in
             kourier)
-                kubectl apply -f "https://github.com/knative/net-kourier/releases/download/$(_get_version net_kourier)/kourier.yaml"
+                kourier_version=$(_get_version net_kourier)
+                kubectl apply -f "https://github.com/knative/net-kourier/releases/download/${kourier_version#*v}/kourier.yaml"
                 kubectl patch configmap/config-network -n knative-serving \
                 --type merge --patch '{"data":{"ingress.class":"kourier.ingress.networking.knative.dev"}}'
             ;;
