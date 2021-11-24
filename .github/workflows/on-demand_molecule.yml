@@ -70,11 +70,13 @@ jobs:
           key: ${{ runner.os }}-vagrant-${{ hashFiles('distros_supported.yml') }}
           restore-keys: |
             ${{ runner.os }}-vagrant-
-      # TODO: Remove this once https://www.virtualbox.org/ticket/20636 is released
-      - name: Apply workaround for VBoxHeadless in macOS
+      - name: Apply workaround for VBoxHeadless issue on macOS (https://www.virtualbox.org/ticket/20636)
+        shell: bash
         run: |
-          find playbooks/roles/ -type f -name "molecule.yml" -exec sed -i '.bak' 's|gui: .*|gui: True|g' {} \;
-          find . -type f -name "*.bak" -delete
+          if [[ "$(VBoxManage --version)" == "6.1.28r147628" ]]; then
+              find playbooks/roles/ -type f -name "molecule.yml" -exec sed -i '.bak' 's|gui: .*|gui: True|g' {} \;
+              find . -type f -name "*.bak" -delete
+          fi
       - name: Install Tox tool
         run: brew install tox
       - name: Run molecule tests
