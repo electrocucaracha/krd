@@ -10,7 +10,7 @@
 
 set -o errexit
 set -o pipefail
-if [[ "${KRD_DEBUG:-false}" == "true" ]]; then
+if [[ "${DEBUG:-false}" == "true" ]]; then
     set -o xtrace
 fi
 
