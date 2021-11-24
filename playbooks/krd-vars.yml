@@ -12,14 +12,14 @@ go_version: 1.15.3
 kubespray_version: v2.17.1
 istio_version: 1.12.0
 cfssl_version: 1.6.1
-sonobuoy_version: 0.55.0
+sonobuoy_version: 0.55.1
 
 # Knative versions
 kn_version: v0.27.0
 knative_serving_version: v0.27.1
 knative_eventing_version: v0.27.0
 ## Knative Sandbox versions
-net_kourier_version: v0.27.0
+net_kourier_version: v0.27.1
 net_istio_version: v0.27.0
 net_certmanager_version: v0.27.0
 
