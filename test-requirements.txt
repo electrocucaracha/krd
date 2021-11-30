@@ -84,7 +84,7 @@ packaging==21.3
     #   ansible-lint
     #   molecule
     #   pytest
-paramiko==2.8.0
+paramiko==2.8.1
     # via molecule
 pathspec==0.9.0
     # via yamllint
@@ -126,7 +126,7 @@ requests==2.26.0
     # via cookiecutter
 resolvelib==0.5.4
     # via ansible-core
-rich==10.15.0
+rich==10.15.1
     # via
     #   ansible-lint
     #   enrich
