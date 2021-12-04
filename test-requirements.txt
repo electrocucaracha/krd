@@ -33,7 +33,7 @@ cffi==1.15.0
     #   pynacl
 chardet==4.0.0
     # via binaryornot
-charset-normalizer==2.0.8
+charset-normalizer==2.0.9
     # via requests
 click==8.0.3
     # via
