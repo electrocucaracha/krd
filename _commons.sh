@@ -317,17 +317,22 @@ function _delete_namespace {
 
     until [ "$(kubectl get all -n "$namespace" --no-headers | wc -l)" == "0" ]; do
         if [ ${attempt_counter} -eq ${max_attempts} ];then
-            echo "Max attempts reached"
+            echo "Max attempts reached to delete resources in $namespace namespace"
             exit 1
         fi
         attempt_counter=$((attempt_counter+1))
         sleep $((attempt_counter*5))
     done
     if kubectl get namespaces 2>/dev/null | grep  "$namespace"; then
+        echo "Force namespace deletion"
         # NOTE: https://stackoverflow.com/a/59667608/2727227
-        kubectl get namespace "$namespace" -o json | tr -d "\n" | \
-        sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" | \
-        kubectl replace --raw "/api/v1/namespaces/$namespace/finalize" -f - ||:
+        if command -v kubectl-finalize_namespace > /dev/null; then
+            kubectl finalize_namespace "$namespace" ||:
+        else
+            kubectl get namespace "$namespace" -o json | tr -d "\n" | \
+            sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" | \
+            kubectl replace --raw "/api/v1/namespaces/$namespace/finalize" -f - ||:
+        fi
     fi
 }
 
