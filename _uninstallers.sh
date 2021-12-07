@@ -141,3 +141,10 @@ function uninstall_kyverno {
     _uninstall_helm kyverno
     _delete_namespace kyverno-system
 }
+
+# uninstall_kubewarden() - Uninstall Kubewarden services
+function uninstall_kubewarden {
+    _uninstall_helm kubewarden-controller
+    _uninstall_helm kubewarden-crds
+    _delete_namespace kubewarden-system
+}

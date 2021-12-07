@@ -281,3 +281,26 @@ function install_kyverno {
 
     wait_for_pods kyverno-system
 }
+
+# install_kubewarden() - Install Kubewarden dynamic admission controller
+function install_kubewarden {
+    install_helm
+
+    if ! helm repo list | grep -e kubewarden; then
+        helm repo add kubewarden https://charts.kubewarden.io
+    fi
+    if ! helm ls | grep -e kubewarden-crds; then
+        helm upgrade --create-namespace \
+        --namespace kubewarden-system \
+        --wait \
+        --install kubewarden-crds kubewarden/kubewarden-crds
+    fi
+    if ! helm ls | grep -e kubewarden-controller; then
+        helm upgrade --create-namespace \
+        --namespace kubewarden-system \
+        --wait \
+        --install kubewarden-controller kubewarden/kubewarden-controller
+    fi
+
+    wait_for_pods kubewarden-system
+}

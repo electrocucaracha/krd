@@ -66,6 +66,7 @@ KubeSphere
 kubespray
 Kubespray's
 Kubevirt
+Kubewarden
 KVM
 Kyverno
 li

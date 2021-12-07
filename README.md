@@ -45,6 +45,7 @@ different scenarios. There are different setups located in the
 | Rook           | Storage Operator                                |                                   | Tested      |
 | OPA Gatekeeper | Policy Controller                               |                                   | Tested      |
 | Kyverno        | Kubernetes Native Policy Management             |                                   | Tested      |
+| Kubewarden     | Kubernetes Native Policy Management             |                                   | Tested      |
 
 ## Quick Deployment
 
