@@ -93,6 +93,7 @@ function uninstall_knative {
     if [[ "${KRD_KNATIVE_EVENTING_ENABLED}" == "true" ]]; then
         _delete_namespace knative-eventing
     fi
+    _delete_namespace kourier-system
 
     case ${KRD_KNATIVE_SERVING_NET} in
         istio)

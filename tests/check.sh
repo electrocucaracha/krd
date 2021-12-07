@@ -19,11 +19,11 @@ trap get_status ERR
 
 cd ..
 for test in "$@"; do
-    info "Starting $test test..."
+    info "+++++ Starting $test test..."
     ./krd_command.sh -a "install_${test}"
     pushd tests
     bash "${test}.sh"
     popd
     ./krd_command.sh -a "uninstall_${test}"
-    info "$test test completed"
+    info "+++++ $test test completed"
 done
