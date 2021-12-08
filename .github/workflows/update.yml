@@ -8,13 +8,14 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check Lastest CI versions
+name: Scheduled verification
 # yamllint disable-line rule:truthy
 on:
   schedule:
     - cron: '0 0 * * *'
   pull_request:
     types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
 
 jobs:
   check-versions:
@@ -31,3 +32,23 @@ jobs:
           COMMIT_NAME: 'electrocucaracha bot'
           PR_BRANCH_NAME: "versions-update-${PR_ID}"
           PR_TITLE: 'chore: update versions'
+  check-dictionary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: technote-space/create-pr-action@v2
+        with:
+          EXECUTE_COMMANDS: |
+            sudo apt-get update
+            sudo apt-get -y --no-install-recommends install aspell aspell-en
+            pip install pyspelling
+
+            sort --ignore-case --output=original.dic .github/.wordlist.txt
+            echo "" > .github/.wordlist.txt
+            # Remove leftovers
+            pyspelling -c .spellcheck.yml | sed '/^<.*>/d;/^!!!/d;/^--/d;/^Misspelled words:/d;/^$/d;/^Spelling check passed :)$/d' | sort --ignore-case | uniq | tee draft.dic
+            comm -12 draft.dic original.dic > .github/.wordlist.txt
+          COMMIT_MESSAGE: 'Update dictionary definitions'
+          COMMIT_NAME: 'spellchecker bot'
+          PR_BRANCH_NAME: "versions-update-${PR_ID}"
+          PR_TITLE: 'chore: update dictionary'
