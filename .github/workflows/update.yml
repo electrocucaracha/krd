@@ -31,3 +31,24 @@ jobs:
           COMMIT_NAME: 'electrocucaracha bot'
           PR_BRANCH_NAME: "versions-update-${PR_ID}"
           PR_TITLE: 'chore: update versions'
+  check-dictionary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: technote-space/create-pr-action@v2
+        with:
+          EXECUTE_COMMANDS: |
+            pip install pyspelling
+            sort -o .github/.wordlist.txt.bkp .github/.wordlist.txt
+            echo "" > .github/.wordlist.txt
+            # Remove leftovers
+            pyspelling -c .spellcheck.yml | sed '/^<text>/d;/^!!!/d;/^--/d;/^Misspelled words:/d;/^$/d' | sort | uniq | tee draft.txt
+            comm -12 draft.txt .github/.wordlist.txt.bkp > .github/.wordlist.txt
+            # Add missing words
+            pyspelling -c .spellcheck.yml | sed '/^<text>/d;/^!!!/d;/^--/d;/^Misspelled words:/d;/^$/d' | sort | uniq | tee --append .github/.wordlist.txt
+            sort -o .github/.wordlist.txt .github/.wordlist.txt
+            rm .github/.wordlist.txt.bkp draft.txt
+          COMMIT_MESSAGE: 'Update dictionary definitions'
+          COMMIT_NAME: 'spellchecker bot'
+          PR_BRANCH_NAME: "versions-update-${PR_ID}"
+          PR_TITLE: 'chore: update dictionary'
