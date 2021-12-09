@@ -67,10 +67,6 @@ localhost
 LOGFILES
 ly
 MetalLB
-Mirantis
-Multus
-NDOTS
-NFD
 nginx
 NodeLocal
 nodelocaldns
