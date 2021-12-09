@@ -28,6 +28,9 @@ Falco
 filesystem
 FPGAs
 fsSL
+GPUs
+Grafana
+gVisor
 gw
 HAProxy
 href
@@ -37,6 +40,7 @@ HugeTLB
 hugetlbpage
 img
 initVagrant
+IOV
 iptables
 IPVS
 ipvsadm
@@ -62,6 +66,11 @@ linter
 localhost
 LOGFILES
 ly
+MetalLB
+Mirantis
+Multus
+NDOTS
+NFD
 nginx
 NodeLocal
 nodelocaldns
@@ -105,4 +114,5 @@ vmwrapper
 vxlan
 Webhook
 WIP
+YAML
 yml
