@@ -1,11 +1,3 @@
-<markdown> CONTRIBUTING.md
-<markdown> README.md
-<markdown> playbooks/roles/criproxy/README.md
-<markdown> playbooks/roles/nfd/README.md
-<markdown> playbooks/roles/pmem/README.md
-<markdown> playbooks/roles/qat_driver/README.md
-<markdown> playbooks/roles/sriov_plugin/README.md
-<markdown> playbooks/roles/virtlet/README.md
 ADDONS
 ANSIBLE
 AddOns
