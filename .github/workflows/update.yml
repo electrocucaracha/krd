@@ -47,7 +47,7 @@ jobs:
             echo "" > .github/.wordlist.txt
             # Remove leftovers
             pyspelling -c .spellcheck.yml | sed '/^<.*>/d;/^!!!/d;/^--/d;/^Misspelled words:/d;/^$/d;/^Spelling check passed :)$/d' | sort --ignore-case | uniq | tee draft.dic
-            comm -12 draft.dic original.dic > .github/.wordlist.txt
+            comm -12 --nocheck-order draft.dic original.dic > .github/.wordlist.txt
           COMMIT_MESSAGE: 'Update dictionary definitions'
           COMMIT_NAME: 'spellchecker bot'
           PR_BRANCH_NAME: "versions-update-${PR_ID}"
