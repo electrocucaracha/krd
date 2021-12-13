@@ -46,8 +46,13 @@ jobs:
             sort --ignore-case --output=original.dic .github/.wordlist.txt
             echo "" > .github/.wordlist.txt
             # Remove leftovers
-            pyspelling -c .spellcheck.yml | sed '/^<.*>/d;/^!!!/d;/^--/d;/^Misspelled words:/d;/^$/d;/^Spelling check passed :)$/d' | sort --ignore-case | uniq | tee draft.dic
+            pyspelling -c .spellcheck.yml | sed '/^<.*>/d;/^!!!/d;/^--/d;/^Misspelled words:/d;/^$/d;/^Spelling check passed :)$/d' | sort --ignore-case | uniq --ignore-case | tee draft.dic
             comm -12 --nocheck-order draft.dic original.dic > .github/.wordlist.txt
+            sort --ignore-case --output=.github/.wordlist.txt .github/.wordlist.txt
+
+            # Add missing words
+            pyspelling -c .spellcheck.yml | sed '/^<.*>/d;/^!!!/d;/^--/d;/^Misspelled words:/d;/^$/d;/^Spelling check passed :)$/d' | sort --ignore-case | uniq --ignore-case | tee --append .github/.wordlist.txt
+            sort --ignore-case --output=.github/.wordlist.txt .github/.wordlist.txt
           COMMIT_MESSAGE: 'Update dictionary definitions'
           COMMIT_NAME: 'spellchecker bot'
           PR_BRANCH_NAME: "versions-update-${PR_ID}"
