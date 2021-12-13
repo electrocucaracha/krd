@@ -59,7 +59,7 @@ jobs:
         env:
           VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
           MEMORY: 12288
-          KRD_KUBE_VERSION: v1.18.10
+          KRD_KUBE_VERSION: v1.18.17
           KRD_KUBESPRAY_VERSION: v2.15.1
           KRD_CERT_MANAGER_ENABLED: false
           KRD_INGRESS_NGINX_ENABLED: false

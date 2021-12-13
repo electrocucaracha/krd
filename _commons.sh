@@ -19,11 +19,11 @@ fi
 
 # _get_kube_version() - Get the Kubernetes version used or installed on the remote cluster
 function _get_kube_version {
-    if command -v kubectl; then
+    if command -v kubectl > /dev/null && kubectl version > /dev/null 2>&1; then
         kubectl version --short | grep -e "Server" | awk -F ': ' '{print $2}'
     elif [ -f "$KRD_FOLDER/k8s-cluster.yml" ]; then
         grep kube_version "$KRD_FOLDER/k8s-cluster.yml" | awk '{ print $2}'
-    elif [ -n "${KRD_KUBE_VERSION}" ]; then
+    elif [ -n "${KRD_KUBE_VERSION:-}" ]; then
         echo "${KRD_KUBE_VERSION}"
     else
         echo "v1.21.6"
@@ -42,6 +42,8 @@ function _install_kubespray {
         pkgs+=" docker"
     fi
     if ! command -v kubectl || ! kubectl krew version &>/dev/null; then
+        PKG_KUBECTL_VERSION="$(_get_kube_version)"
+        export PKG_KUBECTL_VERSION
         pkgs+=" kubectl"
     fi
     if [ -n "$pkgs" ]; then

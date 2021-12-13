@@ -24,8 +24,23 @@
     src: "images.yaml.j2"
     dest: "{{ virtlet_dest }}/images.yml"
 
+- name: get kubectl version
+  shell: "kubectl version --short --client | sed 's/Client Version: v//g'"
+  register: kubectl_version
+  changed_when: false
+
+- name: print out kubectl client version
+  debug:
+    msg: "{{ kubectl_version.stdout }}"
+
+# NOTE: Deprecated kubectl --dry-run values(https://github.com/kubernetes/kubernetes/pull/105327)
+- name: install image translations configmap | latest kubectl
+  shell: "/usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ virtlet_dest }}/images.yml --dry-run='client' -o yaml | /usr/local/bin/kubectl apply -f -"
+  when: kubectl_version.stdout is version('1.23', '>=')
+
 - name: install image translations configmap
   shell: "/usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ virtlet_dest }}/images.yml --dry-run -o yaml | /usr/local/bin/kubectl apply -f -"
+  when: kubectl_version.stdout is version('1.23', '<')
 
 - name: download virtletctl
   command: curl -Ls -o {{ virtlet_dest }}/virtletctl {{ virtlet_url }}  # noqa command-instead-of-module
