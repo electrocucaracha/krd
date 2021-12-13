@@ -10,7 +10,7 @@ blockquote
 brightgreen
 Bugfixes
 CentOS
-cni
+CNI
 config
 CONTAINERD
 contiv
@@ -45,14 +45,14 @@ img
 initVagrant
 IOV
 iptables
-ipvs
+IPVS
 ipvsadm
 ISTIO
 KATA
 katacontainers
 Kiali
 Knative
-krd
+KRD
 KRDaio
 KUBE
 KUBELET
@@ -90,7 +90,7 @@ png
 pre
 PROVISIONER
 PRs
-qat
+QAT
 QCOW
 qemu
 QuickAssist
@@ -103,8 +103,8 @@ RUNTIME
 runtimes
 serverless
 SERVICEMESH
-sig
-sigs
+SIG
+SIGs
 snetworkplumbingwg
 src
 sriov
@@ -116,7 +116,7 @@ udp
 ui
 vagrantup
 VFs
-virtlet
+Virtlet
 VirtualBox
 VM
 VMs
