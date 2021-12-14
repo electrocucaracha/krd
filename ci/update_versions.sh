@@ -58,6 +58,10 @@ function _get_latest_ansible_collection {
     curl -sfL "https://galaxy.ansible.com/api/v2/collections/${1%.*}/${1#*.}/versions" | jq -r '.results[0].version'
 }
 
+function _get_latest_docker_tag {
+    curl -sfL "https://registry.hub.docker.com/v1/repositories/$1/tags" | python -c 'import json,sys;versions=[obj["name"][1:] for obj in json.load(sys.stdin) if obj["name"][0] == "v"];print("\n".join(versions))' | sed 's/-.*//g' | uniq | sort -rn | head -n 1
+}
+
 function update_pip_pkg {
     local pkg="$1"
     local version="$2"
@@ -131,7 +135,7 @@ sed -i "s/driver_registrar_version:.*/driver_registrar_version: v$(get_version g
 sed -i "s/csi_provisioner_version:.*/csi_provisioner_version: v$(get_version github_tag kubernetes-csi/external-provisioner)/g" ./playbooks/roles/pmem/defaults/main.yml
 sed -i "s/cfssl_version:.*/cfssl_version: $(get_version github_tag cloudflare/cfssl)/g" ./playbooks/roles/pmem/defaults/main.yml
 sed -i "s/virtlet_version:.*/virtlet_version: $(get_version github_tag Mirantis/virtlet)/g" ./playbooks/roles/virtlet/defaults/main.yml
-sed -i "s/sriov_plugin_version:.*/sriov_plugin_version: v$(get_version github_release k8snetworkplumbingwg/sriov-network-device-plugin)/g" ./playbooks/roles/sriov_plugin/defaults/main.yml
+sed -i "s/sriov_plugin_version:.*/sriov_plugin_version: v$(get_version docker_tag nfvpe/sriov-device-plugin)/g" ./playbooks/roles/sriov_plugin/defaults/main.yml
 sed -i "s/nfd_version:.*/nfd_version: v$(get_version github_release kubernetes-sigs/node-feature-discovery)/g" ./playbooks/roles/nfd/defaults/main.yml
 
 # Update Kubernetes Collection dependencies
