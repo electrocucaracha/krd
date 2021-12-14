@@ -8,13 +8,14 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check Lastest Distros
+name: Scheduled Latest Vagrant Boxes verification
 # yamllint disable-line rule:truthy
 on:
   schedule:
     - cron: '0 0 1 * *'
   pull_request:
     types: [opened, synchronize, reopened, closed]
+  workflow_dispatch:
 
 jobs:
   check-versions:

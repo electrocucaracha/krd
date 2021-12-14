@@ -8,11 +8,12 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check Linux Distros Supported
+name: Scheduled All Linux Distros Supported verification
 # yamllint disable-line rule:truthy
 on:
   schedule:
     - cron: '0 0 * * 1'
+  workflow_dispatch:
 
 jobs:
   check-all-distros:

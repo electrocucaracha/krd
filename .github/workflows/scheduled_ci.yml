@@ -8,11 +8,12 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Check Kubernetes Dashboard + Metrics Server
+name: Scheduled Kubernetes Dashboard + Metrics Server verification
 # yamllint disable-line rule:truthy
 on:
   schedule:
     - cron: '0 0 * * 5'
+  workflow_dispatch:
 
 jobs:
   check-dashboard-and-metrics:

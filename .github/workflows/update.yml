@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Scheduled verification
+name: Scheduled Versions and Dictionary verification
 # yamllint disable-line rule:truthy
 on:
   schedule:
