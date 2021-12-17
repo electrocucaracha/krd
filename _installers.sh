@@ -208,8 +208,7 @@ function install_istio {
 function install_knative {
     # Install Knative Client
     if ! command -v kn > /dev/null; then
-        kn_version=$(_get_version kn)
-        curl -fsSL http://bit.ly/install_pkg | PKG=kn PKG_KN_VERSION="${kn_version#*v}" bash
+        curl -fsSL http://bit.ly/install_pkg | PKG=kn PKG_KN_VERSION="$(_get_version kn)" bash
     fi
 
     # Install the Serving component
@@ -227,7 +226,7 @@ function install_knative {
         case ${KRD_KNATIVE_SERVING_NET} in
             kourier)
                 kourier_version=$(_get_version net_kourier)
-                kubectl apply -f "https://github.com/knative/net-kourier/releases/download/${kourier_version#*v}/kourier.yaml"
+                kubectl apply -f "https://github.com/knative/net-kourier/releases/download/${kourier_version}/kourier.yaml"
                 kubectl patch configmap/config-network -n knative-serving \
                 --type merge --patch '{"data":{"ingress.class":"kourier.ingress.networking.knative.dev"}}'
             ;;

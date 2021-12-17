@@ -82,10 +82,10 @@ sed -i "s/cfssl_version:.*/cfssl_version: $(get_version github_release cloudflar
 sed -i "s/sonobuoy_version:.*/sonobuoy_version: $(get_version github_release vmware-tanzu/sonobuoy)/g" ./playbooks/krd-vars.yml
 
 # Knative versions
-sed -i "s/kn_version:.*/kn_version: v$(get_version github_release knative/client)/g" ./playbooks/krd-vars.yml
-sed -i "s/knative_serving_version:.*/knative_serving_version: v$(get_version github_release knative/serving)/g" ./playbooks/krd-vars.yml
+sed -i "s/kn_version:.*/kn_version: $(get_version github_release knative/client)/g" ./playbooks/krd-vars.yml
+sed -i "s/knative_serving_version:.*/knative_serving_version: $(get_version github_release knative/serving)/g" ./playbooks/krd-vars.yml
 sed -i "s/knative_eventing_version:.*/knative_eventing_version: v$(get_version github_tag knative/eventing)/g" ./playbooks/krd-vars.yml
-sed -i "s/net_kourier_version:.*/net_kourier_version: v$(get_version github_release knative-sandbox/net-kourier)/g" ./playbooks/krd-vars.yml
+sed -i "s/net_kourier_version:.*/net_kourier_version: $(get_version github_release knative-sandbox/net-kourier)/g" ./playbooks/krd-vars.yml
 sed -i "s/net_istio_version:.*/net_istio_version: v$(get_version github_tag knative-sandbox/net-istio)/g" ./playbooks/krd-vars.yml
 sed -i "s/net_certmanager_version:.*/net_certmanager_version: v$(get_version github_tag knative-sandbox/net-certmanager)/g" ./playbooks/krd-vars.yml
 
