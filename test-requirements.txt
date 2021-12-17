@@ -48,7 +48,7 @@ commonmark==0.9.1
     # via rich
 cookiecutter==1.7.3
     # via molecule
-cryptography==36.0.0
+cryptography==36.0.1
     # via
     #   ansible-core
     #   paramiko
@@ -129,7 +129,7 @@ requests==2.26.0
     # via cookiecutter
 resolvelib==0.5.4
     # via ansible-core
-rich==10.16.0
+rich==10.16.1
     # via
     #   ansible-lint
     #   enrich
