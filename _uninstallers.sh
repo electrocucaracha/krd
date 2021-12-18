@@ -24,8 +24,9 @@ function uninstall_k8s {
 }
 
 function _uninstall_helm {
-    helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
     local helm_chart_name="$1"
+
+    helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
 
     if _vercmp "${helm_installed_version#*v}" '<' '3'; then
         if helm ls --all --tiller-namespace "$KRD_TILLER_NAMESPACE" | grep -q "$helm_chart_name"; then
@@ -34,6 +35,9 @@ function _uninstall_helm {
     else
         for namespace in $(helm ls -A -f "$helm_chart_name" --deployed | grep deployed | awk '{ print $2}'); do
             helm delete "$helm_chart_name" -n "$namespace"
+            if [[ "$helm_chart_name-system" == "$namespace" ]]; then
+                _delete_namespace "$namespace"
+            fi
         done
     fi
 }
@@ -119,7 +123,7 @@ function uninstall_kubevirt {
 # uninstall_rook() - Uninstall Rook services
 function uninstall_rook {
     _uninstall_helm rook-ceph
-    _delete_namespace rook-ceph
+    _delete_namespace rook-ceph-system
     kubectl delete storageclasses.storage.k8s.io rook-ceph-block --ignore-not-found
     class="$(kubectl get storageclasses --no-headers -o custom-columns=name:.metadata.name | awk 'NR==1{print $1}')"
     if [[ -n "$class" ]]; then
@@ -140,7 +144,6 @@ function uninstall_velero {
 # uninstall_kyverno() - Uninstall Kyverno services
 function uninstall_kyverno {
     _uninstall_helm kyverno
-    _delete_namespace kyverno-system
 }
 
 # uninstall_kubewarden() - Uninstall Kubewarden services

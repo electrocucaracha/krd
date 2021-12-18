@@ -22,7 +22,7 @@ source _assertions.sh
 # Test
 info "===== Test started ====="
 
-falco_log="$(kubectl logs -l app=falco)"
+falco_log="$(kubectl logs -l app=falco -n falco-system)"
 assert_non_empty "$falco_log" "Falco's logs are disabled"
 assert_contains "$falco_log" 'Starting internal webserver' "Falco internal server hasn't started"
 

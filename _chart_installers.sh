@@ -77,34 +77,48 @@ EOF
     fi
 }
 
-# install_helm_chart() - Function that installs additional Official Helm Charts
-function install_helm_chart {
-    if [ -z "$KRD_HELM_CHART" ]; then
-        return
-    fi
+function _install_chart {
+    local name="$1"
+    local chart="$2"
+    local namespace="${3:-"$name-system"}"
 
     install_helm
+    helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
 
-    helm upgrade "${KRD_HELM_NAME:-$KRD_HELM_CHART}" \
-    "stable/$KRD_HELM_CHART" --install --atomic \
-    --tiller-namespace "$KRD_TILLER_NAMESPACE"
+    if _vercmp "${helm_installed_version#*v}" '>=' '3' && ! helm ls | grep -e "$name"; then
+        cmd="helm upgrade --create-namespace"
+        cmd+=" --namespace $namespace --wait --install"
+        echo "$cmd"
+        if [ -n "${KRD_CHART_VALUES:-}" ]; then
+            for value in ${KRD_CHART_VALUES//,/ }; do
+                cmd+=" --set $value"
+            done
+        fi
+        if [ -n "${KRD_CHART_FILE:-}" ]; then
+            cmd+=" --values $KRD_CHART_FILE"
+        fi
+        eval "$cmd" "$name" "$chart"
+    fi
+
+    wait_for_pods "$namespace"
+}
+
+function _add_helm_repo {
+    install_helm
+    helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
+
+    if _vercmp "${helm_installed_version#*v}" '>=' '3' && ! helm repo list | grep -e "$1"; then
+        helm repo add "$1" "$2"
+        helm repo update
+    fi
 }
 
 # install_rook() - Function that install Rook Ceph operator
 function install_rook {
-    install_helm
-
-    if ! helm repo list | grep -e rook-release; then
-        helm repo add rook-release https://charts.rook.io/release
-    fi
+    _add_helm_repo rook-release https://charts.rook.io/release
+    kubectl label nodes --all role=storage --overwrite
     if ! helm ls -qA | grep -q rook-ceph; then
-        kubectl label nodes --all role=storage --overwrite
-        helm upgrade --install rook-ceph rook-release/rook-ceph \
-        --namespace rook-ceph \
-        --create-namespace \
-        --wait \
-        --set agent.nodeAffinity="role=storage"
-        wait_for_pods rook-ceph
+        KRD_CHART_VALUES="agent.nodeAffinity='role=storage'" _install_chart rook-ceph rook-release/rook-ceph
 
         for class in $(kubectl get storageclasses --no-headers -o custom-columns=name:.metadata.name); do
             kubectl patch storageclass "$class" -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
@@ -166,15 +180,8 @@ EOF
             --set args[2]="--v=2" --tiller-namespace "$KRD_TILLER_NAMESPACE"
         fi
     else
-        if ! helm repo list | grep -q stable; then
-            helm repo add stable https://charts.helm.sh/stable
-            helm repo update
-        fi
-        helm upgrade --install metrics-server stable/metrics-server \
-        --set image.repository="rancher/metrics-server" \
-        --wait \
-        --set args[0]="--kubelet-insecure-tls" \
-        --set args[1]="--kubelet-preferred-address-types=InternalIP"
+        _add_helm_repo stable https://charts.helm.sh/stable
+        KRD_CHART_VALUES="image.repository=rancher/metrics-server,args[0]='--kubelet-insecure-tls',args[1]='--kubelet-preferred-address-types=InternalIP'" _install_chart metrics-server stable/metrics-server default
     fi
 
     if ! kubectl rollout status deployment/metrics-server --timeout=5m > /dev/null; then
@@ -204,103 +211,38 @@ EOF
 
 # install_kong() - Install Kong ingress services
 function install_kong {
-    install_helm
-
-    if ! helm repo list | grep -e kong; then
-        helm repo add kong https://charts.konghq.com
-    fi
-    if ! helm ls | grep -e kong; then
-        helm upgrade --install kong kong/kong --set proxy.type=NodePort
-    fi
-
-    kubectl rollout status deployment/kong-kong --timeout=5m
+    _add_helm_repo kong https://charts.konghq.com
+    KRD_CHART_VALUES="proxy.type=NodePort" _install_chart kong kong/kong default
 }
 
 # install_haproxy() - Install HAProxy ingress services
 function install_haproxy {
-    install_helm
-
-    if ! helm repo list | grep -e haproxytech; then
-        helm repo add haproxytech https://haproxytech.github.io/helm-charts
-    fi
-    if ! helm ls | grep -e haproxy; then
-        helm upgrade --install haproxy haproxytech/kubernetes-ingress
-    fi
-
-    kubectl rollout status deployment/haproxy-kubernetes-ingress --timeout=5m
-    kubectl rollout status deployment/haproxy-kubernetes-ingress-default-backend --timeout=5m
+    _add_helm_repo haproxytech https://haproxytech.github.io/helm-charts
+    _install_chart haproxy haproxytech/kubernetes-ingress
 }
 
 # install_falco() - Install Falco services
 function install_falco {
-    install_helm
-
-    if ! helm repo list | grep -e falcosecurity; then
-        helm repo add falcosecurity https://falcosecurity.github.io/charts
-    fi
-    if ! helm ls | grep -e falco; then
-        helm upgrade -f helm/falco/custom-rules.yml \
-        --set auditLog.enabled=true \
-        --install falco falcosecurity/falco
-    fi
-
-    kubectl rollout status daemonset/falco --timeout=5m
+    _add_helm_repo falcosecurity https://falcosecurity.github.io/charts
+    KRD_CHART_VALUES="auditLog.enabled=true" KRD_CHART_FILE="helm/falco/custom-rules.yml" _install_chart falco falcosecurity/falco
 }
 
 # install_gatekeeper() - Install OPA Gatekeeper controller
 function install_gatekeeper {
-    install_helm
-
-    if ! helm repo list | grep -e gatekeeper; then
-        helm repo add gatekeeper https://open-policy-agent.github.io/gatekeeper/charts
-    fi
-    if ! helm ls | grep -e gatekeeper; then
-        helm upgrade --create-namespace \
-        --namespace opa-system \
-        --wait \
-        --install gatekeeper gatekeeper/gatekeeper
-    fi
-
-    wait_for_pods opa-system
+    _add_helm_repo gatekeeper https://open-policy-agent.github.io/gatekeeper/charts
+    _install_chart gatekeeper gatekeeper/gatekeeper opa-system
 }
 
 # install_kyverno() - Install Kyverno dynamic admission controller
 function install_kyverno {
     install_gatekeeper
-    install_helm
-
-    if ! helm repo list | grep -e kyverno; then
-        helm repo add kyverno https://kyverno.github.io/kyverno/
-    fi
-    if ! helm ls | grep -e kyverno; then
-        helm upgrade --create-namespace \
-        --namespace kyverno-system \
-        --wait \
-        --install kyverno kyverno/kyverno
-    fi
-
-    wait_for_pods kyverno-system
+    _add_helm_repo kyverno https://kyverno.github.io/kyverno/
+    _install_chart kyverno kyverno/kyverno
 }
 
 # install_kubewarden() - Install Kubewarden dynamic admission controller
 function install_kubewarden {
-    install_helm
-
-    if ! helm repo list | grep -e kubewarden; then
-        helm repo add kubewarden https://charts.kubewarden.io
-    fi
-    if ! helm ls | grep -e kubewarden-crds; then
-        helm upgrade --create-namespace \
-        --namespace kubewarden-system \
-        --wait \
-        --install kubewarden-crds kubewarden/kubewarden-crds
-    fi
-    if ! helm ls | grep -e kubewarden-controller; then
-        helm upgrade --create-namespace \
-        --namespace kubewarden-system \
-        --wait \
-        --install kubewarden-controller kubewarden/kubewarden-controller
-    fi
-
-    wait_for_pods kubewarden-system
+    _add_helm_repo kubewarden https://charts.kubewarden.io
+    _install_chart kubewarden-crds kubewarden/kubewarden-crds kubewarden-system
+    _install_chart kubewarden-controller kubewarden/kubewarden-controller kubewarden-system
 }

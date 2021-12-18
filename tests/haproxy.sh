@@ -29,7 +29,7 @@ trap cleanup EXIT
 
 # Setup
 HOST=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}')
-PORT=$(kubectl get svc haproxy-kubernetes-ingress -o jsonpath='{.spec.ports[0].nodePort}')
+PORT=$(kubectl get svc haproxy-kubernetes-ingress -o jsonpath='{.spec.ports[0].nodePort}' -n haproxy-system)
 CURL_PROXY_CMD="curl -s http://${HOST}:${PORT}"
 
 # Test

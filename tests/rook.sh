@@ -19,29 +19,29 @@ source _assertions.sh
 
 function cleanup {
     kubectl delete -f resources/rook
-    kubectl patch cephblockpools.ceph.rook.io replicapool -n rook-ceph --type='json' -p="[{'op': 'replace', 'path': '/spec/replicated/size', 'value': 3}]"
+    kubectl patch cephblockpools.ceph.rook.io replicapool -n rook-ceph-system --type='json' -p="[{'op': 'replace', 'path': '/spec/replicated/size', 'value': 3}]"
 }
 
 # Setup
-kubectl patch cephblockpools.ceph.rook.io replicapool -n rook-ceph --type='json' -p="[{'op': 'replace', 'path': '/spec/replicated/size', 'value': 1}]"
+kubectl patch cephblockpools.ceph.rook.io replicapool -n rook-ceph-system --type='json' -p="[{'op': 'replace', 'path': '/spec/replicated/size', 'value': 1}]"
 sleep 3
 kubectl apply -f resources/rook
 trap cleanup EXIT
 
 attempt_counter=0
 max_attempts=5
-until [[ "$(kubectl get CephCluster -n rook-ceph my-cluster -o jsonpath='{.status.phase}')" == "Ready" ]]; do
+until [[ "$(kubectl get CephCluster -n rook-ceph-system my-cluster -o jsonpath='{.status.phase}')" == "Ready" ]]; do
     if [ ${attempt_counter} -eq ${max_attempts} ];then
         error "Max attempts reached"
     fi
     attempt_counter=$((attempt_counter+1))
     sleep $((attempt_counter*15))
 done
-wait_deployment rook-ceph-tools rook-ceph
+wait_deployment rook-ceph-tools rook-ceph-system
 
 info "Ceph Stats:"
 # Rook Toolbox - Common tools used for rook debugging and testing
-toolbox_cmd="kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l 'app=rook-ceph-tools' -o jsonpath='{.items[0].metadata.name}') -- "
+toolbox_cmd="kubectl -n rook-ceph-system exec -it $(kubectl -n rook-ceph-system get pod -l 'app=rook-ceph-tools' -o jsonpath='{.items[0].metadata.name}') -- "
 
 $toolbox_cmd rados df
 $toolbox_cmd ceph df
