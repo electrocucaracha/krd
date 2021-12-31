@@ -99,7 +99,7 @@ py==1.11.0
     # via pytest
 pycparser==2.21
     # via cffi
-pygments==2.10.0
+pygments==2.11.0
     # via rich
 pynacl==1.4.0
     # via paramiko
