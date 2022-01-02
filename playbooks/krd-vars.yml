@@ -25,9 +25,9 @@ net_certmanager_version: v0.28.0
 
 octant_version: 0.25.0
 kube-ovn_version: v1.8.1
-prometheus-operator_version: v0.53.0
+prometheus-operator_version: v0.53.1
 kubevirt_version: v0.48.1
-kubesphere_version: v3.2.0
+kubesphere_version: v3.2.1
 metallb_version: v0.11.0
 
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
