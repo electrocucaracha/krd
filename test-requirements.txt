@@ -129,7 +129,7 @@ requests==2.26.0
     # via cookiecutter
 resolvelib==0.5.4
     # via ansible-core
-rich==10.16.1
+rich==10.16.2
     # via
     #   ansible-lint
     #   enrich
