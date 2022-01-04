@@ -114,8 +114,8 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_DEBUG                             | false                                          | Enables verbose execution                                                       |
 | KRD_ANSIBLE_DEBUG                     | false                                          | Enables ansible verbose execution                                               |
 | PKG_DEBUG                             | false                                          | Enables cURL package installer verbose execution                                |
-| KRD_KUBE_VERSION                      | v1.21.6                                        | Specifies the Kubernetes version to be upgraded                                 |
-| KRD_KUBESPRAY_VERSION                 | v2.17.1                                        | Specifies the Kubespray version to be used during the upgrade process           |
+| KRD_KUBE_VERSION                      | v1.23.1                                        | Specifies the Kubernetes version to be upgraded                                 |
+| KRD_KUBESPRAY_VERSION                 | v2.18.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | `https://github.com/kubernetes-sigs/kubespray` | Specifies the Git repository to fetch the Kubespray's source code               |
 | KRD_ENABLE_TESTS                      | false                                          | Enables the functional tests during the deployment process                      |
 | KRD_HELM_CHART                        |                                                | Specifies the Helm chart to be installed                                        |
@@ -152,7 +152,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_INSECURE_REGISTRIES_LIST         |         | Specifies a list of insecure-registries (IP address or domain name)             |
 | KRD_LOCAL_VOLUME_PROVISIONER_ENABLED | true    | Enable/Disable [Local volume provisioner][20]                                   |
 | KRD_DOCKER_VERSION                   | latest  | Specifies the Docker version to be used for deploying Kubernetes                |
-| KRD_CONTAINERD_VERSION               | latest  | Specifies the ContainerD version to be used for deploying Kubernetes            |
+| KRD_CONTAINERD_VERSION               | 1.5.8   | Specifies the ContainerD version to be used for deploying Kubernetes            |
 | KRD_ENABLE_NODELOCALDNS              | true    | Enable/Disable [NodeLocal DNSCache][5]                                          |
 | KRD_NDOTS                            | 1       | Threshold for the number of dots which must appear in name resolution           |
 | KRD_RESOLVCONF_MODE                  | none    | Specifies the DNS setup for non-k8s containers.                                 |
