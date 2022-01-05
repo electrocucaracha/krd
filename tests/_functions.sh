@@ -22,9 +22,20 @@ source _utils.sh
 # destroyed in Kubernetes
 function destroy_deployment {
     local deployment_name=$1
+    local attempt_counter=0
+    max_attempts=4
 
     info "Destroying $deployment_name deployment"
     kubectl delete deployment "$deployment_name" --ignore-not-found=true --now --timeout=5m --wait=true > /dev/null
+    while [ "$(kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' | grep -c "$deployment_name-")" -gt 0 ]; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+            kubectl get pods
+            #get_status
+            error "Max attempts reached on waiting for $deployment_name deployment resource"
+        fi
+        attempt_counter=$((attempt_counter+1))
+        sleep $((attempt_counter*5))
+    done
 }
 
 # recreate_deployment() - This function destroys an existing deployment and
@@ -52,7 +63,7 @@ function wait_deployment {
 function wait_ingress {
     local ingress_name=$1
     local attempt_counter=0
-    readonly max_attempts=12
+    max_attempts=12
 
     info "Waiting for $ingress_name ingress..."
     until [ -n "$(kubectl get ingress "$ingress_name" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" ]; do
@@ -70,7 +81,7 @@ function wait_ingress {
 function wait_service {
     local service_name=$1
     local attempt_counter=0
-    readonly max_attempts=12
+    max_attempts=12
 
     info "Waiting for $service_name service..."
     until [ -n "$(kubectl get service "$service_name" -o jsonpath='{.spec.clusterIP}')" ]; do
