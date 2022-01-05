@@ -175,3 +175,6 @@ kubelet_logfiles_max_nr: $KRD_KUBELET_LOGFILES_MAX_NR
 
 # Maximum size of the container log file before it is rotated
 kubelet_logfiles_max_size: $KRD_KUBELET_LOGFILES_MAX_SIZE
+
+# Specify version of cert-manager to used (should be quoted string).
+cert_manager_version: "$KRD_CERT_MANAGER_VERSION"
