@@ -125,7 +125,7 @@ pyyaml==5.4.1
     #   molecule
     #   molecule-vagrant
     #   yamllint
-requests==2.27.0
+requests==2.27.1
     # via cookiecutter
 resolvelib==0.5.4
     # via ansible-core
