@@ -141,3 +141,6 @@ sed -i "s/nfd_version:.*/nfd_version: v$(get_version github_release kubernetes-s
 # Update Kubernetes Collection dependencies
 update_pip_pkg "kubernetes" "$(get_version github_release kubernetes-client/python)"
 update_pip_pkg "openshift" "$(get_version github_release openshift/openshift-restclient-python)"
+
+# Update Kubespray Default variables
+sed -i "s/{KRD_CERT_MANAGER_VERSION:-.*/{KRD_CERT_MANAGER_VERSION:-v$(get_version github_release jetstack/cert-manager)}/g" ./defaults.env

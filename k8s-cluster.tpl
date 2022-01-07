@@ -42,7 +42,7 @@ kube_network_plugin: $KRD_NETWORK_PLUGIN
 kubeconfig_localhost: true
 
 # Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.21.6
+kube_version: v1.23.1
 
 # Kube-proxy proxyMode configuration.
 # NOTE: Ipvs is based on netfilter hook function, but uses hash table as the underlying data structure and
@@ -125,9 +125,6 @@ flannel_backend_type: $KRD_FLANNEL_BACKEND_TYPE
 # Specify version of Docker to used (should be quoted string).
 docker_version: "$KRD_DOCKER_VERSION"
 
-# Specify version of ContainerD to used (should be quoted string).
-containerd_version: "$KRD_CONTAINERD_VERSION"
-
 # Override auto-detection of MTU by providing an explicit value if needed.
 calico_mtu: 1500
 
@@ -175,3 +172,6 @@ kubelet_logfiles_max_nr: $KRD_KUBELET_LOGFILES_MAX_NR
 
 # Maximum size of the container log file before it is rotated
 kubelet_logfiles_max_size: $KRD_KUBELET_LOGFILES_MAX_SIZE
+
+# Specify version of cert-manager to used (should be quoted string).
+cert_manager_version: "$KRD_CERT_MANAGER_VERSION"
