@@ -35,7 +35,7 @@ on:
       - '!**.md'
 
 jobs:
-  check-corner-cases:
+  check-security-tools:
     name: Check K8s Plugins installation methods in an Ubuntu Bionic All-in-One setup
     if: >-
       (
@@ -44,6 +44,12 @@ jobs:
       ) ||
       github.event_name != 'pull_request_review'
     runs-on: macos-10.15
+    env:
+      VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
+      MEMORY: 12288
+      KRD_INGRESS_NGINX_ENABLED: false
+      KRD_ENABLE_TESTS: true
+      PKG_KREW_PLUGINS_LIST: "cert-manager"
     steps:
       - uses: actions/checkout@v2
       - name: Cache Vagrant boxes
@@ -67,12 +73,21 @@ jobs:
           find . -type f -name "*.bak" -delete
       - name: Run integration tests
         env:
-          VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
-          MEMORY: 12288
-          KRD_INGRESS_NGINX_ENABLED: false
-          KRD_ENABLE_TESTS: true
-          PKG_KREW_PLUGINS_LIST: "cert-manager"
-          KRD_INT_TESTS: "falco kyverno gatekeeper kubewarden"
+          KRD_INT_TESTS: "falco kyverno gatekeeper"
+        run: |
+          cd ci
+          ./bootstrap.sh
+          ./provision_installer.sh
+          ./check.sh
+      - name: Cleanup previous execution
+        run: vagrant destroy -f
+      - name: Run kubewarden integration tests
+        env:
+          KRD_INT_TESTS: "kubewarden"
+          KRD_KUBE_VERSION: v1.21.6
+          KRD_KUBESPRAY_VERSION: v2.17.1
+          KRD_DOCKER_VERSION: latest
+          KRD_CONTAINERD_VERSION: latest
         run: |
           cd ci
           ./bootstrap.sh
