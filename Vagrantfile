@@ -52,7 +52,7 @@ loader = if File.exist?("/usr/share/qemu/OVMF.fd")
              File.dirname(__FILE__), "OVMF.fd"
            )
          end
-system("curl -O https://download.clearlinux.org/image/OVMF.fd") unless File.exist?(loader)
+system("curl -o #{File.dirname(__FILE__)}/OVMF.fd https://download.clearlinux.org/image/OVMF.fd") unless File.exist?(loader)
 
 system("echo -e \"\n\n\n\" | ssh-keygen -f #{File.dirname(__FILE__)}/insecure_keys/key -t rsa -N ''") unless File.exist?("#{File.dirname(__FILE__)}/insecure_keys/key")
 
