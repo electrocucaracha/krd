@@ -10,6 +10,10 @@
 
 extends: default
 
+yaml-files:
+  - '*.yml'
+  - '.yamllint'
+
 ignore: |
   .tox/
 

@@ -124,7 +124,7 @@ function install_rook {
             kubectl patch storageclass "$class" -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
         done
 
-        kubectl apply -f resources/storageclass.yaml
+        kubectl apply -f resources/storageclass.yml
         kubectl patch storageclass rook-ceph-block -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     fi
 }

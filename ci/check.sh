@@ -70,11 +70,10 @@ function _run_integration_tests {
 }
 
 function _run_conformance_tools {
-    info "Running Sonobuoy tool"
-    run_installer_cmd . ./krd_command.sh -a run_sonobuoy
-
-    info "Running Kubescape tool"
-    run_installer_cmd . ./krd_command.sh -a run_kubescape
+    for tool in sonobuoy kubescape checkov; do
+        info "Running $tool tool"
+        run_installer_cmd . ./krd_command.sh -a "run_$tool"
+    done
 }
 
 function _test_virtlet {
@@ -100,9 +99,6 @@ fi
 
 trap _exit_trap ERR
 _run_assertions
-if [[ "${RUN_CONFORMANCE_TOOLS:-false}" == "true" ]]; then
-    _run_conformance_tools
-fi
 if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
     _run_integration_tests
 fi
@@ -111,4 +107,7 @@ if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
 fi
 if [[ "${TEST_RUNTIMECLASSES:-false}" == "true" ]]; then
     _test_runtime_classes
+fi
+if [[ "${RUN_CONFORMANCE_TOOLS:-false}" == "true" ]]; then
+    _run_conformance_tools
 fi

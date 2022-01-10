@@ -22,6 +22,7 @@ exclude_paths:
   - .travis.yml
   - tests
   - playbooks/krd-vars.yml
+  - resources/
 mock_roles:
   - andrewrothstein.gcc-toolbox
   - geerlingguy.docker

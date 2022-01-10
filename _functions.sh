@@ -215,3 +215,11 @@ function run_sonobuoy {
     fi
     sonobuoy delete --wait --level warn
 }
+
+# run_checkov() - Installs and runs checkov tool
+function run_checkov {
+    kubectl apply -f resources/checkov-job.yaml
+    wait_for_pods checkov
+    kubectl logs job/checkov -n checkov
+    kubectl delete -f resources/checkov-job.yaml
+}
