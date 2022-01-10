@@ -46,6 +46,7 @@ different scenarios. There are different setups located in the
 | OPA Gatekeeper | Policy Controller                               |                                   | Tested      |
 | Kyverno        | Kubernetes Native Policy Management             |                                   | Tested      |
 | Kubewarden     | Kubernetes Native Policy Management             |                                   | Tested      |
+| kube-monkey    | Netflix's Chaos Monkey for Kubernetes clusters  |                                   | Implemented |
 
 ## Quick Deployment
 

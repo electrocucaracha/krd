@@ -246,3 +246,9 @@ function install_kubewarden {
     _install_chart kubewarden-crds kubewarden/kubewarden-crds kubewarden-system
     _install_chart kubewarden-controller kubewarden/kubewarden-controller kubewarden-system
 }
+
+# install_kube-monkey() - Install Kube-Monkey chaos services
+function install_kube-monkey {
+    _add_helm_repo kubemonkey https://asobti.github.io/kube-monkey/charts/repo
+    _install_chart kubemonkey kubemonkey/kube-monkey
+}
