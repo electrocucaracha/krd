@@ -10,7 +10,7 @@ ansible-compat==0.5.0
     # via molecule
 ansible-core==2.12.1
     # via ansible
-ansible-lint==5.3.1
+ansible-lint==5.3.2
     # via -r test-requirements.in
 arrow==1.2.1
     # via jinja2-time
@@ -54,7 +54,7 @@ cryptography==36.0.1
     #   paramiko
 distro==1.6.0
     # via selinux
-enrich==1.2.6
+enrich==1.2.7
     # via
     #   ansible-lint
     #   molecule
