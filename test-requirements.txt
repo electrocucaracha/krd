@@ -6,7 +6,7 @@
 #
 ansible==5.1.0
     # via -r test-requirements.in
-ansible-compat==0.5.0
+ansible-compat==1.0.0
     # via molecule
 ansible-core==2.12.1
     # via ansible
@@ -148,7 +148,9 @@ six==1.16.0
     #   cookiecutter
     #   python-dateutil
 subprocess-tee==0.3.5
-    # via molecule
+    # via
+    #   ansible-compat
+    #   molecule
 tenacity==8.0.1
     # via ansible-lint
 text-unidecode==1.3
