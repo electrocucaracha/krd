@@ -46,6 +46,7 @@ different scenarios. There are different setups located in the
 | OPA Gatekeeper | Policy Controller                               |                                   | Tested      |
 | Kyverno        | Kubernetes Native Policy Management             |                                   | Tested      |
 | Kubewarden     | Kubernetes Native Policy Management             |                                   | Tested      |
+| kube-monkey    | Netflix's Chaos Monkey for Kubernetes clusters  |                                   | Implemented |
 
 ## Quick Deployment
 
@@ -152,6 +153,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_INSECURE_REGISTRIES_LIST         |         | Specifies a list of insecure-registries (IP address or domain name)             |
 | KRD_LOCAL_VOLUME_PROVISIONER_ENABLED | true    | Enable/Disable [Local volume provisioner][20]                                   |
 | KRD_DOCKER_VERSION                   | latest  | Specifies the Docker version to be used for deploying Kubernetes                |
+| KRD_CONTAINERD_VERSION               | 1.5.8   | Specifies the ContainerD version to be used for deploying Kubernetes            |
 | KRD_ENABLE_NODELOCALDNS              | true    | Enable/Disable [NodeLocal DNSCache][5]                                          |
 | KRD_NDOTS                            | 1       | Threshold for the number of dots which must appear in name resolution           |
 | KRD_RESOLVCONF_MODE                  | none    | Specifies the DNS setup for non-k8s containers.                                 |

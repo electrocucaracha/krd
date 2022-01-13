@@ -66,6 +66,8 @@ jobs:
           TEST_VIRTLET: true
           KRD_CONTAINER_RUNTIME: docker
           PKG_KREW_PLUGINS_LIST: " "
+          KRD_DOCKER_VERSION: latest
+          KRD_CONTAINERD_VERSION: latest
         run: |
           cd ci
           ./bootstrap.sh

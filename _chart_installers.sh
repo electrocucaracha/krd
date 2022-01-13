@@ -124,7 +124,7 @@ function install_rook {
             kubectl patch storageclass "$class" -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
         done
 
-        kubectl apply -f resources/storageclass.yaml
+        kubectl apply -f resources/storageclass.yml
         kubectl patch storageclass rook-ceph-block -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     fi
 }
@@ -245,4 +245,10 @@ function install_kubewarden {
     _add_helm_repo kubewarden https://charts.kubewarden.io
     _install_chart kubewarden-crds kubewarden/kubewarden-crds kubewarden-system
     _install_chart kubewarden-controller kubewarden/kubewarden-controller kubewarden-system
+}
+
+# install_kube-monkey() - Install Kube-Monkey chaos services
+function install_kube-monkey {
+    _add_helm_repo kubemonkey https://asobti.github.io/kube-monkey/charts/repo
+    _install_chart kubemonkey kubemonkey/kube-monkey
 }

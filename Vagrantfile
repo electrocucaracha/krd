@@ -52,7 +52,7 @@ loader = if File.exist?("/usr/share/qemu/OVMF.fd")
              File.dirname(__FILE__), "OVMF.fd"
            )
          end
-system("curl -O https://download.clearlinux.org/image/OVMF.fd") unless File.exist?(loader)
+system("curl -o #{File.dirname(__FILE__)}/OVMF.fd https://download.clearlinux.org/image/OVMF.fd") unless File.exist?(loader)
 
 system("echo -e \"\n\n\n\" | ssh-keygen -f #{File.dirname(__FILE__)}/insecure_keys/key -t rsa -N ''") unless File.exist?("#{File.dirname(__FILE__)}/insecure_keys/key")
 
@@ -342,6 +342,8 @@ Vagrant.configure("2") do |config|
         KRD_CONTAINER_RUNTIME: ENV["KRD_CONTAINER_RUNTIME"],
         KRD_KUBE_VERSION: ENV["KRD_KUBE_VERSION"],
         KRD_KUBESPRAY_VERSION: ENV["KRD_KUBESPRAY_VERSION"],
+        KRD_DOCKER_VERSION: ENV["KRD_DOCKER_VERSION"],
+        KRD_CONTAINERD_VERSION: ENV["KRD_CONTAINERD_VERSION"],
         KRD_KATA_CONTAINERS_ENABLED: ENV["KRD_KATA_CONTAINERS_ENABLED"],
         KRD_CRUN_ENABLED: ENV["KRD_CRUN_ENABLED"],
         KRD_KUBESPRAY_REPO: ENV["KRD_KUBESPRAY_REPO"],

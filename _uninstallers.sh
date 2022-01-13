@@ -152,3 +152,8 @@ function uninstall_kubewarden {
     _uninstall_helm kubewarden-crds
     _delete_namespace kubewarden-system
 }
+
+# uninstall_kube-monkey() - Uninstall Kube-Monkey services
+function uninstall_kube-monkey {
+    _uninstall_helm kubemonkey
+}
