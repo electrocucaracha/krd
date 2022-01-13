@@ -167,6 +167,17 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_KUBELET_LOGFILES_MAX_NR          | 5       | Maximum number of [container log][24] files that can be present for a container |
 | KRD_KUBELET_LOGFILES_MAX_SIZE        | 10Mi    | Maximum size of the [container log][24] file before it is rotated               |
 
+## Contribution
+
+This project welcomes your PR and issues.
+For example, refactoring, adding features, correcting English, etc.
+
+Thanks to all the people who already contributed!
+
+<a href="https://github.com/electrocucaracha/krd/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=electrocucaracha/krd" />
+</a>
+
 [1]: https://github.com/kubernetes-sigs/kubespray
 [2]: https://github.com/k8snetworkplumbingwg/multus-cni
 [3]: playbooks/configure-virtlet.yml
