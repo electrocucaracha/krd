@@ -124,6 +124,7 @@ flannel_backend_type: $KRD_FLANNEL_BACKEND_TYPE
 
 # Specify version of Docker to used (should be quoted string).
 docker_version: "$KRD_DOCKER_VERSION"
+
 # Specify version of ContainerD to used (should be quoted string).
 containerd_version: "$KRD_CONTAINERD_VERSION"
 
