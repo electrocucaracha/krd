@@ -131,7 +131,7 @@ function install_rook {
 
 # install_metrics_server() - Installs Metrics Server services
 function install_metrics_server {
-    KRD_HELM_VERSION=2 install_helm
+    install_helm
     helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
 
     if _vercmp "${helm_installed_version#*v}" '<' '3'; then
@@ -180,8 +180,8 @@ EOF
             --set args[2]="--v=2" --tiller-namespace "$KRD_TILLER_NAMESPACE"
         fi
     else
-        _add_helm_repo stable https://charts.helm.sh/stable
-        KRD_CHART_VALUES="image.repository=rancher/metrics-server,args[0]='--kubelet-insecure-tls',args[1]='--kubelet-preferred-address-types=InternalIP'" _install_chart metrics-server stable/metrics-server default
+        _add_helm_repo metrics-server https://kubernetes-sigs.github.io/metrics-server/
+        KRD_CHART_VALUES="image.repository=rancher/metrics-server,image.tag=v0.4.1,args[0]='--kubelet-insecure-tls',args[1]='--kubelet-preferred-address-types=InternalIP'" _install_chart metrics-server metrics-server/metrics-server default
     fi
 
     if ! kubectl rollout status deployment/metrics-server --timeout=5m > /dev/null; then
