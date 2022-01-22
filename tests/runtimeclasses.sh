@@ -20,9 +20,10 @@ source _assertions.sh
 kata_deployment_name=kata-deployment-demo
 crun_deployment_name=crun-deployment-demo
 gvisor_deployment_name=gvisor-deployment-demo
+youki_deployment_name=youki-deployment-demo
 
 function cleanup {
-    for deployment in "$kata_deployment_name" "$crun_deployment_name" "$gvisor_deployment_name"; do
+    for deployment in "$kata_deployment_name" "$crun_deployment_name" "$gvisor_deployment_name" "$youki_deployment_name"; do
         destroy_deployment "$deployment"
     done
 }
@@ -98,6 +99,18 @@ if kubectl get runtimeclasses/gvisor > /dev/null; then
     assert_non_empty "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "$deployment_pod is using the default runtime"
     assert_contains "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "gvisor" "$deployment_pod is not using the gVisor runtime"
     destroy_deployment "$gvisor_deployment_name"
+fi
+
+if kubectl get runtimeclasses/youki > /dev/null; then
+    info "+++++ youki validation:"
+    create_deployment "$youki_deployment_name" "youki"
+    wait_deployment "$youki_deployment_name"
+    deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=youki -o jsonpath='{.items[0].metadata.name}')
+
+    info "$deployment_pod assertions:"
+    assert_non_empty "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "$deployment_pod is using the default runtime"
+    assert_contains "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "youki" "$deployment_pod is not using the youki runtime"
+    destroy_deployment "$youki_deployment_name"
 fi
 
 info "===== Test completed ====="
