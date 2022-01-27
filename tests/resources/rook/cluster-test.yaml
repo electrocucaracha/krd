@@ -11,7 +11,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: rook-config-override
-  namespace: rook-ceph-system # namespace:cluster
+  namespace: rook-ceph # namespace:cluster
 data:
   config: |
     [global]
@@ -24,11 +24,11 @@ apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
   name: my-cluster
-  namespace: rook-ceph-system # namespace:cluster
+  namespace: rook-ceph # namespace:cluster
 spec:
   dataDirHostPath: /var/lib/rook
   cephVersion:
-    image: ceph/ceph:v16
+    image: quay.io/ceph/ceph:v16.2.7
     allowUnsupported: true
   mon:
     count: 1
@@ -51,3 +51,15 @@ spec:
         timeout: 600s
   disruptionManagement:
     managePodBudgets: true
+---
+apiVersion: ceph.rook.io/v1
+kind: CephBlockPool
+metadata:
+  name: device-health-metrics
+  namespace: rook-ceph # namespace:cluster
+spec:
+  name: device_health_metrics
+  failureDomain: host
+  replicated:
+    size: 1
+    requireSafeReplicaSize: false

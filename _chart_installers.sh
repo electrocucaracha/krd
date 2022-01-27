@@ -118,7 +118,7 @@ function install_rook {
     _add_helm_repo rook-release https://charts.rook.io/release
     kubectl label nodes --all role=storage --overwrite
     if ! helm ls -qA | grep -q rook-ceph; then
-        KRD_CHART_VALUES="agent.nodeAffinity='role=storage'" _install_chart rook-ceph rook-release/rook-ceph
+        KRD_CHART_VALUES="agent.nodeAffinity='role=storage'" _install_chart rook-ceph rook-release/rook-ceph rook-ceph
 
         for class in $(kubectl get storageclasses --no-headers -o custom-columns=name:.metadata.name); do
             kubectl patch storageclass "$class" -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
