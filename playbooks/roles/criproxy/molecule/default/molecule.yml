@@ -15,7 +15,7 @@ driver:
 lint: |
   set -e
   PATH=${PATH}
-  yamllint -c ../../../.yamllint .
+  yamllint -c ../../../.yaml-lint.yml .
 platforms:
   - name: centos7
     box: generic/centos7

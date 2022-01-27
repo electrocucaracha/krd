@@ -12,6 +12,7 @@ skip_list:
   - no-changed-when
   - risky-shell-pipe
   - command-instead-of-shell
+  - line-length
 exclude_paths:
   - .tox/
   - .github
