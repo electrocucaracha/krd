@@ -72,8 +72,8 @@ jobs:
           KRD_CERT_MANAGER_ENABLED: false
           KRD_INGRESS_NGINX_ENABLED: false
           KRD_ENABLE_TESTS: true
-# TODO: Investigate about the Kong ingress creation issue
-# TODO: Investigate about the Rook resource release issue
+          # TODO: Investigate about the Kong ingress creation issue
+          # TODO: Investigate about the Rook resource release issue
           PKG_KREW_PLUGINS_LIST: "virt"
           KRD_INT_TESTS: "metallb istio haproxy kubevirt knative"
         run: |
