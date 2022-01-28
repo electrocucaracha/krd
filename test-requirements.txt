@@ -12,7 +12,7 @@ ansible-core==2.12.1
     # via ansible
 ansible-lint==5.3.2
     # via -r test-requirements.in
-arrow==1.2.1
+arrow==1.2.2
     # via jinja2-time
 attrs==21.4.0
     # via pytest
