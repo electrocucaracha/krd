@@ -20,11 +20,42 @@ source _assertions.sh
 kata_deployment_name=kata-deployment-demo
 crun_deployment_name=crun-deployment-demo
 gvisor_deployment_name=gvisor-deployment-demo
+youki_deployment_name=youki-deployment-demo
 
 function cleanup {
-    destroy_deployment "$kata_deployment_name"
-    destroy_deployment "$crun_deployment_name"
-    destroy_deployment "$gvisor_deployment_name"
+    for deployment in "$kata_deployment_name" "$crun_deployment_name" "$gvisor_deployment_name" "$youki_deployment_name"; do
+        destroy_deployment "$deployment"
+    done
+}
+
+function create_deployment {
+    name="$1"
+    runtime="$2"
+
+    cat <<EOF | kubectl apply -f -
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: $runtime
+  name: $name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: $runtime
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: $runtime
+    spec:
+      runtimeClassName: $runtime
+      containers:
+        - name: test
+          image: busybox
+          command: ["sleep"]
+          args: ["infity"]
+EOF
 }
 
 trap cleanup EXIT
@@ -35,32 +66,9 @@ info "===== Test started ====="
 
 if kubectl get runtimeclasses/kata-qemu > /dev/null; then
     info "+++++ Kata Containers QEMU validation:"
-    cat <<EOF | kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app.kubernetes.io/name: kata
-  name: $kata_deployment_name
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: kata
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: kata
-    spec:
-      runtimeClassName: kata-qemu
-      containers:
-        - name: test
-          image: busybox
-          command: ["sleep"]
-          args: ["infity"]
-EOF
+    create_deployment "$kata_deployment_name" "kata-qemu"
     wait_deployment "$kata_deployment_name"
-    deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=kata -o jsonpath='{.items[0].metadata.name}')
+    deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=kata-qemu -o jsonpath='{.items[0].metadata.name}')
 
     info "$deployment_pod assertions:"
     assert_non_empty "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "$deployment_pod is using the default runtime"
@@ -71,30 +79,7 @@ fi
 
 if kubectl get runtimeclasses/crun > /dev/null; then
     info "+++++ crun validation:"
-    cat <<EOF | kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app.kubernetes.io/name: crun
-  name: $crun_deployment_name
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: crun
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: crun
-    spec:
-      runtimeClassName: crun
-      containers:
-        - name: test
-          image: busybox
-          command: ["sleep"]
-          args: ["infity"]
-EOF
+    create_deployment "$crun_deployment_name" "crun"
     wait_deployment "$crun_deployment_name"
     deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=crun -o jsonpath='{.items[0].metadata.name}')
 
@@ -105,31 +90,8 @@ EOF
 fi
 
 if kubectl get runtimeclasses/gvisor > /dev/null; then
-    info "+++++ crun validation:"
-    cat <<EOF | kubectl apply -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app.kubernetes.io/name: crun
-  name: $gvisor_deployment_name
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: gvisor
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: gvisor
-    spec:
-      runtimeClassName: gvisor
-      containers:
-        - name: test
-          image: busybox
-          command: ["sleep"]
-          args: ["infity"]
-EOF
+    info "+++++ gvisor validation:"
+    create_deployment "$gvisor_deployment_name" "gvisor"
     wait_deployment "$gvisor_deployment_name"
     deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=gvisor -o jsonpath='{.items[0].metadata.name}')
 
@@ -137,6 +99,18 @@ EOF
     assert_non_empty "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "$deployment_pod is using the default runtime"
     assert_contains "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "gvisor" "$deployment_pod is not using the gVisor runtime"
     destroy_deployment "$gvisor_deployment_name"
+fi
+
+if kubectl get runtimeclasses/youki > /dev/null; then
+    info "+++++ youki validation:"
+    create_deployment "$youki_deployment_name" "youki"
+    wait_deployment "$youki_deployment_name"
+    deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=youki -o jsonpath='{.items[0].metadata.name}')
+
+    info "$deployment_pod assertions:"
+    assert_non_empty "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "$deployment_pod is using the default runtime"
+    assert_contains "$(kubectl get pods "$deployment_pod" -o jsonpath='{.spec.runtimeClassName}')" "youki" "$deployment_pod is not using the youki runtime"
+    destroy_deployment "$youki_deployment_name"
 fi
 
 info "===== Test completed ====="

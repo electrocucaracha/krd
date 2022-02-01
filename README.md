@@ -22,7 +22,7 @@ different scenarios. There are different setups located in the
 | Ubuntu     | 16.04/18.04/20.04 |
 | CentOS     | 7/8               |
 | openSUSE   | Tumbleweed/Leap   |
-| Fedora     | 32/33             |
+| Fedora     | 33/34             |
 
 ## Components
 
@@ -146,6 +146,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_INGRESS_NGINX_ENABLED            | true    | Enable/Disable [NGINX Ingress Controller][11]                                   |
 | KRD_KATA_CONTAINERS_ENABLED          | false   | Enable/Disable [Kata Containers Runtime][13]                                    |
 | KRD_CRUN_ENABLED                     | false   | Enable/Disable [crun][18]                                                       |
+| KRD_YOUKI_ENABLED                    | false   | Enable/Disable [youki][26]                                                      |
 | KRD_GVISOR_ENABLED                   | false   | Enable/Disable [gVisor][25]                                                     |
 | KRD_FLANNEL_BACKEND_TYPE             | host-gw | Type of flannel backend to use (vxlan, host-gw, udp)                            |
 | KRD_MANUAL_DNS_SERVER                |         | Set to use a custom cluster DNS                                                 |
@@ -203,3 +204,4 @@ Thanks to all the people who already contributed!
 [23]: https://kubernetes.io/docs/tasks/debug-application-cluster/audit/
 [24]: https://kubernetes.io/docs/concepts/cluster-administration/logging/
 [25]: https://gvisor.dev/docs/
+[26]: https://containers.github.io/youki/

@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rook-ceph-tools
-  namespace: rook-ceph-system
+  namespace: rook-ceph # namespace:cluster
   labels:
     app: rook-ceph-tools
 spec:
@@ -19,9 +19,14 @@ spec:
       containers:
         - name: rook-ceph-tools
           image: rook/ceph:master
-          command: ["/tini"]
-          args: ["-g", "--", "/usr/local/bin/toolbox.sh"]
+          command: ["/bin/bash"]
+          args: ["-m", "-c", "/usr/local/bin/toolbox.sh"]
           imagePullPolicy: IfNotPresent
+          tty: true
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 2016
+            runAsGroup: 2016
           env:
             - name: ROOK_CEPH_USERNAME
               valueFrom:

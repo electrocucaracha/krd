@@ -12,7 +12,7 @@ apiVersion: ceph.rook.io/v1
 kind: CephBlockPool
 metadata:
   name: replicapool
-  namespace: rook-ceph-system
+  namespace: rook-ceph
 spec:
   replicated:
     size: 3

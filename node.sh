@@ -38,7 +38,14 @@ EOF
     sudo mkfs -t ext4 "${dev_name}1"
     sudo mkdir -p "$mount_dir"
     sudo mount "${dev_name}1" "$mount_dir"
-    echo "${dev_name}1 $mount_dir           ext4    errors=remount-ro,noatime,barrier=0 0       1" | sudo tee --append /etc/fstab
+    # NOTE: barrier=0 - Write barriers are used to enforce proper on-disk
+    # ordering of journal commits, but they will degrade the performance of the
+    # file system. However, if the system does not have battery-backed disks,
+    # there is a risk of file system corruption. Since etcd uses write-ahead
+    # logging and calls fsync every time it commits to the raft log, it’s okay
+    # to disable the write barrier.
+    # commit=60 - The number of seconds for each data and meta data sync.
+    echo "${dev_name}1 $mount_dir           ext4    errors=remount-ro,noatime,barrier=0,commit=60 0       1" | sudo tee --append /etc/fstab
 }
 
 # disable_swap() - Disable Swap

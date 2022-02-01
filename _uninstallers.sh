@@ -123,7 +123,7 @@ function uninstall_kubevirt {
 # uninstall_rook() - Uninstall Rook services
 function uninstall_rook {
     _uninstall_helm rook-ceph
-    _delete_namespace rook-ceph-system
+    _delete_namespace rook-ceph
     kubectl delete storageclasses.storage.k8s.io rook-ceph-block --ignore-not-found
     class="$(kubectl get storageclasses --no-headers -o custom-columns=name:.metadata.name | awk 'NR==1{print $1}')"
     if [[ -n "$class" ]]; then

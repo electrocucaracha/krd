@@ -17,13 +17,13 @@
   debug:
     var: intel_qat_version
 
-- include: cleanup.yml
+- include_tasks: cleanup.yml
   when: intel_qat_version.stdout != qat_driver_version
 
-- include: bootstrap.yml
+- include_tasks: bootstrap.yml
   when: intel_qat_version.stdout != qat_driver_version
 
-- include: build.yml
+- include_tasks: build.yml
   when: intel_qat_version.stdout != qat_driver_version
 
 - name: create qat_service systemd wrapper

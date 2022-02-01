@@ -29,6 +29,9 @@ function cleanup {
 }
 
 function create_client {
+    local attempt_counter=0
+    max_attempts=5
+
     cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod
@@ -40,12 +43,21 @@ spec:
       name: main
       env:
         - name: SERVER_ADDR
-          value: http://server:80/
+          value: http://$service_name:80/
         - name: REQUESTS_PER_SECOND
           value: '10'
 EOF
     kubectl wait --for=condition=ready pods client --timeout=3m
     kubectl logs -n istio-system -l app=istiod | grep default/client
+
+    info "Waiting for istio's client pod..."
+    until [[ "$(kubectl logs client)" == *"10 request(s) complete to http://$service_name:80/"* ]]; do
+        if [ ${attempt_counter} -eq ${max_attempts} ];then
+            error "Max attempts reached on waiting for istio's client resource"
+        fi
+        attempt_counter=$((attempt_counter+1))
+        sleep $((attempt_counter*2))
+    done
 }
 
 trap cleanup EXIT
@@ -54,7 +66,7 @@ trap cleanup EXIT
 kubectl label namespace default istio-injection=enabled --overwrite
 kubectl get namespaces --show-labels
 
-# Test
+# Test https://istiobyexample.dev/mtls/
 info "===== Test started ====="
 
 cat <<EOF | kubectl apply -f -
@@ -95,9 +107,7 @@ create_client
 
 assert_contains "$(kubectl get pods -l=app.kubernetes.io/name=server -o jsonpath='{range .items[0].spec.containers[*]}{.image}{"\n"}{end}')" "istio/proxy" "Istio proxy wasn't injected into the server's pod"
 
-assert_non_empty "$(kubectl logs client)" "There is no client's logs"
 assert_contains "$(kubectl logs client)" "Starting loadgen" "The client's pod doesn't start it"
 assert_contains "$(kubectl logs -n istio-system -l app=istiod)" "Sidecar injection request for default/client" "The Client's sidecar injection request wasn't received"
-assert_contains "$(kubectl logs client)" "10 request(s) complete to http://server:80/" "The client's pod can't connect to the server"
 
 info "===== Test completed ====="

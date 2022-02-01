@@ -9,7 +9,9 @@
 ##############################################################################
 
 - name: deploy cfssl binaries
-  include: bootstrap.yml binary={{ item }}
+  include_tasks: bootstrap.yml
+  vars:
+    binary: "{{ item }}"
   with_items:
     - cfssl
     - cfssljson

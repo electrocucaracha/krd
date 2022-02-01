@@ -103,6 +103,9 @@ kata_containers_enabled: $KRD_KATA_CONTAINERS_ENABLED
 # crun is a container runtime which has lower footprint, better performance and cgroup2 support
 crun_enabled: $KRD_CRUN_ENABLED
 
+# youki is an implementation of the OCI runtime-spec in Rust, similar to runc.
+youki_enabled: $KRD_YOUKI_ENABLED
+
 # gVisor is an application kernel, written in Go, that implements a substantial portion of the Linux system call interface.
 gvisor_enabled: $KRD_GVISOR_ENABLED
 

@@ -11,16 +11,16 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-
-# All-in-One deployments can't take advantage of image caching.
-export KRD_DOWNLOAD_LOCALHOST=false
-krd_actions_list=${KRD_ACTIONS_LIST:-install_k8s}
-
 if [ "${KRD_DEBUG:-false}" == "true" ]; then
     set -o xtrace
     export PKG_DEBUG=true
 fi
 
+# All-in-One deployments can't take advantage of image caching.
+export KRD_DOWNLOAD_LOCALHOST=false
+krd_actions_list=${KRD_ACTIONS_LIST:-install_k8s}
+
+# Validators
 if ! sudo -n "true"; then
     echo ""
     echo "passwordless sudo is needed for '$(id -nu)' user."
@@ -38,16 +38,9 @@ if [[ $(id -u) -eq 0 ]]; then
     exit 1
 fi
 
-curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE=true bash
-pkgs=""
-for pkg in hostname wget git; do
-    if ! command -v "$pkg"; then
-        pkgs+=" $pkg"
-    fi
-done
-if [ -n "$pkgs" ]; then
-    curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
-fi
+# Install dependencies
+# NOTE: Shorten link -> https://github.com/electrocucaracha/pkg-mgr_scripts
+curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE=true PKG_COMMANDS_LIST="hostname,wget,git" bash
 
 # Validating local IP addresses in no_proxy environment variable
 if [[ ${NO_PROXY+x} = "x" ]]; then
@@ -62,6 +55,7 @@ fi
 echo "Sync server's clock"
 sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
 
+# Configuring KRD project
 krd_folder="${KRD_FOLDER:-/opt/krd}"
 if [ ! -d "$krd_folder" ]; then
     echo "Cloning and configuring KRD project..."
@@ -70,15 +64,7 @@ if [ ! -d "$krd_folder" ]; then
 fi
 cd "$krd_folder" || exit
 
-is_k8s_action="false"
-for value in "${KRD_ACTIONS[@]:-install_k8s}"; do
-    if [[ "$value" == *k8s* ]]; then
-        is_k8s_action="true"
-        break
-    fi
-done
-
-if [ "$is_k8s_action" == "true" ]; then
+if [[ "$krd_actions_list" == *k8s* ]]; then
     # Setup SSH keys
     rm -f ~/.ssh/id_rsa*
     sudo mkdir -p /root/.ssh/

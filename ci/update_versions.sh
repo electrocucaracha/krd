@@ -147,4 +147,11 @@ sed -i "s/{KRD_CONTAINERD_VERSION:-.*/{KRD_CONTAINERD_VERSION:-$(get_version git
 sed -i "s/{KRD_CERT_MANAGER_VERSION:-.*/{KRD_CERT_MANAGER_VERSION:-v$(get_version github_release jetstack/cert-manager)}/g" ./defaults.env
 
 # Update Checkov
-wget -O ./resources/checkov-job.yaml https://raw.githubusercontent.com/bridgecrewio/checkov/master/kubernetes/checkov-job.yaml
+wget -q -O ./resources/checkov-job.yaml https://raw.githubusercontent.com/bridgecrewio/checkov/master/kubernetes/checkov-job.yaml
+
+# Update Metrics server
+sed -i "s|image.tag=.*|image.tag=v$(get_version docker_tag rancher/metrics-server),args[0]='--kubelet-insecure-tls',args[1]='--kubelet-preferred-address-types=InternalIP'\" _install_chart metrics-server metrics-server/metrics-server default|g" _chart_installers.sh
+
+# Update Rook test resources
+wget -q -O ./tests/resources/rook/toolbox.yaml https://raw.githubusercontent.com/rook/rook/master/deploy/examples/toolbox.yaml
+wget -q -O ./tests/resources/rook/cluster-test.yaml https://raw.githubusercontent.com/rook/rook/master/deploy/examples/cluster-test.yaml
