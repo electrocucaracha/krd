@@ -73,7 +73,7 @@ jinja2-time==0.2.0
     # via cookiecutter
 markupsafe==2.0.1
     # via jinja2
-molecule==3.5.2
+molecule==3.6.0
     # via
     #   -r test-requirements.in
     #   molecule-vagrant
@@ -117,7 +117,7 @@ python-vagrant==0.5.15
     # via
     #   -r test-requirements.in
     #   molecule-vagrant
-pyyaml==5.4.1
+pyyaml==6.0
     # via
     #   ansible-compat
     #   ansible-core
@@ -139,18 +139,14 @@ ruamel-yaml==0.17.20
 ruamel-yaml-clib==0.2.6
     # via ruamel.yaml
 selinux==0.2.1
-    # via
-    #   molecule
-    #   molecule-vagrant
+    # via molecule-vagrant
 six==1.16.0
     # via
     #   bcrypt
     #   cookiecutter
     #   python-dateutil
 subprocess-tee==0.3.5
-    # via
-    #   ansible-compat
-    #   molecule
+    # via ansible-compat
 tenacity==8.0.1
     # via ansible-lint
 text-unidecode==1.3
