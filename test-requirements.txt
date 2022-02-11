@@ -107,7 +107,7 @@ pyparsing==3.0.7
     # via packaging
 pytest==7.0.0
     # via pytest-testinfra
-pytest-testinfra==6.5.0
+pytest-testinfra==6.6.0
     # via -r test-requirements.in
 python-dateutil==2.8.2
     # via arrow
