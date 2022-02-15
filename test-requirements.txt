@@ -73,7 +73,7 @@ jinja2-time==0.2.0
     # via cookiecutter
 markupsafe==2.0.1
     # via jinja2
-molecule==3.6.0
+molecule==3.6.1
     # via
     #   -r test-requirements.in
     #   molecule-vagrant
