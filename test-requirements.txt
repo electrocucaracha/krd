@@ -35,7 +35,7 @@ chardet==4.0.0
     # via binaryornot
 charset-normalizer==2.0.12
     # via requests
-click==8.0.3
+click==8.0.4
     # via
     #   click-help-colors
     #   cookiecutter
@@ -71,7 +71,7 @@ jinja2==3.0.3
     #   molecule-vagrant
 jinja2-time==0.2.0
     # via cookiecutter
-markupsafe==2.0.1
+markupsafe==2.1.0
     # via jinja2
 molecule==3.6.1
     # via
