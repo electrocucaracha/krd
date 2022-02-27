@@ -111,7 +111,7 @@ pytest-testinfra==6.6.0
     # via -r test-requirements.in
 python-dateutil==2.8.2
     # via arrow
-python-slugify==6.1.0
+python-slugify==6.1.1
     # via cookiecutter
 python-vagrant==0.5.15
     # via
