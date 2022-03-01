@@ -8,7 +8,7 @@ ansible==5.4.0
     # via -r test-requirements.in
 ansible-compat==1.0.0
     # via molecule
-ansible-core==2.12.2
+ansible-core==2.12.3
     # via ansible
 ansible-lint==5.4.0
     # via -r test-requirements.in
