@@ -22,7 +22,7 @@ lint: |
 platforms:
   - name: centos7
     box: generic/centos7
-    box_version: 3.6.6
+    box_version: 3.6.8
     memory: 6144
     cpus: 2
     provider_options:
