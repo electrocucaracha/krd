@@ -36,4 +36,4 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = u"Kubernetes Reference Deployment"
+project = "Kubernetes Reference Deployment"
