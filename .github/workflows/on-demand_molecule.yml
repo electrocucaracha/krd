@@ -36,7 +36,7 @@ jobs:
     runs-on: macos-10.15
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v3
       - uses: syphar/restore-virtualenv@v1.2
         id: cache-tox-molecule
         with:
@@ -58,7 +58,7 @@ jobs:
         tox_env: [nfd, pmem, qat_driver, sriov_cni, sriov_plugin, criproxy]
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v3
       - uses: syphar/restore-virtualenv@v1.2
         id: cache-tox-molecule
         with:
