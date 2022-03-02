@@ -51,7 +51,7 @@ jobs:
       KRD_ENABLE_TESTS: true
       PKG_KREW_PLUGINS_LIST: "cert-manager"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Cache Vagrant boxes
         uses: actions/cache@v2
         with:
