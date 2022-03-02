@@ -16,7 +16,7 @@ sonobuoy_version: 0.56.2
 
 # Knative versions
 kn_version: knative-v1.2.0
-knative_serving_version: knative-v1.1.4
+knative_serving_version: knative-v1.2.3
 knative_eventing_version: v0.29.0
 ## Knative Sandbox versions
 net_kourier_version: knative-v1.2.0
