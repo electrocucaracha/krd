@@ -15,7 +15,7 @@ cfssl_version: 1.6.1
 sonobuoy_version: 0.56.2
 
 # Knative versions
-kn_version: knative-v1.2.0
+kn_version: knative-v1.3.1
 knative_serving_version: knative-v1.3.0
 knative_eventing_version: v0.30.0
 ## Knative Sandbox versions
