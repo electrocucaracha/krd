@@ -83,7 +83,7 @@ packaging==21.3
     #   ansible-lint
     #   molecule
     #   pytest
-paramiko==2.9.2
+paramiko==2.10.1
     # via molecule
 pathspec==0.9.0
     # via yamllint
@@ -142,6 +142,7 @@ six==1.16.0
     # via
     #   bcrypt
     #   cookiecutter
+    #   paramiko
     #   python-dateutil
 subprocess-tee==0.3.5
     # via ansible-compat
