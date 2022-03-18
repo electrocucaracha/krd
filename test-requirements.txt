@@ -6,7 +6,7 @@
 #
 ansible==5.5.0
     # via -r test-requirements.in
-ansible-compat==2.0.0
+ansible-compat==2.0.2
     # via
     #   ansible-lint
     #   molecule
@@ -107,7 +107,7 @@ pynacl==1.5.0
     # via paramiko
 pyparsing==3.0.7
     # via packaging
-pytest==7.1.0
+pytest==7.1.1
     # via pytest-testinfra
 pytest-testinfra==6.6.0
     # via -r test-requirements.in
