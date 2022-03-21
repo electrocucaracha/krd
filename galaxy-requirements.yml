@@ -20,7 +20,7 @@ roles:
   - name: andrewrothstein.kind
     version: v1.0.8
   - name: andrewrothstein.kubectl
-    version: v1.1.73
+    version: v1.1.74
 
 collections:
   - name: community.kubernetes
