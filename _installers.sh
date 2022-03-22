@@ -154,6 +154,13 @@ function install_k8s_addons {
         pip_cmd+=" --verbose"
     fi
     eval "${ansible_galaxy_cmd} -p /tmp/galaxy-roles -r $KRD_FOLDER/galaxy-requirements.yml --ignore-errors"
+    # shellcheck disable=SC1091
+    source /etc/os-release || source /usr/lib/os-release
+    case ${ID,,} in
+        ubuntu|debian)
+            sudo apt remove -y python3-yaml
+        ;;
+    esac
     eval "${pip_cmd} openshift"
 
     for addon in ${KRD_ADDONS_LIST//,/ }; do
