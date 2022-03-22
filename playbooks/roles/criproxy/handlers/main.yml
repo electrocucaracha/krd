@@ -9,12 +9,12 @@
 ##############################################################################
 
 - name: restart kubelet service
-  systemd:
+  ansible.builtin.systemd:
     state: restarted
     daemon_reload: true
     name: kubelet
 
 - name: restart criproxy service
-  systemd:
+  ansible.builtin.systemd:
     state: restarted
     name: criproxy

@@ -11,30 +11,30 @@
 - import_tasks: cleanup.yml
 
 - name: ensure destination folder exists
-  file:
+  ansible.builtin.file:
     mode: '0755'
     state: directory
     path: "{{ qat_template_folder }}"
 
 - name: generate QAT DPDK k8s resources based on templates
-  template:
+  ansible.builtin.template:
     mode: preserve
     src: plugin.yaml.j2
     dest: "{{ qat_template_folder }}/plugin.yml"
   when: qat_plugin_mode == "dpdk"
 
 - name: generate QAT kernel k8s resources based on templates
-  template:
+  ansible.builtin.template:
     mode: preserve
     src: plugin_kernel_mode.yaml.j2
     dest: "{{ qat_template_folder }}/plugin.yml"
   when: qat_plugin_mode == "kernel"
 
 - name: get QAT configmap files
-  copy:
+  ansible.builtin.copy:
     mode: preserve
     src: configmap.yaml
     dest: "{{ qat_template_folder }}/configmap.yaml"
 
 - name: create QAT k8s resources
-  command: "/usr/local/bin/kubectl apply -f {{ qat_template_folder }}"
+  ansible.builtin.command: "/usr/local/bin/kubectl apply -f {{ qat_template_folder }}"

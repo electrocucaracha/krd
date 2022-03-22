@@ -9,14 +9,14 @@
 ##############################################################################
 
 - name: check if binary exists
-  stat:
+  ansible.builtin.stat:
     path: /usr/local/bin/{{ binary }}
   register: binary_location
 - name: print binary value
-  debug:
+  ansible.builtin.debug:
     var: binary_location
 - name: retrieve binary
-  get_url:
+  ansible.builtin.get_url:
     url: https://github.com/cloudflare/cfssl/releases/download/v{{ cfssl_version }}/{{ binary }}_{{ cfssl_version }}_linux_amd64
     dest: /usr/local/bin/{{ binary }}
     mode: '0755'

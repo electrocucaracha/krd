@@ -10,7 +10,7 @@
 
 - name: start qat_service service
   become: true
-  service:
+  ansible.builtin.service:
     name: qat_service
     state: started
     enabled: true

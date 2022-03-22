@@ -13,11 +13,11 @@
     - role: geerlingguy.docker
   tasks:
     - name: add ubuntu repo
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: ppa:criu/ppa
       when: ansible_os_family == 'Ubuntu'
     - name: add centos repo
-      yum_repository:
+      ansible.builtin.yum_repository:
         name: criu-el7
         description: Copr repo for criu-el7 owned by adrian
         baseurl: https://copr-be.cloud.fedoraproject.org/results/adrian/criu-el7/epel-7-$basearch/
@@ -26,7 +26,7 @@
       when: ansible_os_family == 'RedHat'
     - name: enable docker experimental features
       become: true
-      copy:
+      ansible.builtin.copy:
         mode: preserve
         dest: /etc/docker/daemon.json
         content: |
@@ -37,12 +37,12 @@
     - name: configure docker client
       block:
         - name: create docker config folder
-          file:
+          ansible.builtin.file:
             state: directory
             path: /root/.docker/
             mode: '0755'
         - name: configure docker client to use proxy values
-          copy:
+          ansible.builtin.copy:
             mode: preserve
             dest: "/root/.docker/config.json"
             content: |
@@ -59,11 +59,11 @@
               }
       when: lookup('env','http_proxy') != "fooproxy" or lookup('env','https_proxy') != "fooproxy" or lookup('env','no_proxy') != "fooproxy"
     - name: install CRIU packages
-      package:
+      ansible.builtin.package:
         name: criu
         state: present
     - name: reload docker service
-      service:
+      ansible.builtin.service:
         name: docker
         state: restarted
 # TODO: Disable seccomp
