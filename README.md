@@ -22,7 +22,7 @@ different scenarios. There are different setups located in the
 | Ubuntu     | 16.04/18.04/20.04 |
 | CentOS     | 7/8               |
 | openSUSE   | Tumbleweed/Leap   |
-| Fedora     | 33/34             |
+| Fedora     | 34/35             |
 
 ## Components
 
