@@ -81,3 +81,13 @@ jobs:
           ./bootstrap.sh
           ./provision_installer.sh
           ./check.sh
+  check-shellspec:
+    name: Run BDD shell specs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install ShellSpec
+        run: curl -fsSL https://github.com/shellspec/shellspec/releases/latest/download/shellspec-dist.tar.gz | tar -xz -C ..
+      - name: Run Shellspec
+        shell: bash
+        run: ../shellspec/shellspec
