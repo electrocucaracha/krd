@@ -43,13 +43,14 @@ while getopts ":a:" OPTION; do
         a)
             eval "case \$OPTARG in
                 ${valid_options%?})
-                    echo \"Running \$OPTARG...\"
+                    echo \"::group::Running \$OPTARG...\"
                     \$OPTARG
                     if [ \"\$KRD_ENABLE_TESTS\" == \"true\" ] && [ -f \$KRD_FOLDER/tests/\${OPTARG#*install_}.sh ]  ; then
                         pushd \$KRD_FOLDER/tests
                         bash \${OPTARG#*install_}.sh
                         popd
                     fi
+                    echo \"::endgroup::\"
                 ;;
                 *)
                     echo Invalid action
