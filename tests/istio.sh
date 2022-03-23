@@ -30,7 +30,7 @@ function cleanup {
 
 function create_client {
     local attempt_counter=0
-    max_attempts=5
+    max_attempts=10
 
     cat <<EOF | kubectl apply -f -
 apiVersion: v1
@@ -53,6 +53,7 @@ EOF
     info "Waiting for istio's client pod..."
     until [[ "$(kubectl logs client)" == *"10 request(s) complete to http://$service_name:80/"* ]]; do
         if [ ${attempt_counter} -eq ${max_attempts} ];then
+            kubectl logs client
             error "Max attempts reached on waiting for istio's client resource"
         fi
         attempt_counter=$((attempt_counter+1))
