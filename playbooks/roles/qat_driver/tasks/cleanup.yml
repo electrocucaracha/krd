@@ -9,22 +9,22 @@
 ##############################################################################
 
 - name: get service status
-  service_facts:
+  ansible.builtin.service_facts:
 
 - name: stop qat_service service
   become: true
-  service:
+  ansible.builtin.service:
     name: qat_service
     state: stopped
   when: ansible_facts.services["qat_service.service"] is defined
 
 - name: get intel_qat kernel module dependencies
-  shell: PATH=$PATH:/usr/sbin/:/sbin/ lsmod | grep "^intel_qat" | awk '{print $4}'
+  ansible.builtin.shell: PATH=$PATH:/usr/sbin/:/sbin/ lsmod | grep "^intel_qat" | awk '{print $4}'
   register: intel_qat_deps
   changed_when: false
 
 - name: print intel_qat_deps value
-  debug:
+  ansible.builtin.debug:
     var: intel_qat_deps
 
 - name: remove intel_qat kernel module dependencies

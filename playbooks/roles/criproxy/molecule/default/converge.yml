@@ -12,5 +12,5 @@
   hosts: all
   tasks:
     - name: "Include criproxy"
-      include_role:
+      ansible.builtin.include_role:
         name: "criproxy"

@@ -37,11 +37,11 @@
   gather_facts: true
   tasks:
     - name: check if pmem device exists
-      stat:
+      ansible.builtin.stat:
         path: /dev/pmem0
       register: pmem_dev_check
     - name: register PMEM server
-      command: "/usr/local/bin/kubectl label node {{ ansible_hostname }} storage=pmem --overwrite"
+      ansible.builtin.command: "/usr/local/bin/kubectl label node {{ ansible_hostname }} storage=pmem --overwrite"
       when: pmem_dev_check.stat.exists
       delegate_to: localhost
 
@@ -51,7 +51,7 @@
     - community.kubernetes
   pre_tasks:
     - name: Load krd variables
-      include_vars:
+      ansible.builtin.include_vars:
         file: krd-vars.yml
   tags: pmem
   roles:
@@ -63,7 +63,7 @@
   become: true
   pre_tasks:
     - name: Load krd variables
-      include_vars:
+      ansible.builtin.include_vars:
         file: krd-vars.yml
   tags:
     - qat
@@ -83,17 +83,17 @@
   become: true
   tasks:
     - name: Load krd variables
-      include_vars:
+      ansible.builtin.include_vars:
         file: krd-vars.yml
     - name: configure docker client
       block:
         - name: create docker config folder
-          file:
+          ansible.builtin.file:
             state: directory
             path: /root/.docker/
             mode: '0755'
         - name: configure docker client to use proxy values
-          copy:
+          ansible.builtin.copy:
             mode: preserve
             dest: "/root/.docker/config.json"
             content: |
@@ -110,19 +110,19 @@
               }
       when: lookup('env','http_proxy') != "fooproxy" or lookup('env','https_proxy') != "fooproxy" or lookup('env','no_proxy') != "fooproxy"
     - name: clone intel-qat-plugin repo
-      git:
+      ansible.builtin.git:
         repo: "https://github.com/intel/intel-device-plugins-for-kubernetes"
         dest: "{{ qat_plugin_repo_folder }}"
         version: "v{{ qat_plugin_version }}"
         force: true
       when: qat_plugin_mode == "kernel"
     - name: remove old qat docker images
-      shell: "docker images intel-qat-plugin -q | xargs docker rmi -f"
+      ansible.builtin.shell: "docker images intel-qat-plugin -q | xargs docker rmi -f"
       register: docker_rmi_result
       failed_when: "docker_rmi_result.rc != 0 and docker_rmi_result.rc != 123"
       when: qat_plugin_mode == "kernel"
     - name: build docker image
-      command: "docker build --build-arg TAGS_KERNELDRV=kerneldrv --pull -t intel/intel-qat-plugin:{{ qat_plugin_version }} -f {{ qat_plugin_repo_folder }}/build/docker/intel-qat-plugin.Dockerfile {{ qat_plugin_repo_folder }}/"
+      ansible.builtin.command: "docker build --build-arg TAGS_KERNELDRV=kerneldrv --pull -t intel/intel-qat-plugin:{{ qat_plugin_version }} -f {{ qat_plugin_repo_folder }}/build/docker/intel-qat-plugin.Dockerfile {{ qat_plugin_repo_folder }}/"
       when: qat_plugin_mode == "kernel"
 
 - name: install QuickAssist Plugin

@@ -15,12 +15,12 @@
   pre_tasks:
     - name: install python3 packages
       become: true
-      package:
+      ansible.builtin.package:
         name: python3
         state: present
       when: ansible_os_family == "RedHat"
     - name: enforce python3 for ansible
-      set_fact:
+      ansible.builtin.set_fact:
         ansible_python_interpreter: /usr/bin/python3
   roles:
     - role: andrewrothstein.kind
@@ -38,29 +38,29 @@
   tasks:
     - name: add existing user ansible's user to docker's group
       become: true
-      user:
+      ansible.builtin.user:
         name: '{{ ansible_ssh_user }}'
         groups: docker
         append: true
     - name: get k8s clusters
-      command: '{{ kind_dest }}/kind get clusters --quiet'
+      ansible.builtin.command: '{{ kind_dest }}/kind get clusters --quiet'
       register: kind_cluster
       failed_when: ( kind_cluster.rc not in [ 0, 1 ] )
     - name: print kind_cluster value
-      debug:
+      ansible.builtin.debug:
         var: kind_cluster
     - name: create k8s cluster
       become: true
-      command: '{{ kind_dest }}/kind create cluster --name molecule --wait=300s'
+      ansible.builtin.command: '{{ kind_dest }}/kind create cluster --name molecule --wait=300s'
       when: not 'molecule' in kind_cluster.stdout
     - name: create kubeconfig folder
-      file:
+      ansible.builtin.file:
         mode: '0755'
         path: '{{ ansible_env.HOME }}/.kube/'
         state: directory
     - name: copy kubeconfig root file
       become: true
-      copy:
+      ansible.builtin.copy:
         mode: preserve
         src: /root/.kube/config
         dest: '{{ ansible_env.HOME }}/.kube/config'

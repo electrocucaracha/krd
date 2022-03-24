@@ -17,13 +17,13 @@
     - cfssljson
 
 - name: ensure destination folder exists
-  file:
+  ansible.builtin.file:
     mode: '0755'
     state: directory
     path: "{{ pmem_template_folder }}"
 
 - name: copy shell scripts
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ pmem_template_folder }}/{{ item }}.sh"
     mode: +x
@@ -54,7 +54,7 @@
   register: registry_secret
 
 - name: print node and registry values
-  debug:
+  ansible.builtin.debug:
     var: '{{ item }}_secret'
   with_items:
     - node
@@ -62,7 +62,7 @@
 
 - name: create PMEM secrets
   become: true
-  shell: 'PATH=$PATH:/usr/local/bin/ {{ pmem_template_folder }}/setup-ca-kubernetes.sh'
+  ansible.builtin.shell: 'PATH=$PATH:/usr/local/bin/ {{ pmem_template_folder }}/setup-ca-kubernetes.sh'
   environment:
     TEST_DRIVER_NAMESPACE: "{{ pmem_namespace }}"
   args:

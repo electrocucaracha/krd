@@ -97,8 +97,8 @@ echo "opensuse:" >> .distros_supported.yml
 _vagrant_pull "tumbleweed" "generic/opensuse42"
 _vagrant_pull "leap" "generic/opensuse15"
 echo "fedora:" >> .distros_supported.yml
-_vagrant_pull "33" "generic/fedora33"
 _vagrant_pull "34" "fedora/34-cloud-base"
+_vagrant_pull "35" "fedora/35-cloud-base"
 
 if [ "$msg" ]; then
     echo -e "$msg"

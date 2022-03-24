@@ -12,5 +12,5 @@
   hosts: all
   tasks:
     - name: "Include qat_driver"
-      include_role:
+      ansible.builtin.include_role:
         name: "qat_driver"

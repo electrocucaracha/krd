@@ -19,38 +19,38 @@
 
 - name: install RedHat build tools
   become: true
-  yum:
+  ansible.builtin.yum:
     name: "@Development tools"
     state: present
   when: ansible_os_family == 'RedHat'
 
 - name: Load distro variables
-  include_vars:
+  ansible.builtin.include_vars:
     file: "{{ ansible_os_family }}.yml"
 
 - name: Update apt packages
   become: true
-  apt:
+  ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
   when: ansible_os_family == 'Debian'
 
 - name: install qat compilation packages
   become: true
-  package:
+  ansible.builtin.package:
     name: "{{ item }}"
     state: present
   with_items: "{{ qat_driver_pkgs }}"
 
 - name: install Debian kernel development tools
   become: true
-  package:
+  ansible.builtin.package:
     name: "linux-headers-{{ ansible_kernel }}"
     state: present
   when: ansible_os_family == 'Debian'
 
 - name: install RedHat kernel development tools
-  package:
+  ansible.builtin.package:
     name: kernel-devel
     state: present
   when: ansible_os_family == 'RedHat'

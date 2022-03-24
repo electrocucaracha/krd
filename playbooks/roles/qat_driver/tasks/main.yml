@@ -9,12 +9,12 @@
 ##############################################################################
 
 - name: get intel_qat version
-  shell: PATH=$PATH:/usr/sbin/:/sbin/ modinfo intel_qat | grep "^version:" | awk '{ print $2 }'
+  ansible.builtin.shell: PATH=$PATH:/usr/sbin/:/sbin/ modinfo intel_qat | grep "^version:" | awk '{ print $2 }'
   register: intel_qat_version
   changed_when: false
 
 - name: print intel_qat_version value
-  debug:
+  ansible.builtin.debug:
     var: intel_qat_version
 
 - include_tasks: cleanup.yml
@@ -28,7 +28,7 @@
 
 - name: create qat_service systemd wrapper
   become: true
-  copy:
+  ansible.builtin.copy:
     mode: preserve
     src: qat_service.service
     dest: /etc/systemd/system/qat_service.service
@@ -39,12 +39,12 @@
 - name: configure number of processes per qat device
   block:
     - name: get qat devices
-      shell: >
+      ansible.builtin.shell: >
         /usr/local/bin/adf_ctl status | grep up |
         awk '{print $4 substr($1, 4)}' | tr -d ','
       register: qat_devices
     - name: ensure SHIM config section
-      blockinfile:
+      ansible.builtin.blockinfile:
         dest: "/etc/{{ item }}.conf"
         block: |
           [SHIM]
@@ -59,5 +59,5 @@
           Cy0CoreAffinity = 0
       loop: "{{ qat_devices.stdout_lines }}"
     - name: restart qat services
-      command: /usr/local/bin/adf_ctl restart
+      ansible.builtin.command: /usr/local/bin/adf_ctl restart
   when: qat_plugin_mode == "kernel"

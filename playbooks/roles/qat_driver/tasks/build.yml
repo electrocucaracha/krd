@@ -9,13 +9,13 @@
 ##############################################################################
 
 - name: create qat folder
-  file:
+  ansible.builtin.file:
     mode: '0755'
     state: directory
     path: "{{ qat_driver_dest }}"
 
 - name: extract qat driver source code
-  unarchive:
+  ansible.builtin.unarchive:
     mode: '0755'
     src: "{{ qat_driver_url }}"
     dest: "{{ qat_driver_dest }}"
@@ -23,19 +23,19 @@
     creates: "{{ qat_driver_dest }}/configure"
 
 - name: check if configure was executed
-  stat:
+  ansible.builtin.stat:
     path: "{{ qat_driver_dest }}/config.log"
   register: configure_log
 
 - name: configure qat driver source code
-  command: ./configure
+  ansible.builtin.command: ./configure
   args:
     chdir: "{{ qat_driver_dest }}"
   register: configure
   when: not configure_log.stat.exists
 
 - name: check if there is a adf_ctl binary
-  stat:
+  ansible.builtin.stat:
     path: /usr/local/bin/adf_ctl
   register: adf_ctl
 

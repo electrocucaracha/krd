@@ -22,7 +22,7 @@ different scenarios. There are different setups located in the
 | Ubuntu     | 16.04/18.04/20.04 |
 | CentOS     | 7/8               |
 | openSUSE   | Tumbleweed/Leap   |
-| Fedora     | 33/34             |
+| Fedora     | 34/35             |
 
 ## Components
 
@@ -115,8 +115,8 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_DEBUG                             | false                                          | Enables verbose execution                                                       |
 | KRD_ANSIBLE_DEBUG                     | false                                          | Enables ansible verbose execution                                               |
 | PKG_DEBUG                             | false                                          | Enables cURL package installer verbose execution                                |
-| KRD_KUBE_VERSION                      | v1.23.1                                        | Specifies the Kubernetes version to be upgraded                                 |
-| KRD_KUBESPRAY_VERSION                 | v2.18.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
+| KRD_KUBE_VERSION                      | v1.23.5                                        | Specifies the Kubernetes version to be upgraded                                 |
+| KRD_KUBESPRAY_VERSION                 | v2.18.1                                        | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | `https://github.com/kubernetes-sigs/kubespray` | Specifies the Git repository to fetch the Kubespray's source code               |
 | KRD_ENABLE_TESTS                      | false                                          | Enables the functional tests during the deployment process                      |
 | KRD_HELM_CHART                        |                                                | Specifies the Helm chart to be installed                                        |
