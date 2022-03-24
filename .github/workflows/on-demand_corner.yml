@@ -1,14 +1,14 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2021
+# Copyright (c) 2022
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Core use cases
+name: Check Corner cases
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -35,7 +35,7 @@ on:
       - '!**.md'
 
 jobs:
-  check-core-cases:
+  check-corner-cases:
     name: Check K8s Plugins installation methods in an Ubuntu Bionic All-in-One setup
     if: >-
       (
@@ -44,6 +44,14 @@ jobs:
       ) ||
       github.event_name != 'pull_request_review'
     runs-on: macos-10.15
+    strategy:
+      fail-fast: false
+      matrix:
+        test: [kong, rook, haproxy]
+        cert-mgr: [false]
+        include:
+          - test: kubewarden
+            cert-mgr: true
     steps:
       - uses: actions/checkout@v3
       - name: Cache Vagrant boxes
@@ -69,23 +77,13 @@ jobs:
         env:
           VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
           MEMORY: 12288
-          KRD_CERT_MANAGER_ENABLED: false
+          KRD_CERT_MANAGER_ENABLED: ${{ matrix.cert-mgr }}
           KRD_INGRESS_NGINX_ENABLED: false
           KRD_ENABLE_TESTS: true
-          PKG_KREW_PLUGINS_LIST: "virt"
-          KRD_INT_TESTS: "metallb istio kubevirt knative"
+          PKG_KREW_PLUGINS_LIST: " "
+          KRD_INT_TESTS: ${{ matrix.test }}
         run: |
           cd ci
           ./bootstrap.sh
           ./provision_installer.sh
           ./check.sh
-  check-shellspec:
-    name: Run BDD shell specs
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install ShellSpec
-        run: curl -fsSL https://github.com/shellspec/shellspec/releases/latest/download/shellspec-dist.tar.gz | tar -xz -C ..
-      - name: Run Shellspec
-        shell: bash
-        run: ../shellspec/shellspec
