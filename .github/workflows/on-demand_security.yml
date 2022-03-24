@@ -79,17 +79,3 @@ jobs:
           ./bootstrap.sh
           ./provision_installer.sh
           ./check.sh
-      - name: Cleanup previous execution
-        run: vagrant destroy -f
-      - name: Run kubewarden integration tests
-        env:
-          KRD_INT_TESTS: "kubewarden"
-          KRD_KUBE_VERSION: v1.21.6
-          KRD_KUBESPRAY_VERSION: v2.17.1
-          KRD_DOCKER_VERSION: latest
-          KRD_CONTAINERD_VERSION: latest
-        run: |
-          cd ci
-          ./bootstrap.sh
-          ./provision_installer.sh
-          ./check.sh
