@@ -48,6 +48,10 @@ jobs:
       fail-fast: false
       matrix:
         test: [kong, rook, haproxy]
+        cert-mgr: [false]
+        include:
+          - test: kubewarden
+            cert-mgr: true
     steps:
       - uses: actions/checkout@v3
       - name: Cache Vagrant boxes
@@ -73,11 +77,11 @@ jobs:
         env:
           VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
           MEMORY: 12288
-          KRD_CERT_MANAGER_ENABLED: false
+          KRD_CERT_MANAGER_ENABLED: ${{ matrix.cert-mgr }}
           KRD_INGRESS_NGINX_ENABLED: false
           KRD_ENABLE_TESTS: true
           PKG_KREW_PLUGINS_LIST: " "
-          KRD_INT_TESTS: ${{ matrix.tox_env }}
+          KRD_INT_TESTS: ${{ matrix.test }}
         run: |
           cd ci
           ./bootstrap.sh
