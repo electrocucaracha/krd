@@ -143,7 +143,6 @@ update_pip_pkg "kubernetes" "$(get_version github_release kubernetes-client/pyth
 update_pip_pkg "openshift" "$(get_version github_release openshift/openshift-restclient-python)"
 
 # Update Kubespray Default variables
-sed -i "s/{KRD_CONTAINERD_VERSION:-.*/{KRD_CONTAINERD_VERSION:-$(get_version github_release containerd/containerd)}/g" ./defaults.env
 sed -i "s/{KRD_CERT_MANAGER_VERSION:-.*/{KRD_CERT_MANAGER_VERSION:-v$(get_version github_release jetstack/cert-manager)}/g" ./defaults.env
 
 # Update Checkov
