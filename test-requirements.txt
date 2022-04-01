@@ -39,7 +39,7 @@ chardet==4.0.0
     # via binaryornot
 charset-normalizer==2.0.12
     # via requests
-click==8.1.1
+click==8.1.2
     # via
     #   click-help-colors
     #   cookiecutter
@@ -115,7 +115,7 @@ python-dateutil==2.8.2
     # via arrow
 python-slugify==6.1.1
     # via cookiecutter
-python-vagrant==0.5.15
+python-vagrant==1.0.0
     # via
     #   -r test-requirements.in
     #   molecule-vagrant
