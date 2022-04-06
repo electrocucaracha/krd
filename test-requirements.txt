@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible==5.5.0
+ansible==5.6.0
     # via -r test-requirements.in
 ansible-compat==2.0.2
     # via
@@ -131,7 +131,7 @@ requests==2.27.1
     # via cookiecutter
 resolvelib==0.5.4
     # via ansible-core
-rich==12.1.0
+rich==12.2.0
     # via
     #   ansible-lint
     #   enrich
