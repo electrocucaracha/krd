@@ -82,20 +82,38 @@ function ensure_kmod {
     echo "$1" | sudo tee "/etc/modules-load.d/krd-$1.conf"
 }
 
-# _install_deps() - Install minimal dependencies required
-function _install_deps {
+# install_deps() - Install minimal dependencies required
+function install_deps {
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
-    if ! command -v curl; then
-        case ${ID,,} in
-            ubuntu|debian)
+    case ${ID,,} in
+        ubuntu|debian)
+            if ! command -v curl; then
                 sudo apt-get update
                 sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 curl
-            ;;
-        esac
-    fi
-    case ${ID,,} in
+            fi
+            if ! command -v deborphan; then
+                sudo apt-get update
+                sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 deborphan
+            fi
+            sudo du -sh /var/cache/apt/archives
+            sudo apt-get clean
+        ;;
         rhel|centos|fedora)
+            if command -v yum; then
+                yum clean all --verbose
+                sudo rm -rf /var/cache/yum
+                if command -v package-cleanup; then
+                    package-cleanup --quiet --leaves
+                    package-cleanup --quiet --leaves | xargs sudo yum remove -y
+                    sudo package-cleanup --oldkernels --count=2
+                fi
+            fi
+            if command -v dnf; then
+                sudo dnf clean all
+                eval "sudo dnf remove $(sudo dnf repoquery --installonly --latest-limit=-2 -q)"
+                sudo dnf clean packages
+            fi
             if [ "${VERSION_ID}" == "7" ]; then
                 PKG_PYTHON_MAJOR_VERSION=2
                 export PKG_PYTHON_MAJOR_VERSION
@@ -120,6 +138,13 @@ function _install_deps {
         sudo systemctl start tuned
         sudo systemctl enable tuned
     fi
+
+    # Free up space
+    if command -v deborphan; then
+        eval "sudo apt-get remove --purge -y $(deborphan)" ||:
+    fi
+    sudo journalctl --disk-usage
+    sudo journalctl --vacuum-time=1m
 }
 
 # sync_clock() - Sync server's clock
@@ -218,7 +243,7 @@ fi
 for kmod in rbd ip6table_filter; do
     ensure_kmod "$kmod"
 done
-_install_deps
+install_deps
 sync_clock
 mount_partitions
 disable_k8s_ports
