@@ -1,0 +1,142 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2022
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+name: Vagrant up
+inputs:
+  debug:
+    description: 'Enable debug level'
+    default: false
+  memory:
+    description: 'Memory'
+    default: 12288
+  os:
+    description: 'Operating System'
+    default: ubuntu
+  release:
+    description: 'Release'
+    default: bionic
+  vbox-controller:
+    description: 'VirtualBox Controller'
+    default: 'Virtual I/O Device SCSI controller'
+  test-multinode:
+    description: 'Multinode test environment'
+    default: false
+  host-installer:
+    description: 'Run KRD deployment script on the host machine'
+    default: false
+  kube-version:
+    description: 'Kubernetes version'
+  kubespray-version:
+    description: 'Kubespray version'
+  cert-manager-enabled:
+    description: 'Enable Kubernetes Cert-Manager'
+    default: false
+  ingress-enabled:
+    description: 'Enable Kubernetes Ingress Controller'
+    default: false
+  container-runtime:
+    description: 'Container Runtime'
+  kata-containers-enabled:
+    description: 'Enable Katacontainers'
+    default: false
+  crun-enabled:
+    description: 'Enable crun'
+    default: false
+  gvisor-enabled:
+    description: 'Enable gVisor'
+    default: false
+  krew-plugins-list:
+    description: 'List of Krew plugins to be installed'
+    default: ' '
+  docker-version:
+    description: 'Docker version'
+  containerd-version:
+    description: 'ContainerD version'
+  enable-tests:
+    description: 'Enable KRD functional tests'
+    default: false
+  int-tests:
+    description: 'List of KRD integration tests'
+  test-virtlet:
+    description: 'Validate Virtlet services'
+    default: false
+  run-conformance-tools:
+    description: 'Run conformance tools'
+    default: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Vagrant boxes
+      uses: actions/cache@v3
+      with:
+        path: ~/.vagrant.d/boxes
+        key: ${{ runner.os }}-vagrant-ubuntu-bionic-${{ hashFiles('distros_supported.yml') }}
+        restore-keys: |
+          ${{ runner.os }}-vagrant-ubuntu-bionic-
+    - name: Apply workaround for VBoxHeadless issue on macOS (https://www.virtualbox.org/ticket/20636)
+      shell: bash
+      run: |
+        if [[ "$(VBoxManage --version)" == "6.1.28r147628" ]]; then
+            find . -type f -iname "Vagrantfile" -exec sed -i '.bak' 's|v.gui = .*|v.gui = true|g' {} \;
+            find . -type f -name "*.bak" -delete
+        fi
+    - name: Replace shorten links
+      shell: bash
+      run: |
+        find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
+        find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_bin|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/bindep_install.sh|g' {} \;
+        find . -type f -name "*.bak" -delete
+    - name: Bootstrap Kubernetes Nodes
+      shell: bash
+      env:
+        VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
+        DEBUG: ${{ inputs.debug }}
+        MEMORY: ${{ inputs.memory }}
+        OS: ${{ inputs.os }}
+        RELEASE: ${{ inputs.release }}
+        VBOX_CONTROLLER: ${{ inputs.vbox-controller }}
+        TEST_MULTINODE: ${{ inputs.test-multinode }}
+      run: |
+        cd ci
+        ./bootstrap.sh
+    - name: Deploy Kubernetes Cluster
+      shell: bash
+      env:
+        VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
+        DEBUG: ${{ inputs.debug }}
+        HOST_INSTALLER: ${{ inputs.host-installer }}
+        KRD_KUBE_VERSION: ${{ inputs.kube-version }}
+        KRD_KUBESPRAY_VERSION: ${{ inputs.kubespray-version }}
+        KRD_CERT_MANAGER_ENABLED: ${{ inputs.cert-manager-enabled }}
+        KRD_INGRESS_NGINX_ENABLED: ${{ inputs.ingress-enabled }}
+        KRD_CONTAINER_RUNTIME: ${{ inputs.container-runtime }}
+        KRD_KATA_CONTAINERS_ENABLED: ${{ inputs.kata-containers-enabled }}
+        KRD_CRUN_ENABLED: ${{ inputs.crun-enabled }}
+        KRD_GVISOR_ENABLED: ${{ inputs.gvisor-enabled }}
+        PKG_KREW_PLUGINS_LIST: ${{ inputs.krew-plugins-list }}
+        KRD_DOCKER_VERSION: ${{ inputs.docker-version }}
+        KRD_CONTAINERD_VERSION: ${{ inputs.containerd-version }}
+      run: |
+        cd ci
+        ./provision_installer.sh
+    - name: Run Assertions
+      shell: bash
+      env:
+        HOST_INSTALLER: ${{ inputs.host-installer }}
+        KRD_KUBE_VERSION: ${{ inputs.kube-version }}
+        KRD_KUBESPRAY_VERSION: ${{ inputs.kubespray-version }}
+        KRD_ENABLE_TESTS: ${{ inputs.enable-tests }}
+        KRD_INT_TESTS: ${{ inputs.int-tests }}
+        TEST_VIRTLET: ${{ inputs.test-virtlet }}
+        RUN_CONFORMANCE_TOOLS: ${{ inputs.run-conformance-tools }}
+      run: |
+        cd ci
+        ./check.sh

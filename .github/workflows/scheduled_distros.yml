@@ -19,39 +19,21 @@ jobs:
   check-all-distros:
     name: Check all Linux Distributions supported in an All-in-One setup
     runs-on: macos-10.15
-    env:
-      VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
-      MEMORY: 12288
-      KRD_CERT_MANAGER_ENABLED: false
-      KRD_INGRESS_NGINX_ENABLED: false
-      PKG_KREW_PLUGINS_LIST: " "
     steps:
       - uses: actions/checkout@v3
-      - name: Cache Vagrant boxes
-        uses: actions/cache@v3
+      - uses: ./.github/actions/vagrant-up
         with:
-          path: ~/.vagrant.d/boxes
-          key: ${{ runner.os }}-vagrant-${{ hashFiles('distros_supported.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-vagrant-
-      - name: Replace shorten links
-        run: |
-          find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
-          find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_bin|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/bindep_install.sh|g' {} \;
-          find . -type f -name "*.bak" -delete
-      - name: Run openSUSE Leap - integration tests
-        env:
-          OS: opensuse
-          RELEASE: leap
-          VBOX_CONTROLLER: IDE Controller
-        run: |
-          cd ci
-          ./bootstrap.sh
-          ./provision_installer.sh
-          ./check.sh
+          os: opensuse
+          release: leap
+          vbox-controller: IDE Controller
       - name: Run all integration tests
         env:
           KRD_CONTAINER_RUNTIME: containerd
+          VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
+          MEMORY: 12288
+          KRD_CERT_MANAGER_ENABLED: false
+          KRD_INGRESS_NGINX_ENABLED: false
+          PKG_KREW_PLUGINS_LIST: " "
         run: |
           cd ci
           ./check_all.sh

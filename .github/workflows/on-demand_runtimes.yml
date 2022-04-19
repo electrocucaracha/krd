@@ -54,38 +54,9 @@ jobs:
             gvisor_enabled: true
     steps:
       - uses: actions/checkout@v3
-      - name: Cache Vagrant boxes
-        uses: actions/cache@v3
+      - uses: ./.github/actions/vagrant-up
         with:
-          path: ~/.vagrant.d/boxes
-          key: ${{ runner.os }}-vagrant-ubuntu-bionic-${{ hashFiles('distros_supported.yml') }}
-          restore-keys: |
-            ${{ runner.os }}-vagrant-ubuntu-bionic-
-      - name: Apply workaround for VBoxHeadless issue on macOS (https://www.virtualbox.org/ticket/20636)
-        shell: bash
-        run: |
-          if [[ "$(VBoxManage --version)" == "6.1.28r147628" ]]; then
-              find . -type f -iname "Vagrantfile" -exec sed -i '.bak' 's|v.gui = .*|v.gui = true|g' {} \;
-              find . -type f -name "*.bak" -delete
-          fi
-      - name: Replace shorten links
-        run: |
-          find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
-          find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_bin|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/bindep_install.sh|g' {} \;
-          find . -type f -name "*.bak" -delete
-      - name: Run integration tests
-        env:
-          VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
-          MEMORY: 12288
-          KRD_CONTAINER_RUNTIME: ${{ matrix.runtime }}
-          KRD_CERT_MANAGER_ENABLED: false
-          KRD_INGRESS_NGINX_ENABLED: false
-          KRD_KATA_CONTAINERS_ENABLED: true
-          KRD_CRUN_ENABLED: ${{ matrix.crun_enabled }}
-          KRD_GVISOR_ENABLED: ${{ matrix.gvisor_enabled }}
-          PKG_KREW_PLUGINS_LIST: " "
-        run: |
-          cd ci
-          ./bootstrap.sh
-          ./provision_installer.sh
-          ./check.sh
+          container-runtime: ${{ matrix.runtime }}
+          kata-containers-enabled: true
+          crun-enabled: ${{ matrix.crun_enabled }}
+          gvisor-enabled: ${{ matrix.gvisor_enabled }}
