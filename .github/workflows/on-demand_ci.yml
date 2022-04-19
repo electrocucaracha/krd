@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-name: Core use cases
+name: Integration tests
 # yamllint disable-line rule:truthy
 on:
   push:
@@ -35,8 +35,8 @@ on:
       - '!**.md'
 
 jobs:
-  check-core-cases:
-    name: Check K8s Plugins installation methods in an Ubuntu Bionic All-in-One setup
+  check-ci:
+    name: Check Integration tests in an Ubuntu Focal Virtual Machines
     if: >-
       (
         github.event_name == 'pull_request_review' &&
@@ -44,13 +44,36 @@ jobs:
       ) ||
       github.event_name != 'pull_request_review'
     runs-on: macos-10.15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runtime: crio
+            crun_enabled: true
+            kata-containers-enabled: true
+          - runtime: containerd
+            gvisor_enabled: true
+            kata-containers-enabled: true
+          - enable-tests: true
+            krew-plugins-list: 'virt'
+            int-tests: "metallb istio kubevirt knative"
+          - test-multinode: true
+            run-conformance-tools: true
+          - krew-plugins-list: 'cert-manager'
+            enable-tests: true
+            int-tests: 'falco kyverno gatekeeper'
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/vagrant-up
         with:
-          enable-tests: true
-          krew-plugins-list: 'virt'
-          int-tests: "metallb istio kubevirt knative"
+          container-runtime: ${{ matrix.runtime }}
+          kata-containers-enabled: ${{ matrix.kata-containers-enabled }}
+          crun-enabled: ${{ matrix.crun_enabled }}
+          enable-tests: ${{ matrix.enable-tests }}
+          krew-plugins-list: ${{ matrix.krew-plugins-list }}
+          int-tests: ${{ matrix.int-tests }}
+          test-multinode: ${{ matrix.test-multinode }}
+          run-conformance-tools: ${{ matrix.run-conformance-tools }}
   check-shellspec:
     name: Run BDD shell specs
     runs-on: ubuntu-latest
