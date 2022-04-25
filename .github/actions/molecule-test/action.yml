@@ -22,22 +22,10 @@ runs:
       with:
         requirement_files: test-requirements.txt
         custom_virtualenv_dir: .tox/molecule
-    - uses: actions/cache@v3
-      with:
-        path: ~/.vagrant.d/boxes
-        key: ${{ runner.os }}-vagrant-${{ hashFiles('distros_supported.yml') }}
-        restore-keys: |
-          ${{ runner.os }}-vagrant-
-    - name: Apply workaround for VBoxHeadless issue on macOS (https://www.virtualbox.org/ticket/20636)
-      shell: bash
-      run: |
-        if [[ "$(VBoxManage --version)" == "6.1.28r147628" ]]; then
-            find playbooks/roles/ -type f -name "molecule.yml" -exec sed -i '.bak' 's|gui: .*|gui: True|g' {} \;
-            find . -type f -name "*.bak" -delete
-        fi
     - name: Install Tox tool
       shell: bash
       run: brew install tox
+    - uses: ./.github/actions/vagrant-setup
     - name: Run molecule tests
       shell: bash
       env:
