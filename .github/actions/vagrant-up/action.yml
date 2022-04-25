@@ -74,20 +74,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Cache Vagrant boxes
-      uses: actions/cache@v3
-      with:
-        path: ~/.vagrant.d/boxes
-        key: ${{ runner.os }}-vagrant-ubuntu-bionic-${{ hashFiles('distros_supported.yml') }}
-        restore-keys: |
-          ${{ runner.os }}-vagrant-ubuntu-bionic-
-    - name: Apply workaround for VBoxHeadless issue on macOS (https://www.virtualbox.org/ticket/20636)
-      shell: bash
-      run: |
-        if [[ "$(VBoxManage --version)" == "6.1.28r147628" ]]; then
-            find . -type f -iname "Vagrantfile" -exec sed -i '.bak' 's|v.gui = .*|v.gui = true|g' {} \;
-            find . -type f -name "*.bak" -delete
-        fi
+    - uses: ./.github/actions/vagrant-setup
     - name: Replace shorten links
       shell: bash
       run: |
