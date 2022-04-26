@@ -10,7 +10,7 @@ ansible-compat==2.0.2
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.12.4
+ansible-core==2.12.5
     # via
     #   ansible
     #   ansible-lint
@@ -87,7 +87,7 @@ packaging==21.3
     #   ansible-lint
     #   molecule
     #   pytest
-paramiko==2.10.3
+paramiko==2.10.4
     # via molecule
 pathspec==0.9.0
     # via yamllint
