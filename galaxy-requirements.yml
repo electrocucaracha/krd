@@ -10,7 +10,7 @@
 
 roles:
   - name: geerlingguy.docker
-    version: 4.2.1
+    version: 4.2.2
   - name: geerlingguy.repo-epel
     version: 3.1.0
   - name: geerlingguy.pip
@@ -20,7 +20,7 @@ roles:
   - name: andrewrothstein.kind
     version: v1.1.0
   - name: andrewrothstein.kubectl
-    version: v1.1.74
+    version: v1.1.76
 
 collections:
   - name: community.kubernetes
