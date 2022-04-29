@@ -173,7 +173,6 @@ roleRef:
 EOF
         if ! helm ls --tiller-namespace "$KRD_TILLER_NAMESPACE" | grep -q metrics-server; then
             helm install stable/metrics-server --name metrics-server \
-            --set image.repository="rancher/metrics-server" \
             --wait \
             --set args[0]="--kubelet-insecure-tls" \
             --set args[1]="--kubelet-preferred-address-types=InternalIP" \
@@ -181,7 +180,7 @@ EOF
         fi
     else
         _add_helm_repo metrics-server https://kubernetes-sigs.github.io/metrics-server/
-        KRD_CHART_VALUES="image.repository=rancher/metrics-server,image.tag=v0.4.1,args[0]='--kubelet-insecure-tls',args[1]='--kubelet-preferred-address-types=InternalIP'" _install_chart metrics-server metrics-server/metrics-server default
+        KRD_CHART_VALUES="args[0]='--kubelet-insecure-tls',args[1]='--kubelet-preferred-address-types=InternalIP'" _install_chart metrics-server metrics-server/metrics-server default
     fi
 
     if ! kubectl rollout status deployment/metrics-server --timeout=5m > /dev/null; then
