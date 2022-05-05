@@ -124,6 +124,9 @@ runs:
         KRD_INT_TESTS: ${{ inputs.int-tests }}
         TEST_VIRTLET: ${{ inputs.test-virtlet }}
         RUN_CONFORMANCE_TOOLS: ${{ inputs.run-conformance-tools }}
+        KRD_KATA_CONTAINERS_ENABLED: ${{ inputs.kata-containers-enabled }}
+        KRD_CRUN_ENABLED: ${{ inputs.crun-enabled }}
+        KRD_GVISOR_ENABLED: ${{ inputs.gvisor-enabled }}
       run: |
         cd ci
         ./check.sh
