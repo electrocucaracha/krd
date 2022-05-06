@@ -104,9 +104,10 @@ function install_deps {
                 yum clean all --verbose
                 sudo rm -rf /var/cache/yum
                 if command -v package-cleanup; then
-                    package-cleanup --quiet --leaves
-                    package-cleanup --quiet --leaves | xargs sudo yum remove -y
-                    sudo package-cleanup --oldkernels --count=2
+                    for arg in leaves leaves orphans; do
+                        package-cleanup --quiet "--$arg"
+                        package-cleanup --quiet "--$arg" | xargs sudo yum remove -y
+                    done
                 fi
             fi
             if command -v dnf; then
