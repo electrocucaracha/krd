@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible==5.7.1
+ansible==5.8.0
     # via -r test-requirements.in
 ansible-compat==2.0.4
     # via
@@ -14,7 +14,7 @@ ansible-core==2.12.5
     # via
     #   ansible
     #   ansible-lint
-ansible-lint==6.2.0
+ansible-lint==6.2.1
     # via -r test-requirements.in
 arrow==1.2.2
     # via jinja2-time
@@ -30,7 +30,7 @@ bracex==2.2.1
     # via wcmatch
 cerberus==1.3.2
     # via molecule
-certifi==2021.10.8
+certifi==2022.5.18
     # via requests
 cffi==1.15.0
     # via
