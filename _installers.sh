@@ -93,7 +93,8 @@ function install_k8s {
     _install_kubespray
 
     sudo mkdir -p /etc/ansible/
-    sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
+    sudo cp "$KRD_FOLDER/ansible.tpl" /etc/ansible/ansible.cfg
+    sudo sed -i "s|strategy_plugins = .*|strategy_plugins = $(dirname "$(sudo find / -name mitogen_linear.py | head -n 1)")|g" /etc/ansible/ansible.cfg
     _run_ansible_cmd "$kubespray_folder/cluster.yml" "setup-kubernetes.log"
 
     # Configure kubectl
@@ -146,7 +147,8 @@ function install_k8s_addons {
 
     sudo mkdir -p /etc/ansible/
     sudo mkdir -p /tmp/galaxy-roles
-    sudo cp "$KRD_FOLDER/ansible.cfg" /etc/ansible/ansible.cfg
+    sudo cp "$KRD_FOLDER/ansible.tpl" /etc/ansible/ansible.cfg
+    sudo sed -i "s|strategy_plugins = .*|strategy_plugins = $(dirname "$(sudo find / -name mitogen_linear.py | head -n 1)")|g" /etc/ansible/ansible.cfg
     pip_cmd="sudo -E $(command -v pip) install"
     ansible_galaxy_cmd="sudo -E $(command -v ansible-galaxy) install"
     if [ "$KRD_ANSIBLE_DEBUG" == "true" ]; then
