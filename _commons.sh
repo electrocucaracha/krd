@@ -81,7 +81,11 @@ function _install_kubespray {
         fi
 
         $PIP_CMD install --no-cache-dir -r ./requirements.txt
-        make mitogen
+        if _vercmp "${kubespray_version#*v}" '<' "2.18"; then
+            make mitogen
+        else
+            $PIP_CMD install --no-cache-dir mitogen
+        fi
         popd
     fi
 
@@ -302,7 +306,7 @@ function _run_ansible_cmd {
     if [[ "$KRD_ANSIBLE_DEBUG" == "true" ]]; then
         ansible_cmd+="-vvv "
     fi
-    ansible_cmd+="-i $krd_inventory "
+    ansible_cmd+="-i $krd_inventory -e ansible_ssh_common_args='' "
     echo "$ansible_cmd $playbook"
     sudo mkdir -p "$krd_log_dir"
     eval "$ansible_cmd $playbook" | sudo tee "$krd_log_dir/$log"
