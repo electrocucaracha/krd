@@ -24,7 +24,7 @@ function cleanup {
 }
 
 if ! command -v kn; then
-    error "This funtional test requires Knative client"
+    error "This functional test requires Knative client"
 fi
 
 trap cleanup EXIT
