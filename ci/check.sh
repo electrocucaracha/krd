@@ -105,7 +105,7 @@ fi
 if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
     _test_virtlet
 fi
-if [[ "${TEST_RUNTIMECLASSES:-false}" == "true" ]]; then
+if [[ "${KRD_KATA_CONTAINERS_ENABLED:-false}"  == "true" ]] || [[ "${KRD_CRUN_ENABLED:-false}"  == "true" ]] || [[ "${KRD_GVISOR_ENABLED:-false}"  == "true" ]]; then
     _test_runtime_classes
 fi
 if [[ "${RUN_CONFORMANCE_TOOLS:-false}" == "true" ]]; then

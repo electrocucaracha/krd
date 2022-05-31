@@ -50,10 +50,10 @@ jobs:
         include:
           - runtime: crio
             crun_enabled: true
-            kata-containers-enabled: true
+            kata-containers-enabled: false
           - runtime: containerd
             gvisor_enabled: true
-            kata-containers-enabled: true
+            kata-containers-enabled: false  # TODO: Enable this once this PR is included(https://github.com/kubernetes-sigs/kubespray/pull/8797)
           - enable-tests: true
             krew-plugins-list: 'virt'
             int-tests: "metallb istio kubevirt knative"
