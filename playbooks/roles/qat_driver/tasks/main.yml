@@ -9,7 +9,11 @@
 ##############################################################################
 
 - name: get intel_qat version
-  ansible.builtin.shell: PATH=$PATH:/usr/sbin/:/sbin/ modinfo intel_qat | grep "^version:" | awk '{ print $2 }'
+  ansible.builtin.shell: |
+    set -o pipefail
+    PATH=$PATH:/usr/sbin/:/sbin/ modinfo intel_qat | grep "^version:" | awk '{ print $2 }'
+  args:
+    executable: /bin/bash
   register: intel_qat_version
   changed_when: false
 
@@ -43,6 +47,7 @@
         /usr/local/bin/adf_ctl status | grep up |
         awk '{print $4 substr($1, 4)}' | tr -d ','
       register: qat_devices
+      changed_when: false
     - name: ensure SHIM config section
       ansible.builtin.blockinfile:
         dest: "/etc/{{ item }}.conf"
@@ -60,4 +65,5 @@
       loop: "{{ qat_devices.stdout_lines }}"
     - name: restart qat services
       ansible.builtin.command: /usr/local/bin/adf_ctl restart
+      changed_when: false
   when: qat_plugin_mode == "kernel"
