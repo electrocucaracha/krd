@@ -1,0 +1,26 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2019
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+
+- name: add ubuntu repo
+  ansible.builtin.apt_repository:
+    repo: ppa:criu/ppa
+  when: ansible_os_family == 'Ubuntu'
+- name: add centos repo
+  ansible.builtin.yum_repository:
+    name: criu-el7
+    description: Copr repo for criu-el7 owned by adrian
+    baseurl: https://copr-be.cloud.fedoraproject.org/results/adrian/criu-el7/epel-7-$basearch/
+    gpgcheck: true
+    gpgkey: https://copr-be.cloud.fedoraproject.org/results/adrian/criu-el7/pubkey.gpg
+  when: ansible_os_family == 'RedHat'
+- name: install CRIU packages
+  ansible.builtin.package:
+    name: criu
+    state: present

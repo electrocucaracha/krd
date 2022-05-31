@@ -117,12 +117,17 @@
         force: true
       when: qat_plugin_mode == "kernel"
     - name: remove old qat docker images
-      ansible.builtin.shell: "docker images intel-qat-plugin -q | xargs docker rmi -f"
+      ansible.builtin.shell: |
+        set -o pipefail
+        docker images intel-qat-plugin -q | xargs docker rmi -f
+      args:
+        executable: /bin/bash
       register: docker_rmi_result
       failed_when: "docker_rmi_result.rc != 0 and docker_rmi_result.rc != 123"
       when: qat_plugin_mode == "kernel"
     - name: build docker image
-      ansible.builtin.command: "docker build --build-arg TAGS_KERNELDRV=kerneldrv --pull -t intel/intel-qat-plugin:{{ qat_plugin_version }} -f {{ qat_plugin_repo_folder }}/build/docker/intel-qat-plugin.Dockerfile {{ qat_plugin_repo_folder }}/"
+      ansible.builtin.command: |
+        docker build --build-arg TAGS_KERNELDRV=kerneldrv --pull -t intel/intel-qat-plugin:{{ qat_plugin_version }} -f {{ qat_plugin_repo_folder }}/build/docker/intel-qat-plugin.Dockerfile {{ qat_plugin_repo_folder }}/
       when: qat_plugin_mode == "kernel"
 
 - name: install QuickAssist Plugin

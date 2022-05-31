@@ -46,6 +46,7 @@
       ansible.builtin.command: '{{ kind_dest }}/kind get clusters --quiet'
       register: kind_cluster
       failed_when: ( kind_cluster.rc not in [ 0, 1 ] )
+      changed_when: false
     - name: print kind_cluster value
       ansible.builtin.debug:
         var: kind_cluster

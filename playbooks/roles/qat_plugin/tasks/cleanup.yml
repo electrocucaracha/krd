@@ -9,11 +9,18 @@
 ##############################################################################
 
 - name: cleanup | get qat plugin pod name
-  ansible.builtin.shell: /usr/local/bin/kubectl get pods | grep intel-qat-plugin | awk '{print $1}'
+  ansible.builtin.shell: |
+    set -o pipefail
+    /usr/local/bin/kubectl get pods | grep intel-qat-plugin | awk '{print $1}'
+  args:
+    executable: /bin/bash
   register: intel_qat_plugin_pod
+  changed_when: false
 
 - name: cleanup | delete qat plugin daemonset
   ansible.builtin.command: "/usr/local/bin/kubectl delete daemonsets intel-qat-plugin --now --force --ignore-not-found"
+  changed_when: false
 
 - name: cleanup | wait for destroying qat plugin
-  ansible.builtin.shell: "/usr/local/bin/kubectl rollout status daemonsets/intel-qat-plugin --timeout=5m"
+  ansible.builtin.command: "/usr/local/bin/kubectl rollout status daemonsets/intel-qat-plugin --timeout=5m"
+  changed_when: false

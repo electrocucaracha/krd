@@ -38,3 +38,4 @@
 
 - name: create QAT k8s resources
   ansible.builtin.command: "/usr/local/bin/kubectl apply -f {{ qat_template_folder }}"
+  changed_when: false
