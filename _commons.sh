@@ -81,7 +81,11 @@ function _install_kubespray {
         fi
 
         $PIP_CMD install --no-cache-dir -r ./requirements.txt
-        $PIP_CMD install --no-cache-dir mitogen
+        if _vercmp "${kubespray_version#*v}" '<' "2.18"; then
+            make mitogen
+        else
+            $PIP_CMD install --no-cache-dir mitogen
+        fi
         popd
     fi
 

@@ -19,9 +19,14 @@
   when: ansible_facts.services["qat_service.service"] is defined
 
 - name: get intel_qat kernel module dependencies
-  ansible.builtin.shell: PATH=$PATH:/usr/sbin/:/sbin/ lsmod | grep "^intel_qat" | awk '{print $4}'
+  ansible.builtin.shell: |
+    set -o pipefail
+    PATH=$PATH:/usr/sbin/:/sbin/ lsmod | grep "^intel_qat" | awk '{print $4}'
+  args:
+    executable: /bin/bash
   register: intel_qat_deps
   changed_when: false
+  failed_when: ( intel_qat_deps.rc not in [ 0, 1 ] )
 
 - name: print intel_qat_deps value
   ansible.builtin.debug:

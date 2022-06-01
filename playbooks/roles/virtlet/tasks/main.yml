@@ -11,6 +11,7 @@
 - name: apply virtlet extraRuntime label
   ansible.builtin.command: "/usr/local/bin/kubectl label node {{ item }} extraRuntime=virtlet --overwrite"
   with_inventory_hostnames: kube-node
+  changed_when: false
 
 - name: create Virtlet binary folder
   ansible.builtin.file:
@@ -25,7 +26,11 @@
     dest: "{{ virtlet_dest }}/images.yml"
 
 - name: get kubectl version
-  ansible.builtin.shell: "kubectl version --short --client | sed 's/Client Version: v//g'"
+  ansible.builtin.shell: |
+    set -o pipefail
+    kubectl version --short --client | sed 's/Client Version: v//g'
+  args:
+    executable: /bin/bash
   register: kubectl_version
   changed_when: false
 
@@ -35,15 +40,24 @@
 
 # NOTE: Deprecated kubectl --dry-run values(https://github.com/kubernetes/kubernetes/pull/105327)
 - name: install image translations configmap | latest kubectl
-  ansible.builtin.shell: "/usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ virtlet_dest }}/images.yml --dry-run='client' -o yaml | /usr/local/bin/kubectl apply -f -"
+  ansible.builtin.shell: |
+    set -o pipefail
+    /usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ virtlet_dest }}/images.yml --dry-run='client' -o yaml | /usr/local/bin/kubectl apply -f -
+  args:
+    executable: /bin/bash
   when: kubectl_version.stdout is version('1.23', '>=')
 
 - name: install image translations configmap
-  ansible.builtin.shell: "/usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ virtlet_dest }}/images.yml --dry-run -o yaml | /usr/local/bin/kubectl apply -f -"
+  ansible.builtin.shell: |
+    set -o pipefail
+    /usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ virtlet_dest }}/images.yml --dry-run -o yaml | /usr/local/bin/kubectl apply -f -
+  args:
+    executable: /bin/bash
   when: kubectl_version.stdout is version('1.23', '<')
 
 - name: download virtletctl
   ansible.builtin.command: curl -Ls -o {{ virtlet_dest }}/virtletctl {{ virtlet_url }}  # noqa command-instead-of-module
+  changed_when: false
 
 - name: set virtletctl execution permissions
   ansible.builtin.file:
@@ -52,12 +66,19 @@
 
 - name: install virtletctl as kubectl plugin
   ansible.builtin.command: "mv {{ virtlet_dest }}/virtletctl /usr/local/bin/kubectl-virt"
+  changed_when: false
 
 - name: create Virtlet k8s objects
-  ansible.builtin.shell: "/usr/local/bin/kubectl-virt gen | /usr/local/bin/kubectl apply -f -"
+  ansible.builtin.shell: |
+    set -o pipefail
+    /usr/local/bin/kubectl-virt gen | /usr/local/bin/kubectl apply -f -
+  args:
+    executable: /bin/bash
+  changed_when: false
 
 - name: wait for Virtlet daemonset
   ansible.builtin.shell: "/usr/local/bin/kubectl get ds virtlet -n=kube-system -o=jsonpath --template={.status.numberReady}"
+  changed_when: false
   register: daemonset
   until:
     - '1'

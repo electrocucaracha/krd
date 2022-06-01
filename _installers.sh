@@ -103,6 +103,9 @@ function install_k8s {
     sudo chown -R "$USER" "$HOME/.kube/"
     chmod 600 "$HOME/.kube/config"
 
+    sudo mkdir -p /root/.kube
+    sudo cp "$krd_inventory_folder/artifacts/admin.conf" /root/.kube/config
+
     # Update Nginx Ingress CA certificate and key values
     if kubectl get secret/ca-key-pair -n cert-manager --no-headers -o custom-columns=name:.metadata.name; then
         _update_ngnix_ingress_ca

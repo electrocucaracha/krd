@@ -1,33 +1,23 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2020
+# Copyright (c) 2021
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-warn_list:
-  - yaml
-skip_list:
-  - experimental
-exclude_paths:
-  - .tox/
-  - .github
-  - build/ci
-  - config
-  - distros_supported.yml
-  - galaxy-requirements.yml
-  - .travis.yml
-  - tests
-  - playbooks/krd-vars.yml
-  - resources/
-  - helm/
-mock_roles:
-  - andrewrothstein.gcc-toolbox
-  - geerlingguy.docker
-  - andrewrothstein.kind
-  - andrewrothstein.kubectl
-  - geerlingguy.repo-epel
-  - geerlingguy.pip
+- name: boostrap servers
+  hosts: all
+  roles:
+    - role: geerlingguy.docker
+      docker_install_compose: false
+      become: true
+  tasks:
+    - name: add existing user ansible's user to docker's group
+      become: true
+      ansible.builtin.user:
+        name: '{{ ansible_ssh_user }}'
+        groups: docker
+        append: true
