@@ -26,7 +26,7 @@ function _get_kube_version {
     elif [ -n "${KRD_KUBE_VERSION:-}" ]; then
         echo "${KRD_KUBE_VERSION}"
     else
-        echo "v1.23.5"
+        echo "v1.23.7"
     fi
 }
 
@@ -34,6 +34,7 @@ function _get_kube_version {
 function _install_kubespray {
     echo "Deploying kubernetes"
     kubespray_version=$(_get_version kubespray)
+    kube_version=$(_get_kube_version)
 
     # NOTE: bindep prints a multiline's output
     # shellcheck disable=SC2005
@@ -42,7 +43,7 @@ function _install_kubespray {
         pkgs+=" docker"
     fi
     if ! command -v kubectl || ! kubectl krew version &>/dev/null; then
-        PKG_KUBECTL_VERSION="$(_get_kube_version)"
+        PKG_KUBECTL_VERSION="${kube_version#*v}"
         export PKG_KUBECTL_VERSION
         pkgs+=" kubectl"
     fi
@@ -120,6 +121,9 @@ EOF
         if [ "$KRD_CONTAINER_RUNTIME" == "containerd" ]; then
             export KRD_CRUN_ENABLED=false
         fi
+    elif _vercmp "${kube_version#*v}" '>=' "1.24"; then
+        echo "Dockershim has been deprecated in <1.24"
+        exit 1
     fi
     export KRD_DOWNLOAD_LOCALHOST=$KRD_DOWNLOAD_RUN_ONCE
     export KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE
@@ -138,16 +142,37 @@ EOF
             done
         elif [ "$KRD_CONTAINER_RUNTIME" == "crio" ]; then
             echo "crio_registries:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
-                echo "  - ${mirror#*//}" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-            done
+            if _vercmp "${kubespray_version#*v}" '<' "2.18"; then
+                for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
+                    echo "  - ${mirror#*//}" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+                done
+            else
+                echo "  - location: registry-1.docker.io" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+                echo "    unqualified: false" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+                echo "    mirrors:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+                for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
+                    echo "    - location: ${mirror#*//}" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+                    if [[ "${mirror#*//}" == *"$KRD_INSECURE_REGISTRIES_LIST"* ]]; then
+                        echo "      insecure: true" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+                    else
+                        echo "      insecure: false" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+                    fi
+                done
+            fi
         fi
     fi
     if [ -n "${KRD_INSECURE_REGISTRIES_LIST:-}" ] && [ "$KRD_CONTAINER_RUNTIME" != "containerd" ]; then
-        echo "${KRD_CONTAINER_RUNTIME}_insecure_registries:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        for registry in ${KRD_INSECURE_REGISTRIES_LIST//,/ }; do
-            echo "  - $registry" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-        done
+        if [ "$KRD_CONTAINER_RUNTIME" == "docker" ]; then
+            echo "docker_insecure_registries:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            for registry in ${KRD_INSECURE_REGISTRIES_LIST//,/ }; do
+                echo "  - $registry" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            done
+        elif [ "$KRD_CONTAINER_RUNTIME" == "crio" ] && _vercmp "${kubespray_version#*v}" '<' "2.18"; then
+            echo "crio_insecure_registries:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            for registry in ${KRD_INSECURE_REGISTRIES_LIST//,/ }; do
+                echo "  - $registry" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+            done
+        fi
     fi
     if [ -n "${KRD_DNS_ETCHOSTS_DICT:-}" ]; then
         echo "dns_etchosts: |" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
