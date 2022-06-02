@@ -43,7 +43,7 @@ jobs:
         github.event.review.state == 'approved'
       ) ||
       github.event_name != 'pull_request_review'
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     env:
       KRD_DEBUG: true
       KRD_MULTUS_ENABLED: true
