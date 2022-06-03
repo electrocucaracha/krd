@@ -309,7 +309,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "undercloud"
-    installer.vm.box = vagrant_boxes["ubuntu"]["bionic"]["name"]
+    installer.vm.box = vagrant_boxes["ubuntu"]["focal"]["name"]
     installer.vm.network :forwarded_port, guest: 9090, host: 9090
 
     %w[virtualbox libvirt].each do |provider|

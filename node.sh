@@ -165,9 +165,19 @@ function mount_partitions {
 
 # disable_k8s_ports() - Disable FirewallD ports used by Kubernetes Kubelet
 function disable_k8s_ports {
+    local kubelet_ports=(6443 10250 10259 10257)
+
+    for port in "${kubelet_ports[@]}";do
+        if netstat -atun | grep -q "$port"; then
+            echo "Port $port is already used by other non-kubelet service"
+            exit 1
+        fi
+    done
+
     if command -v firewall-cmd && systemctl is-active --quiet firewalld; then
-        sudo firewall-cmd --zone=public --permanent --add-port=6443/tcp
-        sudo firewall-cmd --zone=public --permanent --add-port=10250/tcp
+        for port in "${kubelet_ports[@]}";do
+            sudo firewall-cmd --zone=public --permanent --add-port="$port/tcp"
+        done
         sudo firewall-cmd --zone=public --permanent --add-service=https
         sudo firewall-cmd --reload
         if [ "$KRD_DEBUG" == "true" ]; then
