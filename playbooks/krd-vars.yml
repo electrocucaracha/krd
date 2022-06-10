@@ -10,7 +10,7 @@
 
 go_version: 1.15.3
 kubespray_version: v2.19.0
-istio_version: 1.14.0
+istio_version: 1.14.1
 cfssl_version: 1.6.1
 sonobuoy_version: 0.56.6
 

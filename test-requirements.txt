@@ -14,7 +14,7 @@ ansible-core==2.12.6
     # via
     #   ansible
     #   ansible-lint
-ansible-lint==6.2.2
+ansible-lint==6.3.0
     # via -r test-requirements.in
 arrow==1.2.2
     # via jinja2-time
@@ -138,7 +138,7 @@ pyyaml==6.0
     #   molecule
     #   molecule-vagrant
     #   yamllint
-requests==2.27.1
+requests==2.28.0
     # via cookiecutter
 resolvelib==0.5.4
     # via ansible-core
