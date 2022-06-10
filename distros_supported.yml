@@ -14,27 +14,27 @@ clearlinux:
 centos:
   7:
     name: generic/centos7
-    version: "3.6.14"
+    version: "4.0.0"
   8:
     name: generic/centos8
-    version: "3.6.14"
+    version: "4.0.0"
 ubuntu:
   xenial:
     name: generic/ubuntu1604
-    version: "3.6.14"
+    version: "4.0.0"
   bionic:
     name: generic/ubuntu1804
-    version: "3.6.14"
+    version: "4.0.0"
   focal:
     name: generic/ubuntu2004
-    version: "3.6.14"
+    version: "4.0.0"
 opensuse:
   tumbleweed:
     name: generic/opensuse42
-    version: "3.6.14"
+    version: "4.0.0"
   leap:
     name: generic/opensuse15
-    version: "3.6.14"
+    version: "4.0.0"
 fedora:
   34:
     name: fedora/34-cloud-base
