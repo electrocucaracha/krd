@@ -112,6 +112,25 @@ Vagrant.configure("2") do |config|
   config.ssh.insert_key = false
   config.vm.box_check_update = false
 
+  # Provide a basic configuration
+  config.vm.provision "shell", inline: <<-SHELL
+    if [ -f /etc/netplan/01-netcfg.yaml ]; then
+        sed -i "s/addresses: .*/addresses: [1.1.1.1, 8.8.8.8, 8.8.4.4]/g" /etc/netplan/01-netcfg.yaml
+        netplan apply
+    fi
+    date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
+
+    if ! command -v curl; then
+        source /etc/os-release || source /usr/lib/os-release
+        case ${ID,,} in
+            ubuntu|debian)
+                apt-get update -qq > /dev/null
+                apt-get install -y -qq -o=Dpkg::Use-Pty=0 curl
+            ;;
+        esac
+    fi
+  SHELL
+
   if !ENV["http_proxy"].nil? && !ENV["https_proxy"].nil? && Vagrant.has_plugin?("vagrant-proxyconf")
     config.proxy.http = ENV["http_proxy"] || ENV["HTTP_PROXY"] || ""
     config.proxy.https    = ENV["https_proxy"] || ENV["HTTPS_PROXY"] || ""
