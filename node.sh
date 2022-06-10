@@ -148,12 +148,6 @@ function install_deps {
     sudo journalctl --vacuum-time=1m
 }
 
-# sync_clock() - Sync server's clock
-function sync_clock {
-    echo "Sync server's clock"
-    sudo date -s "$(wget -qSO- --max-redirect=0 google.com 2>&1 | grep Date: | cut -d' ' -f5-8)Z"
-}
-
 # mount_partitions() - Mount and format additional volumes
 function mount_partitions {
     if [ -n "${dict_volumes:-}" ]; then
@@ -255,7 +249,6 @@ for kmod in rbd ip6table_filter; do
     ensure_kmod "$kmod"
 done
 install_deps
-sync_clock
 mount_partitions
 disable_k8s_ports
 create_pmem_namespaces
