@@ -108,7 +108,7 @@ pytest==7.1.2
     # via
     #   ansible-lint
     #   pytest-testinfra
-pytest-testinfra==6.7.0
+pytest-testinfra==6.8.0
     # via -r test-requirements.in
 python-dateutil==2.8.2
     # via arrow
