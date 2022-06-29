@@ -16,11 +16,11 @@ roles:
   - name: geerlingguy.pip
     version: 2.1.0
   - name: andrewrothstein.gcc-toolbox
-    version: v1.1.5
+    version: v1.1.6
   - name: andrewrothstein.kind
     version: v1.1.2
   - name: andrewrothstein.kubectl
-    version: v1.1.78
+    version: v1.1.80
 
 collections:
   - name: community.kubernetes
