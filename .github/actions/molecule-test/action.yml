@@ -25,6 +25,9 @@ runs:
     - name: Install Tox tool
       shell: bash
       run: brew install tox
+    - name: Install vagrant tool
+      shell: bash
+      run: brew install vagrant
     - uses: ./.github/actions/vagrant-setup
     - name: Run molecule tests
       shell: bash

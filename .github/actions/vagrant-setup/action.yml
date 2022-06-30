@@ -28,3 +28,6 @@ runs:
             find playbooks/roles/ -type f -name "molecule.yml" -exec sed -i '.bak' 's|gui: .*|gui: True|g' {} \;
             find . -type f -name "*.bak" -delete
         fi
+    - name: Install vagrant tool
+      shell: bash
+      run: brew install vagrant

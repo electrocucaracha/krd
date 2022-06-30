@@ -71,7 +71,7 @@ jobs:
               - 'playbooks/roles/criproxy/**'
   bootstrap:
     name: Pull python dependencies
-    runs-on: macos-10.15
+    runs-on: macos-12
     needs: changes
     steps:
       - uses: actions/checkout@v3
@@ -93,7 +93,7 @@ jobs:
     name: Check NFD Ansible role with Molecule tests
     if: needs.changes.outputs.nfd == 'true'
     needs: bootstrap
-    runs-on: macos-10.15
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/molecule-test
@@ -103,7 +103,7 @@ jobs:
     name: Check Pmem Ansible role with Molecule tests
     if: needs.changes.outputs.pmem == 'true'
     needs: bootstrap
-    runs-on: macos-10.15
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/molecule-test
@@ -113,7 +113,7 @@ jobs:
     name: Check QAT driver Ansible role with Molecule tests
     if: needs.changes.outputs.qat_driver == 'true'
     needs: bootstrap
-    runs-on: macos-10.15
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/molecule-test
@@ -123,7 +123,7 @@ jobs:
     name: Check SR-IOV CNI Ansible role with Molecule tests
     if: needs.changes.outputs.sriov_cni == 'true'
     needs: bootstrap
-    runs-on: macos-10.15
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/molecule-test
@@ -133,7 +133,7 @@ jobs:
     name: Check SR-IOV Plugin Ansible role with Molecule tests
     if: needs.changes.outputs.sriov_plugin == 'true'
     needs: bootstrap
-    runs-on: macos-10.15
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/molecule-test
@@ -143,7 +143,7 @@ jobs:
     name: Check criproxy Ansible role with Molecule tests
     if: needs.changes.outputs.criproxy == 'true'
     needs: bootstrap
-    runs-on: macos-10.15
+    runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/molecule-test
