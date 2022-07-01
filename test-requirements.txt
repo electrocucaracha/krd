@@ -30,7 +30,7 @@ cerberus==1.3.2
     # via molecule
 certifi==2022.6.15
     # via requests
-cffi==1.15.0
+cffi==1.15.1
     # via cryptography
 chardet==5.0.0
     # via binaryornot
