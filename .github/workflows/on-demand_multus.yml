@@ -54,6 +54,8 @@ jobs:
         run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
       - name: Run Sonobuoy tool
         run: ./krd_command.sh -a run_sonobuoy
+      - name: Run Kubent tool
+        run: ./krd_command.sh -a run_kubent
       - name: Run Multus tests
         run: cd tests; ./multus.sh
       - name: Undeploy services

@@ -223,3 +223,10 @@ function run_checkov {
     kubectl logs job/checkov -n checkov
     kubectl delete -f resources/checkov-job.yaml
 }
+
+function run_kubent {
+    if ! command -v kubent > /dev/null; then
+        curl -sSL https://git.io/install-kubent | GREEN=x TERM=dumb NOCOL=1 YELLOW=x sh
+    fi
+    kubent
+}
