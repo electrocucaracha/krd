@@ -15,7 +15,7 @@ grubby [node platform:fedora]
 open-iscsi [node platform:ubuntu]
 iscsi-initiator-utils [node platform:centos]
 
-git [(node kubespray)]
+git [node kubespray]
 make [kubespray]
 unzip [kubespray]
 wget [kubespray]
@@ -28,3 +28,5 @@ python3-setuptools [kubespray platform:dpkg]
 python3-dev [kubespray platform:dpkg]
 build-essential [kubespray platform:dpkg]
 jq
+
+python3-markupsafe [kubespray]
