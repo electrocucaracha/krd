@@ -28,7 +28,7 @@ kube-ovn_version: v1.10.2
 prometheus-operator_version: v0.57.0
 kubevirt_version: v0.54.0
 kubesphere_version: v3.3.0
-metallb_version: v0.12.1
+metallb_version: v0.13.2
 
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
