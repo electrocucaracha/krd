@@ -193,8 +193,12 @@ function install_metallb {
     metallb_version=$(_get_version metallb)
 
     if ! kubectl get namespaces/metallb-system --no-headers -o custom-columns=name:.metadata.name; then
-        kubectl apply -f "https://raw.githubusercontent.com/metallb/metallb/$metallb_version/manifests/namespace.yaml"
-        kubectl apply -f "https://raw.githubusercontent.com/metallb/metallb/$metallb_version/manifests/metallb.yaml"
+        if _vercmp "${metallb_version#*v}" '<' "0.13"; then
+            kubectl apply -f "https://raw.githubusercontent.com/metallb/metallb/$metallb_version/manifests/namespace.yaml"
+            kubectl apply -f "https://raw.githubusercontent.com/metallb/metallb/$metallb_version/manifests/metallb.yaml"
+        else
+            kubectl apply -f "https://raw.githubusercontent.com/metallb/metallb/$metallb_version/config/manifests/metallb-native.yaml"
+        fi
         if ! kubectl get secret/memberlist -n metallb-system --no-headers -o custom-columns=name:.metadata.name; then
             kubectl create secret generic -n metallb-system memberlist --from-literal=secretkey="$(openssl rand -base64 128)"
         fi

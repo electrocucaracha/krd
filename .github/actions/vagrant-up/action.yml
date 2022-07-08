@@ -52,6 +52,9 @@ inputs:
   gvisor-enabled:
     description: 'Enable gVisor'
     default: false
+  metallb-enabled:
+    description: 'Enable MetalLB'
+    default: false
   krew-plugins-list:
     description: 'List of Krew plugins to be installed'
     default: ' '
@@ -108,6 +111,7 @@ runs:
         KRD_KATA_CONTAINERS_ENABLED: ${{ inputs.kata-containers-enabled }}
         KRD_CRUN_ENABLED: ${{ inputs.crun-enabled }}
         KRD_GVISOR_ENABLED: ${{ inputs.gvisor-enabled }}
+        KRD_METALLB_ENABLED: ${{ inputs.metallb-enabled }}
         PKG_KREW_PLUGINS_LIST: ${{ inputs.krew-plugins-list }}
         KRD_DOCKER_VERSION: ${{ inputs.docker-version }}
         KRD_CONTAINERD_VERSION: ${{ inputs.containerd-version }}

@@ -50,30 +50,32 @@ jobs:
         include:
           - runtime: crio
             crun_enabled: true
-            kata-containers-enabled: false
+            kata_containers_enabled: false
           - runtime: containerd
             gvisor_enabled: true
-            kata-containers-enabled: false  # TODO: Enable this once this PR is included(https://github.com/kubernetes-sigs/kubespray/pull/8797)
-          - enable-tests: true
-            krew-plugins-list: 'virt'
-            int-tests: "metallb istio kubevirt knative"
-          - test-multinode: true
-            run-conformance-tools: true
-          - krew-plugins-list: 'cert-manager'
-            enable-tests: true
-            int-tests: 'falco kyverno gatekeeper'
+            kata_containers_enabled: false  # TODO: Enable this once this PR is included(https://github.com/kubernetes-sigs/kubespray/pull/8797)
+          - enable_tests: true
+            krew_plugins_list: 'virt'
+            metallb_enabled: true
+            int_tests: "metallb istio kubevirt knative"
+          - test_multinode: true
+            run_conformance_tools: true
+          - krew_plugins_list: 'cert-manager'
+            enable_tests: true
+            int_tests: 'falco kyverno gatekeeper'
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/vagrant-up
         with:
           container-runtime: ${{ matrix.runtime }}
-          kata-containers-enabled: ${{ matrix.kata-containers-enabled }}
+          kata-containers-enabled: ${{ matrix.kata_containers_enabled }}
           crun-enabled: ${{ matrix.crun_enabled }}
-          enable-tests: ${{ matrix.enable-tests }}
-          krew-plugins-list: ${{ matrix.krew-plugins-list }}
-          int-tests: ${{ matrix.int-tests }}
-          test-multinode: ${{ matrix.test-multinode }}
-          run-conformance-tools: ${{ matrix.run-conformance-tools }}
+          enable-tests: ${{ matrix.enable_tests }}
+          krew-plugins-list: ${{ matrix.krew_plugins_list }}
+          metallb-enabled: ${{ matrix.metallb_enabled }}
+          int-tests: ${{ matrix.int_tests }}
+          test-multinode: ${{ matrix.test_multinode }}
+          run-conformance-tools: ${{ matrix.run_conformance_tools }}
   check-shellspec:
     name: Run BDD shell specs
     runs-on: ubuntu-latest

@@ -130,7 +130,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_KUBESPHERE_METRICS_SERVER_ENABLED | false                                          | Enable/Disable [Horizontal Pod Autoscaler][15] on KubeSphere                    |
 | KRD_KUBESPHERE_SERVICEMESH_ENABLED    | false                                          | Enable/Disable [KubeSphere Service Mesh][16]                                    |
 | KRD_ENABLE_ISTIO_ADDONS               | false                                          | Enable/Disable Istio AddOns(Grafana, Kiali and Prometheus)                      |
-| KRD_METALLB_ADDRESS_POOLS             |                                                | Specifies a list of L2 address pools for [MetalLB configuration][19]            |
+| KRD_METALLB_ADDRESS_POOLS_LIST        |                                                | Specifies a list of L2 address pools for [MetalLB configuration][19]            |
 
 #### Kubespray
 
