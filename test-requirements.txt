@@ -156,7 +156,7 @@ urllib3==1.26.10
     # via requests
 wcmatch==8.4
     # via ansible-lint
-yamllint==1.26.3
+yamllint==1.27.1
     # via
     #   -r test-requirements.in
     #   ansible-lint
