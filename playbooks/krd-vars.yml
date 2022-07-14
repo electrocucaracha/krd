@@ -15,16 +15,16 @@ cfssl_version: 1.6.1
 sonobuoy_version: 0.56.8
 
 # Knative versions
-kn_version: knative-v1.5.0
+kn_version: knative-v1.6.0
 knative_serving_version: knative-v1.6.0
-knative_eventing_version: v0.32.1
+knative_eventing_version: v0.33.0
 ## Knative Sandbox versions
 net_kourier_version: knative-v1.6.0
 net_istio_version: v0.33.0
 net_certmanager_version: v0.33.0
 
 octant_version: 0.25.1
-kube-ovn_version: v1.10.2
+kube-ovn_version: v1.10.3
 prometheus-operator_version: v0.57.0
 kubevirt_version: v0.54.0
 kubesphere_version: v3.3.0
