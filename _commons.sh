@@ -35,6 +35,7 @@ function _install_kubespray {
     echo "Deploying kubernetes"
     kubespray_version=$(_get_version kubespray)
     kube_version=$(_get_kube_version)
+    mitogen_version=$(_get_version mitogen)
 
     # NOTE: bindep prints a multiline's output
     # shellcheck disable=SC2005
@@ -83,6 +84,7 @@ function _install_kubespray {
 
         $PIP_CMD install --no-cache-dir -r ./requirements.txt
         if _vercmp "${kubespray_version#*v}" '<' "2.18"; then
+            sed -i "s/mitogen_version: .*/mitogen_version: $mitogen_version/g" ./mitogen.yml
             sudo make mitogen
         else
             $PIP_CMD install --no-cache-dir mitogen
