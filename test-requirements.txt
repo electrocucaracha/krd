@@ -76,7 +76,7 @@ jsonschema==4.7.2
     #   ansible-lint
 markupsafe==2.1.1
     # via jinja2
-molecule==4.0.0
+molecule==4.0.1
     # via
     #   -r test-requirements.in
     #   molecule-vagrant
