@@ -152,7 +152,7 @@ tomli==2.0.1
     # via pytest
 typing-extensions==4.3.0
     # via rich
-urllib3==1.26.10
+urllib3==1.26.11
     # via requests
 wcmatch==8.4
     # via ansible-lint
