@@ -26,8 +26,8 @@ platforms:
       gui: false
     provider_raw_config_args:
       - "customize ['modifyvm', :id, '--nictype1', 'virtio', '--cableconnected1', 'on']"
-  - name: xenial
-    box: generic/ubuntu1604
+  - name: focal
+    box: generic/ubuntu2004
     box_version: 4.1.0
     memory: 3072
     cpus: 1
