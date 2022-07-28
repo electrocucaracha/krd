@@ -39,14 +39,9 @@ jobs:
       fail-fast: false
       matrix:
         test: [kong, rook, haproxy]
-        cert-mgr: [false]
-        include:
-          - test: kubewarden
-            cert-mgr: true
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/vagrant-up
         with:
-          cert-manager-enabled: ${{ matrix.cert-mgr }}
           enable-tests: true
           int-tests: ${{ matrix.test }}

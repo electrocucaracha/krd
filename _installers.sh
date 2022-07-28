@@ -303,3 +303,11 @@ function install_kubevirt {
     done
     wait_for_pods kubevirt
 }
+
+# install_virtink() - Installs Virtink solution
+function install_virtink {
+    virtink_version=$(_get_version virtink)
+
+    kubectl apply -f "https://github.com/smartxworks/virtink/releases/download/$virtink_version/virtink.yaml"
+    wait_for_pods virtink-system
+}

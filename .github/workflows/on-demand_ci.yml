@@ -51,9 +51,12 @@ jobs:
             int_tests: "metallb istio kubevirt knative"
           - test_multinode: true
             run_conformance_tools: true
+          - enable_tests: true
+            int_tests: 'falco kyverno gatekeeper'
           - krew_plugins_list: 'cert-manager'
             enable_tests: true
-            int_tests: 'falco kyverno gatekeeper'
+            int_tests: 'virtink kubewarden'
+            cert-manager-enabled: true
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/vagrant-up
