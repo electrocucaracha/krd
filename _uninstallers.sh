@@ -120,6 +120,14 @@ function uninstall_kubevirt {
     _delete_namespace kubevirt
 }
 
+# uninstall_virtink() - Uninstall Virtink servcies
+function uninstall_virtink {
+    virtink_version=$(_get_version virtink)
+
+    kubectl delete -f "https://github.com/smartxworks/virtink/releases/download/$virtink_version/virtink.yaml"
+    _delete_namespace virtink-system
+}
+
 # uninstall_rook() - Uninstall Rook services
 function uninstall_rook {
     _uninstall_helm rook-ceph
