@@ -120,7 +120,9 @@
     mode: '0644'
     dest: /etc/kubernetes/kubelet.env
     insertafter: '^--pod-infra-container-image=*'
-    line: '--container-runtime=remote --container-runtime-endpoint=unix:///run/criproxy.sock --image-service-endpoint=unix:///run/criproxy.sock --enable-controller-attach-detach=false \'
+    line: |-
+      --container-runtime=remote --container-runtime-endpoint=unix:///run/criproxy.sock \
+      --image-service-endpoint=unix:///run/criproxy.sock --enable-controller-attach-detach=false \
     state: present
   when:
     - ansible_facts.services["kubelet.service"] is defined

@@ -40,17 +40,21 @@
 
 # NOTE: Deprecated kubectl --dry-run values(https://github.com/kubernetes/kubernetes/pull/105327)
 - name: install image translations configmap | latest kubectl
-  ansible.builtin.shell: |
+  ansible.builtin.shell: >
     set -o pipefail
-    /usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ virtlet_dest }}/images.yml --dry-run='client' -o yaml | /usr/local/bin/kubectl apply -f -
+
+    /usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations
+    --from-file {{ virtlet_dest }}/images.yml --dry-run='client' -o yaml | /usr/local/bin/kubectl apply -f -
   args:
     executable: /bin/bash
   when: kubectl_version.stdout is version('1.23', '>=')
 
 - name: install image translations configmap
-  ansible.builtin.shell: |
+  ansible.builtin.shell: >
     set -o pipefail
-    /usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations --from-file {{ virtlet_dest }}/images.yml --dry-run -o yaml | /usr/local/bin/kubectl apply -f -
+
+    /usr/local/bin/kubectl create configmap -n kube-system virtlet-image-translations
+    --from-file {{ virtlet_dest }}/images.yml --dry-run -o yaml | /usr/local/bin/kubectl apply -f -
   args:
     executable: /bin/bash
   when: kubectl_version.stdout is version('1.23', '<')
