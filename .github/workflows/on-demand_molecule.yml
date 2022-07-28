@@ -19,10 +19,6 @@ on:
   pull_request_review:
     types:
       - submitted
-    paths:
-      - galaxy-requirements.yml
-      - test-requirements.txt
-      - playbooks/roles/**
 
 jobs:
   changes:

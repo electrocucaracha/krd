@@ -19,10 +19,6 @@ on:
   pull_request_review:
     types:
       - submitted
-    paths:
-      - 'playbooks/roles/virtlet/**'
-      - 'playbooks/roles/criproxy/**'
-      - '!**.md'
 
 jobs:
   check-virtlet:

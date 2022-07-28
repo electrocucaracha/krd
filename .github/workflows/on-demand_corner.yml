@@ -24,15 +24,6 @@ on:
   pull_request_review:
     types:
       - submitted
-    paths:
-      - '**.sh'
-      - '!ci/update_*.sh'
-      - '*.yml'
-      - '!playbooks/**/*.yml'
-      - '*.tpl'
-      - '*.env'
-      - 'resources/*'
-      - '!**.md'
 
 jobs:
   check-corner-cases:
