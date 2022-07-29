@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: openresty/openresty:1.19.3.1-8-alpine
+          image: openresty/openresty:1.21.4.1-2-alpine
           ports:
             - containerPort: 80
               name: server
@@ -68,10 +68,16 @@ data:
     # max clients = worker_processes * worker_connections
     http {
       server {
+        location /sleep {
+          echo_sleep 0.01;
+          echo_reset_timer;
+          echo_location /;
+          echo "took $echo_timer_elapsed sec for total.";
+        }
+
         location / {
           root   /usr/local/openresty/nginx/html;
-          index  index.html index.htm;
-          echo_sleep 1;
+          index  index.html;
         }
       }
     }
