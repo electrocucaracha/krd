@@ -23,11 +23,16 @@ fi
 [[ "$PATH" != *.local/bin* ]] && export PATH=$PATH:$HOME/.local/bin
 [[ "$PATH" != */Library/Frameworks/Python.framework/Versions/2.7/bin* ]] && export PATH=$PATH:/Library/Frameworks/Python.framework/Versions/2.7/bin
 
-for OS in fedora ubuntu centos; do
-    for RELEASE in $(shyaml keys "$OS" < ../distros_supported.yml); do
-        info "Provisioning $OS $RELEASE target node..."
-        ./bootstrap.sh
-        ./provision_installer.sh
-        ./check.sh
+output=""
+for os in fedora ubuntu centos opensuse; do
+    for release in $(shyaml keys "$os" < ../distros_supported.yml); do
+        for cni in flannel cilium calico; do
+            for cri in containerd crio; do
+                output+="{\"os\": \"$os\", \"release\": \"$release\", \"plugin\": \"$cni\", \"runtime\": \"$cri\"},"
+            done
+        done
     done
 done
+
+length=${#output}
+echo "::set-output name=matrix::[${output::length-1}]"

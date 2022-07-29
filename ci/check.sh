@@ -76,6 +76,14 @@ function _run_conformance_tools {
     done
 }
 
+function _run_benchmarks {
+    info "Running K6 tool internally"
+    run_installer_cmd . ./krd_command.sh -a run_internal_k6
+
+    info "Running iperf tool"
+    run_installer_cmd . ./krd_command.sh -a run_k8s_iperf
+}
+
 function _test_virtlet {
     info "Testing Virtlet services"
     run_installer_cmd . KRD_ENABLE_TESTS=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
@@ -110,4 +118,7 @@ if [[ "${KRD_KATA_CONTAINERS_ENABLED:-false}"  == "true" ]] || [[ "${KRD_CRUN_EN
 fi
 if [[ "${RUN_CONFORMANCE_TOOLS:-false}" == "true" ]]; then
     _run_conformance_tools
+fi
+if [[ "${RUN_BENCHMARKS:-false}" == "true" ]]; then
+    _run_benchmarks
 fi

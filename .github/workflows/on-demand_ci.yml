@@ -55,8 +55,8 @@ jobs:
             int_tests: 'falco kyverno gatekeeper'
           - krew_plugins_list: 'cert-manager'
             enable_tests: true
-            int_tests: 'virtink kubewarden'
-            cert-manager-enabled: true
+            int_tests: 'virtink'
+            cert_manager_enabled: true
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/vagrant-up
@@ -70,6 +70,7 @@ jobs:
           int-tests: ${{ matrix.int_tests }}
           test-multinode: ${{ matrix.test_multinode }}
           run-conformance-tools: ${{ matrix.run_conformance_tools }}
+          cert-manager-enabled: ${{ matrix.cert_manager_enabled }}
   check-shellspec:
     name: Run BDD shell specs
     runs-on: ubuntu-latest
