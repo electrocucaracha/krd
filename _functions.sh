@@ -58,6 +58,7 @@ function run_k8s_iperf {
     if ! kubectl get namespaces/iperf3 --no-headers -o custom-columns=name:.metadata.name; then
         kubectl create namespace iperf3
     fi
+    trap '_delete_namespace iperf3' RETURN
     kubectl apply -f resources/iperf.yml
 
     # Wait for stabilization
@@ -68,11 +69,8 @@ function run_k8s_iperf {
     kubectl get pods -n iperf3 -o wide | tee --append  "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
     for pod in $(kubectl get pods -n iperf3 -l app=iperf3-client -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'); do
         ip=$(kubectl get pod "$pod" -n iperf3 -o jsonpath='{.status.hostIP}')
-        bash -c "kubectl exec -it $pod -n iperf3 -- iperf3 -c iperf3-server -T \"Client on $ip\"" | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+        bash -c "kubectl exec -i $pod -n iperf3 -- iperf3 -c iperf3-server -T \"Client on $ip\"" | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
     done
-
-    # Clean up
-    _delete_namespace iperf3
 }
 
 function _setup_demo_app {
@@ -92,6 +90,7 @@ function _setup_demo_app {
 function run_internal_k6 {
     # Setup
     _setup_demo_app k6
+    trap '_delete_namespace k6' RETURN
     kubectl apply -f resources/k6.yml -n k6
     kubectl wait --for=condition=complete job client -n k6 --timeout=3m
 
@@ -100,9 +99,6 @@ function run_internal_k6 {
     kubectl get nodes -o wide | tee "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}-${KRD_KUBE_PROXY_SCHEDULER}.log"
     kubectl get deployments/http-server-deployment -n k6 -o wide | tee --append "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}-${KRD_KUBE_PROXY_SCHEDULER}.log"
     kubectl logs -n k6 "$pod_name" | tail -n 19 | tee --append "$HOME/k6-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}-${KRD_KUBE_PROXY_SCHEDULER}.log"
-
-    # Clean up
-    _delete_namespace k6
 }
 
 # run_external_k6() - Function that execute performance HTTP benchmark to the cluster
@@ -111,6 +107,7 @@ function run_external_k6 {
 
     # Setup
     _setup_demo_app k6
+    trap '_delete_namespace k6' RETURN
     KUBE_EDITOR='sed -i "s|  type\: .*|  type\: LoadBalancer|g"' kubectl edit svc test -n k6
     until [ -n "$(kubectl get service test -o jsonpath='{.status.loadBalancer.ingress[0].ip}' -n k6)" ]; do
         sleep 1
@@ -146,9 +143,6 @@ EOF
     kubectl get nodes -o wide | tee "$HOME/k6-${default_ingress_class}.log"
     kubectl get deployments/http-server-deployment -n k6 -o wide | tee --append "$HOME/k6-${default_ingress_class}.log"
     docker logs k6 | tail -n 19 | tee --append "$HOME/k6-${default_ingress_class}.log"
-
-    # Clean up
-    _delete_namespace k6
 }
 
 # wait_for_pods() - Function that waits for the running state
@@ -224,6 +218,7 @@ function run_checkov {
     kubectl delete -f resources/checkov-job.yaml
 }
 
+# run_kubent() - Installs Kubent to determine deprecated APIs
 function run_kubent {
     if ! command -v kubent > /dev/null; then
         curl -sSL https://git.io/install-kubent | GREEN=x TERM=dumb NOCOL=1 YELLOW=x sh
