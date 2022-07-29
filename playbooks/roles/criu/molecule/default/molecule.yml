@@ -22,14 +22,14 @@ lint: |
 platforms:
   - name: centos7
     box: generic/centos7
-    box_version: 4.1.0
+    box_version: 4.1.2
     memory: 3072
     cpus: 1
     provider_raw_config_args:
       - "customize ['modifyvm', :id, '--nictype1', 'virtio', '--cableconnected1', 'on']"
   - name: bionic
     box: generic/ubuntu1804
-    box_version: 4.1.0
+    box_version: 4.1.2
     memory: 3072
     cpus: 1
     provider_raw_config_args:
