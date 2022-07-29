@@ -16,24 +16,95 @@ on:
   workflow_dispatch:
 
 jobs:
+  generate-json-matrix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Get matrix values
+        id: set-matrix
+        run: |
+          if ! command -v shyaml; then
+              pip install shyaml
+          fi
+
+          output=""
+          for os in $(shyaml keys < distros_supported.yml); do
+              for release in $(shyaml keys "$os" < distros_supported.yml); do
+                  output+="{\"os\": \"$os\", \"release\": \"$release\"},"
+              done
+          done
+
+          length=${#output}
+          echo "::set-output name=matrix::[${output::length-1}]"
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
   check-all-distros:
     name: Check all Linux Distributions supported in an All-in-One setup
     runs-on: macos-12
+    needs: generate-json-matrix
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.generate-json-matrix.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/vagrant-up
+      - name: Running Flannel CNI with ContainerD runtime
+        if: ${{ always() }}
+        uses: ./.github/actions/vagrant-up
         with:
-          os: opensuse
-          release: leap
-          vbox-controller: IDE Controller
-      - name: Run all integration tests
-        env:
-          KRD_CONTAINER_RUNTIME: containerd
-          VAGRANT_DISABLE_VBOXSYMLINKCREATE: 1
-          MEMORY: 12288
-          KRD_CERT_MANAGER_ENABLED: false
-          KRD_INGRESS_NGINX_ENABLED: false
-          PKG_KREW_PLUGINS_LIST: " "
-        run: |
-          cd ci
-          ./check_all.sh
+          os: ${{ matrix.os }}
+          release: ${{ matrix.release }}
+          network-plugin: flannel
+          container-runtime: containerd
+          test-multinode: true
+          run-benchmarks: true
+      - name: Running Calico CNI with ContainerD runtime
+        if: ${{ always() }}
+        uses: ./.github/actions/vagrant-up
+        with:
+          os: ${{ matrix.os }}
+          release: ${{ matrix.release }}
+          network-plugin: calico
+          container-runtime: containerd
+          test-multinode: true
+          run-benchmarks: true
+      - name: Running Cilium CNI with ContainerD runtime
+        if: ${{ always() }}
+        uses: ./.github/actions/vagrant-up
+        with:
+          os: ${{ matrix.os }}
+          release: ${{ matrix.release }}
+          network-plugin: cilium
+          container-runtime: containerd
+          test-multinode: true
+          run-benchmarks: true
+      - name: Running Flannel CNI with CRI-O runtime
+        if: ${{ always() }}
+        uses: ./.github/actions/vagrant-up
+        with:
+          os: ${{ matrix.os }}
+          release: ${{ matrix.release }}
+          network-plugin: flannel
+          container-runtime: crio
+          test-multinode: true
+          run-benchmarks: true
+      - name: Running Calico CNI with CRI-O runtime
+        if: ${{ always() }}
+        uses: ./.github/actions/vagrant-up
+        with:
+          os: ${{ matrix.os }}
+          release: ${{ matrix.release }}
+          network-plugin: calico
+          container-runtime: crio
+          test-multinode: true
+          run-benchmarks: true
+      - name: Running Cilium CNI with CRI-O runtime
+        if: ${{ always() }}
+        uses: ./.github/actions/vagrant-up
+        with:
+          os: ${{ matrix.os }}
+          release: ${{ matrix.release }}
+          network-plugin: cilium
+          container-runtime: crio
+          test-multinode: true
+          run-benchmarks: true
