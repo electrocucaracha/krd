@@ -62,6 +62,9 @@ inputs:
     description: 'Docker version'
   containerd-version:
     description: 'ContainerD version'
+  network-plugin:
+    description: 'CNI plugin'
+    default: 'flannel'
   enable-tests:
     description: 'Enable KRD functional tests'
     default: false
@@ -115,6 +118,7 @@ runs:
         PKG_KREW_PLUGINS_LIST: ${{ inputs.krew-plugins-list }}
         KRD_DOCKER_VERSION: ${{ inputs.docker-version }}
         KRD_CONTAINERD_VERSION: ${{ inputs.containerd-version }}
+        KRD_NETWORK_PLUGIN: ${{ inputs.network-plugin }}
       run: |
         cd ci
         ./provision_installer.sh
