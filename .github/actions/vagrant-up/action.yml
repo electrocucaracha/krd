@@ -76,6 +76,9 @@ inputs:
   run-conformance-tools:
     description: 'Run conformance tools'
     default: false
+  run-benchmarks:
+    description: 'Run K6 and iperf networking benchmark tools'
+    default: false
 
 runs:
   using: "composite"
@@ -135,6 +138,7 @@ runs:
         KRD_KATA_CONTAINERS_ENABLED: ${{ inputs.kata-containers-enabled }}
         KRD_CRUN_ENABLED: ${{ inputs.crun-enabled }}
         KRD_GVISOR_ENABLED: ${{ inputs.gvisor-enabled }}
+        RUN_BENCHMARKS: ${{ inputs.run-benchmarks }}
       run: |
         cd ci
         ./check.sh
