@@ -14,11 +14,11 @@ ansible-core==2.13.2
     # via
     #   ansible
     #   ansible-lint
-ansible-lint==6.3.0
+ansible-lint==6.4.0
     # via -r test-requirements.in
 arrow==1.2.2
     # via jinja2-time
-attrs==21.4.0
+attrs==22.1.0
     # via
     #   jsonschema
     #   pytest
@@ -70,7 +70,7 @@ jinja2==3.1.2
     #   molecule-vagrant
 jinja2-time==0.2.0
     # via cookiecutter
-jsonschema==4.7.2
+jsonschema==4.8.0
     # via
     #   ansible-compat
     #   ansible-lint
