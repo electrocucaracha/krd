@@ -45,15 +45,6 @@ File.open("#{File.dirname(__FILE__)}/inventory/hosts.ini", "w") do |inventory_fi
   inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
 end
 
-loader = if File.exist?("/usr/share/qemu/OVMF.fd")
-           "/usr/share/qemu/OVMF.fd"
-         else
-           File.join(
-             File.dirname(__FILE__), "OVMF.fd"
-           )
-         end
-system("curl -o #{File.dirname(__FILE__)}/OVMF.fd https://download.clearlinux.org/image/OVMF.fd") unless File.exist?(loader)
-
 system("echo -e \"\n\n\n\" | ssh-keygen -f #{File.dirname(__FILE__)}/insecure_keys/key -t rsa -N ''") unless File.exist?("#{File.dirname(__FILE__)}/insecure_keys/key")
 
 if which "vm_stat"

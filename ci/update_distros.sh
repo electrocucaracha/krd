@@ -81,9 +81,6 @@ cat << EOT > .distros_supported.yml
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-clearlinux:
-  latest:
-    name: AntonioMeireles/ClearLinux
 EOT
 
 echo "centos:" >> .distros_supported.yml
