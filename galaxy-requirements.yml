@@ -12,7 +12,7 @@ roles:
   - name: geerlingguy.docker
     version: 5.0.0
   - name: geerlingguy.repo-epel
-    version: 3.1.0
+    version: 3.1.1
   - name: geerlingguy.pip
     version: 2.1.0
   - name: andrewrothstein.gcc-toolbox
