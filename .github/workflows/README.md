@@ -2,6 +2,7 @@
 
 | Workflow file                                  | Description                                                                  | Run event                    |
 | :--------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------- |
+| [diagram](./diagram.yml)                       | Generates the codebase diagram used by the main README.md file               | on new commit/push on master |
 | [distros](./distros.yml)                       | Updates the Vagrant box versions for Distro list supported file              | scheduled/manual trigger     |
 | [linter](./linter.yml)                         | Verifies broken links in documentation and runs multiple linter tools        | on new commit/push on master |
 | [on-demand_ci](./on-demand_ci.yml)             | Runs BDD and integration tests for different container runtimes and projects | on new commit/push on master |

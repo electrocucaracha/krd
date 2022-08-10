@@ -172,14 +172,19 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 
 ## Contribution
 
-This project welcomes your PR and issues.
-For example, refactoring, adding features, correcting English, etc.
+This is an open project, several individuals contribute in different forms like
+coding, documenting, testing, spreading the word at events within others.
+
+If you are interested in contributing, please refer to the code
+[CONTRIBUTING](CONTRIBUTING.md) guidelines.
 
 Thanks to all the people who already contributed!
 
 <a href="https://github.com/electrocucaracha/krd/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=electrocucaracha/krd" />
 </a>
+
+![Visualization of the codebase](./codebase-structure.svg)
 
 [1]: https://github.com/kubernetes-sigs/kubespray
 [2]: https://github.com/k8snetworkplumbingwg/multus-cni
