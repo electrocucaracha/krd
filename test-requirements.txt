@@ -10,7 +10,7 @@ ansible-compat==2.2.0
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.13.2
+ansible-core==2.13.3
     # via
     #   ansible
     #   ansible-lint
@@ -100,7 +100,7 @@ py==1.11.0
     # via pytest
 pycparser==2.21
     # via cffi
-pygments==2.12.0
+pygments==2.13.0
     # via rich
 pyparsing==3.0.9
     # via packaging
