@@ -34,7 +34,7 @@ cffi==1.15.1
     # via cryptography
 chardet==5.0.0
     # via binaryornot
-charset-normalizer==2.1.0
+charset-normalizer==2.1.1
     # via requests
 click==8.1.3
     # via
@@ -70,7 +70,7 @@ jinja2==3.1.2
     #   molecule-vagrant
 jinja2-time==0.2.0
     # via cookiecutter
-jsonschema==4.12.1
+jsonschema==4.13.0
     # via
     #   ansible-compat
     #   ansible-lint
