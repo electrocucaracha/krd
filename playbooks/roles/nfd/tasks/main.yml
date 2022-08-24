@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: create NFD k8s resources based on templates
+- name: Create NFD k8s resources based on templates
   k8s:
     state: present
     definition: "{{ lookup('template', 'nfd-{{ item }}.yaml.j2') }}"  # noqa no-jinja-nesting

@@ -13,9 +13,9 @@
   collections:
     - community.kubernetes
   tasks:
-    - name: enforce python3 for ansible
+    - name: Enforce python3 for ansible
       ansible.builtin.set_fact:
         ansible_python_interpreter: /usr/bin/python3
-    - name: "Include pmem"
+    - name: Include pmem
       ansible.builtin.include_role:
-        name: "pmem"
+        name: pmem

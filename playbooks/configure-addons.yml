@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: install SR-IOV Network CNI
+- name: Install SR-IOV Network CNI
   hosts: localhost
   tags:
     - sriov
@@ -16,7 +16,7 @@
   roles:
     - sriov_cni
 
-- name: install SR-IOV Network Device Plugin
+- name: Install SR-IOV Network Device Plugin
   hosts: localhost
   tags:
     - sriov
@@ -24,7 +24,7 @@
   roles:
     - sriov_plugin
 
-- name: install Node Feature Discovery add-on
+- name: Install Node Feature Discovery add-on
   hosts: localhost
   collections:
     - community.kubernetes
@@ -32,20 +32,20 @@
   roles:
     - nfd
 
-- name: label worker nodes with pmem devices
+- name: Label worker nodes with pmem devices
   hosts: all
   gather_facts: true
   tasks:
-    - name: check if pmem device exists
+    - name: Check if pmem device exists
       ansible.builtin.stat:
         path: /dev/pmem0
       register: pmem_dev_check
-    - name: register PMEM server
+    - name: Register PMEM server
       ansible.builtin.command: "/usr/local/bin/kubectl label node {{ ansible_hostname }} storage=pmem --overwrite"
       when: pmem_dev_check.stat.exists
       delegate_to: localhost
 
-- name: install Persistent Memory add-on
+- name: Install Persistent Memory add-on
   hosts: localhost
   collections:
     - community.kubernetes
@@ -58,7 +58,7 @@
     - role: andrewrothstein.gcc-toolbox
     - pmem
 
-- name: install QuickAssist drivers
+- name: Install QuickAssist drivers
   hosts: qat-node
   become: true
   pre_tasks:
@@ -73,7 +73,7 @@
       when: ansible_os_family == 'RedHat'
     - qat_driver
 
-- name: build intel-qat-plugin in kerneldrv mode
+- name: Build intel-qat-plugin in kerneldrv mode
   vars:
     qat_plugin_repo_folder: /tmp/intel-device-plugins-for-kubernetes
   hosts: kube-node
@@ -85,14 +85,14 @@
     - name: Load krd variables
       ansible.builtin.include_vars:
         file: krd-vars.yml
-    - name: configure docker client
+    - name: Configure docker client
       block:
-        - name: create docker config folder
+        - name: Create docker config folder
           ansible.builtin.file:
             state: directory
             path: /root/.docker/
             mode: '0755'
-        - name: configure docker client to use proxy values
+        - name: Configure docker client to use proxy values
           ansible.builtin.copy:
             mode: preserve
             dest: "/root/.docker/config.json"
@@ -102,21 +102,21 @@
                 {
                   "default":
                   {
-                    "httpProxy": "{{ lookup('env','http_proxy') }}",
-                    "httpsProxy": "{{ lookup('env','https_proxy') }}",
-                    "noProxy": "{{ lookup('env','no_proxy') }}"
+                    "httpProxy": "{{ lookup('env', 'http_proxy') }}",
+                    "httpsProxy": "{{ lookup('env', 'https_proxy') }}",
+                    "noProxy": "{{ lookup('env', 'no_proxy') }}"
                   }
                 }
               }
       when: lookup('env','http_proxy') != "fooproxy" or lookup('env','https_proxy') != "fooproxy" or lookup('env','no_proxy') != "fooproxy"
-    - name: clone intel-qat-plugin repo
+    - name: Clone intel-qat-plugin repo
       ansible.builtin.git:
         repo: "https://github.com/intel/intel-device-plugins-for-kubernetes"
         dest: "{{ qat_plugin_repo_folder }}"
         version: "v{{ qat_plugin_version }}"
         force: true
       when: qat_plugin_mode == "kernel"
-    - name: remove old qat docker images
+    - name: Remove old qat docker images
       ansible.builtin.shell: |
         set -o pipefail
         docker images intel-qat-plugin -q | xargs docker rmi -f
@@ -125,7 +125,7 @@
       register: docker_rmi_result
       failed_when: "docker_rmi_result.rc != 0 and docker_rmi_result.rc != 123"
       when: qat_plugin_mode == "kernel"
-    - name: build docker image
+    - name: Build docker image
       ansible.builtin.command: >
         docker build --build-arg TAGS_KERNELDRV=kerneldrv --pull
         -t intel/intel-qat-plugin:{{ qat_plugin_version }}
@@ -133,7 +133,7 @@
         {{ qat_plugin_repo_folder }}/
       when: qat_plugin_mode == "kernel"
 
-- name: install QuickAssist Plugin
+- name: Install QuickAssist Plugin
   hosts: localhost
   tags:
     - qat

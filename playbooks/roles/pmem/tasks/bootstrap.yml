@@ -8,14 +8,14 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: check if binary exists
+- name: Check if binary exists
   ansible.builtin.stat:
     path: /usr/local/bin/{{ binary }}
   register: binary_location
-- name: print binary value
+- name: Print binary value
   ansible.builtin.debug:
     var: binary_location
-- name: retrieve binary
+- name: Retrieve binary
   ansible.builtin.get_url:
     url: https://github.com/cloudflare/cfssl/releases/download/v{{ cfssl_version }}/{{ binary }}_{{ cfssl_version }}_linux_amd64
     dest: /usr/local/bin/{{ binary }}

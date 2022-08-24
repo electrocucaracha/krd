@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: install SuSE build tools
+- name: Install SuSE build tools
   become: true
   zypper:
     name: devel_C_C++
@@ -17,7 +17,7 @@
     update_cache: true
   when: ansible_os_family == 'Suse'
 
-- name: install RedHat build tools
+- name: Install RedHat build tools
   become: true
   ansible.builtin.yum:
     name: "@Development tools"
@@ -35,21 +35,21 @@
     cache_valid_time: 3600
   when: ansible_os_family == 'Debian'
 
-- name: install qat compilation packages
+- name: Install qat compilation packages
   become: true
   ansible.builtin.package:
     name: "{{ item }}"
     state: present
   with_items: "{{ qat_driver_pkgs }}"
 
-- name: install Debian kernel development tools
+- name: Install Debian kernel development tools
   become: true
   ansible.builtin.package:
     name: "linux-headers-{{ ansible_kernel }}"
     state: present
   when: ansible_os_family == 'Debian'
 
-- name: install RedHat kernel development tools
+- name: Install RedHat kernel development tools
   ansible.builtin.package:
     name: kernel-devel
     state: present

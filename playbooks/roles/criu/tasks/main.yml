@@ -8,11 +8,11 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: add ubuntu repo
+- name: Add ubuntu repo
   ansible.builtin.apt_repository:
     repo: ppa:criu/ppa
   when: ansible_os_family == 'Ubuntu'
-- name: add centos repo
+- name: Add centos repo
   ansible.builtin.yum_repository:
     name: criu-el7
     description: Copr repo for criu-el7 owned by adrian
@@ -20,7 +20,7 @@
     gpgcheck: true
     gpgkey: https://copr-be.cloud.fedoraproject.org/results/adrian/criu-el7/pubkey.gpg
   when: ansible_os_family == 'RedHat'
-- name: install CRIU packages
+- name: Install CRIU packages
   ansible.builtin.package:
     name: criu
     state: present

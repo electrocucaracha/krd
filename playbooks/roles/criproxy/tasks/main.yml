@@ -8,10 +8,10 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: get service status
+- name: Get service status
   ansible.builtin.service_facts:
 
-- name: disable AppArmor in all nodes
+- name: Disable AppArmor in all nodes
   become: true
   ansible.builtin.service:
     name: apparmor
@@ -21,53 +21,53 @@
     - ansible_os_family == "Debian"
     - ansible_facts.services["apparmor.service"] is defined
 
-- name: disable SELinux in all nodes
+- name: Disable SELinux in all nodes
   selinux:
     state: disabled
   when:
     - ansible_os_family == "RedHat"
     - ansible_facts.services["selinux.service"] is defined
 
-- name: check that kubelet env file exists
+- name: Check that kubelet env file exists
   ansible.builtin.stat:
     path: /etc/kubernetes/kubelet.env
   register: kubelet_env_stat
 
-- name: print kubelet_env_stat value
+- name: Print kubelet_env_stat value
   ansible.builtin.debug:
     var: kubelet_env_stat
 
-- name: create dockershim service
+- name: Create dockershim service
   become: true
   block:
-    - name: remove leftovers
+    - name: Remove leftovers
       ansible.builtin.file:
         path: /var/run/dockershim.sock
         state: absent
-    - name: get kubelet version
+    - name: Get kubelet version
       ansible.builtin.shell: /usr/local/bin/kubelet --version | awk '{ gsub(/v/,""); print $2 }'
       register: kubelet_version
       changed_when: false
-    - name: print kubelet_version value
+    - name: Print kubelet_version value
       ansible.builtin.debug:
         var: kubelet_version
     - name: Stop if kubelet doesn't support --experimental-dockershim option
       ansible.builtin.assert:
         that: kubelet_version.stdout is version('1.19', '<')
         msg: Kubelet has removed its Experimental Dockershim option. See https://github.com/kubernetes/kubernetes/commit/53adde65ce000c4d90ee8f807e90658426733a5
-    - name: create dockershim service
+    - name: Create dockershim service
       ansible.builtin.copy:
         mode: '0644'
         src: dockershim.service
         dest: /etc/systemd/system/dockershim.service
-    - name: start dockershim service
+    - name: Start dockershim service
       ansible.builtin.service:
         name: dockershim
         state: started
         enabled: true
       notify:
-        - restart criproxy service
-    - name: wait for dockershim socket to be created
+        - Restart criproxy service
+    - name: Wait for dockershim socket to be created
       ansible.builtin.wait_for:
         path: "{{ cri_socket_path }}"
         delay: 5
@@ -76,45 +76,45 @@
     - kubelet_env_stat.stat.exists
     - ansible_facts.services["docker.service"] is defined
 
-- name: create CRIProxy binary folder
+- name: Create CRIProxy binary folder
   ansible.builtin.file:
     mode: '0755'
     state: directory
     path: "{{ criproxy_dest }}"
 
-- name: check that criproxy binary exists
+- name: Check that criproxy binary exists
   ansible.builtin.stat:
     path: "{{ criproxy_dest }}/criproxy"
   register: criproxy_stat
 
-- name: print criproxy_stat value
+- name: Print criproxy_stat value
   ansible.builtin.debug:
     var: criproxy_stat
 
-- name: download CRIproxy package
+- name: Download CRIproxy package
   ansible.builtin.command: curl -Ls -o {{ criproxy_dest }}/criproxy {{ criproxy_url }}  # noqa command-instead-of-module
   when: not criproxy_stat.stat.exists
 
-- name: set criproxy execution permissions
+- name: Set criproxy execution permissions
   ansible.builtin.file:
     path: "{{ criproxy_dest }}/criproxy"
     mode: "+x"
 
-- name: recreate criproxy service
+- name: Recreate criproxy service
   become: true
   ansible.builtin.template:
     mode: preserve
     src: criproxy.service.j2
     dest: /etc/systemd/system/criproxy.service
 
-- name: start criproxy service
+- name: Start criproxy service
   become: true
   ansible.builtin.service:
     name: criproxy
     state: started
     enabled: true
 
-- name: modify args for kubelet service
+- name: Modify args for kubelet service
   become: true
   ansible.builtin.lineinfile:
     mode: '0644'
@@ -128,4 +128,4 @@
     - ansible_facts.services["kubelet.service"] is defined
     - ansible_facts.services["docker.service"] is defined
   notify:
-    - restart kubelet service
+    - Restart kubelet service

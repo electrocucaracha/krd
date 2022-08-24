@@ -12,11 +12,11 @@
   roles:
     - role: geerlingguy.docker
   tasks:
-    - name: add ubuntu repo
+    - name: Add ubuntu repo
       ansible.builtin.apt_repository:
         repo: ppa:criu/ppa
       when: ansible_os_family == 'Ubuntu'
-    - name: add centos repo
+    - name: Add centos repo
       ansible.builtin.yum_repository:
         name: criu-el7
         description: Copr repo for criu-el7 owned by adrian
@@ -24,7 +24,7 @@
         gpgcheck: true
         gpgkey: https://copr-be.cloud.fedoraproject.org/results/adrian/criu-el7/pubkey.gpg
       when: ansible_os_family == 'RedHat'
-    - name: enable docker experimental features
+    - name: Enable docker experimental features
       become: true
       ansible.builtin.copy:
         mode: preserve
@@ -34,14 +34,14 @@
             "experimental": true,
             "debug": true
           }
-    - name: configure docker client
+    - name: Configure docker client
       block:
-        - name: create docker config folder
+        - name: Create docker config folder
           ansible.builtin.file:
             state: directory
             path: /root/.docker/
             mode: '0755'
-        - name: configure docker client to use proxy values
+        - name: Configure docker client to use proxy values
           ansible.builtin.copy:
             mode: preserve
             dest: "/root/.docker/config.json"
@@ -51,18 +51,18 @@
                 {
                   "default":
                   {
-                    "httpProxy": "{{ lookup('env','http_proxy') }}",
-                    "httpsProxy": "{{ lookup('env','https_proxy') }}",
-                    "noProxy": "{{ lookup('env','no_proxy') }}"
+                    "httpProxy": "{{ lookup('env', 'http_proxy') }}",
+                    "httpsProxy": "{{ lookup('env', 'https_proxy') }}",
+                    "noProxy": "{{ lookup('env', 'no_proxy') }}"
                   }
                 }
               }
       when: lookup('env','http_proxy') != "fooproxy" or lookup('env','https_proxy') != "fooproxy" or lookup('env','no_proxy') != "fooproxy"
-    - name: install CRIU packages
+    - name: Install CRIU packages
       ansible.builtin.package:
         name: criu
         state: present
-    - name: reload docker service
+    - name: Reload docker service
       ansible.builtin.service:
         name: docker
         state: restarted

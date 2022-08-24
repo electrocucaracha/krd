@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: deploy cfssl binaries
+- name: Deploy cfssl binaries
   include_tasks: bootstrap.yml
   vars:
     binary: "{{ item }}"
@@ -16,13 +16,13 @@
     - cfssl
     - cfssljson
 
-- name: ensure destination folder exists
+- name: Ensure destination folder exists
   ansible.builtin.file:
     mode: '0755'
     state: directory
     path: "{{ pmem_template_folder }}"
 
-- name: copy shell scripts
+- name: Copy shell scripts
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ pmem_template_folder }}/{{ item }}.sh"
@@ -32,35 +32,35 @@
     - setup-ca
     - test-config
 
-- name: create a PMEM namespace
+- name: Create a PMEM namespace
   k8s:
     name: "{{ pmem_namespace }}"
     api_version: v1
     kind: Namespace
     state: present
 
-- name: get PMEM CSI node secret
+- name: Get PMEM CSI node secret
   k8s_info:
     kind: Secret
     name: pmem-csi-intel-com-controller-secret
     namespace: "{{ pmem_namespace }}"
   register: node_secret
 
-- name: get PMEM CSI registry secret
+- name: Get PMEM CSI registry secret
   k8s_info:
     kind: Secret
     name: pmem-csi-intel-com-controller-secret
     namespace: "{{ pmem_namespace }}"
   register: registry_secret
 
-- name: print node and registry values
+- name: Print node and registry values
   ansible.builtin.debug:
     var: '{{ item }}_secret'
   with_items:
     - node
     - registry
 
-- name: create PMEM secrets
+- name: Create PMEM secrets
   become: true
   ansible.builtin.shell: 'PATH=$PATH:/usr/local/bin/ {{ pmem_template_folder }}/setup-ca-kubernetes.sh'
   environment:
@@ -71,12 +71,12 @@
     - node_secret.resources | length == 0
     - registry_secret.resources | length == 0
 
-- name: create PMEM CSI for LVM driver
+- name: Create PMEM CSI for LVM driver
   k8s:
     state: present
     definition: "{{ lookup('template', 'pmem-csi-lvm.yaml.j2') }}"
 
-- name: create PMEM storage classes
+- name: Create PMEM storage classes
   k8s:
     state: present
     definition: "{{ lookup('file', 'pmem-{{ item }}.yaml') }}"  # noqa no-jinja-nesting

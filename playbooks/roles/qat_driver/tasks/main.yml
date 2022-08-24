@@ -8,7 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: get intel_qat version
+- name: Get intel_qat version
   ansible.builtin.shell: |
     set -o pipefail
     PATH=$PATH:/usr/sbin/:/sbin/ modinfo intel_qat | grep "^version:" | awk '{ print $2 }'
@@ -17,7 +17,7 @@
   register: intel_qat_version
   changed_when: false
 
-- name: print intel_qat_version value
+- name: Print intel_qat_version value
   ansible.builtin.debug:
     var: intel_qat_version
 
@@ -30,7 +30,7 @@
 - include_tasks: build.yml
   when: intel_qat_version.stdout != qat_driver_version
 
-- name: create qat_service systemd wrapper
+- name: Create qat_service systemd wrapper
   become: true
   ansible.builtin.copy:
     mode: preserve
@@ -38,17 +38,17 @@
     dest: /etc/systemd/system/qat_service.service
   when: ansible_os_family in ['ClearLinux', 'Suse']
   notify:
-    - start qat_service service
+    - Start qat_service service
 
-- name: configure number of processes per qat device
+- name: Configure number of processes per qat device
   block:
-    - name: get qat devices
+    - name: Get qat devices
       ansible.builtin.shell: >
         /usr/local/bin/adf_ctl status | grep up |
         awk '{print $4 substr($1, 4)}' | tr -d ','
       register: qat_devices
       changed_when: false
-    - name: ensure SHIM config section
+    - name: Ensure SHIM config section
       ansible.builtin.blockinfile:
         dest: "/etc/{{ item }}.conf"
         block: |
@@ -63,7 +63,7 @@
           # List of core affinities
           Cy0CoreAffinity = 0
       loop: "{{ qat_devices.stdout_lines }}"
-    - name: restart qat services
+    - name: Restart qat services
       ansible.builtin.command: /usr/local/bin/adf_ctl restart
       changed_when: false
   when: qat_plugin_mode == "kernel"

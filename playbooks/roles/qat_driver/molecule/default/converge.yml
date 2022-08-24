@@ -11,6 +11,6 @@
 - name: Converge
   hosts: all
   tasks:
-    - name: "Include qat_driver"
+    - name: Include qat_driver
       ansible.builtin.include_role:
-        name: "qat_driver"
+        name: qat_driver

@@ -8,17 +8,17 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: get service status
+- name: Get service status
   ansible.builtin.service_facts:
 
-- name: stop qat_service service
+- name: Stop qat_service service
   become: true
   ansible.builtin.service:
     name: qat_service
     state: stopped
   when: ansible_facts.services["qat_service.service"] is defined
 
-- name: get intel_qat kernel module dependencies
+- name: Get intel_qat kernel module dependencies
   ansible.builtin.shell: |
     set -o pipefail
     PATH=$PATH:/usr/sbin/:/sbin/ lsmod | grep "^intel_qat" | awk '{print $4}'
@@ -28,18 +28,18 @@
   changed_when: false
   failed_when: ( intel_qat_deps.rc not in [ 0, 1 ] )
 
-- name: print intel_qat_deps value
+- name: Print intel_qat_deps value
   ansible.builtin.debug:
     var: intel_qat_deps
 
-- name: remove intel_qat kernel module dependencies
+- name: Remove intel_qat kernel module dependencies
   become: true
   modprobe:
     name: "{{ item }}"
     state: absent
   loop: "{{ intel_qat_deps.stdout_lines }}"
 
-- name: remove kernel module
+- name: Remove kernel module
   become: true
   modprobe:
     name: intel_qat

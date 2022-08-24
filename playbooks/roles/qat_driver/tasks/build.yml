@@ -8,13 +8,13 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: create qat folder
+- name: Create qat folder
   ansible.builtin.file:
     mode: '0755'
     state: directory
     path: "{{ qat_driver_dest }}"
 
-- name: extract qat driver source code
+- name: Extract qat driver source code
   ansible.builtin.unarchive:
     mode: '0755'
     src: "{{ qat_driver_url }}"
@@ -22,28 +22,28 @@
     remote_src: true
     creates: "{{ qat_driver_dest }}/configure"
 
-- name: check if configure was executed
+- name: Check if configure was executed
   ansible.builtin.stat:
     path: "{{ qat_driver_dest }}/config.log"
   register: configure_log
 
-- name: configure qat driver source code
+- name: Configure qat driver source code
   ansible.builtin.command: ./configure
   args:
     chdir: "{{ qat_driver_dest }}"
   register: configure
   when: not configure_log.stat.exists
 
-- name: check if there is a adf_ctl binary
+- name: Check if there is a adf_ctl binary
   ansible.builtin.stat:
     path: /usr/local/bin/adf_ctl
   register: adf_ctl
 
-- name: build qat driver
+- name: Build qat driver
   become: true
   make:
     chdir: "{{ qat_driver_dest }}"
     target: install
   when: not adf_ctl.stat.exists
   notify:
-    - start qat_service service
+    - Start qat_service service

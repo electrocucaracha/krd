@@ -8,18 +8,18 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: boostrap servers
+- name: Boostrap servers
   hosts: all
   vars:
     kind_dest: /usr/local/bin
   pre_tasks:
-    - name: install python3 packages
+    - name: Install python3 packages
       become: true
       ansible.builtin.package:
         name: python3
         state: present
       when: ansible_os_family == "RedHat"
-    - name: enforce python3 for ansible
+    - name: Enforce python3 for ansible
       ansible.builtin.set_fact:
         ansible_python_interpreter: /usr/bin/python3
   roles:
@@ -36,18 +36,18 @@
           - kubernetes==24.2.0
           - openshift==0.13.1
   tasks:
-    - name: add existing user ansible's user to docker's group
+    - name: Add existing user ansible's user to docker's group
       become: true
       ansible.builtin.user:
         name: '{{ ansible_ssh_user }}'
         groups: docker
         append: true
-    - name: get k8s clusters
+    - name: Get k8s clusters
       ansible.builtin.command: '{{ kind_dest }}/kind get clusters --quiet'
       register: kind_cluster
       failed_when: ( kind_cluster.rc not in [ 0, 1 ] )
       changed_when: false
-    - name: print kind_cluster value
+    - name: Print kind_cluster value
       ansible.builtin.debug:
         var: kind_cluster
     - name: Creating KinD cluster config
@@ -59,16 +59,16 @@
           apiVersion: kind.x-k8s.io/v1alpha4
           nodes:
             - role: control-plane
-    - name: create k8s cluster
+    - name: Create k8s cluster
       become: true
       ansible.builtin.command: '{{ kind_dest }}/kind create cluster --name molecule --config=/tmp/kind-config.yml --wait=300s'
       when: not 'molecule' in kind_cluster.stdout
-    - name: create kubeconfig folder
+    - name: Create kubeconfig folder
       ansible.builtin.file:
         mode: '0755'
         path: '{{ ansible_env.HOME }}/.kube/'
         state: directory
-    - name: copy kubeconfig root file
+    - name: Copy kubeconfig root file
       become: true
       ansible.builtin.copy:
         mode: preserve

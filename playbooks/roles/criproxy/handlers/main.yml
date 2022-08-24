@@ -8,13 +8,13 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: restart kubelet service
+- name: Restart kubelet service
   ansible.builtin.systemd:
     state: restarted
     daemon_reload: true
     name: kubelet
 
-- name: restart criproxy service
+- name: Restart criproxy service
   ansible.builtin.systemd:
     state: restarted
     name: criproxy

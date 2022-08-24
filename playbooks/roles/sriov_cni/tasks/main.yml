@@ -8,13 +8,13 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: create CRD for Network Attachment Definition
+- name: Create CRD for Network Attachment Definition
   k8s:
     state: present
     definition: "{{ lookup('file', 'net-attach-def.yml') }}"
     namespace: kube-system
 
-- name: create SR-IOV k8s resources
+- name: Create SR-IOV k8s resources
   k8s:
     state: present
     definition: "{{ lookup('template', 'sriov-{{ item }}.yaml.j2') }}"  # noqa no-jinja-nesting
