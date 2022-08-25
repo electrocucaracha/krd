@@ -92,7 +92,7 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder "./", "/vagrant"
   config.vm.provider "libvirt" do |v, override|
-    override.vm.synced_folder "./", "/vagrant", type: "nfs"
+    override.vm.synced_folder "./", "/vagrant", type: "nfs", nfs_version: ENV.fetch("VAGRANT_NFS_VERSION", 3)
     v.management_network_address = "10.0.2.0/24"
     # Administration - Provides Internet access for all nodes and is
     # used for administration to install software packages
