@@ -8,13 +8,13 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: install virtlet
+- name: Install virtlet
   hosts: localhost
   tags: virtlet
   roles:
     - virtlet
 
-- name: install virtlet
+- name: Install virtlet
   hosts: kube-node
   tags: virtlet
   roles:

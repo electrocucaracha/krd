@@ -108,7 +108,7 @@
                   }
                 }
               }
-      when: lookup('env','http_proxy') != "fooproxy" or lookup('env','https_proxy') != "fooproxy" or lookup('env','no_proxy') != "fooproxy"
+      when: lookup('env', 'http_proxy') != "fooproxy" or lookup('env', 'https_proxy') != "fooproxy" or lookup('env', 'no_proxy') != "fooproxy"
     - name: Clone intel-qat-plugin repo
       ansible.builtin.git:
         repo: "https://github.com/intel/intel-device-plugins-for-kubernetes"

@@ -8,7 +8,8 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- hosts: criu
+- name: Configure CRIU hosts
+  hosts: criu
   roles:
     - role: geerlingguy.docker
   tasks:
@@ -57,7 +58,7 @@
                   }
                 }
               }
-      when: lookup('env','http_proxy') != "fooproxy" or lookup('env','https_proxy') != "fooproxy" or lookup('env','no_proxy') != "fooproxy"
+      when: lookup('env', 'http_proxy') != "fooproxy" or lookup('env', 'https_proxy') != "fooproxy" or lookup('env', 'no_proxy') != "fooproxy"
     - name: Install CRIU packages
       ansible.builtin.package:
         name: criu

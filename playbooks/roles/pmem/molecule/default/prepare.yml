@@ -48,7 +48,7 @@
     - name: Get k8s clusters
       ansible.builtin.command: '{{ kind_dest }}/kind get clusters --quiet'
       register: kind_cluster
-      failed_when: ( kind_cluster.rc not in [ 0, 1 ] )
+      failed_when: (kind_cluster.rc not in [0, 1])
       changed_when: false
     - name: Print kind_cluster value
       ansible.builtin.debug:
