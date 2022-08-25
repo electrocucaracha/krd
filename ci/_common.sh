@@ -17,23 +17,23 @@ source ../tests/_utils.sh
 
 # run_installer_cmd() - Runs a specific command on the installer node
 function run_installer_cmd {
-    if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
-        pushd "${1}" > /dev/null
+    if [[ ${HOST_INSTALLER:-false} == "true" ]]; then
+        pushd "${1}" >/dev/null
         KRD_DEBUG=false "${@:2}"
-        popd > /dev/null
+        popd >/dev/null
     else
         # shellcheck disable=SC2145
         $VAGRANT_CMD_SSH_INSTALLER "cd /vagrant/${1}; KRD_DEBUG=false ${@:2}"
     fi
 }
 
-if ! command -v vagrant > /dev/null; then
+if ! command -v vagrant >/dev/null; then
     # NOTE: Shorten link -> https://github.com/electrocucaracha/bootstrap-vagrant
     curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
 fi
 
 VAGRANT_CMD=""
-if [[ "${SUDO_VAGRANT_CMD:-false}" == "true" ]]; then
+if [[ ${SUDO_VAGRANT_CMD:-false} == "true" ]]; then
     VAGRANT_CMD="sudo -H"
 fi
 VAGRANT_CMD+=" $(command -v vagrant)"

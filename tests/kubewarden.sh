@@ -42,18 +42,18 @@ trap cleanup EXIT
 attempt_counter=0
 max_attempts=6
 until [[ "$(kubectl get clusteradmissionpolicies.policies.kubewarden.io privileged-pods -o jsonpath='{.status.policyStatus}')" == "active" ]]; do
-    if [ ${attempt_counter} -eq ${max_attempts} ];then
+    if [ ${attempt_counter} -eq ${max_attempts} ]; then
         kubectl get clusteradmissionpolicies.policies.kubewarden.io privileged-pods -o yaml
         get_status
         error "Max attempts reached on waiting for privileged-pods Cluster Admission policy"
     fi
-    attempt_counter=$((attempt_counter+1))
-    sleep $((attempt_counter*5))
+    attempt_counter=$((attempt_counter + 1))
+    sleep $((attempt_counter * 5))
 done
 
 # Test
 info "===== Test started ====="
 
-assert_contains "$(kubectl apply -f resources/kubewarden/privileged-pod.yaml 2>&1 ||: )" "User 'kubernetes-admin' cannot schedule privileged containers" "Kubewarden didn't restrict the privileged pods creation"
+assert_contains "$(kubectl apply -f resources/kubewarden/privileged-pod.yaml 2>&1 || :)" "User 'kubernetes-admin' cannot schedule privileged containers" "Kubewarden didn't restrict the privileged pods creation"
 
 info "===== Test completed ====="

@@ -30,5 +30,6 @@ scp -o StrictHostKeyChecking=no /tmp/worker_checkpoint.tar.gz minion02:/tmp/work
 rm /tmp/worker_checkpoint.tar.gz
 
 ssh -o StrictHostKeyChecking=no minion02 sudo docker create --name worker python
-ssh -o StrictHostKeyChecking=no minion02 sudo mkdir -p "/var/lib/docker/containers/$CONTAINER_ID/checkpoints"; sudo tar -C "/var/lib/docker/containers/$CONTAINER_ID/checkpoints" -xvf /tmp/worker_checkpoint.tar.gz
+ssh -o StrictHostKeyChecking=no minion02 sudo mkdir -p "/var/lib/docker/containers/$CONTAINER_ID/checkpoints"
+sudo tar -C "/var/lib/docker/containers/$CONTAINER_ID/checkpoints" -xvf /tmp/worker_checkpoint.tar.gz
 ssh -o StrictHostKeyChecking=no minion02 sudo docker start --checkpoint worker_checkpoint worker

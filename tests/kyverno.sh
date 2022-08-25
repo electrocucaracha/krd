@@ -48,6 +48,6 @@ trap cleanup EXIT
 # Test
 info "===== Test started ====="
 
-assert_contains "$(kubectl create deployment nginx --image=nginx 2>&1 ||: )" "check-for-labels" "Kyverno didn't restrict the deployment creation without labels"
+assert_contains "$(kubectl create deployment nginx --image=nginx 2>&1 || :)" "check-for-labels" "Kyverno didn't restrict the deployment creation without labels"
 
 info "===== Test completed ====="

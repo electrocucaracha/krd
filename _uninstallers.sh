@@ -13,7 +13,7 @@ set -o pipefail
 set -o nounset
 
 source _commons.sh
-if [[ "$KRD_DEBUG" == "true" ]]; then
+if [[ $KRD_DEBUG == "true" ]]; then
     set -o xtrace
 fi
 
@@ -91,17 +91,17 @@ function uninstall_istio {
 
 # uninstall_knative() - Uninstall Knative services
 function uninstall_knative {
-    if [[ "${KRD_KNATIVE_SERVING_ENABLED}" == "true" ]]; then
+    if [[ ${KRD_KNATIVE_SERVING_ENABLED} == "true" ]]; then
         _delete_namespace knative-serving
     fi
-    if [[ "${KRD_KNATIVE_EVENTING_ENABLED}" == "true" ]]; then
+    if [[ ${KRD_KNATIVE_EVENTING_ENABLED} == "true" ]]; then
         _delete_namespace knative-eventing
     fi
     _delete_namespace kourier-system
 
     case ${KRD_KNATIVE_SERVING_NET} in
-        istio)
-            uninstall_istio
+    istio)
+        uninstall_istio
         ;;
     esac
 }
@@ -134,7 +134,7 @@ function uninstall_rook {
     _delete_namespace rook-ceph
     kubectl delete storageclasses.storage.k8s.io rook-ceph-block --ignore-not-found
     class="$(kubectl get storageclasses --no-headers -o custom-columns=name:.metadata.name | awk 'NR==1{print $1}')"
-    if [[ -n "$class" ]]; then
+    if [[ -n $class ]]; then
         kubectl patch storageclass "$class" -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     fi
 }

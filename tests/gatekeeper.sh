@@ -34,7 +34,7 @@ trap cleanup EXIT
 # Test
 info "===== Test started ====="
 
-cat <<EOF > /tmp/restricted.yaml
+cat <<EOF >/tmp/restricted.yaml
 kind: Service
 apiVersion: v1
 metadata:
@@ -50,6 +50,6 @@ spec:
     targetPort: 8080
 EOF
 
-assert_contains "$(kubectl apply -f /tmp/restricted.yaml 2>&1 ||: )" "Service type LoadBalancer are restricted" "OPA Gatekeeper didn't restrict the service creation using LoadBalancer type"
+assert_contains "$(kubectl apply -f /tmp/restricted.yaml 2>&1 || :)" "Service type LoadBalancer are restricted" "OPA Gatekeeper didn't restrict the service creation using LoadBalancer type"
 
 info "===== Test completed ====="

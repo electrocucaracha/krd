@@ -10,7 +10,7 @@
 
 set -o errexit
 set -o pipefail
-if [[ "${DEBUG:-false}" == "true" ]]; then
+if [[ ${DEBUG:-false} == "true" ]]; then
     set -o xtrace
 fi
 
@@ -25,12 +25,12 @@ function get_version {
         version=$("_get_latest_$type" "$name")
         if [ "$version" ]; then
             break
-        elif [ ${attempt_counter} -eq ${max_attempts} ];then
+        elif [ ${attempt_counter} -eq ${max_attempts} ]; then
             echo "Max attempts reached"
             exit 1
         fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*2))
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 2))
     done
 
     echo "${version#v}"
@@ -46,7 +46,7 @@ function _get_latest_github_release {
 function _get_latest_github_tag {
     tags="$(curl -s "https://api.github.com/repos/$1/tags")"
     if [ "$tags" ]; then
-        echo "$tags" | grep -Po '"name":.*?[^\\]",' | awk -F  "\"" 'NR==1{print $4}'
+        echo "$tags" | grep -Po '"name":.*?[^\\]",' | awk -F '"' 'NR==1{print $4}'
     fi
 }
 
@@ -97,7 +97,7 @@ sed -i "s/virtink_version:.*/virtink_version: v$(get_version github_release smar
 sed -i "s/kubesphere_version:.*/kubesphere_version: v$(get_version github_release kubesphere/kubesphere)/g" ./playbooks/krd-vars.yml
 sed -i "s/metallb_version:.*/metallb_version: v$(get_version github_tag metallb/metallb)/g" ./playbooks/krd-vars.yml
 
-cat << EOT > galaxy-requirements.yml
+cat <<EOT >galaxy-requirements.yml
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################

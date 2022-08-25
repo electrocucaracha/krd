@@ -13,7 +13,7 @@ set -o pipefail
 set -o nounset
 
 source _commons.sh
-if [[ "$KRD_DEBUG" == "true" ]]; then
+if [[ $KRD_DEBUG == "true" ]]; then
     set -o xtrace
 fi
 
@@ -26,19 +26,19 @@ function install_rundeck {
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
-        *suse)
+    *suse) ;;
+
+    ubuntu | debian)
+        echo "deb https://rundeck.bintray.com/rundeck-deb /" | sudo tee -a /etc/apt/sources.list.d/rundeck.list
+        curl 'https://bintray.com/user/downloadSubjectPublicKey?username=bintray' | sudo apt-key add -
+        update_repos
         ;;
-        ubuntu|debian)
-            echo "deb https://rundeck.bintray.com/rundeck-deb /" | sudo tee -a /etc/apt/sources.list.d/rundeck.list
-            curl 'https://bintray.com/user/downloadSubjectPublicKey?username=bintray' | sudo apt-key add -
-            update_repos
-        ;;
-        rhel|centos|fedora)
-            local java_version=1.8.0
-            if ! command -v java; then
-                _install_packages java-${java_version}-openjdk java-${java_version}-openjdk-devel
-            fi
-            sudo -E rpm -Uvh http://repo.rundeck.org/latest.rpm
+    rhel | centos | fedora)
+        local java_version=1.8.0
+        if ! command -v java; then
+            _install_packages java-${java_version}-openjdk java-${java_version}-openjdk-devel
+        fi
+        sudo -E rpm -Uvh http://repo.rundeck.org/latest.rpm
         ;;
     esac
     _install_packages rundeck-cli rundeck
@@ -95,13 +95,13 @@ function install_openstack {
         pushd $dest_folder/openstack-helm-infra/tools/gate/devel/
         sudo git checkout 70d93625e886a45c9afe2aa748228c39c5897e22 # 2020-01-21
         echo "proxy:" | sudo tee local-vars.yaml
-        if [[ -n "${HTTP_PROXY}" ]]; then
+        if [[ -n ${HTTP_PROXY} ]]; then
             echo "  http: $HTTP_PROXY" | sudo tee --append local-vars.yaml
         fi
-        if [[ -n "${HTTPS_PROXY}" ]]; then
+        if [[ -n ${HTTPS_PROXY} ]]; then
             echo "  https: $HTTPS_PROXY" | sudo tee --append local-vars.yaml
         fi
-        if [[ -n "${NO_PROXY}" ]]; then
+        if [[ -n ${NO_PROXY} ]]; then
             echo "  noproxy: $NO_PROXY,.svc.cluster.local" | sudo tee --append local-vars.yaml
         fi
         popd
@@ -136,7 +136,7 @@ function install_harbor {
     fi
     if ! helm ls -qA | grep -q harbor; then
         helm upgrade --install harbor harbor/harbor \
-        --wait
+            --wait
     fi
 }
 
@@ -153,13 +153,13 @@ function install_octant {
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
-        ubuntu|debian)
-            curl -Lo "$filename.deb" "https://github.com/vmware-tanzu/octant/releases/download/v$octant_version/$filename.deb"
-            sudo dpkg -i "$filename.deb"
+    ubuntu | debian)
+        curl -Lo "$filename.deb" "https://github.com/vmware-tanzu/octant/releases/download/v$octant_version/$filename.deb"
+        sudo dpkg -i "$filename.deb"
         ;;
-        rhel|centos|fedora)
-            curl -Lo "$filename.rpm" "https://github.com/vmware-tanzu/octant/releases/download/v$octant_version/$filename.rpm"
-            sudo rpm -i "$filename.rpm"
+    rhel | centos | fedora)
+        curl -Lo "$filename.rpm" "https://github.com/vmware-tanzu/octant/releases/download/v$octant_version/$filename.rpm"
+        sudo rpm -i "$filename.rpm"
         ;;
     esac
     rm "$filename".*
@@ -178,10 +178,10 @@ function install_kubelive {
 
         # Update NPM to latest version
         npm config set registry http://registry.npmjs.org/
-        if [[ ${HTTP_PROXY+x} = "x"  ]]; then
+        if [[ ${HTTP_PROXY+x} == "x" ]]; then
             npm config set proxy "$HTTP_PROXY"
         fi
-        if [[ ${HTTPS_PROXY+x} = "x"  ]]; then
+        if [[ ${HTTPS_PROXY+x} == "x" ]]; then
             npm config set https-proxy "$HTTPS_PROXY"
         fi
         sudo npm install -g npm
@@ -256,7 +256,7 @@ function install_ovn_metrics_dashboard {
         helm install stable/grafana --name metrics-dashboard -f ./helm/kube-ovn/grafana.yml
     fi
     kubectl apply -f "https://raw.githubusercontent.com/coreos/prometheus-operator/${prometheus_operator_version}/bundle.yaml"
-    if ! kubectl get namespaces 2>/dev/null | grep  monitoring; then
+    if ! kubectl get namespaces 2>/dev/null | grep monitoring; then
         kubectl create namespace monitoring
     fi
     for resource in cni-monitor controller-monitor pinger-monitor; do
@@ -281,7 +281,7 @@ function install_nsm {
 
     for daemonset in $(kubectl get daemonset | grep nsm | awk '{print $1}'); do
         echo "Waiting for $daemonset to successfully rolled out"
-        if ! kubectl rollout status "daemonset/$daemonset" --timeout=5m > /dev/null; then
+        if ! kubectl rollout status "daemonset/$daemonset" --timeout=5m >/dev/null; then
             echo "The $daemonset daemonset has not started properly"
             exit 1
         fi
@@ -301,7 +301,7 @@ function install_velero {
     # Install the nsm chart
     if ! helm ls -qA | grep -q velero; then
         helm upgrade --install velero vmware-tanzu/velero \
-        --wait
+            --wait
     fi
 }
 
@@ -411,20 +411,20 @@ function install_longhorn {
     fi
     if ! helm ls --namespace longhorn-system | grep -q longhorn; then
         helm upgrade --install longhorn longhorn/longhorn \
-        --timeout 600s \
-        --create-namespace \
-        --namespace longhorn-system
+            --timeout 600s \
+            --create-namespace \
+            --namespace longhorn-system
     fi
     for daemonset in $(kubectl get daemonset -n longhorn-system --no-headers -o custom-columns=name:.metadata.name); do
         echo "Waiting for $daemonset to successfully rolled out"
-        if ! kubectl rollout status "daemonset/$daemonset" -n longhorn-system --timeout=5m > /dev/null; then
+        if ! kubectl rollout status "daemonset/$daemonset" -n longhorn-system --timeout=5m >/dev/null; then
             echo "The $daemonset daemonset has not started properly"
             exit 1
         fi
     done
     for deployment in $(kubectl get deployment -n longhorn-system --no-headers -o custom-columns=name:.metadata.name); do
         echo "Waiting for $deployment to successfully rolled out"
-        if ! kubectl rollout status "deployment/$deployment" -n longhorn-system --timeout=5m > /dev/null; then
+        if ! kubectl rollout status "deployment/$deployment" -n longhorn-system --timeout=5m >/dev/null; then
             echo "The $deployment deployment has not started properly"
             exit 1
         fi

@@ -17,7 +17,7 @@ source _installers.sh
 source _chart_installers.sh
 source _uninstallers.sh
 
-if [[ "$KRD_DEBUG" == "true" ]]; then
+if [[ $KRD_DEBUG == "true" ]]; then
     set -o xtrace
 fi
 
@@ -40,8 +40,8 @@ EOF
 
 while getopts ":a:" OPTION; do
     case $OPTION in
-        a)
-            eval "case \$OPTARG in
+    a)
+        eval "case \$OPTARG in
                 ${valid_options%?})
                     echo \"::group::Running \$OPTARG...\"
                     \$OPTARG
@@ -58,8 +58,8 @@ while getopts ":a:" OPTION; do
                     exit 1
                 esac"
         ;;
-        *)
-            usage
+    *)
+        usage
         ;;
     esac
 done

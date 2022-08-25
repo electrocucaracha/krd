@@ -13,17 +13,17 @@ set -o pipefail
 set -o nounset
 
 source defaults.env
-if [[ "$KRD_DEBUG" == "true" ]]; then
+if [[ $KRD_DEBUG == "true" ]]; then
     set -o xtrace
 fi
 
 # _get_kube_version() - Get the Kubernetes version used or installed on the remote cluster
 function _get_kube_version {
-    if command -v kubectl > /dev/null && kubectl version > /dev/null 2>&1; then
+    if command -v kubectl >/dev/null && kubectl version >/dev/null 2>&1; then
         kubectl version --short | grep -e "Server" | awk -F ': ' '{print $2}'
     elif [ -f "$KRD_FOLDER/k8s-cluster.yml" ]; then
         grep kube_version "$KRD_FOLDER/k8s-cluster.yml" | awk '{ print $2}'
-    elif [ -n "${KRD_KUBE_VERSION:-}" ]; then
+    elif [ -n "${KRD_KUBE_VERSION-}" ]; then
         echo "${KRD_KUBE_VERSION}"
     else
         echo "v1.23.7"
@@ -93,7 +93,7 @@ function _install_kubespray {
     fi
 
     mkdir -p "$krd_inventory_folder/group_vars/"
-    cat << EOF > "$krd_inventory_folder/group_vars/all.yml"
+    cat <<EOF >"$krd_inventory_folder/group_vars/all.yml"
 override_system_hostname: false
 docker_dns_servers_strict: false
 EOF
@@ -102,13 +102,13 @@ EOF
     else
         echo "kube_log_level: 2" | tee --append "$krd_inventory_folder/group_vars/all.yml"
     fi
-    if [ -n "${HTTP_PROXY:-}" ]; then
+    if [ -n "${HTTP_PROXY-}" ]; then
         echo "http_proxy: \"$HTTP_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
     fi
-    if [ -n "${HTTPS_PROXY:-}" ]; then
+    if [ -n "${HTTPS_PROXY-}" ]; then
         echo "https_proxy: \"$HTTPS_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
     fi
-    if [ -n "${NO_PROXY:-}" ]; then
+    if [ -n "${NO_PROXY-}" ]; then
         echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
     fi
     KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE="docker"
@@ -129,14 +129,14 @@ EOF
     fi
     export KRD_DOWNLOAD_LOCALHOST=$KRD_DOWNLOAD_RUN_ONCE
     export KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE
-    envsubst < k8s-cluster.tpl > "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-    if [ -n "${KRD_KUBE_VERSION:-}" ]; then
+    envsubst <k8s-cluster.tpl >"$krd_inventory_folder/group_vars/k8s-cluster.yml"
+    if [ -n "${KRD_KUBE_VERSION-}" ]; then
         sed -i "s/^kube_version: .*$/kube_version: ${KRD_KUBE_VERSION}/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
     fi
-    if [ -n "${KRD_MANUAL_DNS_SERVER:-}" ]; then
+    if [ -n "${KRD_MANUAL_DNS_SERVER-}" ]; then
         sed -i "s/^manual_dns_server: .*$/manual_dns_server: $KRD_MANUAL_DNS_SERVER/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
     fi
-    if [ -n "${KRD_REGISTRY_MIRRORS_LIST:-}" ] && [ "$KRD_CONTAINER_RUNTIME" != "containerd" ]; then
+    if [ -n "${KRD_REGISTRY_MIRRORS_LIST-}" ] && [ "$KRD_CONTAINER_RUNTIME" != "containerd" ]; then
         if [ "$KRD_CONTAINER_RUNTIME" == "docker" ]; then
             echo "docker_registry_mirrors:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
@@ -154,7 +154,7 @@ EOF
                 echo "    mirrors:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
                 for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
                     echo "    - location: ${mirror#*//}" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
-                    if [[ "${mirror#*//}" == *"$KRD_INSECURE_REGISTRIES_LIST"* ]]; then
+                    if [[ ${mirror#*//} == *"$KRD_INSECURE_REGISTRIES_LIST"* ]]; then
                         echo "      insecure: true" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
                     else
                         echo "      insecure: false" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
@@ -163,7 +163,7 @@ EOF
             fi
         fi
     fi
-    if [ -n "${KRD_INSECURE_REGISTRIES_LIST:-}" ] && [ "$KRD_CONTAINER_RUNTIME" != "containerd" ]; then
+    if [ -n "${KRD_INSECURE_REGISTRIES_LIST-}" ] && [ "$KRD_CONTAINER_RUNTIME" != "containerd" ]; then
         if [ "$KRD_CONTAINER_RUNTIME" == "docker" ]; then
             echo "docker_insecure_registries:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
             for registry in ${KRD_INSECURE_REGISTRIES_LIST//,/ }; do
@@ -176,13 +176,13 @@ EOF
             done
         fi
     fi
-    if [ -n "${KRD_DNS_ETCHOSTS_DICT:-}" ]; then
+    if [ -n "${KRD_DNS_ETCHOSTS_DICT-}" ]; then
         echo "dns_etchosts: |" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         for etchost_entry in ${KRD_DNS_ETCHOSTS_DICT//,/ }; do
             echo "  ${etchost_entry%-*} ${etchost_entry#*-}" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         done
     fi
-    if [ "$kubespray_version" != "master" ] && _vercmp "${kubespray_version#*v}" '>' "2.15" && [ "$KRD_METALLB_ENABLED" == "true" ] && [ -n "${KRD_METALLB_ADDRESS_POOLS_LIST:-}" ]; then
+    if [ "$kubespray_version" != "master" ] && _vercmp "${kubespray_version#*v}" '>' "2.15" && [ "$KRD_METALLB_ENABLED" == "true" ] && [ -n "${KRD_METALLB_ADDRESS_POOLS_LIST-}" ]; then
         echo "metallb_ip_range:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         for pool in ${KRD_METALLB_ADDRESS_POOLS_LIST//,/ }; do
             echo "  - $pool" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
@@ -208,7 +208,7 @@ function install_metallb {
 
     wait_for_pods metallb-system
 
-    if [ -n "${KRD_METALLB_ADDRESS_POOLS_LIST:-}" ]; then
+    if [ -n "${KRD_METALLB_ADDRESS_POOLS_LIST-}" ]; then
         ranges=""
         for range in ${KRD_METALLB_ADDRESS_POOLS_LIST//,/ }; do
             ranges+="          - ${range}\n"
@@ -240,17 +240,17 @@ function _is_package_installed {
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
-        *suse)
-            CHECK_CMD="zypper search --match-exact --installed"
+    *suse)
+        CHECK_CMD="zypper search --match-exact --installed"
         ;;
-        ubuntu|debian)
-            CHECK_CMD="dpkg -l"
+    ubuntu | debian)
+        CHECK_CMD="dpkg -l"
         ;;
-        rhel|centos|fedora)
-            CHECK_CMD="rpm -q"
+    rhel | centos | fedora)
+        CHECK_CMD="rpm -q"
         ;;
     esac
-    sudo "${CHECK_CMD}" "$@" &> /dev/null
+    sudo "${CHECK_CMD}" "$@" &>/dev/null
 }
 
 # _install_package() - Install specific package if doesn't exist
@@ -267,7 +267,7 @@ function _install_packages {
 # _get_version() - Get the version number declared as environment variable or in the configuration file
 function _get_version {
     krd_var_version="KRD_$(awk -v name="$1" 'BEGIN {print toupper(name)}')_VERSION"
-    if [ "${!krd_var_version:-}" ]; then
+    if [ "${!krd_var_version-}" ]; then
         echo "${!krd_var_version}"
     else
         grep "^${1}_version:" "$krd_playbooks/krd-vars.yml" | awk -F ': ' '{print $2}'
@@ -277,14 +277,14 @@ function _get_version {
 # get_cpu_arch() - Gets CPU architecture of the server
 function get_cpu_arch {
     case "$(uname -m)" in
-        x86_64)
-            echo "amd64"
+    x86_64)
+        echo "amd64"
         ;;
-        armv8*|aarch64*)
-            echo "arm64"
+    armv8* | aarch64*)
+        echo "arm64"
         ;;
-        armv*)
-            echo "armv7"
+    armv*)
+        echo "armv7"
         ;;
     esac
 }
@@ -301,30 +301,30 @@ function _vercmp {
     result=$(echo -e "$v1\n$v2" | sort -V | head -1)
 
     case $op in
-        "==")
-            [ "$v1" = "$v2" ]
-            return
-            ;;
-        ">")
-            [ "$v1" != "$v2" ] && [ "$result" = "$v2" ]
-            return
-            ;;
-        "<")
-            [ "$v1" != "$v2" ] && [ "$result" = "$v1" ]
-            return
-            ;;
-        ">=")
-            [ "$result" = "$v2" ]
-            return
-            ;;
-        "<=")
-            [ "$result" = "$v1" ]
-            return
-            ;;
-        *)
-            echo "unrecognised op: $op"
-            exit 1
-            ;;
+    "==")
+        [ "$v1" = "$v2" ]
+        return
+        ;;
+    ">")
+        [ "$v1" != "$v2" ] && [ "$result" = "$v2" ]
+        return
+        ;;
+    "<")
+        [ "$v1" != "$v2" ] && [ "$result" = "$v1" ]
+        return
+        ;;
+    ">=")
+        [ "$result" = "$v2" ]
+        return
+        ;;
+    "<=")
+        [ "$result" = "$v1" ]
+        return
+        ;;
+    *)
+        echo "unrecognised op: $op"
+        exit 1
+        ;;
     esac
 }
 
@@ -334,7 +334,7 @@ function _run_ansible_cmd {
     local krd_log_dir="/var/log/krd"
 
     ansible_cmd="ANSIBLE_ROLES_PATH=/tmp/galaxy-roles sudo -E $(command -v ansible-playbook) --become "
-    if [[ "$KRD_ANSIBLE_DEBUG" == "true" ]]; then
+    if [[ $KRD_ANSIBLE_DEBUG == "true" ]]; then
         ansible_cmd+="-vvv "
     fi
     ansible_cmd+="-i $krd_inventory -e ansible_ssh_common_args='' "
@@ -348,44 +348,44 @@ function _delete_namespace {
     local attempt_counter=0
     local max_attempts=12
 
-    if ! kubectl get namespaces 2>/dev/null | grep  "$namespace"; then
+    if ! kubectl get namespaces 2>/dev/null | grep "$namespace"; then
         return
     fi
     kubectl delete namespace "$namespace" --wait=false
 
     until [ "$(kubectl get all -n "$namespace" --no-headers | wc -l)" == "0" ]; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
             echo "Max attempts reached to delete resources in $namespace namespace"
             exit 1
         fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*5))
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 5))
     done
-    if kubectl get namespaces 2>/dev/null | grep  "$namespace"; then
+    if kubectl get namespaces 2>/dev/null | grep "$namespace"; then
         echo "Force namespace deletion"
         # NOTE: https://stackoverflow.com/a/59667608/2727227
-        if command -v kubectl-finalize_namespace > /dev/null; then
-            kubectl finalize_namespace "$namespace" ||:
+        if command -v kubectl-finalize_namespace >/dev/null; then
+            kubectl finalize_namespace "$namespace" || :
         else
-            kubectl get namespace "$namespace" -o json | tr -d "\n" | \
-            sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" | \
-            kubectl replace --raw "/api/v1/namespaces/$namespace/finalize" -f - ||:
+            kubectl get namespace "$namespace" -o json | tr -d "\n" |
+                sed "s/\"finalizers\": \[[^]]\+\]/\"finalizers\": []/" |
+                kubectl replace --raw "/api/v1/namespaces/$namespace/finalize" -f - || :
         fi
     fi
 }
 
 # Requirements
-if ! command -v curl > /dev/null; then
+if ! command -v curl >/dev/null; then
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
-        ubuntu|debian)
-            sudo apt-get update
-            sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 curl
+    ubuntu | debian)
+        sudo apt-get update
+        sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 curl
         ;;
     esac
 fi
-if ! command -v bindep > /dev/null; then
+if ! command -v bindep >/dev/null; then
     curl -fsSL http://bit.ly/install_bin | bash
 else
     pkgs="$(bindep -b || :)"
@@ -402,6 +402,6 @@ export krd_inventory_folder=$KRD_FOLDER/inventory
 export krd_playbooks=$KRD_FOLDER/playbooks
 export krd_inventory=$krd_inventory_folder/hosts.ini
 export kubespray_folder=/opt/kubespray
-if [[ "$KRD_DEBUG" == "true" ]]; then
+if [[ $KRD_DEBUG == "true" ]]; then
     set -o xtrace
 fi

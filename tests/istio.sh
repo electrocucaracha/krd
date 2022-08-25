@@ -52,12 +52,12 @@ EOF
 
     info "Waiting for istio's client pod..."
     until [[ "$(kubectl logs client)" == *"10 request(s) complete to http://$service_name:80/"* ]]; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
             kubectl logs client
             error "Max attempts reached on waiting for istio's client resource"
         fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*2))
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 2))
     done
 }
 

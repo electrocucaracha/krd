@@ -13,7 +13,7 @@ set -o pipefail
 set -o nounset
 
 source _commons.sh
-if [[ "$KRD_DEBUG" == "true" ]]; then
+if [[ $KRD_DEBUG == "true" ]]; then
     set -o xtrace
 fi
 
@@ -21,7 +21,7 @@ fi
 function install_helm {
     local helm_version=${KRD_HELM_VERSION}
 
-    if ! command -v helm  || _vercmp "$(helm version | awk -F '"' '{print substr($2,2); exit}')" '<' "$helm_version"; then
+    if ! command -v helm || _vercmp "$(helm version | awk -F '"' '{print substr($2,2); exit}')" '<' "$helm_version"; then
         curl -fsSL http://bit.ly/install_pkg | PKG="helm" PKG_HELM_VERSION="$helm_version" bash
     fi
 
@@ -89,12 +89,12 @@ function _install_chart {
         cmd="helm upgrade --create-namespace"
         cmd+=" --namespace $namespace --wait --install"
         echo "$cmd"
-        if [ -n "${KRD_CHART_VALUES:-}" ]; then
+        if [ -n "${KRD_CHART_VALUES-}" ]; then
             for value in ${KRD_CHART_VALUES//,/ }; do
                 cmd+=" --set $value"
             done
         fi
-        if [ -n "${KRD_CHART_FILE:-}" ]; then
+        if [ -n "${KRD_CHART_FILE-}" ]; then
             cmd+=" --values $KRD_CHART_FILE"
         fi
         eval "$cmd" "$name" "$chart"
@@ -173,38 +173,38 @@ roleRef:
 EOF
         if ! helm ls --tiller-namespace "$KRD_TILLER_NAMESPACE" | grep -q metrics-server; then
             helm install stable/metrics-server --name metrics-server \
-            --wait \
-            --set args[0]="--kubelet-insecure-tls" \
-            --set args[1]="--kubelet-preferred-address-types=InternalIP" \
-            --set args[2]="--v=2" --tiller-namespace "$KRD_TILLER_NAMESPACE"
+                --wait \
+                --set args[0]="--kubelet-insecure-tls" \
+                --set args[1]="--kubelet-preferred-address-types=InternalIP" \
+                --set args[2]="--v=2" --tiller-namespace "$KRD_TILLER_NAMESPACE"
         fi
     else
         _add_helm_repo metrics-server https://kubernetes-sigs.github.io/metrics-server/
         KRD_CHART_VALUES="args[0]='--kubelet-insecure-tls',args[1]='--kubelet-preferred-address-types=InternalIP'" _install_chart metrics-server metrics-server/metrics-server default
     fi
 
-    if ! kubectl rollout status deployment/metrics-server --timeout=5m > /dev/null; then
+    if ! kubectl rollout status deployment/metrics-server --timeout=5m >/dev/null; then
         echo "The metrics server has not started properly"
         exit 1
     fi
     attempt_counter=0
     max_attempts=5
-    until kubectl top node 2> /dev/null; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+    until kubectl top node 2>/dev/null; do
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
             echo "Max attempts reached"
             exit 1
         fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*60))
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 60))
     done
     attempt_counter=0
-    until kubectl top pod 2> /dev/null; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+    until kubectl top pod 2>/dev/null; do
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
             echo "Max attempts reached"
             exit 1
         fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*60))
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 60))
     done
 }
 

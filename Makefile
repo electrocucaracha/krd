@@ -15,8 +15,10 @@ lint:
 	-e RUN_LOCAL=true \
 	-e LINTER_RULES_PATH=/ \
 	-e VALIDATE_KUBERNETES_KUBEVAL=false \
-	-e VALIDATE_PYTHON_PYLINT=false \
-	-e PYTHON_FLAKE8_CONFIG_FILE=tox.ini \
-	-e VALIDATE_PYTHON_MYPY=false \
 	github/super-linter
 	tox -e lint
+
+.PHONY: fmt
+fmt:
+	sudo -E $(DOCKER_CMD) run --rm -u "$$(id -u):$$(id -g)" \
+	-v "$$(pwd):/mnt" -w /mnt mvdan/shfmt -l -w -i 4 -s .

@@ -12,7 +12,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 KRD_DEBUG="${KRD_DEBUG:-false}"
-if [[ "${KRD_DEBUG}" == "true" ]]; then
+if [[ ${KRD_DEBUG} == "true" ]]; then
     set -o xtrace
 fi
 
@@ -24,7 +24,7 @@ function assert_non_empty {
     local input=$1
     local error_msg=$2
 
-    if [[ "$KRD_DEBUG" == "true" ]]; then
+    if [[ $KRD_DEBUG == "true" ]]; then
         debug "NonEmpty Assertion - value: $1"
     fi
     if [ -z "$input" ]; then
@@ -38,7 +38,7 @@ function assert_are_equal {
     local expected=$2
     local error_msg=${3:-"got $input, want $expected"}
 
-    if [[ "$KRD_DEBUG" == "true" ]]; then
+    if [[ $KRD_DEBUG == "true" ]]; then
         debug "Are equal Assertion - value: $1 expected: $2"
     fi
     if [ "$input" != "$expected" ]; then
@@ -52,7 +52,7 @@ function assert_are_not_equal {
     local expected=$2
     local error_msg=$3
 
-    if [[ "$KRD_DEBUG" == "true" ]]; then
+    if [[ $KRD_DEBUG == "true" ]]; then
         debug "Are not equal Assertion - value: $1 expected: $2"
     fi
     if [ "$input" == "$expected" ]; then
@@ -66,10 +66,10 @@ function assert_contains {
     local expected=$2
     local error_msg=${3:-"$input doesn't contains $expected"}
 
-    if [[ "$KRD_DEBUG" == "true" ]]; then
+    if [[ $KRD_DEBUG == "true" ]]; then
         debug "Contains Assertion - value: $1 expected: $2"
     fi
-    if [[ "$input" != *"$expected"* ]]; then
+    if [[ $input != *"$expected"* ]]; then
         error "$error_msg"
     fi
 }

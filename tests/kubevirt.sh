@@ -24,11 +24,11 @@ function cleanup {
     kubectl delete vm testvm --ignore-not-found=true
 
     while kubectl get pods -l kubevirt.io=virt-launcher | grep -q "virt-launcher"; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
             error "Max attempts reached"
         fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*10))
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 10))
     done
 }
 
@@ -37,7 +37,7 @@ trap cleanup EXIT
 # Test
 info "===== Test started ====="
 
-cat << EOL | kubectl apply -f -
+cat <<EOL | kubectl apply -f -
 apiVersion: kubevirt.io/v1alpha3
 kind: VirtualMachine
 metadata:
@@ -78,9 +78,9 @@ spec:
 EOL
 
 kubectl get vms
-[[ "$PATH" != *.krew* ]] && export PATH="$PATH:${KREW_ROOT:-$HOME/.krew}/bin"
+[[ $PATH != *.krew* ]] && export PATH="$PATH:${KREW_ROOT:-$HOME/.krew}/bin"
 kubectl virt start testvm
-kubectl wait --for=condition=ready vmis testvm --timeout=5m > /dev/null
+kubectl wait --for=condition=ready vmis testvm --timeout=5m >/dev/null
 vm_pod=$(kubectl get pods -o jsonpath='{.items[0].metadata.name}' | grep virt-launcher-testvm)
 info "$vm_pod details:"
 kubectl logs "$vm_pod" -c compute | jq -R "fromjson? | .msg"

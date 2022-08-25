@@ -20,7 +20,7 @@ source _assertions.sh
 service_name="helloworld-go"
 
 function cleanup {
-    kn service delete "$service_name" ||:
+    kn service delete "$service_name" || :
 }
 
 if ! command -v kn; then

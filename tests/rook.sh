@@ -31,11 +31,11 @@ trap cleanup EXIT
 attempt_counter=0
 max_attempts=5
 until [[ "$(kubectl get CephCluster -n rook-ceph my-cluster -o jsonpath='{.status.phase}')" == "Ready" ]]; do
-    if [ ${attempt_counter} -eq ${max_attempts} ];then
+    if [ ${attempt_counter} -eq ${max_attempts} ]; then
         error "Max attempts reached"
     fi
-    attempt_counter=$((attempt_counter+1))
-    sleep $((attempt_counter*15))
+    attempt_counter=$((attempt_counter + 1))
+    sleep $((attempt_counter * 15))
 done
 wait_deployment rook-ceph-tools rook-ceph
 

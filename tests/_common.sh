@@ -19,7 +19,7 @@ function populate_nfd {
     mkdir -p "/tmp/${nfd_deployment_name}"
     pushd "/tmp/${nfd_deployment_name}"
 
-    cat << DEPLOYMENT > "$nfd_deployment_name.yaml"
+    cat <<DEPLOYMENT >"$nfd_deployment_name.yaml"
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -65,7 +65,7 @@ function populate_qat {
     mkdir -p "/tmp/${qat_deployment_name}"
     pushd "/tmp/${qat_deployment_name}"
 
-    cat << DEPLOYMENT > "$qat_deployment_name.yaml"
+    cat <<DEPLOYMENT >"$qat_deployment_name.yaml"
 apiVersion: apps/v1
 kind: Deployment
 metadata:

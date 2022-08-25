@@ -10,7 +10,7 @@
 
 set -o errexit
 set -o pipefail
-if [[ "${DEBUG:-false}" == "true" ]]; then
+if [[ ${DEBUG:-false} == "true" ]]; then
     set -o xtrace
 fi
 
@@ -31,12 +31,12 @@ function _get_box_current_version {
             if [ "$metadata" ]; then
                 version="$(echo "$metadata" | python -c 'import json,sys;print(json.load(sys.stdin)["current_version"]["version"])')"
                 break
-            elif [ ${attempt_counter} -eq ${max_attempts} ];then
+            elif [ ${attempt_counter} -eq ${max_attempts} ]; then
                 echo "Max attempts reached"
                 exit 1
             fi
-            attempt_counter=$((attempt_counter+1))
-            sleep $((attempt_counter*2))
+            attempt_counter=$((attempt_counter + 1))
+            sleep $((attempt_counter * 2))
         done
     fi
 
@@ -50,7 +50,7 @@ function _vagrant_pull {
     version=$(_get_box_current_version "$name")
 
     if [ "$(curl "https://app.vagrantup.com/${name%/*}/boxes/${name#*/}/versions/$version/providers/$PROVIDER.box" -o /dev/null -w '%{http_code}\n' -s)" == "302" ] && [ "$(vagrant box list | grep -c "$name .*$PROVIDER, $version")" != "1" ]; then
-        vagrant box remove --provider "$PROVIDER" --all --force "$name" ||:
+        vagrant box remove --provider "$PROVIDER" --all --force "$name" || :
         vagrant box add --provider "$PROVIDER" --box-version "$version" "$name"
     elif [ "$(vagrant box list | grep -c "$name .*$PROVIDER, $version")" == "1" ]; then
         echo "$name($version, $PROVIDER) box is already present in the host"
@@ -58,19 +58,19 @@ function _vagrant_pull {
         msg+="$name($version, $PROVIDER) box doesn't exist\n"
         return
     fi
-    cat << EOT >> .distros_supported.yml
+    cat <<EOT >>.distros_supported.yml
   $alias:
     name: $name
     version: "$version"
 EOT
 }
 
-if ! command -v vagrant > /dev/null; then
+if ! command -v vagrant >/dev/null; then
     # NOTE: Shorten link -> https://github.com/electrocucaracha/bootstrap-vagrant
     curl -fsSL http://bit.ly/initVagrant | bash
 fi
 
-cat << EOT > .distros_supported.yml
+cat <<EOT >.distros_supported.yml
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
@@ -83,17 +83,17 @@ cat << EOT > .distros_supported.yml
 
 EOT
 
-echo "centos:" >> .distros_supported.yml
+echo "centos:" >>.distros_supported.yml
 _vagrant_pull "7" "generic/centos7"
 _vagrant_pull "8" "generic/centos8"
-echo "ubuntu:" >> .distros_supported.yml
+echo "ubuntu:" >>.distros_supported.yml
 _vagrant_pull "xenial" "generic/ubuntu1604"
 _vagrant_pull "bionic" "generic/ubuntu1804"
 _vagrant_pull "focal" "generic/ubuntu2004"
-echo "opensuse:" >> .distros_supported.yml
+echo "opensuse:" >>.distros_supported.yml
 _vagrant_pull "tumbleweed" "generic/opensuse42"
 _vagrant_pull "leap" "generic/opensuse15"
-echo "fedora:" >> .distros_supported.yml
+echo "fedora:" >>.distros_supported.yml
 _vagrant_pull "34" "fedora/34-cloud-base"
 _vagrant_pull "35" "fedora/35-cloud-base"
 
@@ -102,7 +102,7 @@ if [ "$msg" ]; then
     rm .distros_supported.yml
 else
     version=$(_get_box_current_version "generic/ubuntu1804")
-    if sed --version > /dev/null; then
+    if sed --version >/dev/null; then
         find ./playbooks/roles -type f -name 'molecule.yml' -exec sed -i "s/box_version: .*/box_version: $version/g" {} \;
     else
         find ./playbooks/roles -type f -name 'molecule.yml' -exec sed -i '.bak' "s/box_version: .*/box_version: $version/g" {} \;

@@ -106,7 +106,8 @@ EOF
 info "===== Test started ====="
 
 info "+++++ Multiple Network Interfaces validation:"
-net_definition=$(cat <<EOF
+net_definition=$(
+    cat <<EOF
         k8s.v1.cni.cncf.io/networks: '[
           { "name": "$bridge_net_name", "interfaceRequest": "eth1" },
           { "name": "$bridge_net_name", "interfaceRequest": "eth2" }
@@ -119,12 +120,13 @@ info "$deployment_pod details:"
 kubectl exec -it "$deployment_pod" -- ip link
 info "$deployment_pod assertions:"
 assert_non_empty "$(kubectl exec -it "$deployment_pod" -- ifconfig eth1)" "$deployment_pod pod doesn't contain eth1 nic"
-assert_non_empty "$(kubectl exec -it "$deployment_pod" -- ifconfig eth1 | awk '/inet addr/{print substr($2,6)}' | grep "$subnet_prefix" )" "$deployment_pod pod eth1 ip doesn't belong to $bridge_net_name network"
+assert_non_empty "$(kubectl exec -it "$deployment_pod" -- ifconfig eth1 | awk '/inet addr/{print substr($2,6)}' | grep "$subnet_prefix")" "$deployment_pod pod eth1 ip doesn't belong to $bridge_net_name network"
 assert_non_empty "$(kubectl exec -it "$deployment_pod" -- ifconfig eth2)" "$deployment_pod pod doesn't contain eth2 nic"
-assert_non_empty "$(kubectl exec -it "$deployment_pod" -- ifconfig eth2 | awk '/inet addr/{print substr($2,6)}' | grep "$subnet_prefix" )" "$deployment_pod pod eth2 ip doesn't belong to $bridge_net_name network"
+assert_non_empty "$(kubectl exec -it "$deployment_pod" -- ifconfig eth2 | awk '/inet addr/{print substr($2,6)}' | grep "$subnet_prefix")" "$deployment_pod pod eth2 ip doesn't belong to $bridge_net_name network"
 
 info "+++++ Default Network Interfaces validation:"
-net_definition=$(cat <<EOF
+net_definition=$(
+    cat <<EOF
         v1.multus-cni.io/default-network: $bridge_net_name
 EOF
 )
@@ -134,6 +136,6 @@ info "$deployment_pod details:"
 kubectl exec -it "$deployment_pod" -- ip link
 info "$deployment_pod assertions:"
 assert_non_empty "$(kubectl exec -it "$deployment_pod" -- ifconfig eth0)" "$deployment_pod pod doesn't contain eth0 nic"
-assert_non_empty "$(kubectl exec -it "$deployment_pod" -- ifconfig eth0 | awk '/inet addr/{print substr($2,6)}' | grep "$subnet_prefix" )" "$deployment_pod pod ip doesn't belong to $bridge_net_name network"
+assert_non_empty "$(kubectl exec -it "$deployment_pod" -- ifconfig eth0 | awk '/inet addr/{print substr($2,6)}' | grep "$subnet_prefix")" "$deployment_pod pod ip doesn't belong to $bridge_net_name network"
 
 info "===== Test completed ====="

@@ -11,7 +11,7 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-if [[ "$KRD_DEBUG" == "true" ]]; then
+if [[ $KRD_DEBUG == "true" ]]; then
     set -o xtrace
 fi
 
@@ -26,15 +26,15 @@ function destroy_deployment {
     max_attempts=4
 
     info "Destroying $deployment_name deployment"
-    kubectl delete deployment "$deployment_name" --ignore-not-found=true --now --timeout=5m --wait=true > /dev/null
+    kubectl delete deployment "$deployment_name" --ignore-not-found=true --now --timeout=5m --wait=true >/dev/null
     while [ "$(kubectl get pods -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' | grep -c "$deployment_name-")" -gt 0 ]; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
             kubectl get pods
             #get_status
             error "Max attempts reached on waiting for $deployment_name deployment resource"
         fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*5))
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 5))
     done
 }
 
@@ -53,7 +53,7 @@ function wait_deployment {
     local namespace_name=${2:-default}
 
     info "Waiting for $deployment_name deployment..."
-    if ! kubectl rollout status "deployment/$deployment_name" -n "$namespace_name" --timeout=5m > /dev/null; then
+    if ! kubectl rollout status "deployment/$deployment_name" -n "$namespace_name" --timeout=5m >/dev/null; then
         get_status
         error "Timeout reached"
     fi
@@ -67,13 +67,13 @@ function wait_ingress {
 
     info "Waiting for $ingress_name ingress..."
     until [ -n "$(kubectl get ingress "$ingress_name" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" ]; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
             kubectl get ingress "$ingress_name" -o yaml
             get_status
             error "Max attempts reached on waiting for $ingress_name ingress resource"
         fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*10))
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 10))
     done
 }
 
@@ -85,25 +85,25 @@ function wait_service {
 
     info "Waiting for $service_name service..."
     until [ -n "$(kubectl get service "$service_name" -o jsonpath='{.spec.clusterIP}')" ]; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
             kubectl get service "$service_name" -o yaml
             get_status
             error "Max attempts reached on waiting for $service_name service resource"
         fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*10))
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 10))
     done
 
     attempt_counter=0
     info "Waiting for $service_name endpoints..."
-    until [ -n "$(kubectl get endpoints "$service_name" -o jsonpath='{.subsets[0].addresses[0].ip}' )" ]; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+    until [ -n "$(kubectl get endpoints "$service_name" -o jsonpath='{.subsets[0].addresses[0].ip}')" ]; do
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
             kubectl get endpoints "$service_name" -o yaml
             get_status
             error "Max attempts reached on waiting for $service_name service's endpoint resources"
         fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*10))
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 10))
     done
 }
 
@@ -148,6 +148,6 @@ function get_status {
 function _get_kube_version {
     kubectl version -o json | jq -r '.serverVersion.gitVersion'
 }
-if ! command -v kubectl > /dev/null; then
+if ! command -v kubectl >/dev/null; then
     error "This functional test requires kubectl client"
 fi

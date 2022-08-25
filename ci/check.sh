@@ -14,15 +14,15 @@ set -o pipefail
 
 # shellcheck source=ci/_common.sh
 source _common.sh
-pushd ../tests > /dev/null
+pushd ../tests >/dev/null
 # shellcheck source=tests/_assertions.sh
 source _assertions.sh
-popd > /dev/null
+popd >/dev/null
 
 function _exit_trap {
     VAGRANT_CMD_SSH_AIO="$VAGRANT_CMD ssh aio --"
 
-    if [ -f  /proc/stat ]; then
+    if [ -f /proc/stat ]; then
         printf "CPU usage: "
         grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage " %"}'
     fi
@@ -39,7 +39,7 @@ function _exit_trap {
     $VAGRANT_CMD_SSH_AIO "sudo journalctl -u kubelet --since -5m | grep -E 'E[0-9]+|error|Error'"
     echo "${KRD_CONTAINER_RUNTIME:-docker} Errors:"
     $VAGRANT_CMD_SSH_AIO "sudo journalctl -u ${KRD_CONTAINER_RUNTIME:-docker} --since -5m | grep -E 'E[0-9]+|error|Error'"
-    if [[ "${KRD_KATA_CONTAINERS_ENABLED:-false}"  == "true" ]]; then
+    if [[ ${KRD_KATA_CONTAINERS_ENABLED:-false} == "true" ]]; then
         $VAGRANT_CMD_SSH_AIO "/opt/kata/bin/kata-runtime kata-env"
         $VAGRANT_CMD_SSH_AIO "sudo journalctl --since -5m | grep 'kata-runtime'"
     fi
@@ -48,12 +48,12 @@ function _exit_trap {
 function _run_assertions {
     info "Running Assertions"
 
-    if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
+    if [[ ${HOST_INSTALLER:-false} == "true" ]]; then
         assert_contains "$(command -v kubectl)" "kubectl"
         assert_are_equal "${KRD_KUBE_VERSION:-v1.23.7}" "$(kubectl version --short | awk 'END{print $3}')"
-        pushd /opt/kubespray > /dev/null
+        pushd /opt/kubespray >/dev/null
         assert_are_equal "${KRD_KUBESPRAY_VERSION:-v2.19.0}" "$(git describe --abbrev=0 --tags)"
-        popd > /dev/null
+        popd >/dev/null
     else
         assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "command -v kubectl")" "kubectl"
         assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "kubectl version --short | awk 'END{print \$3}'")" "${KRD_KUBE_VERSION:-v1.23.7}"
@@ -94,7 +94,7 @@ function _test_runtime_classes {
     run_installer_cmd tests ./runtimeclasses.sh
 }
 
-if [[ "${HOST_INSTALLER:-false}" == "true" ]]; then
+if [[ ${HOST_INSTALLER:-false} == "true" ]]; then
     info "Configure SSH keys"
 
     sudo mkdir -p /root/.ssh/
@@ -107,18 +107,18 @@ fi
 
 trap _exit_trap ERR
 _run_assertions
-if [[ "${KRD_ENABLE_TESTS:-false}" == "true" ]]; then
+if [[ ${KRD_ENABLE_TESTS:-false} == "true" ]]; then
     _run_integration_tests
 fi
-if [[ "${TEST_VIRTLET:-false}" == "true" ]]; then
+if [[ ${TEST_VIRTLET:-false} == "true" ]]; then
     _test_virtlet
 fi
-if [[ "${KRD_KATA_CONTAINERS_ENABLED:-false}"  == "true" ]] || [[ "${KRD_CRUN_ENABLED:-false}"  == "true" ]] || [[ "${KRD_GVISOR_ENABLED:-false}"  == "true" ]]; then
+if [[ ${KRD_KATA_CONTAINERS_ENABLED:-false} == "true" ]] || [[ ${KRD_CRUN_ENABLED:-false} == "true" ]] || [[ ${KRD_GVISOR_ENABLED:-false} == "true" ]]; then
     _test_runtime_classes
 fi
-if [[ "${RUN_CONFORMANCE_TOOLS:-false}" == "true" ]]; then
+if [[ ${RUN_CONFORMANCE_TOOLS:-false} == "true" ]]; then
     _run_conformance_tools
 fi
-if [[ "${RUN_BENCHMARKS:-false}" == "true" ]]; then
+if [[ ${RUN_BENCHMARKS:-false} == "true" ]]; then
     _run_benchmarks
 fi

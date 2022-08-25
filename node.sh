@@ -14,7 +14,7 @@ set -o nounset
 
 source defaults.env
 
-if [[ "$KRD_DEBUG" == "true" ]]; then
+if [[ $KRD_DEBUG == "true" ]]; then
     set -o xtrace
 fi
 
@@ -32,7 +32,7 @@ function mount_external_partition {
     local dev_name="/dev/$1"
     local mount_dir=$2
 
-    sudo sfdisk "$dev_name" --no-reread << EOF
+    sudo sfdisk "$dev_name" --no-reread <<EOF
 ;
 EOF
     sudo mkfs -t ext4 "${dev_name}1"
@@ -87,49 +87,49 @@ function install_deps {
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
-        ubuntu|debian)
-            if ! command -v curl; then
-                sudo apt-get update
-                sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 curl
-            fi
-            if ! command -v deborphan; then
-                sudo apt-get update
-                sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 deborphan
-            fi
-            sudo du -sh /var/cache/apt/archives
-            sudo apt-get clean
+    ubuntu | debian)
+        if ! command -v curl; then
+            sudo apt-get update
+            sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 curl
+        fi
+        if ! command -v deborphan; then
+            sudo apt-get update
+            sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 deborphan
+        fi
+        sudo du -sh /var/cache/apt/archives
+        sudo apt-get clean
         ;;
-        rhel|centos|fedora)
-            if command -v yum; then
-                yum clean all --verbose
-                sudo rm -rf /var/cache/yum
-                if command -v package-cleanup; then
-                    for arg in leaves leaves orphans; do
-                        package-cleanup --quiet "--$arg"
-                        package-cleanup --quiet "--$arg" | xargs sudo yum remove -y
-                    done
-                fi
+    rhel | centos | fedora)
+        if command -v yum; then
+            yum clean all --verbose
+            sudo rm -rf /var/cache/yum
+            if command -v package-cleanup; then
+                for arg in leaves leaves orphans; do
+                    package-cleanup --quiet "--$arg"
+                    package-cleanup --quiet "--$arg" | xargs sudo yum remove -y
+                done
             fi
-            if command -v dnf; then
-                sudo dnf clean all
-                eval "sudo dnf remove $(sudo dnf repoquery --installonly --latest-limit=-2 -q)"
-                sudo dnf clean packages
-            fi
-            if [ "${VERSION_ID}" == "7" ]; then
-                PKG_PYTHON_MAJOR_VERSION=2
-                export PKG_PYTHON_MAJOR_VERSION
-            fi
-        ;;
-        *suse)
+        fi
+        if command -v dnf; then
+            sudo dnf clean all
+            eval "sudo dnf remove $(sudo dnf repoquery --installonly --latest-limit=-2 -q)"
+            sudo dnf clean packages
+        fi
+        if [ "${VERSION_ID}" == "7" ]; then
             PKG_PYTHON_MAJOR_VERSION=2
             export PKG_PYTHON_MAJOR_VERSION
+        fi
+        ;;
+    *suse)
+        PKG_PYTHON_MAJOR_VERSION=2
+        export PKG_PYTHON_MAJOR_VERSION
         ;;
     esac
 
-    if ! command -v bindep > /dev/null; then
+    if ! command -v bindep >/dev/null; then
         curl -fsSL http://bit.ly/install_bin | PKG_BINDEP_PROFILE=node bash
     else
-        pkgs="$(bindep node -b|| :)"
+        pkgs="$(bindep node -b || :)"
         if [ "$pkgs" ]; then
             curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
         fi
@@ -142,7 +142,7 @@ function install_deps {
 
     # Free up space
     if command -v deborphan; then
-        eval "sudo apt-get remove --purge -y $(deborphan)" ||:
+        eval "sudo apt-get remove --purge -y $(deborphan)" || :
     fi
     sudo journalctl --disk-usage
     sudo journalctl --vacuum-time=1m
@@ -150,8 +150,8 @@ function install_deps {
 
 # mount_partitions() - Mount and format additional volumes
 function mount_partitions {
-    if [ -n "${dict_volumes:-}" ]; then
-        for kv in ${dict_volumes//,/ } ;do
+    if [ -n "${dict_volumes-}" ]; then
+        for kv in ${dict_volumes//,/ }; do
             mount_external_partition "${kv%=*}" "${kv#*=}"
         done
     fi
@@ -161,7 +161,7 @@ function mount_partitions {
 function disable_k8s_ports {
     local kubelet_ports=(6443 10250 10259 10257)
 
-    for port in "${kubelet_ports[@]}";do
+    for port in "${kubelet_ports[@]}"; do
         if netstat -atun | grep -q "$port"; then
             echo "Port $port is already used by other non-kubelet service"
             exit 1
@@ -169,7 +169,7 @@ function disable_k8s_ports {
     done
 
     if command -v firewall-cmd && systemctl is-active --quiet firewalld; then
-        for port in "${kubelet_ports[@]}";do
+        for port in "${kubelet_ports[@]}"; do
             sudo firewall-cmd --zone=public --permanent --add-port="$port/tcp"
         done
         sudo firewall-cmd --zone=public --permanent --add-service=https
@@ -226,13 +226,13 @@ function set_dns_server {
 
 while getopts "h?v:" opt; do
     case $opt in
-        v)
-            dict_volumes="$OPTARG"
-            ;;
-        h|\?)
-            usage
-            exit
-            ;;
+    v)
+        dict_volumes="$OPTARG"
+        ;;
+    h | \?)
+        usage
+        exit
+        ;;
     esac
 done
 
@@ -255,10 +255,10 @@ create_pmem_namespaces
 enable_nvdimm_mixed_mode
 
 if [ "$KRD_DEBUG" == "true" ]; then
-    if command -v lstopo-no-graphics > /dev/null; then
+    if command -v lstopo-no-graphics >/dev/null; then
         lstopo-no-graphics
     fi
-    if command -v ipvsadm > /dev/null; then
+    if command -v ipvsadm >/dev/null; then
         sudo ipvsadm -Ln
     fi
 fi

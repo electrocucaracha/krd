@@ -43,9 +43,9 @@ fi
 curl -fsSL http://bit.ly/install_pkg | PKG_UPDATE=true PKG_COMMANDS_LIST="hostname,wget,git" bash
 
 # Validating local IP addresses in no_proxy environment variable
-if [[ ${NO_PROXY+x} = "x" ]]; then
+if [[ ${NO_PROXY+x} == "x" ]]; then
     for ip in $(hostname --ip-address || hostname -i) $(ip addr | awk "/$(ip route | grep "^default" | head -n1 | awk '{ print $5 }')\$/ { sub(/\/[0-9]*/, \"\","' $2); print $2}'); do
-        if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$  &&  $NO_PROXY != *"$ip"* ]]; then
+        if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ && $NO_PROXY != *"$ip"* ]]; then
             echo "The $ip IP address is not defined in NO_PROXY env"
             exit 1
         fi
@@ -64,7 +64,7 @@ if [ ! -d "$krd_folder" ]; then
 fi
 cd "$krd_folder" || exit
 
-if [[ "$krd_actions_list" == *k8s* ]]; then
+if [[ $krd_actions_list == *k8s* ]]; then
     # Setup SSH keys
     rm -f ~/.ssh/id_rsa*
     sudo mkdir -p /root/.ssh/
@@ -73,11 +73,11 @@ if [[ "$krd_actions_list" == *k8s* ]]; then
         # Attempt to copy file when non root else cmd fails with 'same file' message
         sudo cp ~/.ssh/id_rsa /root/.ssh/id_rsa
     fi
-    < ~/.ssh/id_rsa.pub tee --append  ~/.ssh/authorized_keys | sudo tee --append /root/.ssh/authorized_keys
+    tee <~/.ssh/id_rsa.pub --append ~/.ssh/authorized_keys | sudo tee --append /root/.ssh/authorized_keys
     chmod og-wx ~/.ssh/authorized_keys
 
     hostname=$(hostname)
-    sudo tee inventory/hosts.ini << EOL
+    sudo tee inventory/hosts.ini <<EOL
 [all]
 $hostname
 
@@ -104,12 +104,12 @@ if [ "${KRD_CONTAINER_RUNTIME:-docker}" == "docker" ] && command -v docker; then
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
-        ubuntu|debian)
-            systemctl --all --type service | grep -q docker && sudo systemctl stop docker --now
-            sudo apt-get purge -y docker-ce docker-ce-cli moby-engine moby-cli moby-buildx || true
-            sudo rm -rf /var/lib/docker /etc/docker
-            sudo rm -rf /var/run/docker.sock
-            sudo rm -f "$(sudo netstat -npl | grep docker | awk '{print $NF}')"
+    ubuntu | debian)
+        systemctl --all --type service | grep -q docker && sudo systemctl stop docker --now
+        sudo apt-get purge -y docker-ce docker-ce-cli moby-engine moby-cli moby-buildx || true
+        sudo rm -rf /var/lib/docker /etc/docker
+        sudo rm -rf /var/run/docker.sock
+        sudo rm -f "$(sudo netstat -npl | grep docker | awk '{print $NF}')"
         ;;
     esac
 fi

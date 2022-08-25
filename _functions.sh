@@ -13,7 +13,7 @@ set -o pipefail
 set -o nounset
 
 source _commons.sh
-if [[ "$KRD_DEBUG" == "true" ]]; then
+if [[ $KRD_DEBUG == "true" ]]; then
     set -o xtrace
 fi
 
@@ -35,7 +35,7 @@ function upgrade_k8s {
         return
     fi
 
-    if [ -n "${KRD_KUBESPRAY_VERSION+x}" ] && _vercmp "${kubespray_version#*v}" '<' "${KRD_KUBESPRAY_VERSION#*v}" ; then
+    if [ -n "${KRD_KUBESPRAY_VERSION+x}" ] && _vercmp "${kubespray_version#*v}" '<' "${KRD_KUBESPRAY_VERSION#*v}"; then
         sed -i "s/^kubespray_version: .*\$/kubespray_version: $KRD_KUBESPRAY_VERSION/" "$krd_playbooks/krd-vars.yml"
         pushd "$kubespray_folder"
         git checkout master
@@ -65,8 +65,8 @@ function run_k8s_iperf {
     wait_for_pods iperf3
 
     # Perform bechmarking
-    kubectl get nodes -o wide | tee  "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
-    kubectl get pods -n iperf3 -o wide | tee --append  "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+    kubectl get nodes -o wide | tee "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+    kubectl get pods -n iperf3 -o wide | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
     for pod in $(kubectl get pods -n iperf3 -l app=iperf3-client -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'); do
         ip=$(kubectl get pod "$pod" -n iperf3 -o jsonpath='{.status.hostIP}')
         bash -c "kubectl exec -i $pod -n iperf3 -- iperf3 -c iperf3-server -T \"Client on $ip\"" | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
@@ -115,8 +115,8 @@ function run_external_k6 {
 
     # Perform bechmarking
     docker rm k6 || :
-    pushd "$(mktemp -d)" > /dev/null
-    cat << EOF > script.js
+    pushd "$(mktemp -d)" >/dev/null
+    cat <<EOF >script.js
     import http from "k6/http";
     import { check, sleep } from "k6";
     export let options = {
@@ -136,7 +136,7 @@ function run_external_k6 {
     };
 EOF
     docker run --name k6 -i loadimpact/k6 run - <script.js
-    popd > /dev/null
+    popd >/dev/null
 
     # Collecting results
     default_ingress_class="$(kubectl get ingressclasses.networking.k8s.io -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.metadata.annotations}{"\n"}{end}' | grep '"ingressclass.kubernetes.io/is-default-class":"true"' | awk '{ print $1}')"
@@ -160,17 +160,17 @@ function wait_for_pods {
     until [ $PENDING == "False" ] && [ $READY == "True" ] && [ $JOBR == "True" ]; do
         printf "."
         sleep 5
-        kubectl get pods -n "$namespace" -o jsonpath="{.items[*].status.phase}" | grep Pending > /dev/null && PENDING="True" || PENDING="False"
+        kubectl get pods -n "$namespace" -o jsonpath="{.items[*].status.phase}" | grep Pending >/dev/null && PENDING="True" || PENDING="False"
         query='.items[]|select(.status.phase=="Running")'
         query="$query|.status.containerStatuses[].ready"
 
-        kubectl get pods -n "$namespace" -o json | jq -r "$query" | grep false > /dev/null && READY="False" || READY="True"
-        kubectl get jobs -n "$namespace" -o json | jq -r '.items[] | .spec.completions == .status.succeeded' | grep false > /dev/null && JOBR="False" || JOBR="True"
-        if [ "$(date +%s)" -gt $end ] ; then
+        kubectl get pods -n "$namespace" -o json | jq -r "$query" | grep false >/dev/null && READY="False" || READY="True"
+        kubectl get jobs -n "$namespace" -o json | jq -r '.items[] | .spec.completions == .status.succeeded' | grep false >/dev/null && JOBR="False" || JOBR="True"
+        if [ "$(date +%s)" -gt $end ]; then
             printf "Containers failed to start after %s seconds\n" "$timeout"
             kubectl get pods -n "$namespace" -o wide
             echo
-            if [ $PENDING == "True" ] ; then
+            if [ $PENDING == "True" ]; then
                 echo "Some pods are in pending state:"
                 kubectl get pods --field-selector=status.phase=Pending -n "$namespace" -o wide
             fi
@@ -183,7 +183,7 @@ function wait_for_pods {
 
 # run_kubescape() - Installs and runs Kubescape tool for verifying Kubernetes deployments
 function run_kubescape {
-    if ! command -v kubescape > /dev/null; then
+    if ! command -v kubescape >/dev/null; then
         curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | bash
     fi
     kubescape scan framework nsa --exclude-namespaces kube-system,kube-public --silent
@@ -193,18 +193,18 @@ function run_kubescape {
 function run_sonobuoy {
     version=$(_get_version sonobuoy)
 
-    if ! command -v sonobuoy > /dev/null; then
-        pushd "$(mktemp -d)" > /dev/null
-        curl -L -o sonobuoy.tgz "https://github.com/vmware-tanzu/sonobuoy/releases/download/v$version/sonobuoy_${version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch).tar.gz" > /dev/null
+    if ! command -v sonobuoy >/dev/null; then
+        pushd "$(mktemp -d)" >/dev/null
+        curl -L -o sonobuoy.tgz "https://github.com/vmware-tanzu/sonobuoy/releases/download/v$version/sonobuoy_${version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch).tar.gz" >/dev/null
         tar xzf sonobuoy.tgz
         sudo mv sonobuoy /usr/local/bin/
         popd
     fi
-    if sonobuoy run --wait --mode quick 2> /dev/null; then
+    if sonobuoy run --wait --mode quick 2>/dev/null; then
         sonobuoy results "$(sonobuoy retrieve)"
         rm -f ./*_sonobuoy_*.tar.gz
     else
-        sonobuoy status ||:
+        sonobuoy status || :
         sonobuoy logs
     fi
     sonobuoy delete --wait --level warn
@@ -220,7 +220,7 @@ function run_checkov {
 
 # run_kubent() - Installs Kubent to determine deprecated APIs
 function run_kubent {
-    if ! command -v kubent > /dev/null; then
+    if ! command -v kubent >/dev/null; then
         curl -sSL https://git.io/install-kubent | GREEN=x TERM=dumb NOCOL=1 YELLOW=x sh
     fi
     kubent

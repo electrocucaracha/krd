@@ -64,7 +64,7 @@ trap get_status ERR
 # Test
 info "===== Test started ====="
 
-if kubectl get runtimeclasses/kata-qemu > /dev/null; then
+if kubectl get runtimeclasses/kata-qemu >/dev/null; then
     info "+++++ Kata Containers QEMU validation:"
     create_deployment "$kata_deployment_name" "kata-qemu"
     wait_deployment "$kata_deployment_name"
@@ -77,7 +77,7 @@ if kubectl get runtimeclasses/kata-qemu > /dev/null; then
     destroy_deployment "$kata_deployment_name"
 fi
 
-if kubectl get runtimeclasses/crun > /dev/null; then
+if kubectl get runtimeclasses/crun >/dev/null; then
     info "+++++ crun validation:"
     create_deployment "$crun_deployment_name" "crun"
     wait_deployment "$crun_deployment_name"
@@ -89,7 +89,7 @@ if kubectl get runtimeclasses/crun > /dev/null; then
     destroy_deployment "$crun_deployment_name"
 fi
 
-if kubectl get runtimeclasses/gvisor > /dev/null; then
+if kubectl get runtimeclasses/gvisor >/dev/null; then
     info "+++++ gvisor validation:"
     create_deployment "$gvisor_deployment_name" "gvisor"
     wait_deployment "$gvisor_deployment_name"
@@ -101,7 +101,7 @@ if kubectl get runtimeclasses/gvisor > /dev/null; then
     destroy_deployment "$gvisor_deployment_name"
 fi
 
-if kubectl get runtimeclasses/youki > /dev/null; then
+if kubectl get runtimeclasses/youki >/dev/null; then
     info "+++++ youki validation:"
     create_deployment "$youki_deployment_name" "youki"
     wait_deployment "$youki_deployment_name"

@@ -25,8 +25,8 @@ function destroy_vm {
 }
 
 info "Define target node"
-if [[ "${TEST_MULTINODE:-false}" == "false" ]]; then
-    cat <<EOL > ../config/pdf.yml
+if [[ ${TEST_MULTINODE:-false} == "false" ]]; then
+    cat <<EOL >../config/pdf.yml
 - name: aio
   os:
     name: ${OS:-ubuntu}
@@ -73,7 +73,7 @@ if [[ "${TEST_MULTINODE:-false}" == "false" ]]; then
 EOL
     destroy_vm aio
 else
-    cat <<EOL > ../config/pdf.yml
+    cat <<EOL >../config/pdf.yml
 - name: controller
   os:
     name: ${OS:-ubuntu}
@@ -99,14 +99,14 @@ else
     - etcd
 EOL
     for i in {1..2}; do
-        cat <<EOL >> ../config/pdf.yml
+        cat <<EOL >>../config/pdf.yml
 - name: worker0${i}
   os:
     name: ${OS:-ubuntu}
     release: ${RELEASE:-bionic}
   networks:
     - name: public-net
-      ip: "10.10.16.$((i+3))"
+      ip: "10.10.16.$((i + 3))"
   memory: 4096
   cpus: 1
   storage_controllers:

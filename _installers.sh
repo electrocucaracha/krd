@@ -13,7 +13,7 @@ set -o pipefail
 set -o nounset
 
 source _commons.sh
-if [[ "$KRD_DEBUG" == "true" ]]; then
+if [[ $KRD_DEBUG == "true" ]]; then
     set -o xtrace
 fi
 
@@ -36,16 +36,16 @@ function install_local_registry {
     if [[ -z $(sudo docker ps -aqf "name=registry") ]]; then
         sudo mkdir -p /var/lib/registry
         sudo -E docker run -d --name registry --restart=always \
-        -p "$KRD_DOCKER_LOCAL_REGISTRY_PORT":5000 --userns=host \
-        -v /var/lib/registry:/var/lib/registry registry:2
+            -p "$KRD_DOCKER_LOCAL_REGISTRY_PORT":5000 --userns=host \
+            -v /var/lib/registry:/var/lib/registry registry:2
     fi
 
     # Preload Kubespray images
     export kube_version
-    envsubst \$kube_version < kubespray_images.tpl > /tmp/kubespray_images.txt
+    envsubst \$kube_version <kubespray_images.tpl >/tmp/kubespray_images.txt
     while IFS= read -r image; do
         skopeo copy --dest-tls-verify=false "docker://$image" "docker://localhost:5000/${image#*/}"
-    done < /tmp/kubespray_images.txt
+    done </tmp/kubespray_images.txt
 }
 
 function _install_krew_plugin {
@@ -65,14 +65,14 @@ function _update_ngnix_ingress_ca {
     _install_krew_plugin cert-manager
     for binary in cfssl cfssljson; do
         if ! command -v "$binary"; then
-            sudo curl -sLo "/usr/bin/$binary" "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/${binary}_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" > /dev/null
+            sudo curl -sLo "/usr/bin/$binary" "https://github.com/cloudflare/cfssl/releases/download/v${cfssl_version}/${binary}_${cfssl_version}_$(uname | awk '{print tolower($0)}')_$(get_cpu_arch)" >/dev/null
             sudo chmod +x "/usr/bin/$binary"
         fi
     done
     sudo mkdir -p "$cert_dir"
     sudo chown -R "$USER:" "$cert_dir"
-    pushd "$cert_dir" > /dev/null
-    <<EOF cfssl gencert -initca - | cfssljson -bare ca
+    pushd "$cert_dir" >/dev/null
+    cfssl gencert -initca - <<EOF | cfssljson -bare ca
 {
     "CN": "cert-manager",
     "key": {
@@ -81,8 +81,8 @@ function _update_ngnix_ingress_ca {
     }
 }
 EOF
-    KUBE_EDITOR="sed -i \"s|tls.crt\: .*|tls.crt\: $(< ca.pem base64 -w 0)|g; s|tls.key\: .*|tls.key\: $(< ca-key.pem base64 -w 0)|g\"" kubectl edit secret/ca-key-pair -n cert-manager
-    popd > /dev/null
+    KUBE_EDITOR="sed -i \"s|tls.crt\: .*|tls.crt\: $(base64 <ca.pem -w 0)|g; s|tls.key\: .*|tls.key\: $(base64 <ca-key.pem -w 0)|g\"" kubectl edit secret/ca-key-pair -n cert-manager
+    popd >/dev/null
 
 }
 
@@ -162,8 +162,8 @@ function install_k8s_addons {
     # shellcheck disable=SC1091
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
-        ubuntu|debian)
-            sudo apt remove -y python3-yaml
+    ubuntu | debian)
+        sudo apt remove -y python3-yaml
         ;;
     esac
     eval "${pip_cmd} openshift"
@@ -171,7 +171,7 @@ function install_k8s_addons {
     for addon in ${KRD_ADDONS_LIST//,/ }; do
         echo "Deploying $addon using configure-$addon.yml playbook.."
         _run_ansible_cmd "$krd_playbooks/configure-${addon}.yml" "setup-${addon}.log"
-        if [[ "$KRD_ENABLE_TESTS" == "true" ]]; then
+        if [[ $KRD_ENABLE_TESTS == "true" ]]; then
             pushd "$KRD_FOLDER"/tests
             bash "${addon}".sh
             popd
@@ -193,33 +193,33 @@ function install_istio {
     fi
 
     istioctl install --skip-confirmation || :
-    if [[ "$KRD_ENABLE_ISTIO_ADDONS" == "true" ]]; then
+    if [[ $KRD_ENABLE_ISTIO_ADDONS == "true" ]]; then
         for addon in grafana prometheus; do
-            echo  "Installing $addon Istio AddOn"
+            echo "Installing $addon Istio AddOn"
             kubectl apply -f "https://raw.githubusercontent.com/istio/istio/${istio_version}/samples/addons/${addon}.yaml"
         done
 
         # Kiali installation
         install_helm
-        echo  "Installing Kiali Istio AddOn"
+        echo "Installing Kiali Istio AddOn"
         if ! helm repo list | grep -e kiali; then
             helm repo add kiali https://kiali.org/helm-charts
         fi
         if ! helm ls -n istio-system | grep -e kiali-server; then
             helm install --namespace istio-system \
-            --set auth.strategy="anonymous" \
-            kiali-server kiali/kiali-server
+                --set auth.strategy="anonymous" \
+                kiali-server kiali/kiali-server
         fi
     fi
     wait_for_pods istio-system
-    istioctl manifest generate > /tmp/generated-manifest.yaml
+    istioctl manifest generate >/tmp/generated-manifest.yaml
     istioctl verify-install -f /tmp/generated-manifest.yaml
 }
 
 # install_knative() - Function that installs Knative and its dependencies
 function install_knative {
     # Install Knative Client
-    if ! command -v kn > /dev/null; then
+    if ! command -v kn >/dev/null; then
         curl -fsSL http://bit.ly/install_pkg | PKG=kn PKG_KN_VERSION="$(_get_version kn)" bash
     fi
 
@@ -228,7 +228,7 @@ function install_knative {
     #  - Serving 630m CPU + 420Mi
     # Resources limits:
     #  - Serving 3,800m CPU + 3,700Mi
-    if [[ "${KRD_KNATIVE_SERVING_ENABLED}" == "true" ]]; then
+    if [[ ${KRD_KNATIVE_SERVING_ENABLED} == "true" ]]; then
         knative_serving_version=$(_get_version knative_serving)
         if ! kubectl get namespaces/knative-serving --no-headers -o custom-columns=name:.metadata.name; then
             kubectl create namespace knative-serving
@@ -236,22 +236,22 @@ function install_knative {
         kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_serving_version}/serving-crds.yaml"
         kubectl apply -f "https://github.com/knative/serving/releases/download/${knative_serving_version}/serving-core.yaml"
         case ${KRD_KNATIVE_SERVING_NET} in
-            kourier)
-                kourier_version=$(_get_version net_kourier)
-                kubectl apply -f "https://github.com/knative/net-kourier/releases/download/${kourier_version}/kourier.yaml"
-                kubectl patch configmap/config-network -n knative-serving \
+        kourier)
+            kourier_version=$(_get_version net_kourier)
+            kubectl apply -f "https://github.com/knative/net-kourier/releases/download/${kourier_version}/kourier.yaml"
+            kubectl patch configmap/config-network -n knative-serving \
                 --type merge --patch '{"data":{"ingress.class":"kourier.ingress.networking.knative.dev"}}'
             ;;
-            istio)
-                install_istio
-                # Using Istio mTLS feature
-                if kubectl get service cluster-local-gateway -n istio-system; then
-                    kubectl apply -f "https://raw.githubusercontent.com/knative-sandbox/net-istio/master/third_party/istio-stable/istio-knative-extras.yaml"
-                fi
-                kubectl apply -f "https://github.com/knative/net-istio/releases/download/$(_get_version net_istio)/release.yaml"
+        istio)
+            install_istio
+            # Using Istio mTLS feature
+            if kubectl get service cluster-local-gateway -n istio-system; then
+                kubectl apply -f "https://raw.githubusercontent.com/knative-sandbox/net-istio/master/third_party/istio-stable/istio-knative-extras.yaml"
+            fi
+            kubectl apply -f "https://github.com/knative/net-istio/releases/download/$(_get_version net_istio)/release.yaml"
             ;;
         esac
-        if [[ "${KRD_KNATIVE_SERVING_CERT_MANAGER_ENABLED}" == "true" ]]; then
+        if [[ ${KRD_KNATIVE_SERVING_CERT_MANAGER_ENABLED} == "true" ]]; then
             kubectl apply -f "https://github.com/knative/net-certmanager/releases/download/$(_get_version net_certmanager)/release.yaml"
         fi
 
@@ -263,7 +263,7 @@ function install_knative {
     #  - Eventing 420m CPU + 420Mi
     # Resources limits:
     #  - Eventing 600m CPU + 600Mi
-    if [[ "${KRD_KNATIVE_EVENTING_ENABLED}" == "true" ]]; then
+    if [[ ${KRD_KNATIVE_EVENTING_ENABLED} == "true" ]]; then
         knative_eventing_version=$(_get_version knative_eventing)
         kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_eventing_version}/eventing-crds.yaml"
         kubectl apply -f "https://github.com/knative/eventing/releases/download/${knative_eventing_version}/eventing-core.yaml"
@@ -294,12 +294,12 @@ function install_kubevirt {
     echo "Wait for Kubevirt resources to be ready"
     kubectl rollout status deployment/virt-operator -n kubevirt --timeout=5m
     until kubectl logs -n kubevirt -l kubevirt.io=virt-operator | grep "All KubeVirt components ready"; do
-        if [ ${attempt_counter} -eq ${max_attempts} ];then
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
             echo "Max attempts reached"
             exit 1
         fi
-        attempt_counter=$((attempt_counter+1))
-        sleep $((attempt_counter*15))
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 15))
     done
     wait_for_pods kubevirt
 }

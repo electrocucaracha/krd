@@ -71,8 +71,45 @@ jobs:
           test-multinode: ${{ matrix.test_multinode }}
           run-conformance-tools: ${{ matrix.run_conformance_tools }}
           cert-manager-enabled: ${{ matrix.cert_manager_enabled }}
+  changes:
+    runs-on: ubuntu-latest
+    if: >-
+      (
+        github.event_name == 'pull_request_review' &&
+        github.event.review.state == 'approved'
+      ) ||
+      github.event_name != 'pull_request_review'
+    outputs:
+      scripts: ${{ steps.filter.outputs.scripts }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        if: ${{ !env.ACT }}
+        id: filter
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          filters: |
+            scripts:
+              - '**.sh'
+  check-format:
+    name: Check scripts format
+    if: needs.changes.outputs.scripts == 'true'
+    needs: changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run the sh-checker
+        uses: luizm/action-sh-checker@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SHFMT_OPTS: -i 4 -s
+        with:
+          sh_checker_shellcheck_disable: true
+          sh_checker_exclude: "playbooks/roles/pmem/ spec/commons_spec.sh"
   check-shellspec:
     name: Run BDD shell specs
+    if: needs.changes.outputs.scripts == 'true'
+    needs: changes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

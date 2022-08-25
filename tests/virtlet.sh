@@ -33,21 +33,21 @@ function create_deployment {
 
     proxy="apt:"
     cloud_init_proxy=""
-    if [[ -n "${HTTP_PROXY+x}" ]]; then
+    if [[ -n ${HTTP_PROXY+x} ]]; then
         proxy+="
             http_proxy: $HTTP_PROXY"
         cloud_init_proxy+="
             - export http_proxy=$HTTP_PROXY
             - export HTTP_PROXY=$HTTP_PROXY"
     fi
-    if [[ -n "${HTTPS_PROXY+x}" ]]; then
+    if [[ -n ${HTTPS_PROXY+x} ]]; then
         proxy+="
             https_proxy: $HTTPS_PROXY"
         cloud_init_proxy+="
             - export https_proxy=$HTTPS_PROXY
             - export HTTPS_PROXY=$HTTPS_PROXY"
     fi
-    if [[ -n "${NO_PROXY+x}" ]]; then
+    if [[ -n ${NO_PROXY+x} ]]; then
         cloud_init_proxy+="
             - export no_proxy=$NO_PROXY
             - export NO_PROXY=$NO_PROXY"
