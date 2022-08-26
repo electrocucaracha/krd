@@ -14,7 +14,7 @@ ansible-core==2.13.3
     # via
     #   ansible
     #   ansible-lint
-ansible-lint==6.5.0
+ansible-lint==6.5.1
     # via -r test-requirements.in
 arrow==1.2.2
     # via jinja2-time

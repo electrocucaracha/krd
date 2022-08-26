@@ -14,7 +14,7 @@ roles:
   - name: geerlingguy.repo-epel
     version: 3.1.1
   - name: geerlingguy.pip
-    version: 2.1.0
+    version: 2.2.0
   - name: andrewrothstein.gcc-toolbox
     version: v1.1.7
   - name: andrewrothstein.kind
