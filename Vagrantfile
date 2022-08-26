@@ -216,7 +216,7 @@ Vagrant.configure("2") do |config|
         # Intel Corporation Persistent Memory
         if Gem::Version.new(qemu_version) > Gem::Version.new("2.6.0") && (node.key? "pmem")
           v.qemuargs value: "-machine"
-          v.qemuargs value: "pc,accel=kvm,nvdimm=on"
+          v.qemuargs value: "pc,nvdimm=on"
           v.qemuargs value: "-m"
           v.qemuargs value: "#{node['pmem']['size']},slots=#{node['pmem']['slots']},maxmem=#{node['pmem']['max_size']}"
           node["pmem"]["vNVDIMMs"].each do |nvdimm|
