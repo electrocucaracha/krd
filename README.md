@@ -118,7 +118,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_ANSIBLE_DEBUG                     | false                                          | Enables ansible verbose execution                                               |
 | PKG_DEBUG                             | false                                          | Enables cURL package installer verbose execution                                |
 | KRD_KUBE_VERSION                      | v1.23.7                                        | Specifies the Kubernetes version to be upgraded                                 |
-| KRD_KUBESPRAY_VERSION                 | v2.19.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
+| KRD_KUBESPRAY_VERSION                 | v2.19.1                                        | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | `https://github.com/kubernetes-sigs/kubespray` | Specifies the Git repository to fetch the Kubespray's source code               |
 | KRD_ENABLE_TESTS                      | false                                          | Enables the functional tests during the deployment process                      |
 | KRD_HELM_CHART                        |                                                | Specifies the Helm chart to be installed                                        |
