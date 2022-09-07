@@ -9,7 +9,7 @@
 ##############################################################################
 
 sriov_template_folder: /tmp/sriov_k8s
-sriov_plugin_version: v3.3.2
+sriov_plugin_version: vMax attempts reached
 sriovdp_config:
   resourceList:
     - resourceName: virtio_net_device
