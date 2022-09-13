@@ -10,7 +10,7 @@ ansible-compat==2.2.0
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.13.3
+ansible-core==2.13.4
     # via
     #   ansible
     #   ansible-lint
@@ -171,7 +171,7 @@ urllib3==1.26.12
     # via requests
 wcmatch==8.4
     # via ansible-lint
-yamllint==1.27.1
+yamllint==1.28.0
     # via
     #   -r test-requirements.in
     #   ansible-lint
