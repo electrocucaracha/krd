@@ -52,12 +52,12 @@ function _run_assertions {
         assert_contains "$(command -v kubectl)" "kubectl"
         assert_are_equal "${KRD_KUBE_VERSION:-v1.23.7}" "$(kubectl version --short | awk 'END{print $3}')"
         pushd /opt/kubespray >/dev/null
-        assert_are_equal "${KRD_KUBESPRAY_VERSION:-v2.19.0}" "$(git describe --abbrev=0 --tags)"
+        assert_are_equal "${KRD_KUBESPRAY_VERSION:-v2.19.1}" "$(git describe --abbrev=0 --tags)"
         popd >/dev/null
     else
         assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "command -v kubectl")" "kubectl"
         assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "kubectl version --short | awk 'END{print \$3}'")" "${KRD_KUBE_VERSION:-v1.23.7}"
-        assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")" "${KRD_KUBESPRAY_VERSION:-v2.19.0}"
+        assert_contains "$($VAGRANT_CMD_SSH_INSTALLER "cd /opt/kubespray; git describe --abbrev=0 --tags")" "${KRD_KUBESPRAY_VERSION:-v2.19.1}"
     fi
 }
 
