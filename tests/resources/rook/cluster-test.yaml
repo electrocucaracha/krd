@@ -19,6 +19,7 @@ data:
     mon_warn_on_pool_no_redundancy = false
     bdev_flock_retry = 20
     bluefs_buffered_io = false
+    mon_data_avail_warn = 500M
 ---
 apiVersion: ceph.rook.io/v1
 kind: CephCluster
@@ -28,7 +29,7 @@ metadata:
 spec:
   dataDirHostPath: /var/lib/rook
   cephVersion:
-    image: quay.io/ceph/ceph:v17.2.1
+    image: quay.io/ceph/ceph:v17
     allowUnsupported: true
   mon:
     count: 1
