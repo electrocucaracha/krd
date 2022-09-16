@@ -59,7 +59,7 @@ function _get_latest_ansible_collection {
 }
 
 function _get_latest_docker_tag {
-    curl -sfL "https://registry.hub.docker.com/v1/repositories/$1/tags" | python -c 'import json,sys;versions=[obj["name"][1:] for obj in json.load(sys.stdin) if obj["name"][0] == "v"];print("\n".join(versions))' | sed 's/-.*//g' | uniq | sort -rn | head -n 1
+    curl -sfL "https://registry.hub.docker.com/v2/repositories/$1/tags" | python -c 'import json,sys,re;versions=[obj["name"] for obj in json.load(sys.stdin)["results"] if re.match("^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$",obj["name"])];print("\n".join(versions))' | uniq | sort -rn | head -n 1
 }
 
 function update_pip_pkg {
