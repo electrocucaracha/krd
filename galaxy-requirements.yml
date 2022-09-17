@@ -16,7 +16,7 @@ roles:
   - name: geerlingguy.pip
     version: 2.2.0
   - name: andrewrothstein.gcc-toolbox
-    version: v1.1.7
+    version: v1.1.8
   - name: andrewrothstein.kind
     version: v1.2.1
   - name: andrewrothstein.kubectl
