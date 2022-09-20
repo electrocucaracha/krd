@@ -169,7 +169,7 @@ typing-extensions==4.3.0
     #   rich
 urllib3==1.26.12
     # via requests
-wcmatch==8.4
+wcmatch==8.4.1
     # via ansible-lint
 yamllint==1.28.0
     # via
