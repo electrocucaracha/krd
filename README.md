@@ -135,40 +135,43 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 
 #### Kubespray
 
-| Name                                 | Default | Description                                                                     |
-|:-------------------------------------|:--------|:--------------------------------------------------------------------------------|
-| KRD_NETWORK_PLUGIN                   | flannel | Choose network plugin (calico, canal, cilium, contiv, flannel weave)            |
-| KRD_KUBE_PROXY_MODE                  | ipvs    | Choose kube-proxy mode (iptables, ipvs)                                         |
-| KRD_DOWNLOAD_RUN_ONCE                | true    | Download images and binaries only once and then push them to the cluster nodes  |
-| KRD_DOWNLOAD_LOCALHOST               | true    | Make localhost the download delegate                                            |
-| KRD_MULTUS_ENABLED                   | false   | Enable/Disable [Kubernetes Multus CNI][2]                                       |
-| KRD_CONTAINER_RUNTIME                | docker  | Specifies the Container Runtime to be used for deploying kubernetes             |
-| KRD_DASHBOARD_ENABLED                | false   | Enable/Disable [Kubernetes Dashboard][12]                                       |
-| KRD_CERT_MANAGER_ENABLED             | true    | Enable/Disable [Kubernetes Cert-Manager][10]                                    |
-| KRD_INGRESS_NGINX_ENABLED            | true    | Enable/Disable [NGINX Ingress Controller][11]                                   |
-| KRD_KATA_CONTAINERS_ENABLED          | false   | Enable/Disable [Kata Containers Runtime][13]                                    |
-| KRD_CRUN_ENABLED                     | false   | Enable/Disable [crun][18]                                                       |
-| KRD_YOUKI_ENABLED                    | false   | Enable/Disable [youki][26]                                                      |
-| KRD_GVISOR_ENABLED                   | false   | Enable/Disable [gVisor][25]                                                     |
-| KRD_FLANNEL_BACKEND_TYPE             | host-gw | Type of flannel backend to use (vxlan, host-gw, udp)                            |
-| KRD_MANUAL_DNS_SERVER                |         | Set to use a custom cluster DNS                                                 |
-| KRD_REGISTRY_MIRRORS_LIST            |         | Specifies a list of additional registry mirrors                                 |
-| KRD_INSECURE_REGISTRIES_LIST         |         | Specifies a list of insecure-registries (IP address or domain name)             |
-| KRD_LOCAL_VOLUME_PROVISIONER_ENABLED | true    | Enable/Disable [Local volume provisioner][20]                                   |
-| KRD_DOCKER_VERSION                   | latest  | Specifies the Docker version to be used for deploying Kubernetes                |
-| KRD_CONTAINERD_VERSION               | 1.5.8   | Specifies the ContainerD version to be used for deploying Kubernetes            |
-| KRD_ENABLE_NODELOCALDNS              | true    | Enable/Disable [NodeLocal DNSCache][5]                                          |
-| KRD_NDOTS                            | 1       | Threshold for the number of dots which must appear in name resolution           |
-| KRD_RESOLVCONF_MODE                  | none    | Specifies the DNS setup for non-k8s containers.                                 |
-| KRD_KUBE_PROXY_SCHEDULER             | sh      | Specifies the [IPVS scheduling algorithm][7] for allocating connections         |
-| KRD_EPHEMERAL_CONTAINERS_ENABLED     | true    | Enable/Disable [Ephemeral Containers][21]                                       |
-| KRD_METALLB_ENABLED                  | false   | Enable/Disable [MetalLB load-balancer][22]                                      |
-| KRD_METALLB_ADDRESS_POOLS_LIST       |         | Specifies a lists of Layer 2 Address pools for MetalLB                          |
-| KRD_KUBERNETES_AUDIT                 | false   | Enable/Disable [Auditing][23]                                                   |
-| KRD_KUBERNETES_AUDIT_WEBHOOK         | false   | Enable/Disable [Audit Webhook][23]                                              |
-| KRD_AUDIT_WEBHOOK_SERVER_URL         |         | Audit Webhook server URL                                                        |
-| KRD_KUBELET_LOGFILES_MAX_NR          | 5       | Maximum number of [container log][24] files that can be present for a container |
-| KRD_KUBELET_LOGFILES_MAX_SIZE        | 10Mi    | Maximum size of the [container log][24] file before it is rotated               |
+| Name                                 | Default        | Description                                                                     |
+|:-------------------------------------|:---------------|:--------------------------------------------------------------------------------|
+| KRD_NETWORK_PLUGIN                   | flannel        | Choose network plugin (calico, canal, cilium, contiv, flannel weave)            |
+| KRD_CILIUM_TUNNEL_MODE               | disabled       | Encapsulation mode for communication between nodes (disabled, vxlan, geneve)    |
+| KRD_CILIUM_NATIVE_ROUTING_CIDR       | 10.233.64.0/18 | CIDR in which native routing can be performed.                                  |
+| KRD_CILIUM_KUBE_PROXY_REPLACEMENT    | probe          | Specifies the type of kube-proxy replacement.                                   |
+| KRD_KUBE_PROXY_MODE                  | ipvs           | Choose kube-proxy mode (iptables, ipvs)                                         |
+| KRD_DOWNLOAD_RUN_ONCE                | true           | Download images and binaries only once and then push them to the cluster nodes  |
+| KRD_DOWNLOAD_LOCALHOST               | true           | Make localhost the download delegate                                            |
+| KRD_MULTUS_ENABLED                   | false          | Enable/Disable [Kubernetes Multus CNI][2]                                       |
+| KRD_CONTAINER_RUNTIME                | docker         | Specifies the Container Runtime to be used for deploying kubernetes             |
+| KRD_DASHBOARD_ENABLED                | false          | Enable/Disable [Kubernetes Dashboard][12]                                       |
+| KRD_CERT_MANAGER_ENABLED             | true           | Enable/Disable [Kubernetes Cert-Manager][10]                                    |
+| KRD_INGRESS_NGINX_ENABLED            | true           | Enable/Disable [NGINX Ingress Controller][11]                                   |
+| KRD_KATA_CONTAINERS_ENABLED          | false          | Enable/Disable [Kata Containers Runtime][13]                                    |
+| KRD_CRUN_ENABLED                     | false          | Enable/Disable [crun][18]                                                       |
+| KRD_YOUKI_ENABLED                    | false          | Enable/Disable [youki][26]                                                      |
+| KRD_GVISOR_ENABLED                   | false          | Enable/Disable [gVisor][25]                                                     |
+| KRD_FLANNEL_BACKEND_TYPE             | host-gw        | Type of flannel backend to use (vxlan, host-gw, udp)                            |
+| KRD_MANUAL_DNS_SERVER                |                | Set to use a custom cluster DNS                                                 |
+| KRD_REGISTRY_MIRRORS_LIST            |                | Specifies a list of additional registry mirrors                                 |
+| KRD_INSECURE_REGISTRIES_LIST         |                | Specifies a list of insecure-registries (IP address or domain name)             |
+| KRD_LOCAL_VOLUME_PROVISIONER_ENABLED | true           | Enable/Disable [Local volume provisioner][20]                                   |
+| KRD_DOCKER_VERSION                   | latest         | Specifies the Docker version to be used for deploying Kubernetes                |
+| KRD_CONTAINERD_VERSION               | 1.5.8          | Specifies the ContainerD version to be used for deploying Kubernetes            |
+| KRD_ENABLE_NODELOCALDNS              | true           | Enable/Disable [NodeLocal DNSCache][5]                                          |
+| KRD_NDOTS                            | 1              | Threshold for the number of dots which must appear in name resolution           |
+| KRD_RESOLVCONF_MODE                  | none           | Specifies the DNS setup for non-k8s containers.                                 |
+| KRD_KUBE_PROXY_SCHEDULER             | sh             | Specifies the [IPVS scheduling algorithm][7] for allocating connections         |
+| KRD_EPHEMERAL_CONTAINERS_ENABLED     | true           | Enable/Disable [Ephemeral Containers][21]                                       |
+| KRD_METALLB_ENABLED                  | false          | Enable/Disable [MetalLB load-balancer][22]                                      |
+| KRD_METALLB_ADDRESS_POOLS_LIST       |                | Specifies a lists of Layer 2 Address pools for MetalLB                          |
+| KRD_KUBERNETES_AUDIT                 | false          | Enable/Disable [Auditing][23]                                                   |
+| KRD_KUBERNETES_AUDIT_WEBHOOK         | false          | Enable/Disable [Audit Webhook][23]                                              |
+| KRD_AUDIT_WEBHOOK_SERVER_URL         |                | Audit Webhook server URL                                                        |
+| KRD_KUBELET_LOGFILES_MAX_NR          | 5              | Maximum number of [container log][24] files that can be present for a container |
+| KRD_KUBELET_LOGFILES_MAX_SIZE        | 10Mi           | Maximum size of the [container log][24] file before it is rotated               |
 
 ## Contribution
 

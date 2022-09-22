@@ -10,6 +10,7 @@ blockquote
 brightgreen
 Bugfixes
 CentOS
+CIDR
 CNI
 codebase
 config
@@ -33,6 +34,7 @@ Falco
 filesystem
 FPGAs
 fsSL
+geneve
 GPUs
 Grafana
 GVISOR

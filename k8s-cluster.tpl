@@ -181,3 +181,12 @@ kubelet_logfiles_max_size: $KRD_KUBELET_LOGFILES_MAX_SIZE
 
 # Specify version of cert-manager to used (should be quoted string).
 cert_manager_version: "$KRD_CERT_MANAGER_VERSION"
+
+# Overlay Network Mode
+cilium_tunnel_mode: $KRD_CILIUM_TUNNEL_MODE
+
+# Allows to explicitly specify the IPv4 CIDR for native routing.
+cilium_native_routing_cidr: "$KRD_CILIUM_NATIVE_ROUTING_CIDR"
+
+# Kube Proxy Replacement mode (strict/probe/partial)
+cilium_kube_proxy_replacement: $KRD_CILIUM_KUBE_PROXY_REPLACEMENT

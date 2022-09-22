@@ -182,6 +182,9 @@ EOF
             echo "  ${etchost_entry%-*} ${etchost_entry#*-}" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         done
     fi
+    if [ "$KRD_NETWORK_PLUGIN" == "cilium" ] && [ "$KRD_CILIUM_TUNNEL_MODE" == "disabled" ]; then
+        echo "cilium_auto_direct_node_routes: true" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+    fi
     if [ "$kubespray_version" != "master" ] && _vercmp "${kubespray_version#*v}" '>' "2.15" && [ "$KRD_METALLB_ENABLED" == "true" ] && [ -n "${KRD_METALLB_ADDRESS_POOLS_LIST-}" ]; then
         echo "metallb_ip_range:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
         for pool in ${KRD_METALLB_ADDRESS_POOLS_LIST//,/ }; do
