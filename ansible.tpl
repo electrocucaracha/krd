@@ -21,6 +21,5 @@ roles_path = roles:$VIRTUAL_ENV/usr/local/share/kubespray/roles:$VIRTUAL_ENV/usr
 deprecation_warnings=False
 inventory_ignore_extensions = ~, .orig, .bak, .ini, .cfg, .retry, .pyc, .pyo, .creds, .gpg
 timeout = 30
-strategy = mitogen_linear
 [inventory]
 ignore_patterns = artifacts, credentials
