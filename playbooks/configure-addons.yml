@@ -93,7 +93,7 @@
             path: /root/.docker/
             mode: '0755'
         - name: Configure docker client to use proxy values
-          ansible.builtin.copy:
+          ansible.builtin.template:
             mode: preserve
             dest: "/root/.docker/config.json"
             content: |
