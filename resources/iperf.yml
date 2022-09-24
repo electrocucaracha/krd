@@ -38,11 +38,17 @@ spec:
           effect: NoSchedule
       containers:
         - name: iperf3-server
-          image: networkstatic/iperf3
-          args: ['-s']
+          image: clearlinux/iperf
+          args: ['--server', '--port', '5201', '-V']
           ports:
             - containerPort: 5201
-              name: server
+              name: tcp5201
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 5201
+            initialDelaySeconds: 3
+            periodSeconds: 2
 ---
 apiVersion: v1
 kind: Service
@@ -82,5 +88,5 @@ spec:
                     operator: DoesNotExist
       containers:
         - name: iperf3-client
-          image: networkstatic/iperf3
+          image: clearlinux/iperf
           command: ['/bin/sh', '-c', 'sleep infinity']

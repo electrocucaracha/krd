@@ -69,7 +69,10 @@ function run_k8s_iperf {
     kubectl get pods -n iperf3 -o wide | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
     for pod in $(kubectl get pods -n iperf3 -l app=iperf3-client -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'); do
         ip=$(kubectl get pod "$pod" -n iperf3 -o jsonpath='{.status.hostIP}')
-        bash -c "kubectl exec -i $pod -n iperf3 -- iperf3 -c iperf3-server -T \"Client on $ip\"" | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+        hostname=$(kubectl get nodes -o jsonpath="{range .items[?(@.status.addresses[0].address == \"$ip\")]}{.metadata.name}{end}")
+        bash -c "kubectl exec -i $pod -n iperf3 -- bash -c 'iperf3 -V -c \$IPERF3_SERVER_SERVICE_HOST -4 --connect-timeout 10 -p 5201 -T \"Client on $hostname\"' ||:" | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+        kubectl logs -n iperf3 -l app=iperf3-server | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+        sleep 10
     done
 }
 

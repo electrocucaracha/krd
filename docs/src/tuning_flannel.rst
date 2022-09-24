@@ -1,4 +1,4 @@
-.. Copyright 2021
+.. Copyright 2021,2022
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
    You may obtain a copy of the License at
@@ -12,6 +12,20 @@
 ****************************************
 Tuning Kubernetes Flannel CNI deployment
 ****************************************
+
+**Software versions**
+
++--------------+--------------------+
+| Name         | Version            |
++==============+====================+
+| Ubuntu       | Ubuntu 18.04.6 LTS |
++--------------+--------------------+
+| Kernel       | 4.15.0-189-generic |
++--------------+--------------------+
+| Kubernetes   | v1.23.7            |
++--------------+--------------------+
+| Flannel      | v0.17.0            |
++--------------+--------------------+
 
 `Flannel CNI <https://www.cni.dev/plugins/current/meta/flannel/>`_ is a simple
 and easy way to configure a L3 network fabric designed for Kubernetes. It
@@ -38,13 +52,33 @@ between hosts running Flannel daemon.
 Backend Results
 ###############
 
-+-------------+----------------+----------------+
-| Measurement | VXLAN          | host-gw        |
-+=============+================+================+
-| Bitrate     | 5.33 Gbits/sec | 11.8 Gbits/sec |
-+-------------+----------------+----------------+
-| Transfer    | 6.20 GBytes    | 13.7 GBytes    |
-+-------------+----------------+----------------+
++------------------------+---------------------------+----------------+----------------+
+| Connection             | Measurement               | host-gw        | VXLAN          |
++========================+===========================+================+================+
+| worker01 -> controller | Bitrate(sender)           | 15.6 Gbits/sec | 4.64 Gbits/sec |
+|                        +---------------------------+----------------+----------------+
+|                        | Transfer(sender)          | 18.2 GBytes    | 5.40 GBytes    |
+|                        +---------------------------+----------------+----------------+
+|                        | CPU Utilization(sender)   | 74.3%          | 19.7%          |
+|                        +---------------------------+----------------+----------------+
+|                        | Bitrate(receiver)         | 15.6 Gbits/sec | 4.63 Gbits/sec |
+|                        +---------------------------+----------------+----------------+
+|                        | Transfer(receiver)        | 18.2 GBytes    | 5.40 GBytes    |
+|                        +---------------------------+----------------+----------------+
+|                        | CPU Utilization(receiver) | 80.4%          | 71.4%          |
++------------------------+---------------------------+----------------+----------------+
+| worker02 -> controller | Bitrate(sender)           | 15.8 Gbits/sec | 4.94 Gbits/sec |
+|                        +---------------------------+----------------+----------------+
+|                        | Transfer(sender)          | 18.4 GBytes    | 5.75 GBytes    |
+|                        +---------------------------+----------------+----------------+
+|                        | CPU Utilization(sender)   | 75.1%          | 22.4%          |
+|                        +---------------------------+----------------+----------------+
+|                        | Bitrate(receiver)         | 15.8 Gbits/sec | 4.94 Gbits/sec |
+|                        +---------------------------+----------------+----------------+
+|                        | Transfer(receiver)        | 18.4 GBytes    | 5.75 GBytes    |
+|                        +---------------------------+----------------+----------------+
+|                        | CPU Utilization(receiver) | 79.7%          | 75.2%          |
++------------------------+---------------------------+----------------+----------------+
 
 ***********************************************
 Tuning Kubernetes using different Linux Distros
@@ -53,24 +87,22 @@ Tuning Kubernetes using different Linux Distros
 Every Linux distribution can provide a kernel version optimized for running
 certain workloads. The following results were obtained running the previous
 benchmark function with different Linux distributions. This setup is  using
-*Host Gateway* as Flannel CNI backend in a Kubernetes v1.19.9 cluster.
+*Host Gateway* as Flannel CNI backend in a Kubernetes v1.23.7 cluster.
 
 Setup
 #####
 
-+------------------+-------+--------+--------------------+--------------------+-------------------+
-| Hostname         | vCPUs | Memory | Distro             | Kernel             | Container Runtime |
-+==================+=======+========+====================+====================+===================+
-| controller       | 1     | 4 GB   | Ubuntu 18.04.7 LTS | 4.15.0-142-generic | docker://20.10.6  |
-+------------------+-------+--------+--------------------+--------------------+-------------------+
-| ubuntu16         | 1     | 8 GB   | Ubuntu 16.04.7 LTS | 4.4.0-210-generic  | docker://20.10.6  |
-+------------------+-------+--------+--------------------+--------------------+-------------------+
-| ubuntu18         | 1     | 8 GB   | Ubuntu 18.04.7 LTS | 4.15.0-142-generic | docker://20.10.6  |
-+------------------+-------+--------+--------------------+--------------------+-------------------+
-| ubuntu20         | 1     | 8 GB   | Ubuntu 20.04.7 LTS | 5.4.0-72-generic   | docker://20.10.6  |
-+------------------+-------+--------+--------------------+--------------------+-------------------+
-| opensuse42       | 1     | 8 GB   | openSUSE Leap 42.3 | 4.4.179-99-default | docker://18.9.1   |
-+------------------+-------+--------+--------------------+--------------------+-------------------+
++------------------+-------+--------+--------------------+-----------------------------+-------------------+
+| Hostname         | vCPUs | Memory | Distro             | Kernel                      | Container Runtime |
++==================+=======+========+====================+=============================+===================+
+| controller       | 1     | 4 GB   | Ubuntu 18.04.6 LTS | 4.15.0-189-generic          | docker://20.10.11 |
++------------------+-------+--------+--------------------+-----------------------------+-------------------+
+| ubuntu18         | 1     | 4 GB   | Ubuntu 18.04.6 LTS | 4.15.0-189-generic          | docker://20.10.11 |
++------------------+-------+--------+--------------------+-----------------------------+-------------------+
+| ubuntu20         | 1     | 4 GB   | Ubuntu 20.04.4 LTS | 5.4.0-122-generic           | docker://20.10.11 |
++------------------+-------+--------+--------------------+-----------------------------+-------------------+
+| opensuse42       | 1     | 4 GB   | openSUSE Leap 42.3 | 4.4.179-99-default          | docker://18.9.1   |
++------------------+-------+--------+--------------------+-----------------------------+-------------------+
 
 Distro Results
 ##############
@@ -78,11 +110,9 @@ Distro Results
 +------------+----------------+-------------+
 | Hostname   | Bitrate        | Transfer    |
 +============+================+=============+
-| opensuse42 | 19.4 Gbits/sec | 22.6 GBytes |
+| ubuntu18   | 20.0 Gbits/sec | 23.3 GBytes |
 +------------+----------------+-------------+
-| ubuntu16   | 22.1 Gbits/sec | 25.7 GBytes |
+| ubuntu20   | 17.9 Gbits/sec | 15.3 GBytes |
 +------------+----------------+-------------+
-| ubuntu18   | 25.4 Gbits/sec | 29.6 GBytes |
-+------------+----------------+-------------+
-| ubuntu20   | 18.1 Gbits/sec | 21.1 GBytes |
+| opensuse42 | 20.0 Gbits/sec | 23.3 GBytes |
 +------------+----------------+-------------+
