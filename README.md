@@ -137,7 +137,8 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 
 | Name                                 | Default        | Description                                                                     |
 |:-------------------------------------|:---------------|:--------------------------------------------------------------------------------|
-| KRD_NETWORK_PLUGIN                   | flannel        | Choose network plugin (calico, canal, cilium, contiv, flannel weave)            |
+| KRD_NETWORK_PLUGIN                   | flannel        | Choose network plugin (calico, canal, cilium, contiv, flannel, weave)           |
+| KRD_FLANNEL_BACKEND_TYPE             | host-gw        | Type of flannel backend to use (vxlan, host-gw, udp)                            |
 | KRD_CILIUM_TUNNEL_MODE               | disabled       | Encapsulation mode for communication between nodes (disabled, vxlan, geneve)    |
 | KRD_CILIUM_NATIVE_ROUTING_CIDR       | 10.233.64.0/18 | CIDR in which native routing can be performed.                                  |
 | KRD_CILIUM_KUBE_PROXY_REPLACEMENT    | probe          | Specifies the type of kube-proxy replacement.                                   |
@@ -153,7 +154,6 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_CRUN_ENABLED                     | false          | Enable/Disable [crun][18]                                                       |
 | KRD_YOUKI_ENABLED                    | false          | Enable/Disable [youki][26]                                                      |
 | KRD_GVISOR_ENABLED                   | false          | Enable/Disable [gVisor][25]                                                     |
-| KRD_FLANNEL_BACKEND_TYPE             | host-gw        | Type of flannel backend to use (vxlan, host-gw, udp)                            |
 | KRD_MANUAL_DNS_SERVER                |                | Set to use a custom cluster DNS                                                 |
 | KRD_REGISTRY_MIRRORS_LIST            |                | Specifies a list of additional registry mirrors                                 |
 | KRD_INSECURE_REGISTRIES_LIST         |                | Specifies a list of insecure-registries (IP address or domain name)             |
