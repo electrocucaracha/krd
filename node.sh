@@ -138,6 +138,13 @@ function install_deps {
         sudo sed -i "s|#\!/usr/bin/python |#\!$(command -v python2) |g" /usr/sbin/tuned
         sudo systemctl start tuned
         sudo systemctl enable tuned
+        # This profile favors performance over power savings by setting
+        # intel_pstate and min_perf_pct=100. It disables transparent huge pages,
+        # and automatic NUMA balancing. It also uses cpupower to set the
+        # performance cpufreq governor, and requests a cpu_dma_latency value of
+        # 1. It also sets busy_read and busy_poll times to 50 μs, and
+        # tcp_fastopen to 3.
+        sudo tuned-adm profile network-latency
     fi
 
     # Free up space
