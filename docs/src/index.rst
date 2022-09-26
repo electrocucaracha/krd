@@ -16,4 +16,5 @@ Table of contents
    Benchmark results of Kubernetes Network plugins <benchmark_network>
    Benchmark results of Kubernetes Ingress controllers <benchmark_ingress>
    Tuning Flannel CNI plugin <tuning_flannel>
+   Tuning Cilium CNI plugin <tuning_cilium>
    Tuning Kube-proxy <tuning_kube-proxy>
