@@ -169,7 +169,7 @@ function disable_k8s_ports {
     local kubelet_ports=(6443 10250 10259 10257)
 
     for port in "${kubelet_ports[@]}"; do
-        if netstat -atun | grep -q "$port"; then
+        if command -v netstat && netstat -atun | grep -q "$port"; then
             echo "Port $port is already used by other non-kubelet service"
             exit 1
         fi
