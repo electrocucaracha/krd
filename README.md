@@ -117,8 +117,8 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_DEBUG                             | false                                          | Enables verbose execution                                                       |
 | KRD_ANSIBLE_DEBUG                     | false                                          | Enables ansible verbose execution                                               |
 | PKG_DEBUG                             | false                                          | Enables cURL package installer verbose execution                                |
-| KRD_KUBE_VERSION                      | v1.23.7                                        | Specifies the Kubernetes version to be upgraded                                 |
-| KRD_KUBESPRAY_VERSION                 | v2.19.1                                        | Specifies the Kubespray version to be used during the upgrade process           |
+| KRD_KUBE_VERSION                      | v1.24.6                                        | Specifies the Kubernetes version to be upgraded                                 |
+| KRD_KUBESPRAY_VERSION                 | v2.20.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | `https://github.com/kubernetes-sigs/kubespray` | Specifies the Git repository to fetch the Kubespray's source code               |
 | KRD_ENABLE_TESTS                      | false                                          | Enables the functional tests during the deployment process                      |
 | KRD_HELM_CHART                        |                                                | Specifies the Helm chart to be installed                                        |
@@ -146,7 +146,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_DOWNLOAD_RUN_ONCE                | true           | Download images and binaries only once and then push them to the cluster nodes  |
 | KRD_DOWNLOAD_LOCALHOST               | true           | Make localhost the download delegate                                            |
 | KRD_MULTUS_ENABLED                   | false          | Enable/Disable [Kubernetes Multus CNI][2]                                       |
-| KRD_CONTAINER_RUNTIME                | docker         | Specifies the Container Runtime to be used for deploying kubernetes             |
+| KRD_CONTAINER_RUNTIME                | containerd     | Specifies the Container Runtime to be used for deploying kubernetes             |
 | KRD_DASHBOARD_ENABLED                | false          | Enable/Disable [Kubernetes Dashboard][12]                                       |
 | KRD_CERT_MANAGER_ENABLED             | true           | Enable/Disable [Kubernetes Cert-Manager][10]                                    |
 | KRD_INGRESS_NGINX_ENABLED            | true           | Enable/Disable [NGINX Ingress Controller][11]                                   |
