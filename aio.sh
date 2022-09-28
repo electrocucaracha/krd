@@ -77,18 +77,19 @@ if [[ $krd_actions_list == *k8s* ]]; then
     chmod og-wx ~/.ssh/authorized_keys
 
     hostname=$(hostname)
+    ip_address=$(hostname -I | awk '{print $2}')
     sudo tee inventory/hosts.ini <<EOL
 [all]
 $hostname
 
 [kube-master]
-$hostname
+$hostname	ansible_host=$ip_address ip=$ip_address
 
 [kube-node]
-$hostname
+$hostname	ansible_host=$ip_address ip=$ip_address
 
 [etcd]
-$hostname
+$hostname	ansible_host=$ip_address ip=$ip_address
 
 [k8s-cluster:children]
 kube-node
