@@ -98,13 +98,14 @@ function install_k8s {
     _run_ansible_cmd "$kubespray_folder/cluster.yml" "setup-kubernetes.log"
 
     # Configure kubectl
-    mkdir -p "$HOME/.kube"
-    sudo cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"
+    for dest in "$HOME" /root; do
+        sudo mkdir -p "$dest/.kube"
+        kubeconfig="$krd_inventory_folder/artifacts/admin.conf"
+        [ ! -f "$kubeconfig" ] && kubeconfig="/etc/kubernetes/admin.conf"
+        [ -f "$kubeconfig" ] && sudo cp "$kubeconfig" "$dest/.kube/config"
+    done
     sudo chown -R "$USER" "$HOME/.kube/"
-    chmod 600 "$HOME/.kube/config"
-
-    sudo mkdir -p /root/.kube
-    sudo cp "$krd_inventory_folder/artifacts/admin.conf" /root/.kube/config
+    [ -f "$HOME/.kube/config" ] && chmod 600 "$HOME/.kube/config"
 
     # Update Nginx Ingress CA certificate and key values
     if kubectl get secret/ca-key-pair -n cert-manager --no-headers -o custom-columns=name:.metadata.name; then
