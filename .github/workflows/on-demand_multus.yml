@@ -37,6 +37,7 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       KRD_DEBUG: true
+      KRD_ANSIBLE_DEBUG: true
       KRD_MULTUS_ENABLED: true
       PKG_KREW_PLUGINS_LIST: "cert-manager"
     steps:
