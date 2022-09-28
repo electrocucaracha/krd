@@ -82,7 +82,12 @@ function _install_kubespray {
             done
         fi
 
-        $PIP_CMD install --no-cache-dir -r ./requirements.txt
+        python_version=$(python -V | awk '{print $2}')
+        if _vercmp "$python_version" '<' "3.8"; then
+            $PIP_CMD install --no-cache-dir -r ./requirements-2.11.txt
+        else
+            $PIP_CMD install --no-cache-dir -r ./requirements.txt
+        fi
         if _vercmp "${kubespray_version#*v}" '<' "2.18"; then
             sed -i "s/mitogen_version: .*/mitogen_version: $mitogen_version/g" ./mitogen.yml
             sudo make mitogen
@@ -336,7 +341,7 @@ function _run_ansible_cmd {
     local log=$2
     local krd_log_dir="/var/log/krd"
 
-    ansible_cmd="ANSIBLE_ROLES_PATH=/tmp/galaxy-roles sudo -E $(command -v ansible-playbook) --become "
+    ansible_cmd="ANSIBLE_ROLES_PATH=/tmp/galaxy-roles sudo -E $(command -v ansible-playbook) --become --become-user=root "
     if [[ $KRD_ANSIBLE_DEBUG == "true" ]]; then
         ansible_cmd+="-vvv "
     fi
