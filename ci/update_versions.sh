@@ -62,6 +62,15 @@ function _get_latest_docker_tag {
     curl -sfL "https://registry.hub.docker.com/v2/repositories/$1/tags" | python -c 'import json,sys,re;versions=[obj["name"] for obj in json.load(sys.stdin)["results"] if re.match("^v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$",obj["name"])];print("\n".join(versions))' | uniq | sort -rn | head -n 1
 }
 
+function set_kubespray_img_version {
+    local img_versions="$1"
+    local image="$2"
+    local kubespray_key="$3"
+
+    version=
+    sed -i "s/$image:.*/$image:$(echo "$img_versions" | grep "$kubespray_key" | awk '{ print $2}' | tr -d '"{}')/g" ./kubespray_images.tpl
+}
+
 function update_pip_pkg {
     local pkg="$1"
     local version="$2"
@@ -76,6 +85,15 @@ sed -i "s/kubespray_version:.*/kubespray_version: v$kubespray_version/g" ./playb
 sed -i "s/KRD_KUBESPRAY_VERSION                 |.*/KRD_KUBESPRAY_VERSION                 | v$kubespray_version                                        | Specifies the Kubespray version to be used during the upgrade process           |/g" README.md
 sed -i "s/KRD_KUBESPRAY_VERSION:-.* \"\$(git describe --abbrev=0 --tags)\"/KRD_KUBESPRAY_VERSION:-v$kubespray_version}\" \"\$(git describe --abbrev=0 --tags)\"/g" ./ci/check.sh
 sed -i "s/KRD_KUBESPRAY_VERSION:-.* \"\$(\$VAGRANT_CMD_SSH_INSTALLER \"cd \/opt\/kubespray; git describe --abbrev=0 --tags\")\"/KRD_KUBESPRAY_VERSION:-v$kubespray_version}\" \"\$(\$VAGRANT_CMD_SSH_INSTALLER \"cd \/opt\/kubespray; git describe --abbrev=0 --tags\")\"/g" ./ci/check.sh
+
+# Image versions
+kubespray_defaults=$(curl -sfL "https://raw.githubusercontent.com/kubernetes-sigs/kubespray/v$kubespray_version/roles/download/defaults/main.yml" | grep -e "^[a-zA-Z].*_version: " -e "^[a-zA-Z].*image_tag: ")
+set_kubespray_img_version "$kubespray_defaults" "k8s-dns-node-cache" "nodelocaldns_version"
+set_kubespray_img_version "$kubespray_defaults" "controller" "ingress_nginx_controller_image_tag"
+set_kubespray_img_version "$kubespray_defaults" "local-volume-provisioner" "local_volume_provisioner_version"
+for img in cainjector controller webhook; do
+    set_kubespray_img_version "$kubespray_defaults" "cert-manager-$img" "cert_manager_version"
+done
 
 sed -i "s/istio_version:.*/istio_version: $(get_version github_release istio/istio)/g" ./playbooks/krd-vars.yml
 sed -i "s/cfssl_version:.*/cfssl_version: $(get_version github_release cloudflare/cfssl)/g" ./playbooks/krd-vars.yml
