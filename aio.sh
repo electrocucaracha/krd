@@ -77,7 +77,7 @@ if [[ $krd_actions_list == *k8s* ]]; then
     chmod og-wx ~/.ssh/authorized_keys
 
     hostname=$(hostname)
-    ip_address=$(hostname -I | awk '{print $2}')
+    ip_address=$(hostname -I | awk '{print $1}')
     sudo tee inventory/hosts.ini <<EOL
 [all]
 $hostname
