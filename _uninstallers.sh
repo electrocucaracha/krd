@@ -19,7 +19,7 @@ fi
 
 # uninstall_k8s() - Uninstall Kubernetes cluster
 function uninstall_k8s {
-    _install_kubespray
+    [ ! -d $kubespray_folder ] && _install_kubespray
     _run_ansible_cmd "$kubespray_folder/reset.yml --extra-vars \"reset_confirmation=yes\"" "destroy-kubernetes.log"
 }
 
