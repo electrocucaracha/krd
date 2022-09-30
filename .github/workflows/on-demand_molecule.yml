@@ -21,6 +21,25 @@ on:
       - submitted
 
 jobs:
+  bootstrap:
+    name: Pull python dependencies
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - uses: syphar/restore-virtualenv@v1.2
+        id: cache-tox-molecule
+        with:
+          requirement_files: test-requirements.txt
+          custom_virtualenv_dir: .tox/molecule
+      - uses: syphar/restore-pip-download-cache@v1
+        if: steps.cache-tox-molecule.outputs.cache-hit != 'true'
+        with:
+          requirement_files: test-requirements.txt
+      - run: pip install -r test-requirements.txt
+        if: steps.cache-tox-molecule.outputs.cache-hit != 'true'
   changes:
     runs-on: ubuntu-latest
     if: >-
@@ -29,6 +48,7 @@ jobs:
         github.event.review.state == 'approved'
       ) ||
       github.event_name != 'pull_request_review'
+    needs: bootstrap
     outputs:
       nfd: ${{ steps.filter.outputs.nfd }}
       pmem: ${{ steps.filter.outputs.pmem }}
@@ -65,30 +85,10 @@ jobs:
             criproxy:
               - *reqs
               - 'playbooks/roles/criproxy/**'
-  bootstrap:
-    name: Pull python dependencies
-    runs-on: macos-12
-    needs: changes
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-      - uses: syphar/restore-virtualenv@v1.2
-        id: cache-tox-molecule
-        with:
-          requirement_files: test-requirements.txt
-          custom_virtualenv_dir: .tox/molecule
-      - uses: syphar/restore-pip-download-cache@v1
-        if: steps.cache-tox-molecule.outputs.cache-hit != 'true'
-        with:
-          requirement_files: test-requirements.txt
-      - run: pip install -r test-requirements.txt
-        if: steps.cache-tox-molecule.outputs.cache-hit != 'true'
   check-nfd-molecule:
     name: Check NFD Ansible role with Molecule tests
     if: needs.changes.outputs.nfd == 'true'
-    needs: bootstrap
+    needs: changes
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
@@ -98,7 +98,7 @@ jobs:
   check-pmem-molecule:
     name: Check Pmem Ansible role with Molecule tests
     if: needs.changes.outputs.pmem == 'true'
-    needs: bootstrap
+    needs: changes
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
@@ -108,7 +108,7 @@ jobs:
   check-qat-driver-molecule:
     name: Check QAT driver Ansible role with Molecule tests
     if: needs.changes.outputs.qat_driver == 'true'
-    needs: bootstrap
+    needs: changes
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
@@ -118,7 +118,7 @@ jobs:
   check-sriov-cni-molecule:
     name: Check SR-IOV CNI Ansible role with Molecule tests
     if: needs.changes.outputs.sriov_cni == 'true'
-    needs: bootstrap
+    needs: changes
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
@@ -128,7 +128,7 @@ jobs:
   check-sriov-plugin-molecule:
     name: Check SR-IOV Plugin Ansible role with Molecule tests
     if: needs.changes.outputs.sriov_plugin == 'true'
-    needs: bootstrap
+    needs: changes
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
@@ -138,7 +138,7 @@ jobs:
   check-criproxy-molecule:
     name: Check criproxy Ansible role with Molecule tests
     if: needs.changes.outputs.criproxy == 'true'
-    needs: bootstrap
+    needs: changes
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v3
