@@ -14,7 +14,7 @@ ansible-core==2.13.4
     # via
     #   ansible
     #   ansible-lint
-ansible-lint==6.7.0
+ansible-lint==6.8.0
     # via -r test-requirements.in
 arrow==1.2.3
     # via jinja2-time
@@ -24,7 +24,7 @@ attrs==22.1.0
     #   pytest
 binaryornot==0.4.4
     # via cookiecutter
-black==22.8.0
+black==22.10.0
     # via ansible-lint
 bracex==2.3.post1
     # via wcmatch
@@ -55,9 +55,7 @@ cryptography==38.0.1
 distro==1.7.0
     # via selinux
 enrich==1.2.7
-    # via
-    #   ansible-lint
-    #   molecule
+    # via molecule
 filelock==3.8.0
     # via ansible-lint
 idna==3.4
@@ -163,7 +161,7 @@ tomli==2.0.1
     # via
     #   black
     #   pytest
-typing-extensions==4.3.0
+typing-extensions==4.4.0
     # via
     #   black
     #   rich
