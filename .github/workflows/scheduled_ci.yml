@@ -17,12 +17,13 @@ on:
 
 jobs:
   check-dashboard-and-metrics:
-    name: Check All-in-One setup in a Ubuntu Bionic virtual environment
+    name: Check All-in-One setup in a Ubuntu Focal virtual environment
     runs-on: ubuntu-20.04
     env:
       KRD_DEBUG: true
       KRD_DASHBOARD_ENABLED: true
-      KRD_CONTAINER_RUNTIME: containerd
+      KRD_ANSIBLE_DEBUG: true
+      KRD_CONTAINER_RUNTIME: crio
     steps:
       - uses: actions/checkout@v3
       - name: Deploy services
