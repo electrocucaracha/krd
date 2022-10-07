@@ -27,7 +27,7 @@ on:
 
 jobs:
   check-multus:
-    name: Check Multus CNI in an Ubuntu Bionic All-in-One setup
+    name: Check Multus CNI in an Ubuntu Focal All-in-One setup
     if: >-
       (
         github.event_name == 'pull_request_review' &&
