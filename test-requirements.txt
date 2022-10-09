@@ -60,7 +60,7 @@ filelock==3.8.0
     # via ansible-lint
 idna==3.4
     # via requests
-importlib-resources==5.9.0
+importlib-resources==5.10.0
     # via jsonschema
 iniconfig==1.1.1
     # via pytest
@@ -173,7 +173,7 @@ yamllint==1.28.0
     # via
     #   -r test-requirements.in
     #   ansible-lint
-zipp==3.8.1
+zipp==3.9.0
     # via importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
