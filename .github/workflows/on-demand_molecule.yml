@@ -25,8 +25,8 @@ jobs:
     name: Pull python dependencies
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v3.1.0
+      - uses: actions/setup-python@v4.3.0
         with:
           python-version: '3.x'
       - uses: syphar/restore-virtualenv@v1.2
@@ -57,8 +57,8 @@ jobs:
       sriov_plugin: ${{ steps.filter.outputs.sriov_plugin }}
       criproxy: ${{ steps.filter.outputs.criproxy }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: dorny/paths-filter@v2
+      - uses: actions/checkout@v3.1.0
+      - uses: dorny/paths-filter@v2.10.2
         if: ${{ !env.ACT }}
         id: filter
         with:
@@ -91,7 +91,7 @@ jobs:
     needs: changes
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
       - uses: ./.github/actions/molecule-test
         with:
           tox-env: nfd
@@ -101,7 +101,7 @@ jobs:
     needs: changes
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
       - uses: ./.github/actions/molecule-test
         with:
           tox-env: pmem
@@ -111,7 +111,7 @@ jobs:
     needs: changes
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
       - uses: ./.github/actions/molecule-test
         with:
           tox-env: qat_driver
@@ -121,7 +121,7 @@ jobs:
     needs: changes
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
       - uses: ./.github/actions/molecule-test
         with:
           tox-env: sriov_cni
@@ -131,7 +131,7 @@ jobs:
     needs: changes
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
       - uses: ./.github/actions/molecule-test
         with:
           tox-env: sriov_plugin
@@ -141,7 +141,7 @@ jobs:
     needs: changes
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3.1.0
       - uses: ./.github/actions/molecule-test
         with:
           tox-env: criproxy

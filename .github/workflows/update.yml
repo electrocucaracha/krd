@@ -24,8 +24,8 @@ jobs:
       pull-requests: write  # for technote-space/create-pr-action to create a PR
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: technote-space/create-pr-action@v2
+      - uses: actions/checkout@v3.1.0
+      - uses: technote-space/create-pr-action@v2.1.3
         with:
           EXECUTE_COMMANDS: |
             ./ci/update_versions.sh
@@ -38,8 +38,8 @@ jobs:
   check-dictionary:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: technote-space/create-pr-action@v2
+      - uses: actions/checkout@v3.1.0
+      - uses: technote-space/create-pr-action@v2.1.3
         with:
           EXECUTE_COMMANDS: |
             sudo apt-get update
