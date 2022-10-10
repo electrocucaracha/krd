@@ -9,7 +9,7 @@
 ##############################################################################
 
 - name: Create NFD k8s resources based on templates
-  k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'nfd-{{ item }}.yaml.j2') }}"  # noqa no-jinja-nesting
   with_items:

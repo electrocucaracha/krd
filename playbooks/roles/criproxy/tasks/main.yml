@@ -22,7 +22,7 @@
     - ansible_facts.services["apparmor.service"] is defined
 
 - name: Disable SELinux in all nodes
-  selinux:
+  selinux:  # noqa fqcn
     state: disabled
   when:
     - ansible_os_family == "RedHat"

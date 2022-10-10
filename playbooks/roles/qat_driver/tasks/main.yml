@@ -21,13 +21,16 @@
   ansible.builtin.debug:
     var: intel_qat_version
 
-- include_tasks: cleanup.yml
+- name: Clean up
+  ansible.builtin.include_tasks: cleanup.yml
   when: intel_qat_version.stdout != qat_driver_version
 
-- include_tasks: bootstrap.yml
+- name: Bootstrap QAT drivers source code
+  ansible.builtin.include_tasks: bootstrap.yml
   when: intel_qat_version.stdout != qat_driver_version
 
-- include_tasks: build.yml
+- name: Build QAT drivers source code
+  ansible.builtin.include_tasks: build.yml
   when: intel_qat_version.stdout != qat_driver_version
 
 - name: Create qat_service systemd wrapper
