@@ -13,8 +13,6 @@ name: Scheduled Versions and Dictionary verification
 on:
   schedule:
     - cron: '0 0 * * *'
-  pull_request:
-    types: [opened, synchronize, reopened, closed]
   workflow_dispatch:
 
 jobs:
