@@ -9,7 +9,7 @@
 ##############################################################################
 
 - name: Deploy cfssl binaries
-  include_tasks: bootstrap.yml
+  ansible.builtin.include_tasks: bootstrap.yml
   vars:
     binary: "{{ item }}"
   with_items:
@@ -33,21 +33,21 @@
     - test-config
 
 - name: Create a PMEM namespace
-  k8s:
+  kubernetes.core.k8s:
     name: "{{ pmem_namespace }}"
     api_version: v1
     kind: Namespace
     state: present
 
 - name: Get PMEM CSI node secret
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     name: pmem-csi-intel-com-controller-secret
     namespace: "{{ pmem_namespace }}"
   register: node_secret
 
 - name: Get PMEM CSI registry secret
-  k8s_info:
+  kubernetes.core.k8s_info:
     kind: Secret
     name: pmem-csi-intel-com-controller-secret
     namespace: "{{ pmem_namespace }}"
@@ -72,12 +72,12 @@
     - registry_secret.resources | length == 0
 
 - name: Create PMEM CSI for LVM driver
-  k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'pmem-csi-lvm.yaml.j2') }}"
 
 - name: Create PMEM storage classes
-  k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('file', 'pmem-{{ item }}.yaml') }}"  # noqa no-jinja-nesting
   with_items:

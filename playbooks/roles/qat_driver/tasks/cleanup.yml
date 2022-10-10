@@ -34,13 +34,13 @@
 
 - name: Remove intel_qat kernel module dependencies
   become: true
-  modprobe:
+  community.general.modprobe:
     name: "{{ item }}"
     state: absent
   loop: "{{ intel_qat_deps.stdout_lines }}"
 
 - name: Remove kernel module
   become: true
-  modprobe:
+  community.general.modprobe:
     name: intel_qat
     state: absent

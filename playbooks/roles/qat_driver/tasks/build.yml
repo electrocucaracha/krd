@@ -41,7 +41,7 @@
 
 - name: Build qat driver
   become: true
-  make:
+  community.general.make:
     chdir: "{{ qat_driver_dest }}"
     target: install
   when: not adf_ctl.stat.exists

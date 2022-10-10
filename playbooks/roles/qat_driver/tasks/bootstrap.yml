@@ -10,7 +10,7 @@
 
 - name: Install SuSE build tools
   become: true
-  zypper:
+  community.general.zypper:
     name: devel_C_C++
     state: present
     type: pattern
