@@ -14,7 +14,7 @@ ansible-core==2.13.4
     # via
     #   ansible
     #   ansible-lint
-ansible-lint==6.8.0
+ansible-lint==6.8.1
     # via -r test-requirements.in
 arrow==1.2.3
     # via jinja2-time
@@ -52,7 +52,7 @@ cookiecutter==2.1.1
     # via molecule
 cryptography==38.0.1
     # via ansible-core
-distro==1.7.0
+distro==1.8.0
     # via selinux
 enrich==1.2.7
     # via molecule
