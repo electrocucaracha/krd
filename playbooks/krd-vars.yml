@@ -10,13 +10,13 @@
 
 go_version: 1.15.3
 kubespray_version: v2.20.0
-istio_version: 1.15.1
+istio_version: 1.15.2
 cfssl_version: 1.6.3
 sonobuoy_version: 0.56.10
 mitogen_version: 0.2.10
 
 # Knative versions
-kn_version: knative-v1.7.0
+kn_version: knative-v1.7.1
 knative_serving_version: knative-v1.7.2
 knative_eventing_version: v0.34.3
 ## Knative Sandbox versions
@@ -26,11 +26,11 @@ net_certmanager_version: v0.34.0
 
 octant_version: 0.25.1
 kube-ovn_version: v1.10.6
-prometheus-operator_version: v0.60.0
+prometheus-operator_version: v0.60.1
 kubevirt_version: v0.55.2
 virtink_version: v0.11.0
 kubesphere_version: v3.3.0
-metallb_version: v0.13.5
+metallb_version: v0.13.6
 
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"

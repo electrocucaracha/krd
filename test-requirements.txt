@@ -10,7 +10,7 @@ ansible-compat==2.2.1
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.13.4
+ansible-core==2.13.5
     # via
     #   ansible
     #   ansible-lint
@@ -50,7 +50,7 @@ commonmark==0.9.1
     # via rich
 cookiecutter==2.1.1
     # via molecule
-cryptography==38.0.1
+cryptography==38.0.2
     # via ansible-core
 distro==1.8.0
     # via selinux
