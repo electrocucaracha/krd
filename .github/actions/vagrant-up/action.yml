@@ -100,9 +100,8 @@ runs:
         RELEASE: ${{ inputs.release }}
         VBOX_CONTROLLER: ${{ inputs.vbox-controller }}
         TEST_MULTINODE: ${{ inputs.test-multinode }}
-      run: |
-        cd ci
-        ./bootstrap.sh
+      working-directory: ./ci
+      run: ./bootstrap.sh
     - name: Deploy Kubernetes Cluster
       shell: bash
       env:
@@ -122,9 +121,8 @@ runs:
         KRD_DOCKER_VERSION: ${{ inputs.docker-version }}
         KRD_CONTAINERD_VERSION: ${{ inputs.containerd-version }}
         KRD_NETWORK_PLUGIN: ${{ inputs.network-plugin }}
-      run: |
-        cd ci
-        ./provision_installer.sh
+      working-directory: ./ci
+      run: ./provision_installer.sh
     - name: Run Assertions
       shell: bash
       env:
@@ -139,6 +137,5 @@ runs:
         KRD_CRUN_ENABLED: ${{ inputs.crun-enabled }}
         KRD_GVISOR_ENABLED: ${{ inputs.gvisor-enabled }}
         RUN_BENCHMARKS: ${{ inputs.run-benchmarks }}
-      run: |
-        cd ci
-        ./check.sh
+      working-directory: ./ci
+      run: ./check.sh
