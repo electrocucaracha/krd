@@ -58,7 +58,7 @@ jobs:
       criproxy: ${{ steps.filter.outputs.criproxy }}
     steps:
       - uses: actions/checkout@v3.1.0
-      - uses: dorny/paths-filter@v2.10.2
+      - uses: dorny/paths-filter@v2.11.0
         if: ${{ !env.ACT }}
         id: filter
         with:
