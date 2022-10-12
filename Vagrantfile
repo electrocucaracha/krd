@@ -136,9 +136,6 @@ Vagrant.configure("2") do |config|
     v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     # https://docs.oracle.com/en/virtualization/virtualbox/6.0/user/network_performance.html
     v.customize ["modifyvm", :id, "--nictype1", "virtio", "--cableconnected1", "on"]
-    # https://bugs.launchpad.net/cloud-images/+bug/1829625/comments/2
-    v.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
-    v.customize ["modifyvm", :id, "--uartmode1", "file", File::NULL]
     # Enable nested paging for memory management in hardware
     v.customize ["modifyvm", :id, "--nestedpaging", "on"]
     # Use large pages to reduce Translation Lookaside Buffers usage
