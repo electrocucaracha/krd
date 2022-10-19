@@ -18,11 +18,11 @@ mitogen_version: 0.2.10
 # Knative versions
 kn_version: knative-v1.7.1
 knative_serving_version: knative-v1.7.2
-knative_eventing_version: v0.34.3
+knative_eventing_version: v0.35.0
 ## Knative Sandbox versions
-net_kourier_version: knative-v1.7.0
-net_istio_version: v0.34.0
-net_certmanager_version: v0.34.0
+net_kourier_version: knative-v1.8.0
+net_istio_version: v0.35.0
+net_certmanager_version: v0.35.0
 
 octant_version: 0.25.1
 kube-ovn_version: v1.10.6
