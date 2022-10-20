@@ -1,6 +1,6 @@
 ansible # GPLv3
 ansible-lint # MIT
-molecule # MIT
+molecule!=4.0.2 # MIT
 molecule-vagrant # MIT
 python-vagrant # MIT
 pytest-testinfra # Apache-2.0
