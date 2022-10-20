@@ -16,8 +16,8 @@ sonobuoy_version: 0.56.10
 mitogen_version: 0.2.10
 
 # Knative versions
-kn_version: knative-v1.7.1
-knative_serving_version: knative-v1.7.2
+kn_version: knative-v1.8.0
+knative_serving_version: knative-v1.8.0
 knative_eventing_version: v0.35.0
 ## Knative Sandbox versions
 net_kourier_version: knative-v1.8.0
