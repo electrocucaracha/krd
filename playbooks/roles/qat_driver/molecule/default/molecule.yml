@@ -39,5 +39,3 @@ provisioner:
   name: ansible
 verifier:
   name: testinfra
-  lint:
-    name: flake8
