@@ -146,7 +146,7 @@ rich==12.6.0
     #   molecule
 ruamel-yaml==0.17.21
     # via ansible-lint
-ruamel-yaml-clib==0.2.6
+ruamel-yaml-clib==0.2.7
     # via ruamel-yaml
 selinux==0.2.1
     # via molecule-vagrant
