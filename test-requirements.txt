@@ -172,7 +172,7 @@ yamllint==1.28.0
     # via
     #   -r test-requirements.in
     #   ansible-lint
-zipp==3.9.0
+zipp==3.10.0
     # via importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
