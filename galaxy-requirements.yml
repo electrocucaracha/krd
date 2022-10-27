@@ -18,9 +18,9 @@ roles:
   - name: andrewrothstein.gcc-toolbox
     version: v1.1.9
   - name: andrewrothstein.kind
-    version: v1.2.2
+    version: v1.2.3
   - name: andrewrothstein.kubectl
-    version: v1.2.2
+    version: v1.2.3
 
 collections:
   - name: community.kubernetes
