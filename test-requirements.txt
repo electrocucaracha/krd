@@ -6,7 +6,7 @@
 #
 ansible==6.5.0
     # via -r test-requirements.in
-ansible-compat==2.2.1
+ansible-compat==2.2.3
     # via
     #   ansible-lint
     #   molecule
@@ -14,7 +14,7 @@ ansible-core==2.13.5
     # via
     #   ansible
     #   ansible-lint
-ansible-lint==6.8.4
+ansible-lint==6.8.5
     # via -r test-requirements.in
 arrow==1.2.3
     # via jinja2-time
@@ -90,6 +90,7 @@ mypy-extensions==0.4.3
     # via black
 packaging==21.3
     # via
+    #   ansible-compat
     #   ansible-core
     #   ansible-lint
     #   molecule
