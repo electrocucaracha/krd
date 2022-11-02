@@ -17,13 +17,9 @@ source _functions.sh
 # shellcheck source=tests/_assertions.sh
 source _assertions.sh
 
-# Setup
-
-# Test
 info "===== Test started ====="
+trap 'info "===== Test completed ====="' EXIT
 
-falco_log="$(kubectl logs -l app.kubernetes.io/name=falco -n falco-system)"
+falco_log="$(kubectl logs -l app.kubernetes.io/name=falco -n falco-system -c falco)"
 assert_non_empty "$falco_log" "Falco's logs are disabled"
-assert_contains "$falco_log" 'Starting internal webserver' "Falco internal server hasn't started"
-
-info "===== Test completed ====="
+assert_contains "$falco_log" 'Starting health webserver' "Falco internal server hasn't started"
