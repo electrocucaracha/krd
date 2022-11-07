@@ -101,7 +101,7 @@ pathspec==0.10.1
     #   yamllint
 pkgutil-resolve-name==1.3.10
     # via jsonschema
-platformdirs==2.5.2
+platformdirs==2.5.3
     # via black
 pluggy==1.0.0
     # via
