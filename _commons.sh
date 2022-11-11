@@ -158,11 +158,11 @@ EOF
                 echo "    unqualified: false" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
                 echo "    mirrors:" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
                 for mirror in ${KRD_REGISTRY_MIRRORS_LIST//,/ }; do
-                    echo "    - location: ${mirror#*//}" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+                    echo "      - location: ${mirror#*//}" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
                     if [[ ${mirror#*//} == *"$KRD_INSECURE_REGISTRIES_LIST"* ]]; then
-                        echo "      insecure: true" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+                        echo "        insecure: true" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
                     else
-                        echo "      insecure: false" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+                        echo "        insecure: false" | tee --append "$krd_inventory_folder/group_vars/k8s-cluster.yml"
                     fi
                 done
             fi
