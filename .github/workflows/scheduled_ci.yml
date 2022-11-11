@@ -36,7 +36,7 @@ jobs:
 
           attempt_counter=0
           max_attempts=5
-          until wget -qO- http://127.0.0.1 | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' | grep -q "Kubernetes Dashboard"; do
+          until curl -s "http://$(ip route get 8.8.8.8 | grep "^8." | awk '{ print $7 }')" | perl -l -0777 -ne 'print $1 if /<title.*?>\s*(.*?)\s*<\/title/si' | grep -q "Kubernetes Dashboard"; do
               if [ ${attempt_counter} -eq ${max_attempts} ];then
                   echo "Max attempts reached"
                   exit 1
