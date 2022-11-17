@@ -186,7 +186,7 @@ function run_kubescape {
     if ! command -v kubescape >/dev/null; then
         curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | bash
     fi
-    kubescape scan framework nsa --exclude-namespaces kube-system,kube-public --silent
+    kubescape scan framework nsa --exclude-namespaces kube-system,kube-public
 }
 
 # run_sonobuoy - Installs and runs Sonobuoy conformance tool
