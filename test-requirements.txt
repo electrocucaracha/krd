@@ -6,7 +6,7 @@
 #
 ansible==6.6.0
     # via -r test-requirements.in
-ansible-compat==2.2.4
+ansible-compat==2.2.5
     # via
     #   ansible-lint
     #   molecule
