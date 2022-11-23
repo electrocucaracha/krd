@@ -73,7 +73,7 @@ jinja2==3.1.2
     #   molecule-vagrant
 jinja2-time==0.2.0
     # via cookiecutter
-jsonschema==4.17.0
+jsonschema==4.17.1
     # via
     #   ansible-compat
     #   ansible-lint
