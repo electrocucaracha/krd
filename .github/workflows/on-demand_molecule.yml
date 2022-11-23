@@ -50,12 +50,7 @@ jobs:
       github.event_name != 'pull_request_review'
     needs: bootstrap
     outputs:
-      nfd: ${{ steps.filter.outputs.nfd }}
-      pmem: ${{ steps.filter.outputs.pmem }}
-      qat_driver: ${{ steps.filter.outputs.qat_driver }}
-      sriov_cni: ${{ steps.filter.outputs.sriov_cni }}
-      sriov_plugin: ${{ steps.filter.outputs.sriov_plugin }}
-      criproxy: ${{ steps.filter.outputs.criproxy }}
+      environments: ${{ steps.filter.outputs.changes }}
     steps:
       - uses: actions/checkout@v3.1.0
       - uses: dorny/paths-filter@v2.11.1
@@ -85,63 +80,18 @@ jobs:
             criproxy:
               - *reqs
               - 'playbooks/roles/criproxy/**'
-  check-nfd-molecule:
-    name: Check NFD Ansible role with Molecule tests
-    if: needs.changes.outputs.nfd == 'true'
+  check-molecule:
+    name: Check Ansible role with Molecule tests
     needs: changes
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJSON(needs.changes.outputs.environments) }}
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v3.1.0
+        if: matrix.environment != 'reqs'
       - uses: ./.github/actions/molecule-test
+        if: matrix.environment != 'reqs'
         with:
-          tox-env: nfd
-  check-pmem-molecule:
-    name: Check Pmem Ansible role with Molecule tests
-    if: needs.changes.outputs.pmem == 'true'
-    needs: changes
-    runs-on: macos-12
-    steps:
-      - uses: actions/checkout@v3.1.0
-      - uses: ./.github/actions/molecule-test
-        with:
-          tox-env: pmem
-  check-qat-driver-molecule:
-    name: Check QAT driver Ansible role with Molecule tests
-    if: needs.changes.outputs.qat_driver == 'true'
-    needs: changes
-    runs-on: macos-12
-    steps:
-      - uses: actions/checkout@v3.1.0
-      - uses: ./.github/actions/molecule-test
-        with:
-          tox-env: qat_driver
-  check-sriov-cni-molecule:
-    name: Check SR-IOV CNI Ansible role with Molecule tests
-    if: needs.changes.outputs.sriov_cni == 'true'
-    needs: changes
-    runs-on: macos-12
-    steps:
-      - uses: actions/checkout@v3.1.0
-      - uses: ./.github/actions/molecule-test
-        with:
-          tox-env: sriov_cni
-  check-sriov-plugin-molecule:
-    name: Check SR-IOV Plugin Ansible role with Molecule tests
-    if: needs.changes.outputs.sriov_plugin == 'true'
-    needs: changes
-    runs-on: macos-12
-    steps:
-      - uses: actions/checkout@v3.1.0
-      - uses: ./.github/actions/molecule-test
-        with:
-          tox-env: sriov_plugin
-  check-criproxy-molecule:
-    name: Check criproxy Ansible role with Molecule tests
-    if: needs.changes.outputs.criproxy == 'true'
-    needs: changes
-    runs-on: macos-12
-    steps:
-      - uses: actions/checkout@v3.1.0
-      - uses: ./.github/actions/molecule-test
-        with:
-          tox-env: criproxy
+          tox-env: ${{ matrix.environment }}
