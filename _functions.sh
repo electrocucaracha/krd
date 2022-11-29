@@ -66,7 +66,8 @@ function run_k8s_iperf {
 
     # Perform bechmarking
     kubectl get nodes -o wide | tee "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
-    kubectl get pods -n iperf3 -o wide | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+    kubectl get pods -n iperf3 -o wide -l app=iperf3-client | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
+    kubectl get services -n iperf3 | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
     for pod in $(kubectl get pods -n iperf3 -l app=iperf3-client -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}'); do
         ip=$(kubectl get pod "$pod" -n iperf3 -o jsonpath='{.status.hostIP}')
         hostname=$(kubectl get nodes -o jsonpath="{range .items[?(@.status.addresses[0].address == \"$ip\")]}{.metadata.name}{end}")

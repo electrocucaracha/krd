@@ -1,0 +1,221 @@
+- name: controller
+  os:
+    name: ubuntu
+    release: focal
+  networks:
+    - name: public-net
+      ip: "10.10.16.3"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+  roles:
+    - kube-master
+    - etcd
+- name: ubuntu16
+  os:
+    name: ubuntu
+    release: xenial
+  networks:
+    - name: public-net
+      ip: "10.10.16.4"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+  roles:
+    - kube-node
+- name: ubuntu18
+  os:
+    name: ubuntu
+    release: bionic
+  networks:
+    - name: public-net
+      ip: "10.10.16.5"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+  roles:
+    - kube-node
+- name: ubuntu20
+  os:
+    name: ubuntu
+    release: focal
+  networks:
+    - name: public-net
+      ip: "10.10.16.6"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+  roles:
+    - kube-node
+- name: opensuse15
+  os:
+    name: opensuse
+    release: leap
+  networks:
+    - name: public-net
+      ip: "10.10.16.7"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+  roles:
+    - kube-node
+- name: opensuse42
+  os:
+    name: opensuse
+    release: tumbleweed
+  networks:
+    - name: public-net
+      ip: "10.10.16.8"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+  roles:
+    - kube-node
+- name: fedora34
+  os:
+    name: fedora
+    release: 34
+  networks:
+    - name: public-net
+      ip: "10.10.16.9"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+  roles:
+    - kube-node
+- name: fedora35
+  os:
+    name: fedora
+    release: 35
+  networks:
+    - name: public-net
+      ip: "10.10.16.10"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+  roles:
+    - kube-node
+- name: centos7
+  os:
+    name: centos
+    release: 7
+  networks:
+    - name: public-net
+      ip: "10.10.16.11"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+  roles:
+    - kube-node
+- name: centos8
+  os:
+    name: centos
+    release: 8
+  networks:
+    - name: public-net
+      ip: "10.10.16.12"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+  roles:
+    - kube-node
