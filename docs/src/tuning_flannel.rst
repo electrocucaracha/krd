@@ -18,13 +18,13 @@ Tuning Kubernetes Flannel CNI deployment
 +--------------+--------------------+
 | Name         | Version            |
 +==============+====================+
-| Ubuntu       | Ubuntu 18.04.6 LTS |
+| Ubuntu       | Ubuntu 20.04.4 LTS |
 +--------------+--------------------+
-| Kernel       | 4.15.0-189-generic |
+| Kernel       | 5.4.0-122-generic  |
 +--------------+--------------------+
-| Kubernetes   | v1.23.7            |
+| Kubernetes   | v1.24.6            |
 +--------------+--------------------+
-| Flannel      | v0.17.0            |
+| Flannel      | v1.1.0             |
 +--------------+--------------------+
 
 `Flannel CNI <https://www.cni.dev/plugins/current/meta/flannel/>`_ is a simple
@@ -55,21 +55,21 @@ Backend Results
 +------------------------+--------------------+----------------+----------------+
 | Connection             | Measurement        | host-gw        | VXLAN          |
 +========================+====================+================+================+
-| worker01 -> controller | Bitrate(sender)    | 25.1 Gbits/sec | 4.11 Gbits/sec |
+| worker01 -> controller | Bitrate(sender)    | 17.9 Gbits/sec | 5.18 Gbits/sec |
 |                        +--------------------+----------------+----------------+
-|                        | Transfer(sender)   | 29.3 GBytes    | 4.78 GBytes    |
+|                        | Transfer(sender)   | 20.8 GBytes    | 6.03 GBytes    |
 |                        +--------------------+----------------+----------------+
-|                        | Bitrate(receiver)  | 25.1 Gbits/sec | 4.09 Gbits/sec |
+|                        | Bitrate(receiver)  | 17.9 Gbits/sec | 5.17 Gbits/sec |
 |                        +--------------------+----------------+----------------+
-|                        | Transfer(receiver) | 29.3 GBytes    | 4.78 GBytes    |
+|                        | Transfer(receiver) | 20.8 GBytes    | 6.02 GBytes    |
 +------------------------+--------------------+----------------+----------------+
-| worker02 -> controller | Bitrate(sender)    | 25.1 Gbits/sec | 4.19 Gbits/sec |
+| worker02 -> controller | Bitrate(sender)    | 16.6 Gbits/sec | 4.90 Gbits/sec |
 |                        +--------------------+----------------+----------------+
-|                        | Transfer(sender)   | 29.2 GBytes    | 4.88 GBytes    |
+|                        | Transfer(sender)   | 19.3 GBytes    | 5.71 GBytes    |
 |                        +--------------------+----------------+----------------+
-|                        | Bitrate(receiver)  | 25.0 Gbits/sec | 4.18 Gbits/sec |
+|                        | Bitrate(receiver)  | 16.6 Gbits/sec | 4.90 Gbits/sec |
 |                        +--------------------+----------------+----------------+
-|                        | Transfer(receiver) | 29.2 GBytes    | 4.88 GBytes    |
+|                        | Transfer(receiver) | 19.3 GBytes    | 5.70 GBytes    |
 +------------------------+--------------------+----------------+----------------+
 
 ***********************************************
@@ -79,22 +79,32 @@ Tuning Kubernetes using different Linux Distros
 Every Linux distribution can provide a kernel version optimized for running
 certain workloads. The following results were obtained running the previous
 benchmark function with different Linux distributions. This setup is  using
-*Host Gateway* as Flannel CNI backend in a Kubernetes v1.23.7 cluster.
+*Host Gateway* as Flannel CNI backend in a Kubernetes v1.24.6 cluster.
 
 Setup
 #####
 
-+------------------+-------+--------+--------------------+-----------------------------+-------------------+
-| Hostname         | vCPUs | Memory | Distro             | Kernel                      | Container Runtime |
-+==================+=======+========+====================+=============================+===================+
-| controller       | 1     | 4 GB   | Ubuntu 18.04.6 LTS | 4.15.0-189-generic          | docker://20.10.11 |
-+------------------+-------+--------+--------------------+-----------------------------+-------------------+
-| ubuntu18         | 1     | 4 GB   | Ubuntu 18.04.6 LTS | 4.15.0-189-generic          | docker://20.10.11 |
-+------------------+-------+--------+--------------------+-----------------------------+-------------------+
-| ubuntu20         | 1     | 4 GB   | Ubuntu 20.04.4 LTS | 5.4.0-122-generic           | docker://20.10.11 |
-+------------------+-------+--------+--------------------+-----------------------------+-------------------+
-| opensuse42       | 1     | 4 GB   | openSUSE Leap 42.3 | 4.4.179-99-default          | docker://18.9.1   |
-+------------------+-------+--------+--------------------+-----------------------------+-------------------+
++------------------+-------+--------+--------------------+-----------------------------+--------------------+
+| Hostname         | vCPUs | Memory | Distro             | Kernel                      | Container Runtime  |
++==================+=======+========+====================+=============================+====================+
+| ubuntu16         | 1     | 4 GB   | Ubuntu 16.04.7 LTS | 4.4.0-210-generic           | containerd://1.5.8 |
++------------------+-------+--------+--------------------+-----------------------------+--------------------+
+| ubuntu18         | 1     | 4 GB   | Ubuntu 18.04.6 LTS | 4.15.0-189-generic          | containerd://1.5.8 |
++------------------+-------+--------+--------------------+-----------------------------+--------------------+
+| ubuntu20         | 1     | 4 GB   | Ubuntu 20.04.4 LTS | 5.4.0-122-generic           | containerd://1.5.8 |
++------------------+-------+--------+--------------------+-----------------------------+--------------------+
+| opensuse15       | 1     | 4 GB   | openSUSE Leap 15.4 | 5.14.21-150400.22-default   | containerd://1.5.8 |
++------------------+-------+--------+--------------------+-----------------------------+--------------------+
+| opensuse42       | 1     | 4 GB   | openSUSE Leap 42.3 | 4.4.179-99-default          | containerd://1.5.8 |
++------------------+-------+--------+--------------------+-----------------------------+--------------------+
+| fedora34         | 1     | 4 GB   | Fedora 34          | 5.11.12-300.fc34.x86_64     | containerd://1.5.8 |
++------------------+-------+--------+--------------------+-----------------------------+--------------------+
+| fedora35         | 1     | 4 GB   | Fedora Linux 35    | 5.14.10-300.fc35.x86_64     | containerd://1.5.8 |
++------------------+-------+--------+--------------------+-----------------------------+--------------------+
+| centos7          | 1     | 4 GB   | CentOS Linux 7     | 3.10.0-1160.71.1.el7.x86_64 | containerd://1.5.8 |
++------------------+-------+--------+--------------------+-----------------------------+--------------------+
+| centos8          | 1     | 4 GB   | CentOS Linux 8     | 4.18.0-348.7.1.el8_5.x86_64 | containerd://1.5.8 |
++------------------+-------+--------+--------------------+-----------------------------+--------------------+
 
 Distro Results
 ##############
@@ -102,9 +112,9 @@ Distro Results
 +------------+----------------+-------------+
 | Hostname   | Bitrate        | Transfer    |
 +============+================+=============+
-| ubuntu18   | 20.0 Gbits/sec | 23.3 GBytes |
+| centos7    | 17.7 Gbits/sec | 20.6 GBytes |
 +------------+----------------+-------------+
-| ubuntu20   | 17.9 Gbits/sec | 15.3 GBytes |
+| ubuntu18   | 20.4 Gbits/sec | 23.8 GBytes |
 +------------+----------------+-------------+
-| opensuse42 | 20.0 Gbits/sec | 23.3 GBytes |
+| ubuntu20   | 15.4 Gbits/sec | 18.0 GBytes |
 +------------+----------------+-------------+

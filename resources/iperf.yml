@@ -30,7 +30,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: node-role.kubernetes.io/master
+                  - key: node-role.kubernetes.io/control-plane
                     operator: Exists
       tolerations:
         - key: node-role.kubernetes.io/master
@@ -38,11 +38,15 @@ spec:
           effect: NoSchedule
       containers:
         - name: iperf3-server
-          image: networkstatic/iperf3
-          args: ['-s']
+          image: clearlinux/iperf
+          args: ['--server', '--port', '5201']
           ports:
             - containerPort: 5201
-              name: server
+              name: udp5201
+              protocol: UDP
+            - containerPort: 5201
+              name: tcp5201
+              protocol: TCP
 ---
 apiVersion: v1
 kind: Service
@@ -55,7 +59,7 @@ spec:
   ports:
     - protocol: TCP
       port: 5201
-      targetPort: server
+      targetPort: tcp5201
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -78,9 +82,30 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
               - matchExpressions:
-                  - key: node-role.kubernetes.io/master
+                  - key: node-role.kubernetes.io/control-plane
                     operator: DoesNotExist
       containers:
         - name: iperf3-client
-          image: networkstatic/iperf3
+          image: clearlinux/iperf
           command: ['/bin/sh', '-c', 'sleep infinity']
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: iperf3-server-access
+spec:
+  podSelector:
+    matchLabels:
+      app: iperf3-server
+  policyTypes:
+    - Ingress
+  ingress:
+    - ports:
+        - port: 5201
+          protocol: UDP
+        - port: 5201
+          protocol: TCP
+      from:
+        - podSelector:
+            matchLabels:
+              app: iperf3-client
