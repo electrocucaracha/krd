@@ -142,6 +142,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_CILIUM_TUNNEL_MODE               | disabled       | Encapsulation mode for communication between nodes (disabled, vxlan, geneve)    |
 | KRD_CILIUM_NATIVE_ROUTING_CIDR       | 10.233.64.0/18 | CIDR in which native routing can be performed.                                  |
 | KRD_CILIUM_KUBE_PROXY_REPLACEMENT    | probe          | Specifies the type of kube-proxy replacement.                                   |
+| KRD_CILIUM_ENABLE_BPF_MASQUERADE     | true           | Enable/Disable native IP masquerade support in eBPF                             |
 | KRD_KUBE_PROXY_MODE                  | ipvs           | Choose kube-proxy mode (iptables, ipvs)                                         |
 | KRD_DOWNLOAD_RUN_ONCE                | true           | Download images and binaries only once and then push them to the cluster nodes  |
 | KRD_DOWNLOAD_LOCALHOST               | true           | Make localhost the download delegate                                            |

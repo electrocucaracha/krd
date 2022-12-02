@@ -7,6 +7,7 @@ Autoscaler
 BACKEND
 balancer
 blockquote
+BPF
 brightgreen
 Bugfixes
 CentOS
@@ -29,6 +30,7 @@ Distros
 DNS
 DNSCache
 dpdk
+eBPF
 electrocucaracha
 Falco
 filesystem
