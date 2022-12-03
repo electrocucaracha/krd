@@ -51,8 +51,10 @@ function install_local_registry {
 function _install_krew_plugin {
     local plugin=$1
 
-    # shellcheck disable=SC1091
-    source /etc/profile.d/krew_path.sh
+    if ! kubectl plugin list | grep -q kubectl-krew; then
+        return
+    fi
+
     if kubectl krew search "$plugin" | grep -q "${plugin}.*no"; then
         kubectl krew install "$plugin"
     fi
