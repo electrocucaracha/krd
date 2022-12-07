@@ -86,7 +86,7 @@ Tuning Kubernetes using different Linux Distros
 
 Every Linux distribution can provide a kernel version optimized for running
 certain workloads. The following results were obtained running the previous
-benchmark function with different Linux distributions. This setup is  using
+benchmark function with different Linux distributions. This setup is using
 *Host Gateway* as Flannel CNI backend in a Kubernetes v1.24.6 cluster.
 
 Setup
@@ -120,9 +120,9 @@ Distro Results
 +------------+----------------+-------------+
 | Hostname   | Bitrate        | Transfer    |
 +============+================+=============+
-| centos7    | 17.7 Gbits/sec | 20.6 GBytes |
-+------------+----------------+-------------+
 | ubuntu18   | 20.4 Gbits/sec | 23.8 GBytes |
 +------------+----------------+-------------+
 | ubuntu20   | 15.4 Gbits/sec | 18.0 GBytes |
++------------+----------------+-------------+
+| centos7    | 17.7 Gbits/sec | 20.6 GBytes |
 +------------+----------------+-------------+
