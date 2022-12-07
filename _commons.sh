@@ -132,6 +132,14 @@ EOF
         echo "Dockershim has been deprecated in <1.24"
         exit 1
     fi
+    if [ "$KRD_NETWORK_PLUGIN" == "calico" ]; then
+        if [ "$KRD_CALICO_IPIP_MODE" == "Never" ] && [ "$KRD_CALICO_VXLAN_MODE" == "Never" ]; then
+            export KRD_CALICO_NETWORK_BACKEND=bird
+        elif [ "$KRD_CALICO_IPIP_MODE" != "Never" ] && [ "$KRD_CALICO_VXLAN_MODE" != "Never" ]; then
+            echo "Calico encapsulation mode was misconfigured"
+            exit 1
+        fi
+    fi
     export KRD_DOWNLOAD_LOCALHOST=$KRD_DOWNLOAD_RUN_ONCE
     export KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE
     envsubst <k8s-cluster.tpl >"$krd_inventory_folder/group_vars/k8s-cluster.yml"

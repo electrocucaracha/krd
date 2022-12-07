@@ -20,6 +20,7 @@ contiv
 contrib
 CRI
 criproxy
+CrossSubnet
 CRUN
 CSI
 cx
@@ -50,6 +51,7 @@ hugetlbpage
 img
 initVagrant
 IOV
+IPIP
 iptables
 IPVS
 ipvsadm
