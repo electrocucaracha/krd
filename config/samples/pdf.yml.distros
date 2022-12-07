@@ -109,35 +109,13 @@
       device: 0
   roles:
     - kube-node
-- name: opensuse42
-  os:
-    name: opensuse
-    release: tumbleweed
-  networks:
-    - name: public-net
-      ip: "10.10.16.8"
-  memory: 4096
-  cpus: 1
-  storage_controllers:
-    - name: Virtual I/O Device SCSI controller
-      type: virtio-scsi
-      controller: VirtIO
-  volumes:
-    - name: sdb
-      size: 25
-      mount: /var/lib/docker/
-      controller: Virtual I/O Device SCSI controller
-      port: 1
-      device: 0
-  roles:
-    - kube-node
 - name: fedora34
   os:
     name: fedora
     release: 34
   networks:
     - name: public-net
-      ip: "10.10.16.9"
+      ip: "10.10.16.8"
   memory: 4096
   cpus: 1
   storage_controllers:
@@ -159,7 +137,7 @@
     release: 35
   networks:
     - name: public-net
-      ip: "10.10.16.10"
+      ip: "10.10.16.9"
   memory: 4096
   cpus: 1
   storage_controllers:
@@ -181,7 +159,7 @@
     release: 7
   networks:
     - name: public-net
-      ip: "10.10.16.11"
+      ip: "10.10.16.10"
   memory: 4096
   cpus: 1
   storage_controllers:
@@ -203,7 +181,7 @@
     release: 8
   networks:
     - name: public-net
-      ip: "10.10.16.12"
+      ip: "10.10.16.11"
   memory: 4096
   cpus: 1
   storage_controllers:
