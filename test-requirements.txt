@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible==7.0.0
+ansible==7.1.0
     # via -r test-requirements.in
 ansible-compat==2.2.6
     # via
@@ -28,7 +28,7 @@ black==22.10.0
     # via ansible-lint
 bracex==2.3.post1
     # via wcmatch
-certifi==2022.9.24
+certifi==2022.12.7
     # via requests
 cffi==1.15.1
     # via cryptography
@@ -86,7 +86,7 @@ molecule-vagrant==1.0.0
     # via -r test-requirements.in
 mypy-extensions==0.4.3
     # via black
-packaging==21.3
+packaging==22.0
     # via
     #   ansible-compat
     #   ansible-core
@@ -97,7 +97,7 @@ pathspec==0.10.2
     # via
     #   black
     #   yamllint
-platformdirs==2.5.4
+platformdirs==2.6.0
     # via black
 pluggy==1.0.0
     # via
@@ -107,8 +107,6 @@ pycparser==2.21
     # via cffi
 pygments==2.13.0
     # via rich
-pyparsing==3.0.9
-    # via packaging
 pyrsistent==0.19.2
     # via jsonschema
 pytest==7.2.0
