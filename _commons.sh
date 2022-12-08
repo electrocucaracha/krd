@@ -11,11 +11,20 @@
 set -o errexit
 set -o pipefail
 set -o nounset
-
-source defaults.env
-if [[ $KRD_DEBUG == "true" ]]; then
+if [[ ${KRD_DEBUG:-false} == "true" ]]; then
     set -o xtrace
 fi
+
+source defaults.env
+
+# Configuration values
+KRD_FOLDER="$(git rev-parse --show-toplevel)"
+export KRD_FOLDER
+
+export krd_inventory_folder=$KRD_FOLDER/inventory
+export krd_playbooks=$KRD_FOLDER/playbooks
+export krd_inventory=$krd_inventory_folder/hosts.ini
+export kubespray_folder=/opt/kubespray
 
 # _get_kube_version() - Get the Kubernetes version used or installed on the remote cluster
 function _get_kube_version {
@@ -63,6 +72,7 @@ function _install_kubespray {
             git checkout -b "${kubespray_version#"origin/"}" "$kubespray_version"
         fi
 
+        curl -fsSL http://bit.ly/install_pkg | PKG_COMMANDS_LIST="pip" bash
         PIP_CMD="sudo -E $(command -v pip)"
         if [[ "$(pip -V)" == *"python2"* ]] && command -v pip3; then
             PIP_CMD="sudo -E $(command -v pip3)"
@@ -389,35 +399,3 @@ function _delete_namespace {
         fi
     fi
 }
-
-# Requirements
-if ! command -v curl >/dev/null; then
-    # shellcheck disable=SC1091
-    source /etc/os-release || source /usr/lib/os-release
-    case ${ID,,} in
-    ubuntu | debian)
-        sudo apt-get update
-        sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 curl
-        ;;
-    esac
-fi
-if ! command -v bindep >/dev/null; then
-    curl -fsSL http://bit.ly/install_bin | bash
-else
-    pkgs="$(bindep -b || :)"
-    if [ "$pkgs" ]; then
-        curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
-    fi
-fi
-
-# Configuration values
-KRD_FOLDER="$(git rev-parse --show-toplevel)"
-export KRD_FOLDER
-
-export krd_inventory_folder=$KRD_FOLDER/inventory
-export krd_playbooks=$KRD_FOLDER/playbooks
-export krd_inventory=$krd_inventory_folder/hosts.ini
-export kubespray_folder=/opt/kubespray
-if [[ $KRD_DEBUG == "true" ]]; then
-    set -o xtrace
-fi

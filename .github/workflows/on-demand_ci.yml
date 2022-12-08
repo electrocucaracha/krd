@@ -116,5 +116,5 @@ jobs:
       - name: Install ShellSpec
         run: curl -fsSL https://github.com/shellspec/shellspec/releases/latest/download/shellspec-dist.tar.gz | tar -xz -C ..
       - name: Run Shellspec
-        shell: bash
-        run: ../shellspec/shellspec
+        shell: 'script -q -e -c "bash {0}"'
+        run: ../shellspec/shellspec --profile --xtrace
