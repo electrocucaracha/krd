@@ -182,9 +182,6 @@ cert_manager_version: "$KRD_CERT_MANAGER_VERSION"
 # Overlay Network Mode
 cilium_tunnel_mode: $KRD_CILIUM_TUNNEL_MODE
 
-# Allows to explicitly specify the IPv4 CIDR for native routing.
-cilium_native_routing_cidr: "$KRD_CILIUM_NATIVE_ROUTING_CIDR"
-
 # Enable native IP masquerade support in eBPF
 cilium_enable_bpf_masquerade: $KRD_CILIUM_ENABLE_BPF_MASQUERADE
 

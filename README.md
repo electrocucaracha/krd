@@ -140,7 +140,6 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_NETWORK_PLUGIN                   | flannel        | Choose network plugin (calico, canal, cilium, contiv, flannel, weave)           |
 | KRD_FLANNEL_BACKEND_TYPE             | host-gw        | Type of flannel backend to use (vxlan, host-gw, udp)                            |
 | KRD_CILIUM_TUNNEL_MODE               | disabled       | Encapsulation mode for communication between nodes (disabled, vxlan, geneve)    |
-| KRD_CILIUM_NATIVE_ROUTING_CIDR       | 10.233.64.0/18 | CIDR in which native routing can be performed.                                  |
 | KRD_CILIUM_KUBE_PROXY_REPLACEMENT    | probe          | Specifies the type of kube-proxy replacement.                                   |
 | KRD_CILIUM_ENABLE_BPF_MASQUERADE     | true           | Enable/Disable native IP masquerade support in eBPF                             |
 | KRD_CALICO_IPIP_MODE                 | Never          | Configures Calico IP in IP encapsulation (Always, Never, CrossSubnet)           |
