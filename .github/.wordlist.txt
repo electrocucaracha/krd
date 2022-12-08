@@ -7,6 +7,7 @@ Autoscaler
 BACKEND
 balancer
 blockquote
+BPF
 brightgreen
 Bugfixes
 CentOS
@@ -19,6 +20,7 @@ contiv
 contrib
 CRI
 criproxy
+CrossSubnet
 CRUN
 CSI
 cx
@@ -29,6 +31,7 @@ Distros
 DNS
 DNSCache
 dpdk
+eBPF
 electrocucaracha
 Falco
 filesystem
@@ -48,6 +51,7 @@ hugetlbpage
 img
 initVagrant
 IOV
+IPIP
 iptables
 IPVS
 ipvsadm

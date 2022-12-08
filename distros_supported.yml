@@ -26,9 +26,6 @@ ubuntu:
     name: generic/ubuntu2004
     version: "4.2.4"
 opensuse:
-  tumbleweed:
-    name: generic/opensuse42
-    version: "4.2.4"
   leap:
     name: generic/opensuse15
     version: "4.2.4"

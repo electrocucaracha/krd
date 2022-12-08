@@ -78,7 +78,8 @@ spec:
 EOL
 
 kubectl get vms
-[[ $PATH != *.krew* ]] && export PATH="$PATH:${KREW_ROOT:-$HOME/.krew}/bin"
+[ -d "${KREW_ROOT:-$HOME/.krew}/bin" ] && export PATH="$PATH:${KREW_ROOT:-$HOME/.krew}/bin"
+! kubectl plugin list | grep -q virt && kubectl krew install virt
 kubectl virt start testvm
 kubectl wait --for=condition=ready vmis testvm --timeout=5m >/dev/null
 vm_pod=$(kubectl get pods -o jsonpath='{.items[0].metadata.name}' | grep virt-launcher-testvm)

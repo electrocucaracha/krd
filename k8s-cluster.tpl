@@ -131,9 +131,6 @@ docker_version: "$KRD_DOCKER_VERSION"
 # Specify version of ContainerD to used (should be quoted string).
 containerd_version: "$KRD_CONTAINERD_VERSION"
 
-# Override auto-detection of MTU by providing an explicit value if needed.
-calico_mtu: 1500
-
 # Enable nodelocal to make pods reach out to the dns (core-dns) caching agent
 # running on the same node, thereby avoiding iptables DNAT rules and connection tracking.
 enable_nodelocaldns: $KRD_ENABLE_NODELOCALDNS
@@ -185,8 +182,17 @@ cert_manager_version: "$KRD_CERT_MANAGER_VERSION"
 # Overlay Network Mode
 cilium_tunnel_mode: $KRD_CILIUM_TUNNEL_MODE
 
-# Allows to explicitly specify the IPv4 CIDR for native routing.
-cilium_native_routing_cidr: "$KRD_CILIUM_NATIVE_ROUTING_CIDR"
+# Enable native IP masquerade support in eBPF
+cilium_enable_bpf_masquerade: $KRD_CILIUM_ENABLE_BPF_MASQUERADE
 
 # Kube Proxy Replacement mode (strict/probe/partial)
 cilium_kube_proxy_replacement: $KRD_CILIUM_KUBE_PROXY_REPLACEMENT
+
+# IP in IP encapsulation mode: "Always", "CrossSubnet", "Never"
+calico_ipip_mode: $KRD_CALICO_IPIP_MODE
+
+# VXLAN encapsulation mode: "Always", "CrossSubnet", "Never"
+calico_vxlan_mode: $KRD_CALICO_VXLAN_MODE
+
+# Calico network backend: "bird", "vxlan" or "none"
+calico_network_backend: $KRD_CALICO_NETWORK_BACKEND

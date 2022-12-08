@@ -45,8 +45,8 @@ function _uninstall_helm {
 function _uninstall_krew_plugin {
     local plugin=$1
 
-    # shellcheck disable=SC1091
-    source /etc/profile.d/krew_path.sh
+    [ -d "${KREW_ROOT:-$HOME/.krew}/bin" ] && export PATH="$PATH:${KREW_ROOT:-$HOME/.krew}/bin"
+    ! kubectl plugin list | grep -q krew && return
     if kubectl krew search "$plugin" | grep -q "${plugin}.*yes"; then
         kubectl krew uninstall "$plugin"
     fi

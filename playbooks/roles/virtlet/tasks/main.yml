@@ -39,7 +39,7 @@
     msg: "{{ kubectl_version.stdout }}"
 
 # NOTE: Deprecated kubectl --dry-run values(https://github.com/kubernetes/kubernetes/pull/105327)
-- name: Install image translations configmap | latest kubectl
+- name: Install image translations configmap
   ansible.builtin.shell: >
     set -o pipefail
 

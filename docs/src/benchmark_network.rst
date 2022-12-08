@@ -43,13 +43,13 @@ distributed in the following manner:
 +--------------+--------------------+
 | Kernel       | 4.15.0-189-generic |
 +--------------+--------------------+
-| Kubernetes   | v1.23.7            |
+| Kubernetes   | v1.24.6            |
 +--------------+--------------------+
-| Flannel      | v0.17.0            |
+| Flannel      | v1.1.0             |
 +--------------+--------------------+
 | Calico       | v3.22.3            |
 +--------------+--------------------+
-| Cilium       | v1.11.3            |
+| Cilium       | v1.12.1            |
 +--------------+--------------------+
 
 All the previous configuration uses VXLAN as overlay mode. This setup can be
@@ -140,6 +140,7 @@ the desired CNI.
 
     export KRD_FLANNEL_BACKEND_TYPE=vxlan
     export KRD_CILIUM_TUNNEL_MODE=vxlan
+    export KRD_CALICO_VXLAN_MODE=Always
     for KRD_NETWORK_PLUGIN in calico cilium flannel; do
         export KRD_NETWORK_PLUGIN
         ./krd_command.sh -a uninstall_k8s -a install_k8s -a run_k8s_iperf
@@ -148,27 +149,35 @@ the desired CNI.
 Results
 #######
 
-+------------------------+--------------------+----------------+----------------+----------------+
-| Connection             | Measurement        | Flannel        | Calico         | Cilium         |
-+========================+====================+================+================+================+
-| worker01 -> controller | Bitrate(sender)    | 4.11 Gbits/sec | 3.55 Gbits/sec | 4.20 Gbits/sec |
-|                        +--------------------+----------------+----------------+----------------+
-|                        | Transfer(sender)   | 4.78 GBytes    | 4.13 GBytes    | 4.88 GBytes    |
-|                        +--------------------+----------------+----------------+----------------+
-|                        | Bitrate(receiver)  | 4.09 Gbits/sec | 3.53 Gbits/sec | 4.18 Gbits/sec |
-|                        +--------------------+----------------+----------------+----------------+
-|                        | Transfer(receiver) | 4.78 GBytes    | 4.12 GBytes    | 4.88 GBytes    |
-+------------------------+--------------------+----------------+----------------+----------------+
-| worker02 -> controller | Bitrate(sender)    | 4.19 Gbits/sec | 3.12 Gbits/sec | 4.07 Gbits/sec |
-|                        +--------------------+----------------+----------------+----------------+
-|                        | Transfer(sender)   | 4.88 GBytes    | 3.63 GBytes    | 4.74 GBytes    |
-|                        +--------------------+----------------+----------------+----------------+
-|                        | Bitrate(receiver)  | 4.18 Gbits/sec | 3.11 Gbits/sec | 4.05 Gbits/sec |
-|                        +--------------------+----------------+----------------+----------------+
-|                        | Transfer(receiver) | 4.88 GBytes    | 3.63 GBytes    | 4.05 GBytes    |
-+------------------------+--------------------+----------------+----------------+----------------+
++------------------------+---------------------------+----------------+----------------+----------------+
+| Connection             | Measurement               | Flannel        | Calico         | Cilium         |
++========================+===========================+================+================+================+
+| worker01 -> controller | Bitrate(sender)           | 4.18 Gbits/sec | 2.50 Gbits/sec | 4.09 Gbits/sec |
+|                        +---------------------------+----------------+----------------+----------------+
+|                        | Transfer(sender)          | 4.87 GBytes    | 2.91 GBytes    | 4.76 GBytes    |
+|                        +---------------------------+----------------+----------------+----------------+
+|                        | CPU Utilization(sender)   | 13.4%          | 43.0%          | 10.7%          |
+|                        +---------------------------+----------------+----------------+----------------+
+|                        | Bitrate(receiver)         | 4.18 Gbits/sec | 2.50 Gbits/sec | 4.08 Gbits/sec |
+|                        +---------------------------+----------------+----------------+----------------+
+|                        | Transfer(receiver)        | 4.86 GBytes    | 2.91 GBytes    | 4.75 GBytes    |
+|                        +---------------------------+----------------+----------------+----------------+
+|                        | CPU Utilization(receiver) | 70.3%          | 55.5%          | 63.9%          |
++------------------------+---------------------------+----------------+----------------+----------------+
+| worker02 -> controller | Bitrate(sender)           | 4.20 Gbits/sec | 2.22 Gbits/sec | 3.72 Gbits/sec |
+|                        +---------------------------+----------------+----------------+----------------+
+|                        | Transfer(sender)          | 4.89 GBytes    | 2.59 GBytes    | 4.33 GBytes    |
+|                        +---------------------------+----------------+----------------+----------------+
+|                        | CPU Utilization(sender)   | 14.5%          | 31.5%          | 8.7%           |
+|                        +---------------------------+----------------+----------------+----------------+
+|                        | Bitrate(receiver)         | 4.19 Gbits/sec | 2.22 Gbits/sec | 3.72 Gbits/sec |
+|                        +---------------------------+----------------+----------------+----------------+
+|                        | Transfer(receiver)        | 4.88 GBytes    | 2.59 GBytes    | 4.33 GBytes    |
+|                        +---------------------------+----------------+----------------+----------------+
+|                        | CPU Utilization(receiver) | 70.9%          | 47.1%          | 59.1%          |
++------------------------+---------------------------+----------------+----------------+----------------+
 
 This execution uses **kube-proxy** configured with *IPVS* mode.
 
 .. note::
-   EAST-WEST traffic goes from *worker01* to *controller*
+   EAST-WEST traffic goes from *worker01* and/or *worker02* to *controller*

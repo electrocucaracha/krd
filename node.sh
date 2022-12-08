@@ -88,11 +88,11 @@ function install_deps {
     source /etc/os-release || source /usr/lib/os-release
     case ${ID,,} in
     ubuntu | debian)
-        if ! command -v curl; then
+        if ! command -v curl >/dev/null; then
             sudo apt-get update
             sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 curl
         fi
-        if ! command -v deborphan; then
+        if ! command -v deborphan >/dev/null; then
             sudo apt-get update
             sudo apt-get install -y -qq -o=Dpkg::Use-Pty=0 deborphan
         fi
@@ -100,17 +100,17 @@ function install_deps {
         sudo apt-get clean
         ;;
     rhel | centos | fedora)
-        if command -v yum; then
+        if command -v yum >/dev/null; then
             yum clean all --verbose
             sudo rm -rf /var/cache/yum
-            if command -v package-cleanup; then
+            if command -v package-cleanup >/dev/null; then
                 for arg in leaves leaves orphans; do
                     package-cleanup --quiet "--$arg"
-                    package-cleanup --quiet "--$arg" | xargs sudo yum remove -y
+                    package-cleanup --quiet "--$arg" | xargs sudo yum remove -y || :
                 done
             fi
         fi
-        if command -v dnf; then
+        if command -v dnf >/dev/null; then
             sudo dnf clean all
             eval "sudo dnf remove $(sudo dnf repoquery --installonly --latest-limit=-2 -q)"
             sudo dnf clean packages
@@ -118,6 +118,9 @@ function install_deps {
         if [ "${VERSION_ID}" == "7" ]; then
             PKG_PYTHON_MAJOR_VERSION=2
             export PKG_PYTHON_MAJOR_VERSION
+        fi
+        if ! command -v iptables >/dev/null; then
+            sudo -H -E "$(command -v dnf || command -v yum)" -q -y install iptables-legacy
         fi
         ;;
     *suse)
@@ -148,7 +151,7 @@ function install_deps {
     fi
 
     # Free up space
-    if command -v deborphan; then
+    if command -v deborphan >/dev/null; then
         eval "sudo apt-get remove --purge -y $(deborphan)" || :
     fi
     sudo journalctl --disk-usage
@@ -169,13 +172,13 @@ function disable_k8s_ports {
     local kubelet_ports=(6443 10250 10259 10257)
 
     for port in "${kubelet_ports[@]}"; do
-        if command -v netstat && netstat -atun | grep -q "$port"; then
+        if command -v netstat >/dev/null && netstat -atun | grep -q "$port"; then
             echo "Port $port is already used by other non-kubelet service"
             exit 1
         fi
     done
 
-    if command -v firewall-cmd && systemctl is-active --quiet firewalld; then
+    if command -v firewall-cmd >/dev/null && systemctl is-active --quiet firewalld; then
         for port in "${kubelet_ports[@]}"; do
             sudo firewall-cmd --zone=public --permanent --add-port="$port/tcp"
         done
@@ -191,7 +194,7 @@ function disable_k8s_ports {
 
 # create_pmem_namespaces() - Creates Persistent Memory namespaces
 function create_pmem_namespaces {
-    if lsblk -t | grep pmem && command -v ndctl && command -v jq; then
+    if lsblk -t | grep pmem && command -v ndctl >/dev/null && command -v jq >/dev/null; then
         for namespace in $(ndctl list | jq -r '((. | arrays | .[]), . | objects) | select(.mode == "raw") | .dev'); do
             sudo ndctl create-namespace -f -e "$namespace" --mode=memory || true
         done
@@ -203,7 +206,7 @@ function create_pmem_namespaces {
 
 # enable_nvdimm_mixed_mode() - Enable NVDIMM mixed mode (configuration for MM:AD is set to 50:50)
 function enable_nvdimm_mixed_mode {
-    if command -v ipmctl && [[ "$(sudo ipmctl show -dimm | awk -F'|' 'FNR==3{print $4}')" == *"Healthy"* ]]; then
+    if command -v ipmctl >/dev/null && [[ "$(sudo ipmctl show -dimm | awk -F'|' 'FNR==3{print $4}')" == *"Healthy"* ]]; then
         sudo ipmctl create -goal memorymode=50 persistentmemorytype=appdirect
         sudo ipmctl create -goal memorymode=50 persistentmemorytype=appdirectnotinterleaved
     fi
@@ -218,7 +221,7 @@ function change_ip_precedence {
 
 # set_dns_server - Change default DNS server configuration
 function set_dns_server {
-    if command -v systemd-resolve && sudo systemd-resolve --status --interface eth0; then
+    if command -v systemd-resolve >/dev/null && sudo systemd-resolve --status --interface eth0; then
         sudo systemd-resolve --interface eth0 --set-dns 1.1.1.1 --flush-caches
         sudo systemd-resolve --status --interface eth0
     fi
