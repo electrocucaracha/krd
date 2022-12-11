@@ -6,7 +6,7 @@
 #
 ansible==7.1.0
     # via -r test-requirements.in
-ansible-compat==2.2.6
+ansible-compat==2.2.7
     # via
     #   ansible-lint
     #   molecule
@@ -24,7 +24,7 @@ attrs==22.1.0
     #   pytest
 binaryornot==0.4.4
     # via cookiecutter
-black==22.10.0
+black==22.12.0
     # via ansible-lint
 bracex==2.3.post1
     # via wcmatch
@@ -93,7 +93,7 @@ packaging==22.0
     #   ansible-lint
     #   molecule
     #   pytest
-pathspec==0.10.2
+pathspec==0.10.3
     # via
     #   black
     #   yamllint
