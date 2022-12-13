@@ -34,7 +34,7 @@ jobs:
         with:
           requirement_files: test-requirements.txt
           custom_virtualenv_dir: .tox/molecule
-      - uses: syphar/restore-pip-download-cache@v1
+      - uses: syphar/restore-pip-download-cache@v1.2
         if: steps.cache-tox-molecule.outputs.cache-hit != 'true'
         with:
           requirement_files: test-requirements.txt
