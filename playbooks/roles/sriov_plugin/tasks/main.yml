@@ -11,7 +11,7 @@
 - name: Create SR-IOV k8s resources
   kubernetes.core.k8s:
     state: present
-    definition: "{{ lookup('template', '{{ item }}.yaml.j2') }}"  # noqa no-jinja-nesting
+    definition: "{{ lookup('template', '{{ item }}.yaml.j2') }}"  # noqa jinja[invalid]
     namespace: kube-system
   with_items:
     - configMap

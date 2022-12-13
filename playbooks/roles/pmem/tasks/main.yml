@@ -79,7 +79,7 @@
 - name: Create PMEM storage classes
   kubernetes.core.k8s:
     state: present
-    definition: "{{ lookup('file', 'pmem-{{ item }}.yaml') }}"  # noqa no-jinja-nesting
+    definition: "{{ lookup('file', 'pmem-{{ item }}.yaml') }}"  # noqa jinja[invalid]
   with_items:
     - storageclass-ext4
     - storageclass-xfs
