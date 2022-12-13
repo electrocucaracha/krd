@@ -25,7 +25,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.1.0
+      - uses: actions/checkout@v3.2.0
       - name: Update diagram
         uses: githubocto/repo-visualizer@0.8.2
         with:
