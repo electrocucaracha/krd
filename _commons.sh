@@ -46,6 +46,7 @@ function _install_kubespray {
     kube_version=$(_get_kube_version)
     mitogen_version=$(_get_version mitogen)
 
+    curl -fsSL http://bit.ly/install_pkg | PKG_COMMANDS_LIST="bindep" bash
     # NOTE: bindep prints a multiline's output
     # shellcheck disable=SC2005
     pkgs="$(echo "$(bindep kubespray -b)")"
