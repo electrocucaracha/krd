@@ -18,7 +18,7 @@ ansible-lint==6.10.0
     # via -r test-requirements.in
 arrow==1.2.3
     # via jinja2-time
-attrs==22.1.0
+attrs==22.2.0
     # via
     #   jsonschema
     #   pytest
