@@ -143,7 +143,7 @@ ruamel-yaml==0.17.21
     # via ansible-lint
 ruamel-yaml-clib==0.2.7
     # via ruamel-yaml
-selinux==0.2.1
+selinux==0.3.0
     # via molecule-vagrant
 six==1.16.0
     # via python-dateutil
