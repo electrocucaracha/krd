@@ -107,7 +107,7 @@ pycparser==2.21
     # via cffi
 pygments==2.13.0
     # via rich
-pyrsistent==0.19.2
+pyrsistent==0.19.3
     # via jsonschema
 pytest==7.2.0
     # via pytest-testinfra
