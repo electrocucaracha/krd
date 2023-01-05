@@ -11,24 +11,24 @@
 centos:
   7:
     name: generic/centos7
-    version: "4.1.0"
+    version: "4.2.6"
   8:
     name: generic/centos8
-    version: "4.1.0"
+    version: "4.2.6"
 ubuntu:
   xenial:
     name: generic/ubuntu1604
-    version: "4.1.0"
+    version: "4.2.6"
   bionic:
     name: generic/ubuntu1804
-    version: "4.1.0"
+    version: "4.2.6"
   focal:
     name: generic/ubuntu2004
-    version: "4.1.0"
+    version: "4.2.6"
 opensuse:
   leap:
     name: generic/opensuse15
-    version: "4.1.0"
+    version: "4.2.6"
 fedora:
   34:
     name: fedora/34-cloud-base
