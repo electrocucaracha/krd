@@ -11,7 +11,6 @@ BPF
 brightgreen
 Bugfixes
 CentOS
-CIDR
 CNI
 codebase
 config
@@ -130,7 +129,7 @@ VirtualBox
 VM
 VMs
 vmwrapper
-vxlan
+VXLAN
 WEBHOOK
 WIP
 YAML
