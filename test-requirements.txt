@@ -82,7 +82,7 @@ molecule==4.0.4
     # via
     #   -r test-requirements.in
     #   molecule-vagrant
-molecule-vagrant==1.0.0
+molecule-vagrant==2.0.0
     # via -r test-requirements.in
 mypy-extensions==0.4.3
     # via black
@@ -134,7 +134,7 @@ requests==2.28.1
     # via cookiecutter
 resolvelib==0.8.1
     # via ansible-core
-rich==13.0.0
+rich==13.0.1
     # via
     #   ansible-lint
     #   enrich
