@@ -86,7 +86,7 @@ molecule-vagrant==2.0.0
     # via -r test-requirements.in
 mypy-extensions==0.4.3
     # via black
-packaging==22.0
+packaging==23.0
     # via
     #   ansible-compat
     #   ansible-core
