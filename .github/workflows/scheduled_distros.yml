@@ -35,7 +35,7 @@ jobs:
           done
 
           length=${#output}
-          echo "::set-output name=matrix::[${output::length-1}]"
+          echo "matrix=[${output::length-1}]" >> "$GITHUB_OUTPUT"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
   check-all-distros:

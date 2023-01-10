@@ -99,10 +99,12 @@ following instruction:
 
     vagrant up
 
+<!-- textlint-disable -->
 > Note: Vagrant will utilize the default configuration values defined in
 [*this*](config/default.yml) file to setup the VM nodes of the cluster. Those
 values can be overwritten creating a valid  *pdf.yml* file in
 the [config](config) folder.
+<!-- textlint-enable -->`
 
 An additional *installer* VM will be used for provisioning the Kubernetes
 cluster. Several [environment variables](README.md#environment-variables)
