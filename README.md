@@ -68,11 +68,13 @@ its provisioning.
 
 ## Override Default Cluster setup
 
+<!-- textlint-disable -->
 Vagrant uses the [default configuration](config/default.yml) to define
 the Virtual Machines used by the Kubernetes cluster, this
 configuration can be overwritten defining the *config/pdf.yml* file.
 The **diagram** tox environment generates the *krd.png* file to
 visualize the topology of the cluster.
+<!-- textlint-enable -->
 
     tox -e diagram
 
