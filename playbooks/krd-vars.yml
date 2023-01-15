@@ -18,15 +18,15 @@ mitogen_version: 0.2.10
 # Knative versions
 kn_version: knative-v1.8.1
 knative_serving_version: knative-v1.8.3
-knative_eventing_version: v0.35.4
+knative_eventing_version: vMax attempts reached
 ## Knative Sandbox versions
 net_kourier_version: knative-v1.8.1
-net_istio_version: v0.35.1
-net_certmanager_version: v0.35.1
+net_istio_version: vMax attempts reached
+net_certmanager_version: vMax attempts reached
 
 octant_version: 0.25.1
 kube-ovn_version: v1.11.0
-prometheus-operator_version: v0.62.0
+prometheus-operator_version: vMax attempts reached
 kubevirt_version: v0.58.0
 virtink_version: v0.13.0
 kubesphere_version: v3.3.1

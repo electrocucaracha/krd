@@ -109,7 +109,7 @@ pygments==2.14.0
     # via rich
 pyrsistent==0.19.3
     # via jsonschema
-pytest==7.2.0
+pytest==7.2.1
     # via pytest-testinfra
 pytest-testinfra==7.0.0
     # via -r test-requirements.in
@@ -134,7 +134,7 @@ requests==2.28.2
     # via cookiecutter
 resolvelib==0.8.1
     # via ansible-core
-rich==13.0.1
+rich==13.1.0
     # via
     #   ansible-lint
     #   enrich
