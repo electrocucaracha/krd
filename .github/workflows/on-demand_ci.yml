@@ -105,7 +105,7 @@ jobs:
           SHFMT_OPTS: -i 4 -s
         with:
           sh_checker_shellcheck_disable: true
-          sh_checker_exclude: "playbooks/roles/pmem/ spec/commons_spec.sh"
+          sh_checker_exclude: "playbooks/roles/pmem/ spec/"
   check-shellspec:
     name: Run BDD shell specs
     if: needs.changes.outputs.scripts == 'true'
