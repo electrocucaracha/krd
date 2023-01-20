@@ -33,9 +33,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: /
           VALIDATE_KUBERNETES_KUBEVAL: false
-          VALIDATE_PYTHON_PYLINT: false
-          PYTHON_FLAKE8_CONFIG_FILE: tox.ini
-          VALIDATE_PYTHON_MYPY: false
+          KUBERNETES_KUBECONFORM_OPTIONS: '-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml'
   check-tox:
     name: Check syntax (tox)
     runs-on: ubuntu-latest
