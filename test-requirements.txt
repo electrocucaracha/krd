@@ -95,7 +95,7 @@ packaging==23.0
     #   ansible-lint
     #   molecule
     #   pytest
-pathspec==0.10.3
+pathspec==0.11.0
     # via
     #   black
     #   yamllint
