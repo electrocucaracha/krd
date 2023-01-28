@@ -12,7 +12,7 @@ go_version: 1.15.3
 kubespray_version: v2.21.0
 istio_version: 1.16.1
 cfssl_version: 1.6.3
-sonobuoy_version: 0.56.14
+sonobuoy_version: 0.56.15
 mitogen_version: 0.2.10
 
 # Knative versions
