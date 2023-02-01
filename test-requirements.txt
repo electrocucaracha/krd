@@ -4,15 +4,16 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible==7.1.0
+ansible==7.2.0
     # via -r test-requirements.in
-ansible-compat==2.2.7
+ansible-compat==3.0.0
     # via
     #   ansible-lint
     #   molecule
 ansible-core==2.14.2
     # via
     #   ansible
+    #   ansible-compat
     #   ansible-lint
 ansible-lint==6.11.0
     # via -r test-requirements.in
