@@ -10,7 +10,7 @@
 
 roles:
   - name: geerlingguy.docker
-    version: 6.0.4
+    version: 6.1.0
   - name: geerlingguy.repo-epel
     version: 3.1.1
   - name: geerlingguy.pip
