@@ -87,7 +87,7 @@ molecule==4.0.4
     #   molecule-vagrant
 molecule-vagrant==2.0.0
     # via -r test-requirements.in
-mypy-extensions==0.4.3
+mypy-extensions==1.0.0
     # via black
 packaging==23.0
     # via
