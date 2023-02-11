@@ -26,8 +26,6 @@
 
 - name: Install Node Feature Discovery add-on
   hosts: localhost
-  collections:
-    - community.kubernetes
   tags: nfd
   roles:
     - nfd
@@ -47,8 +45,6 @@
 
 - name: Install Persistent Memory add-on
   hosts: localhost
-  collections:
-    - community.kubernetes
   pre_tasks:
     - name: Load krd variables
       ansible.builtin.include_vars:
