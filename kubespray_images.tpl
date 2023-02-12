@@ -1,7 +1,7 @@
 registry.k8s.io/coredns/coredns:v1.8.6
 registry.k8s.io/cpa/cluster-proportional-autoscaler-amd64:1.8.5
 registry.k8s.io/dns/k8s-dns-node-cache:1.21.1
-registry.k8s.io/ingress-nginx/controller:v1.3.1
+registry.k8s.io/ingress-nginx/controller:
 registry.k8s.io/kube-apiserver:$kube_version
 registry.k8s.io/kube-controller-manager:$kube_version
 registry.k8s.io/kube-proxy:$kube_version
