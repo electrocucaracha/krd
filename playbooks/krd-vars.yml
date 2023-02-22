@@ -30,7 +30,7 @@ prometheus-operator_version: v0.63.0
 kubevirt_version: v0.58.1
 virtink_version: v0.14.0
 kubesphere_version: v3.3.2
-metallb_version: v0.13.7
+metallb_version: v0.13.9
 
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
