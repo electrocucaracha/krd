@@ -70,6 +70,7 @@
   when:
     - node_secret.resources | length == 0
     - registry_secret.resources | length == 0
+  changed_when: true
 
 - name: Create PMEM CSI for LVM driver
   kubernetes.core.k8s:

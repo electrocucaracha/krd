@@ -33,6 +33,7 @@
     chdir: "{{ qat_driver_dest }}"
   register: configure
   when: not configure_log.stat.exists
+  changed_when: true
 
 - name: Check if there is a adf_ctl binary
   ansible.builtin.stat:

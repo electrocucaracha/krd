@@ -36,6 +36,7 @@
             "debug": true
           }
     - name: Configure docker client
+      when: lookup('env', 'http_proxy') != "fooproxy" or lookup('env', 'https_proxy') != "fooproxy" or lookup('env', 'no_proxy') != "fooproxy"
       block:
         - name: Create docker config folder
           ansible.builtin.file:
@@ -58,7 +59,6 @@
                   }
                 }
               }
-      when: lookup('env', 'http_proxy') != "fooproxy" or lookup('env', 'https_proxy') != "fooproxy" or lookup('env', 'no_proxy') != "fooproxy"
     - name: Install CRIU packages
       ansible.builtin.package:
         name: criu

@@ -1,26 +1,27 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2019
+# Copyright (c) 2019,2023
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-- name: Get qat plugin pod name
-  ansible.builtin.shell: |
-    set -o pipefail
-    /usr/local/bin/kubectl get pods | grep intel-qat-plugin | awk '{print $1}'
-  args:
-    executable: /bin/bash
-  register: intel_qat_plugin_pod
-  changed_when: false
+
+- name: Remove the PyYAML package
+  ansible.builtin.package:
+    name: python3-yaml
+    state: absent
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install kubernetes python package
+  ansible.builtin.pip:
+    name: kubernetes
 
 - name: Delete qat plugin daemonset
-  ansible.builtin.command: "/usr/local/bin/kubectl delete daemonsets intel-qat-plugin --now --force --ignore-not-found"
-  changed_when: false
-
-- name: Wait for destroying qat plugin
-  ansible.builtin.command: "/usr/local/bin/kubectl rollout status daemonsets/intel-qat-plugin --timeout=5m"
-  changed_when: false
+  kubernetes.core.k8s:
+    state: absent
+    api_version: v1
+    kind: DaemonSet
+    name: intel-qat-plugin

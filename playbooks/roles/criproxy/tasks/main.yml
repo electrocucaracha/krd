@@ -39,6 +39,9 @@
 
 - name: Create dockershim service
   become: true
+  when:
+    - kubelet_env_stat.stat.exists
+    - ansible_facts.services["docker.service"] is defined
   block:
     - name: Remove leftovers
       ansible.builtin.file:
@@ -72,9 +75,6 @@
         path: "{{ cri_socket_path }}"
         delay: 5
         timeout: 600
-  when:
-    - kubelet_env_stat.stat.exists
-    - ansible_facts.services["docker.service"] is defined
 
 - name: Create CRIProxy binary folder
   ansible.builtin.file:
@@ -92,7 +92,10 @@
     var: criproxy_stat
 
 - name: Download CRIproxy package
-  ansible.builtin.command: curl -Ls -o {{ criproxy_dest }}/criproxy {{ criproxy_url }}  # noqa command-instead-of-module
+  ansible.builtin.get_url:
+    url: "{{ criproxy_url }}"
+    dest: "{{ criproxy_dest }}/criproxy"
+    mode: '0755'
   when: not criproxy_stat.stat.exists
 
 - name: Set criproxy execution permissions

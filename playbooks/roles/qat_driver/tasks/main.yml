@@ -44,6 +44,7 @@
     - Start qat_service service
 
 - name: Configure number of processes per qat device
+  when: qat_plugin_mode == "kernel"
   block:
     - name: Get qat devices
       ansible.builtin.shell: >
@@ -69,4 +70,3 @@
     - name: Restart qat services
       ansible.builtin.command: /usr/local/bin/adf_ctl restart
       changed_when: false
-  when: qat_plugin_mode == "kernel"

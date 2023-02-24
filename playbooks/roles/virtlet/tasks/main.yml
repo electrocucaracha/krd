@@ -48,6 +48,7 @@
   args:
     executable: /bin/bash
   when: kubectl_version.stdout is version('1.23', '>=')
+  changed_when: true
 
 - name: Install image translations configmap
   ansible.builtin.shell: >
@@ -58,6 +59,7 @@
   args:
     executable: /bin/bash
   when: kubectl_version.stdout is version('1.23', '<')
+  changed_when: true
 
 - name: Download virtletctl
   ansible.builtin.command: curl -Ls -o {{ virtlet_dest }}/virtletctl {{ virtlet_url }}  # noqa command-instead-of-module

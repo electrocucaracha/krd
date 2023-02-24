@@ -67,7 +67,6 @@ function set_kubespray_img_version {
     local image="$2"
     local kubespray_key="$3"
 
-    version=
     sed -i "s/$image:.*/$image:$(echo "$img_versions" | grep "$kubespray_key" | awk '{ print $2}' | tr -d '"{}')/g" ./kubespray_images.tpl
 }
 
@@ -141,8 +140,10 @@ roles:
     version: v$(get_version ansible_role andrewrothstein.kubectl)
 
 collections:
-  - name: community.kubernetes
-    version: $(get_version ansible_collection community.kubernetes)
+  - name: kubernetes.core
+    version: $(get_version ansible_collection kubernetes.core)
+  - name: community.docker
+    version: $(get_version ansible_collection community.docker)
 EOT
 
 # Udpate Playbook default versions
