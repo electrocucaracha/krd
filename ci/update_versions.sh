@@ -76,7 +76,7 @@ function update_pip_pkg {
 
     while IFS= read -r playbook; do
         sed -i "s/$pkg==.*/$pkg==$version/g" "$playbook"
-    done < <(grep -r "$pkg==" ./playbooks/roles/ | awk -F ':' '{ print $1}')
+    done < <(grep -r "$pkg==" ./playbooks/ | awk -F ':' '{ print $1}')
 }
 
 kubespray_version="$(get_version github_release kubernetes-sigs/kubespray)"
@@ -130,8 +130,6 @@ roles:
     version: $(get_version ansible_role geerlingguy.docker)
   - name: geerlingguy.repo-epel
     version: $(get_version ansible_role geerlingguy.repo-epel)
-  - name: geerlingguy.pip
-    version: $(get_version ansible_role geerlingguy.pip)
   - name: andrewrothstein.gcc-toolbox
     version: v$(get_version ansible_role andrewrothstein.gcc-toolbox)
   - name: andrewrothstein.kind
@@ -160,7 +158,6 @@ sed -i "s/nfd_version:.*/nfd_version: v$(get_version github_release kubernetes-s
 
 # Update Kubernetes Collection dependencies
 update_pip_pkg "kubernetes" "$(get_version github_release kubernetes-client/python)"
-update_pip_pkg "openshift" "$(get_version github_release openshift/openshift-restclient-python)"
 
 # Update Kubespray Default variables
 sed -i "s/{KRD_CERT_MANAGER_VERSION:-.*/{KRD_CERT_MANAGER_VERSION:-v$(get_version github_release jetstack/cert-manager)}/g" ./defaults.env

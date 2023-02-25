@@ -13,6 +13,15 @@
   tags:
     - sriov
     - sriov-cni
+  pre_tasks:
+    - name: Remove the PyYAML package
+      ansible.builtin.package:
+        name: python3-yaml
+        state: absent
+      when: ansible_distribution == 'Ubuntu'
+    - name: Install kubernetes python package
+      ansible.builtin.pip:
+        name: kubernetes==25.3.0
   roles:
     - sriov_cni
 
@@ -21,12 +30,30 @@
   tags:
     - sriov
     - sriov-plugin
+  pre_tasks:
+    - name: Remove the PyYAML package
+      ansible.builtin.package:
+        name: python3-yaml
+        state: absent
+      when: ansible_distribution == 'Ubuntu'
+    - name: Install kubernetes python package
+      ansible.builtin.pip:
+        name: kubernetes==25.3.0
   roles:
     - sriov_plugin
 
 - name: Install Node Feature Discovery add-on
   hosts: localhost
   tags: nfd
+  pre_tasks:
+    - name: Remove the PyYAML package
+      ansible.builtin.package:
+        name: python3-yaml
+        state: absent
+      when: ansible_distribution == 'Ubuntu'
+    - name: Install kubernetes python package
+      ansible.builtin.pip:
+        name: kubernetes==25.3.0
   roles:
     - nfd
 
@@ -41,7 +68,7 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes
+        name: kubernetes==25.3.0
     - name: Check if pmem device exists
       ansible.builtin.stat:
         path: /dev/pmem0
@@ -63,6 +90,14 @@
     - name: Load krd variables
       ansible.builtin.include_vars:
         file: krd-vars.yml
+    - name: Remove the PyYAML package
+      ansible.builtin.package:
+        name: python3-yaml
+        state: absent
+      when: ansible_distribution == 'Ubuntu'
+    - name: Install kubernetes python package
+      ansible.builtin.pip:
+        name: kubernetes==25.3.0
   tags: pmem
   roles:
     - role: andrewrothstein.gcc-toolbox
@@ -159,5 +194,14 @@
   tags:
     - qat
     - qat-plugin
+  pre_tasks:
+    - name: Remove the PyYAML package
+      ansible.builtin.package:
+        name: python3-yaml
+        state: absent
+      when: ansible_distribution == 'Ubuntu'
+    - name: Install kubernetes python package
+      ansible.builtin.pip:
+        name: kubernetes==25.3.0
   roles:
     - qat_plugin

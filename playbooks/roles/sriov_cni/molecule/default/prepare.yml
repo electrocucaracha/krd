@@ -22,6 +22,15 @@
     - name: Enforce python3 for ansible
       ansible.builtin.set_fact:
         ansible_python_interpreter: /usr/bin/python3
+    - name: Remove the PyYAML package
+      ansible.builtin.package:
+        name: python3-yaml
+        state: absent
+      when: ansible_distribution == 'Ubuntu'
+    - name: Install kubernetes python package
+      become: true
+      ansible.builtin.pip:
+        name: kubernetes==25.3.0
   roles:
     - role: andrewrothstein.kind
       kind_install_dir: '{{ kind_dest }}'
@@ -29,12 +38,6 @@
     - role: geerlingguy.docker
       docker_install_compose: false
       become: true
-    - role: geerlingguy.pip
-      become: true
-      vars:
-        pip_install_packages:
-          - kubernetes==25.3.0
-          - openshift==0.13.1
   tasks:
     - name: Add existing user ansible's user to docker's group
       become: true
