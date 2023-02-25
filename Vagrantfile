@@ -367,7 +367,13 @@ Vagrant.configure("2") do |config|
         KRD_DNS_ETCHOSTS_DICT: etchosts_dict.to_s
       }
       sh.inline = <<-SHELL
+        # Create .bash_aliases
+        echo 'cd /vagrant/' >> /home/vagrant/.bash_aliases
+        chown vagrant:vagrant /home/vagrant/.bash_aliases
+
+        # Persists KRD variables
         for krd_var in $(printenv | grep KRD_); do echo "export $krd_var" | sudo tee --append /etc/environment ; done
+
         cd /vagrant/
         ./krd_command.sh -a install_local_registry -a install_k8s | tee ~/vagrant_init.log
       SHELL
