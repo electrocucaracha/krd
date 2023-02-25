@@ -138,6 +138,15 @@ function install_k8s {
     fi
 }
 
+function _ansible_galaxy_install {
+    ansible_galaxy_cmd="sudo -E $(command -v ansible-galaxy) $1 install"
+    if [ "$KRD_ANSIBLE_DEBUG" == "true" ]; then
+        ansible_galaxy_cmd+=" -vvv"
+        pip_cmd+=" --verbose"
+    fi
+    eval "${ansible_galaxy_cmd} -p /tmp/galaxy -r $KRD_FOLDER/galaxy-requirements.yml --ignore-errors"
+}
+
 # install_k8s_addons() - Install Kubenertes AddOns
 function install_k8s_addons {
     echo "Installing Kubernetes AddOns"
@@ -155,21 +164,8 @@ function install_k8s_addons {
     sudo mkdir -p /tmp/galaxy-roles
     sudo cp "$KRD_FOLDER/ansible.tpl" /etc/ansible/ansible.cfg
     sudo sed -i "s|strategy_plugins = .*|strategy_plugins = $(dirname "$(sudo find / -name mitogen_linear.py | head -n 1)")|g" /etc/ansible/ansible.cfg
-    pip_cmd="sudo -E $(command -v pip) install"
-    ansible_galaxy_cmd="sudo -E $(command -v ansible-galaxy) install"
-    if [ "$KRD_ANSIBLE_DEBUG" == "true" ]; then
-        ansible_galaxy_cmd+=" -vvv"
-        pip_cmd+=" --verbose"
-    fi
-    eval "${ansible_galaxy_cmd} -p /tmp/galaxy-roles -r $KRD_FOLDER/galaxy-requirements.yml --ignore-errors"
-    # shellcheck disable=SC1091
-    source /etc/os-release || source /usr/lib/os-release
-    case ${ID,,} in
-    ubuntu | debian)
-        sudo apt remove -y python3-yaml
-        ;;
-    esac
-    eval "${pip_cmd} openshift"
+    _ansible_galaxy_install role
+    _ansible_galaxy_install collection
 
     for addon in ${KRD_ADDONS_LIST//,/ }; do
         echo "Deploying $addon using configure-$addon.yml playbook.."

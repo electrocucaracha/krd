@@ -360,7 +360,7 @@ function _run_ansible_cmd {
     local log=$2
     local krd_log_dir="/var/log/krd"
 
-    ansible_cmd="ANSIBLE_ROLES_PATH=/tmp/galaxy-roles sudo -E $(command -v ansible-playbook) --become --become-user=root "
+    ansible_cmd="ANSIBLE_ROLES_PATH=/tmp/galaxy COLLECTIONS_PATHS=/tmp/galaxy sudo -E $(command -v ansible-playbook) --become --become-user=root "
     if [[ $KRD_ANSIBLE_DEBUG == "true" ]]; then
         ansible_cmd+="-vvv "
     fi
