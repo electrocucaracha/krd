@@ -76,5 +76,11 @@
         owner: '{{ ansible_ssh_user }}'
         group: '{{ ansible_ssh_user }}'
     - name: Label PMEM node
-      ansible.builtin.command: kubectl label node molecule-control-plane storage=pmem
-      changed_when: false
+      kubernetes.core.k8s:
+        api_version: v1
+        kind: Node
+        name: molecule-control-plane
+        resource_definition:
+          metadata:
+            labels:
+              storage: pmem

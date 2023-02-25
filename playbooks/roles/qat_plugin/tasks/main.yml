@@ -38,5 +38,6 @@
     dest: "{{ qat_template_folder }}/configmap.yaml"
 
 - name: Create QAT k8s resources
-  ansible.builtin.command: "/usr/local/bin/kubectl apply -f {{ qat_template_folder }}"
-  changed_when: false
+  kubernetes.core.k8s:
+    state: present
+    src: "{{ qat_template_folder }}"
