@@ -9,6 +9,6 @@
 ##############################################################################
 
 criproxy_dest: "/tmp/criproxy"
-criproxy_version: 0.14.0
+criproxy_version: Max attempts reached
 criproxy_url: "https://github.com/Mirantis/criproxy/releases/download/v{{ criproxy_version }}/criproxy"
 cri_socket_path: "/var/run/dockershim.sock"
