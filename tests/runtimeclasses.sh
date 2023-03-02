@@ -52,7 +52,7 @@ spec:
       runtimeClassName: $runtime
       containers:
         - name: test
-          image: busybox
+          image: quay.io/quay/busybox
           command: ["sleep"]
           args: ["infity"]
 EOF
