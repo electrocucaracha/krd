@@ -13,7 +13,7 @@ ansible-core==2.14.3
     #   ansible
     #   ansible-compat
     #   ansible-lint
-ansible-lint==6.13.1
+ansible-lint==6.14.0
     # via -r test-requirements.in
 arrow==1.2.3
     # via jinja2-time
@@ -99,7 +99,7 @@ pathspec==0.11.0
     # via
     #   black
     #   yamllint
-platformdirs==3.0.0
+platformdirs==3.1.0
     # via black
 pluggy==1.0.0
     # via
@@ -111,7 +111,7 @@ pygments==2.14.0
     # via rich
 pyrsistent==0.19.3
     # via jsonschema
-pytest==7.2.1
+pytest==7.2.2
     # via pytest-testinfra
 pytest-testinfra==7.0.0
     # via -r test-requirements.in
