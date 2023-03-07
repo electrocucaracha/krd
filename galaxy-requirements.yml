@@ -10,7 +10,7 @@
 
 roles:
   - name: geerlingguy.docker
-    version: 6.0.4
+    version: 6.1.0
   - name: geerlingguy.repo-epel
     version: 3.1.1
   - name: andrewrothstein.gcc-toolbox
@@ -18,10 +18,10 @@ roles:
   - name: andrewrothstein.kind
     version: v1.2.4
   - name: andrewrothstein.kubectl
-    version: v1.2.5
+    version: v1.2.7
 
 collections:
   - name: kubernetes.core
     version: 2.4.0
   - name: community.docker
-    version: 3.4.1
+    version: 3.4.2

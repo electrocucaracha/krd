@@ -30,7 +30,7 @@
     - name: Install kubernetes python package
       become: true
       ansible.builtin.pip:
-        name: kubernetes==25.3.0
+        name: kubernetes==26.1.0
   roles:
     - role: andrewrothstein.kind
       kind_install_dir: '{{ kind_dest }}'
