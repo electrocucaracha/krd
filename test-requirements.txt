@@ -53,7 +53,7 @@ enrich==1.2.7
     # via molecule
 exceptiongroup==1.1.1
     # via pytest
-filelock==3.9.0
+filelock==3.9.1
     # via ansible-lint
 idna==3.4
     # via requests
