@@ -53,7 +53,7 @@ enrich==1.2.7
     # via molecule
 exceptiongroup==1.1.1
     # via pytest
-filelock==3.9.1
+filelock==3.10.0
     # via ansible-lint
 idna==3.4
     # via requests
@@ -95,7 +95,7 @@ packaging==23.0
     #   black
     #   molecule
     #   pytest
-pathspec==0.11.0
+pathspec==0.11.1
     # via
     #   black
     #   yamllint
