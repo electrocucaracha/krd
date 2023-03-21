@@ -21,7 +21,7 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==25.3.0
+        name: kubernetes==26.1.0
   roles:
     - sriov_cni
 
@@ -38,7 +38,7 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==25.3.0
+        name: kubernetes==26.1.0
   roles:
     - sriov_plugin
 
@@ -53,7 +53,7 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==25.3.0
+        name: kubernetes==26.1.0
   roles:
     - nfd
 
@@ -68,7 +68,7 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==25.3.0
+        name: kubernetes==26.1.0
     - name: Check if pmem device exists
       ansible.builtin.stat:
         path: /dev/pmem0
@@ -97,7 +97,7 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==25.3.0
+        name: kubernetes==26.1.0
   tags: pmem
   roles:
     - role: andrewrothstein.gcc-toolbox
@@ -202,6 +202,6 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==25.3.0
+        name: kubernetes==26.1.0
   roles:
     - qat_plugin
