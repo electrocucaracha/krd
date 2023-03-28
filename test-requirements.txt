@@ -8,7 +8,7 @@ ansible==7.3.0
     # via -r test-requirements.in
 ansible-compat==3.0.1
     # via molecule
-ansible-core==2.14.3
+ansible-core==2.14.4
     # via
     #   ansible
     #   ansible-compat
@@ -53,7 +53,7 @@ enrich==1.2.7
     # via molecule
 exceptiongroup==1.1.1
     # via pytest
-filelock==3.10.6
+filelock==3.10.7
     # via ansible-lint
 idna==3.4
     # via requests
@@ -137,7 +137,7 @@ requests==2.28.2
     # via cookiecutter
 resolvelib==0.8.1
     # via ansible-core
-rich==13.3.2
+rich==13.3.3
     # via
     #   ansible-lint
     #   enrich
