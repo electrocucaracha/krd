@@ -28,7 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3.5.1
       - name: Run super-linter validation
-        uses: github/super-linter@v4.10.1
+        uses: github/super-linter@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: /
