@@ -44,7 +44,7 @@ jobs:
           - test: kubewarden
             cert-mgr: true
     steps:
-      - uses: actions/checkout@v3.5.1
+      - uses: actions/checkout@v3.5.2
       - uses: ./.github/actions/vagrant-up
         with:
           cert-manager-enabled: ${{ matrix.cert-mgr }}
