@@ -43,7 +43,7 @@ click-help-colors==0.9.1
     # via molecule
 cookiecutter==2.1.1
     # via molecule
-cryptography==40.0.1
+cryptography==40.0.2
     # via ansible-core
 distro==1.8.0
     # via selinux
@@ -109,7 +109,7 @@ pygments==2.15.0
     # via rich
 pyrsistent==0.19.3
     # via jsonschema
-pytest==7.3.0
+pytest==7.3.1
     # via pytest-testinfra
 pytest-testinfra==7.0.0
     # via -r test-requirements.in
