@@ -48,7 +48,11 @@
         path: /var/run/dockershim.sock
         state: absent
     - name: Get kubelet version
-      ansible.builtin.shell: /usr/local/bin/kubelet --version | awk '{ gsub(/v/,""); print $2 }'
+      ansible.builtin.shell: |
+        set -o pipefail
+        /usr/local/bin/kubelet --version | awk '{ gsub(/v/,""); print $2 }'
+      args:
+        executable: /bin/bash
       register: kubelet_version
       changed_when: false
     - name: Print kubelet_version value

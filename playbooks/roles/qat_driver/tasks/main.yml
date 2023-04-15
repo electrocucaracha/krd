@@ -48,8 +48,11 @@
   block:
     - name: Get qat devices
       ansible.builtin.shell: >
+        set -o pipefail ;
         /usr/local/bin/adf_ctl status | grep up |
         awk '{print $4 substr($1, 4)}' | tr -d ','
+      args:
+        executable: /bin/bash
       register: qat_devices
       changed_when: false
     - name: Ensure SHIM config section
