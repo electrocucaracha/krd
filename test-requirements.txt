@@ -14,7 +14,7 @@ ansible-core==2.14.4
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==6.14.6
+ansible-lint==6.15.0
     # via -r test-requirements.in
 arrow==1.2.3
     # via jinja2-time
@@ -162,10 +162,7 @@ urllib3==1.26.15
     # via requests
 wcmatch==8.4.1
     # via ansible-lint
-yamllint==1.30.0
+yamllint==1.31.0
     # via
     #   -r test-requirements.in
     #   ansible-lint
-
-# The following packages are considered to be unsafe in a requirements file:
-# setuptools
