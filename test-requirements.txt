@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible==7.4.0
+ansible==7.5.0
     # via -r test-requirements.in
 ansible-compat==3.0.2
     # via molecule
@@ -98,7 +98,7 @@ pathspec==0.11.1
     # via
     #   black
     #   yamllint
-platformdirs==3.3.0
+platformdirs==3.4.0
     # via black
 pluggy==1.0.0
     # via
@@ -131,7 +131,7 @@ pyyaml==6.0
     #   molecule
     #   molecule-vagrant
     #   yamllint
-requests==2.28.2
+requests==2.29.0
     # via cookiecutter
 resolvelib==0.8.1
     # via ansible-core
