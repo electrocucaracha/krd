@@ -24,4 +24,4 @@ collections:
   - name: kubernetes.core
     version: 2.4.0
   - name: community.docker
-    version: 3.4.3
+    version: 3.4.4

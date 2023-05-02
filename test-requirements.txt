@@ -6,7 +6,7 @@
 #
 ansible==7.5.0
     # via -r test-requirements.in
-ansible-compat==3.0.2
+ansible-compat==4.0.1
     # via molecule
 ansible-core==2.14.5
     # via
