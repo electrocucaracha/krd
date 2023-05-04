@@ -6,7 +6,7 @@
 #
 ansible==7.5.0
     # via -r test-requirements.in
-ansible-compat==4.0.1
+ansible-compat==3.0.2
     # via molecule
 ansible-core==2.14.5
     # via
@@ -78,7 +78,7 @@ markupsafe==2.1.2
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-molecule==5.0.0
+molecule==5.0.1
     # via
     #   -r test-requirements.in
     #   molecule-vagrant
