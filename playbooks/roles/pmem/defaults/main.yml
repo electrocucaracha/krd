@@ -9,8 +9,8 @@
 ##############################################################################
 
 pmem_template_folder: "/tmp/pmem_k8s"
-pmem_version: v1.1.0
-driver_registrar_version: v2.8.0
-csi_provisioner_version: v3.5.0
-cfssl_version: 1.6.4
+pmem_version: vMax attempts reached
+driver_registrar_version: vMax attempts reached
+csi_provisioner_version: vMax attempts reached
+cfssl_version: Max attempts reached
 pmem_namespace: pmem-csi
