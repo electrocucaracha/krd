@@ -14,7 +14,7 @@ ansible-core==2.14.5
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==6.15.0
+ansible-lint==6.16.0
     # via -r test-requirements.in
 arrow==1.2.3
     # via jinja2-time
@@ -140,7 +140,7 @@ rich==13.3.5
     #   ansible-lint
     #   enrich
     #   molecule
-ruamel-yaml==0.17.24
+ruamel-yaml==0.17.26
     # via ansible-lint
 ruamel-yaml-clib==0.2.7
     # via ruamel-yaml
