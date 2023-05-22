@@ -14,7 +14,7 @@ ansible-core==2.14.5
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==6.16.1
+ansible-lint==6.16.2
     # via -r test-requirements.in
 arrow==1.2.3
     # via jinja2-time
@@ -112,7 +112,7 @@ pyrsistent==0.19.3
     # via jsonschema
 pytest==7.3.1
     # via pytest-testinfra
-pytest-testinfra==8.0.0
+pytest-testinfra==8.1.0
     # via -r test-requirements.in
 python-dateutil==2.8.2
     # via arrow
