@@ -25,6 +25,7 @@ export krd_inventory_folder=$KRD_FOLDER/inventory
 export krd_playbooks=$KRD_FOLDER/playbooks
 export krd_inventory=$krd_inventory_folder/hosts.ini
 export kubespray_folder=/opt/kubespray
+export galaxy_base_path=/tmp/galaxy/
 
 # _get_kube_version() - Get the Kubernetes version used or installed on the remote cluster
 function _get_kube_version {
@@ -103,6 +104,9 @@ function _install_kubespray {
             sed -i "s/mitogen_version: .*/mitogen_version: $mitogen_version/g" ./mitogen.yml
             sudo make mitogen
         else
+            if _vercmp "${kubespray_version#*v}" '>=' "2.22"; then
+                sudo sed -i "s|roles_path = .*|roles_path = $kubespray_folder/roles:$galaxy_base_path|g" /etc/ansible/ansible.cfg
+            fi
             $PIP_CMD install --no-cache-dir mitogen
         fi
         popd
@@ -360,7 +364,7 @@ function _run_ansible_cmd {
     local log=$2
     local krd_log_dir="/var/log/krd"
 
-    ansible_cmd="ANSIBLE_ROLES_PATH=/tmp/galaxy COLLECTIONS_PATHS=/tmp/galaxy sudo -E $(command -v ansible-playbook) --become --become-user=root "
+    ansible_cmd="COLLECTIONS_PATHS=$galaxy_base_path sudo -E $(command -v ansible-playbook) --become --become-user=root "
     if [[ $KRD_ANSIBLE_DEBUG == "true" ]]; then
         ansible_cmd+="-vvv "
     fi

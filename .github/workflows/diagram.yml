@@ -25,9 +25,9 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.4.0
+      - uses: actions/checkout@v3.5.2
       - name: Update diagram
-        uses: githubocto/repo-visualizer@0.8.2
+        uses: githubocto/repo-visualizer@0.9.1
         with:
           excluded_paths: "ignore,.github"
           output_file: codebase-structure.svg

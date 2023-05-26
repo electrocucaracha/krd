@@ -92,11 +92,10 @@ EOF
 function install_k8s {
     echo "Installing Kubernetes"
 
+    sudo mkdir -p /etc/ansible/
+    _configure_ansible
     _install_kubespray
 
-    sudo mkdir -p /etc/ansible/
-    sudo cp "$KRD_FOLDER/ansible.tpl" /etc/ansible/ansible.cfg
-    sudo sed -i "s|strategy_plugins = .*|strategy_plugins = $(dirname "$(sudo find / -name mitogen_linear.py | head -n 1)")|g" /etc/ansible/ansible.cfg
     _run_ansible_cmd "$kubespray_folder/cluster.yml" "setup-kubernetes.log"
 
     # Configure kubectl
@@ -139,12 +138,36 @@ function install_k8s {
 }
 
 function _ansible_galaxy_install {
+    mkdir -p "$galaxy_base_path"
     ansible_galaxy_cmd="sudo -E $(command -v ansible-galaxy) $1 install"
     if [ "$KRD_ANSIBLE_DEBUG" == "true" ]; then
         ansible_galaxy_cmd+=" -vvv"
         pip_cmd+=" --verbose"
     fi
-    eval "${ansible_galaxy_cmd} -p /tmp/galaxy -r $KRD_FOLDER/galaxy-requirements.yml --ignore-errors"
+    eval "${ansible_galaxy_cmd} -p $galaxy_base_path -r $KRD_FOLDER/galaxy-requirements.yml --ignore-errors"
+}
+
+function _configure_ansible {
+    sudo mkdir -p /etc/ansible/
+    sudo tee /etc/ansible/ansible.cfg <<EOT
+[ssh_connection]
+pipelining=True
+ansible_ssh_common_args = -o ControlMaster=auto -o ControlPersist=30m -o ConnectionAttempts=100
+retries=2
+[defaults]
+forks = 20
+strategy_plugins = $(dirname "$(sudo find / -name mitogen_linear.py | head -n 1)")
+
+host_key_checking=False
+gathering = smart
+fact_caching = jsonfile
+fact_caching_connection = /tmp
+stdout_callback = skippy
+library = ./library:../library
+callbacks_enabled = profile_tasks
+jinja2_extensions = jinja2.ext.do
+roles_path = $galaxy_base_path
+EOT
 }
 
 # install_k8s_addons() - Install Kubenertes AddOns
@@ -160,10 +183,7 @@ function install_k8s_addons {
         curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
     fi
 
-    sudo mkdir -p /etc/ansible/
-    sudo mkdir -p /tmp/galaxy-roles
-    sudo cp "$KRD_FOLDER/ansible.tpl" /etc/ansible/ansible.cfg
-    sudo sed -i "s|strategy_plugins = .*|strategy_plugins = $(dirname "$(sudo find / -name mitogen_linear.py | head -n 1)")|g" /etc/ansible/ansible.cfg
+    _configure_ansible
     _ansible_galaxy_install role
     _ansible_galaxy_install collection
 
