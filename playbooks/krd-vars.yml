@@ -9,7 +9,7 @@
 ##############################################################################
 
 go_version: 1.15.3
-kubespray_version: v2.22.0
+kubespray_version: v2.22.1
 istio_version: 1.17.1
 cfssl_version: 1.6.3
 sonobuoy_version: 0.56.16
