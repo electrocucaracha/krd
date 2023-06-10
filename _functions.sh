@@ -189,6 +189,7 @@ function wait_for_pods {
 function run_kubescape {
     if ! command -v kubescape >/dev/null; then
         curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | bash
+        export PATH="$PATH:$HOME/.kubescape/bin"
     fi
     kubescape scan framework nsa --exclude-namespaces kube-system,kube-public
 }
