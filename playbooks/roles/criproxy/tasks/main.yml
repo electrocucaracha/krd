@@ -31,16 +31,16 @@
 - name: Check that kubelet env file exists
   ansible.builtin.stat:
     path: /etc/kubernetes/kubelet.env
-  register: kubelet_env_stat
+  register: criproxy_kubelet_env
 
 - name: Print kubelet_env_stat value
   ansible.builtin.debug:
-    var: kubelet_env_stat
+    var: criproxy_kubelet_env
 
 - name: Create dockershim service
   become: true
   when:
-    - kubelet_env_stat.stat.exists
+    - criproxy_kubelet_env.stat.exists
     - ansible_facts.services["docker.service"] is defined
   block:
     - name: Remove leftovers
@@ -53,14 +53,14 @@
         /usr/local/bin/kubelet --version | awk '{ gsub(/v/,""); print $2 }'
       args:
         executable: /bin/bash
-      register: kubelet_version
+      register: criproxy_current_kubelet_version
       changed_when: false
     - name: Print kubelet_version value
       ansible.builtin.debug:
-        var: kubelet_version
+        var: criproxy_current_kubelet_version
     - name: Stop if kubelet doesn't support --experimental-dockershim option
       ansible.builtin.assert:
-        that: kubelet_version.stdout is version('1.19', '<')
+        that: criproxy_current_kubelet_version.stdout is version('1.19', '<')
         msg: Kubelet has removed its Experimental Dockershim option. See https://github.com/kubernetes/kubernetes/commit/53adde65ce000c4d90ee8f807e90658426733a5
     - name: Create dockershim service
       ansible.builtin.copy:

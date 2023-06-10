@@ -31,12 +31,12 @@
     kubectl version --short --client | sed 's/Client Version: v//g'
   args:
     executable: /bin/bash
-  register: kubectl_version
+  register: virtlet_kubectl_version
   changed_when: false
 
 - name: Print out kubectl client version
   ansible.builtin.debug:
-    msg: "{{ kubectl_version.stdout }}"
+    msg: "{{ virtlet_kubectl_version.stdout }}"
 
 # NOTE: Deprecated kubectl --dry-run values(https://github.com/kubernetes/kubernetes/pull/105327)
 - name: Install image translations configmap
@@ -47,7 +47,7 @@
     --from-file {{ virtlet_dest }}/images.yml --dry-run='client' -o yaml | /usr/local/bin/kubectl apply -f -
   args:
     executable: /bin/bash
-  when: kubectl_version.stdout is version('1.23', '>=')
+  when: virtlet_kubectl_version.stdout is version('1.23', '>=')
   changed_when: true
 
 - name: Install image translations configmap
@@ -58,7 +58,7 @@
     --from-file {{ virtlet_dest }}/images.yml --dry-run -o yaml | /usr/local/bin/kubectl apply -f -
   args:
     executable: /bin/bash
-  when: kubectl_version.stdout is version('1.23', '<')
+  when: virtlet_kubectl_version.stdout is version('1.23', '<')
   changed_when: true
 
 - name: Download virtletctl
@@ -85,7 +85,7 @@
 - name: Wait for Virtlet daemonset
   ansible.builtin.shell: "/usr/local/bin/kubectl get ds virtlet -n=kube-system -o=jsonpath --template={.status.numberReady}"
   changed_when: false
-  register: daemonset
+  register: virtlet_daemonset
   until:
     - '1'
   retries: 6
