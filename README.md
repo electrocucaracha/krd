@@ -3,6 +3,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GitHub Super-Linter](https://github.com/electrocucaracha/krd/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
+<!-- markdown-link-check-disable-next-line -->
 ![visitors](https://visitor-badge.glitch.me/badge?page_id=electrocucaracha.krd)
 
 ## Summary
@@ -120,7 +121,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_ANSIBLE_DEBUG                     | false                                          | Enables ansible verbose execution                                               |
 | PKG_DEBUG                             | false                                          | Enables cURL package installer verbose execution                                |
 | KRD_KUBE_VERSION                      | v1.25.6                                        | Specifies the Kubernetes version to be upgraded                                 |
-| KRD_KUBESPRAY_VERSION                 | v2.22.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
+| KRD_KUBESPRAY_VERSION                 | v2.22.1                                        | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | `https://github.com/kubernetes-sigs/kubespray` | Specifies the Git repository to fetch the Kubespray's source code               |
 | KRD_ENABLE_TESTS                      | false                                          | Enables the functional tests during the deployment process                      |
 | KRD_HELM_CHART                        |                                                | Specifies the Helm chart to be installed                                        |

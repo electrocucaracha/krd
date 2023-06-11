@@ -14,24 +14,24 @@
     PATH=$PATH:/usr/sbin/:/sbin/ modinfo intel_qat | grep "^version:" | awk '{ print $2 }'
   args:
     executable: /bin/bash
-  register: intel_qat_version
+  register: qat_driver_installed_version
   changed_when: false
 
 - name: Print intel_qat_version value
   ansible.builtin.debug:
-    var: intel_qat_version
+    var: qat_driver_installed_version
 
 - name: Clean up
   ansible.builtin.include_tasks: cleanup.yml
-  when: intel_qat_version.stdout != qat_driver_version
+  when: qat_driver_installed_version.stdout != qat_driver_version
 
 - name: Bootstrap QAT drivers source code
   ansible.builtin.include_tasks: bootstrap.yml
-  when: intel_qat_version.stdout != qat_driver_version
+  when: qat_driver_installed_version.stdout != qat_driver_version
 
 - name: Build QAT drivers source code
   ansible.builtin.include_tasks: build.yml
-  when: intel_qat_version.stdout != qat_driver_version
+  when: qat_driver_installed_version.stdout != qat_driver_version
 
 - name: Create qat_service systemd wrapper
   become: true
@@ -53,7 +53,7 @@
         awk '{print $4 substr($1, 4)}' | tr -d ','
       args:
         executable: /bin/bash
-      register: qat_devices
+      register: qat_driver_devices
       changed_when: false
     - name: Ensure SHIM config section
       ansible.builtin.blockinfile:
@@ -69,7 +69,7 @@
           Cy0IsPolled = 1
           # List of core affinities
           Cy0CoreAffinity = 0
-      loop: "{{ qat_devices.stdout_lines }}"
+      loop: "{{ qat_driver_devices.stdout_lines }}"
     - name: Restart qat services
       ansible.builtin.command: /usr/local/bin/adf_ctl restart
       changed_when: false

@@ -25,26 +25,25 @@
 - name: Check if configure was executed
   ansible.builtin.stat:
     path: "{{ qat_driver_dest }}/config.log"
-  register: configure_log
+  register: qat_driver_configure_log
 
 - name: Configure qat driver source code
   ansible.builtin.command: ./configure
   args:
     chdir: "{{ qat_driver_dest }}"
-  register: configure
-  when: not configure_log.stat.exists
+  when: not qat_driver_configure_log.stat.exists
   changed_when: true
 
 - name: Check if there is a adf_ctl binary
   ansible.builtin.stat:
     path: /usr/local/bin/adf_ctl
-  register: adf_ctl
+  register: qat_driver_adf_ctl
 
 - name: Build qat driver
   become: true
   community.general.make:
     chdir: "{{ qat_driver_dest }}"
     target: install
-  when: not adf_ctl.stat.exists
+  when: not qat_driver_adf_ctl.stat.exists
   notify:
     - Start qat_service service

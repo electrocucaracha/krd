@@ -11,7 +11,7 @@
 - name: Deploy cfssl binaries
   ansible.builtin.include_tasks: bootstrap.yml
   vars:
-    binary: "{{ item }}"
+    pmem_cfssl_binary: "{{ item }}"
   with_items:
     - cfssl
     - cfssljson
@@ -44,14 +44,14 @@
     kind: Secret
     name: pmem-csi-intel-com-controller-secret
     namespace: "{{ pmem_namespace }}"
-  register: node_secret
+  register: pmem_node_secret
 
 - name: Get PMEM CSI registry secret
   kubernetes.core.k8s_info:
     kind: Secret
     name: pmem-csi-intel-com-controller-secret
     namespace: "{{ pmem_namespace }}"
-  register: registry_secret
+  register: pmem_registry_secret
 
 - name: Print node and registry values
   ansible.builtin.debug:
@@ -68,8 +68,8 @@
   args:
     chdir: '{{ pmem_template_folder }}'
   when:
-    - node_secret.resources | length == 0
-    - registry_secret.resources | length == 0
+    - pmem_node_secret.resources | length == 0
+    - pmem_registry_secret.resources | length == 0
   changed_when: true
 
 - name: Create PMEM CSI for LVM driver

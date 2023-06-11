@@ -10,15 +10,17 @@
 
 - name: Check if binary exists
   ansible.builtin.stat:
-    path: /usr/local/bin/{{ binary }}
-  register: binary_location
+    path: /usr/local/bin/{{ pmem_cfssl_binary }}
+  register: pmem_cfssl_binary_location
+
 - name: Print binary value
   ansible.builtin.debug:
-    var: binary_location
+    var: pmem_cfssl_binary_location
+
 - name: Retrieve binary
   ansible.builtin.get_url:
-    url: https://github.com/cloudflare/cfssl/releases/download/v{{ cfssl_version }}/{{ binary }}_{{ cfssl_version }}_linux_amd64
-    dest: /usr/local/bin/{{ binary }}
+    url: https://github.com/cloudflare/cfssl/releases/download/v{{ cfssl_version }}/{{ pmem_cfssl_binary }}_{{ cfssl_version }}_linux_amd64
+    dest: /usr/local/bin/{{ pmem_cfssl_binary }}
     mode: '0755'
   become: true
-  when: not binary_location.stat.exists
+  when: not pmem_cfssl_binary_location.stat.exists
