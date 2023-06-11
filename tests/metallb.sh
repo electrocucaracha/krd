@@ -19,11 +19,22 @@ source _assertions.sh
 
 function cleanup {
     kubectl delete service nginx --ignore-not-found
+    kubectl delete ipaddresspools metallb-test-cidr --ignore-not-found
 }
 
 trap cleanup EXIT
 
 # Setup
+cat <<EOF | kubectl apply -f -
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: metallb-test-cidr
+  namespace: metallb-system
+spec:
+  addresses:
+  - 172.18.0.0/20
+EOF
 
 # Test
 info "===== Test started ====="
@@ -43,5 +54,6 @@ spec:
 EOF
 
 assert_non_empty "$(kubectl get svc nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" "IP address wasn't assigned to nginx service"
+assert_are_equal "$(kubectl get svc nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" "172.18.0.0" "IP address wasn't different than expected"
 
 info "===== Test completed ====="
