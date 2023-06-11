@@ -35,9 +35,9 @@ if [[ ${TEST_MULTINODE:-false} == "false" ]]; then
     - name: public-net
       ip: "10.10.16.3"
   memory: ${MEMORY:-6144}
-  cpus: 2
+  cpus: 3
   numa_nodes: # Total memory for NUMA nodes must be equal to RAM size
-    - cpus: 0-1
+    - cpus: 0-2
       memory: ${MEMORY:-6144}
   pmem:
     size: ${MEMORY:-6144}M # This value may affect the currentMemory libvirt tag
