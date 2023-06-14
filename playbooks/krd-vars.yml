@@ -25,7 +25,7 @@ net_istio_version: v0.37.1
 net_certmanager_version: v0.37.1
 
 octant_version: 0.25.1
-kube-ovn_version: v1.11.5
+kube-ovn_version: v1.11.8
 prometheus-operator_version: v0.65.2
 kubevirt_version: v0.59.1
 virtink_version: v0.15.0
