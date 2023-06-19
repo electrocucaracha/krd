@@ -101,7 +101,7 @@ pathspec==0.11.1
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==3.5.3
+platformdirs==3.6.0
     # via black
 pluggy==1.0.0
     # via
