@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3.5.3
-      - uses: reviewdog/action-misspell@v1.12.4
+      - uses: reviewdog/action-misspell@v1.13.0
         with:
           github_token: ${{ secrets.github_token }}
   check-spellcheck:
