@@ -101,9 +101,9 @@ pathspec==0.11.1
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==3.6.0
+platformdirs==3.7.0
     # via black
-pluggy==1.0.0
+pluggy==1.2.0
     # via
     #   molecule
     #   pytest

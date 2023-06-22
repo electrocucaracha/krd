@@ -12,7 +12,7 @@ go_version: 1.15.3
 kubespray_version: v2.22.1
 istio_version: 1.18.0
 cfssl_version: 1.6.4
-sonobuoy_version: 0.56.17
+sonobuoy_version: 0.56.16
 mitogen_version: 0.2.10
 
 # Knative versions
@@ -27,7 +27,7 @@ net_certmanager_version: v0.37.1
 octant_version: 0.25.1
 kube-ovn_version: v1.11.8
 prometheus-operator_version: v0.66.0
-kubevirt_version: v0.59.1
+kubevirt_version: v0.59.2
 virtink_version: v0.15.0
 kubesphere_version: v3.3.2
 metallb_version: v0.13.10
