@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=test-requirements.txt --resolver=backtracking test-requirements.in
 #
-ansible==8.0.0
+ansible==8.1.0
     # via -r test-requirements.in
 ansible-compat==4.1.2
     # via
@@ -16,7 +16,7 @@ ansible-core==2.15.1
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==6.17.1
+ansible-lint==6.17.2
     # via -r test-requirements.in
 arrow==1.2.3
     # via jinja2-time
