@@ -80,7 +80,7 @@ markupsafe==2.1.3
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-molecule==5.0.0
+molecule==5.1.0
     # via
     #   -r test-requirements.in
     #   molecule-vagrant
@@ -101,7 +101,7 @@ pathspec==0.11.1
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==3.7.0
+platformdirs==3.8.0
     # via black
 pluggy==1.2.0
     # via
@@ -113,7 +113,7 @@ pygments==2.15.1
     # via rich
 pyrsistent==0.19.3
     # via jsonschema
-pytest==7.3.2
+pytest==7.4.0
     # via pytest-testinfra
 pytest-testinfra==8.1.0
     # via -r test-requirements.in
