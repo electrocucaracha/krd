@@ -26,6 +26,10 @@ function _exit_trap {
         printf "CPU usage: "
         grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage " %"}'
     fi
+    if [ -f /proc/pressure/io ]; then
+        printf "I/O Pressure Stall Information (PSI): "
+        grep full /proc/pressure/io | awk '{ sub(/avg300=/, ""); print $4 }'
+    fi
     printf "Memory free(Kb):"
     if [ -f /proc/zoneinfo ]; then
         awk -v low="$(grep low /proc/zoneinfo | awk '{k+=$2}END{print k}')" '{a[$1]=$2}  END{ print a["MemFree:"]+a["Active(file):"]+a["Inactive(file):"]+a["SReclaimable:"]-(12*low);}' /proc/meminfo
