@@ -65,7 +65,7 @@ jinja2==3.1.2
     #   ansible-core
     #   cookiecutter
     #   molecule
-jsonschema==4.18.0
+jsonschema==4.18.2
     # via
     #   ansible-compat
     #   ansible-lint
