@@ -38,7 +38,7 @@ chardet==5.1.0
     # via binaryornot
 charset-normalizer==3.2.0
     # via requests
-click==8.1.4
+click==8.1.5
     # via
     #   black
     #   click-help-colors
@@ -65,7 +65,7 @@ jinja2==3.1.2
     #   ansible-core
     #   cookiecutter
     #   molecule
-jsonschema==4.18.2
+jsonschema==4.18.3
     # via
     #   ansible-compat
     #   ansible-lint
