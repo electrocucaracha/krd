@@ -121,7 +121,7 @@ python-vagrant==1.0.0
     # via
     #   -r test-requirements.in
     #   molecule-plugins
-pyyaml==6.0
+pyyaml==6.0.1
     # via
     #   ansible-compat
     #   ansible-core
@@ -144,7 +144,7 @@ rich==13.4.2
     #   ansible-lint
     #   enrich
     #   molecule
-rpds-py==0.8.10
+rpds-py==0.8.11
     # via
     #   jsonschema
     #   referencing
