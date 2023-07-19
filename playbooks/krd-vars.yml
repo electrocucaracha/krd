@@ -22,7 +22,7 @@ knative_eventing_version: v0.37.1
 ## Knative Sandbox versions
 net_kourier_version: knative-v1.10.0
 net_istio_version: v0.37.1
-net_certmanager_version: v0.37.1
+net_certmanager_version: v0.37.2
 
 octant_version: 0.25.1
 kube-ovn_version: v1.11.8

@@ -4,13 +4,13 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible==8.1.0
+ansible==8.2.0
     # via -r test-requirements.in
 ansible-compat==4.1.2
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.15.1
+ansible-core==2.15.2
     # via
     #   ansible
     #   ansible-compat
@@ -38,7 +38,7 @@ chardet==5.1.0
     # via binaryornot
 charset-normalizer==3.2.0
     # via requests
-click==8.1.5
+click==8.1.6
     # via
     #   black
     #   click-help-colors
@@ -65,12 +65,12 @@ jinja2==3.1.2
     #   ansible-core
     #   cookiecutter
     #   molecule
-jsonschema==4.18.3
+jsonschema==4.18.4
     # via
     #   ansible-compat
     #   ansible-lint
     #   molecule
-jsonschema-specifications==2023.6.1
+jsonschema-specifications==2023.7.1
     # via jsonschema
 markdown-it-py==3.0.0
     # via rich
@@ -129,7 +129,7 @@ pyyaml==6.0.1
     #   cookiecutter
     #   molecule
     #   yamllint
-referencing==0.29.1
+referencing==0.30.0
     # via
     #   jsonschema
     #   jsonschema-specifications
@@ -144,7 +144,7 @@ rich==13.4.2
     #   ansible-lint
     #   enrich
     #   molecule
-rpds-py==0.8.11
+rpds-py==0.9.2
     # via
     #   jsonschema
     #   referencing
