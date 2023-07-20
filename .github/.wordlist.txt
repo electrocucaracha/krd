@@ -71,6 +71,7 @@ Kubevirt
 Kubewarden
 KVM
 Kyverno
+laobi
 libndctl
 Libvirt
 Lifecycle
