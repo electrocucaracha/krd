@@ -164,7 +164,7 @@ tomli==2.0.1
     # via
     #   black
     #   pytest
-urllib3==2.0.3
+urllib3==2.0.4
     # via requests
 wcmatch==8.4.1
     # via ansible-lint
