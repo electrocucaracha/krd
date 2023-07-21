@@ -31,5 +31,7 @@ platforms:
       - "customize ['modifyvm', :id, '--nictype1', 'virtio', '--cableconnected1', 'on']"
 provisioner:
   name: ansible
+  playbooks:
+    prepare: ${MOLECULE_PROJECT_DIRECTORY}/../pmem/molecule/default/prepare.yml
 verifier:
   name: testinfra
