@@ -29,7 +29,7 @@ metadata:
 spec:
   dataDirHostPath: /var/lib/rook
   cephVersion:
-    image: quay.io/ceph/ceph:v17
+    image: quay.io/ceph/ceph:v18
     allowUnsupported: true
   mon:
     count: 1
@@ -45,6 +45,8 @@ spec:
     useAllNodes: true
     useAllDevices: true
     #deviceFilter:
+  monitoring:
+    enabled: false
   healthCheck:
     daemonHealth:
       mon:
