@@ -30,7 +30,7 @@
     - name: Install kubernetes python package
       become: true
       ansible.builtin.pip:
-        name: kubernetes==26.1.0
+        name: kubernetes==27.2.0
     - name: Load krd variables
       ansible.builtin.include_vars:
         file: ../../../../krd-vars.yml
@@ -57,24 +57,30 @@
       ansible.builtin.debug:
         var: kind_cluster
     - name: Create k8s cluster
-      become: true
-      ansible.builtin.command: '{{ kind_dest }}/kind create cluster --name molecule --wait=300s'
-      when: not 'molecule' in kind_cluster.stdout
-      changed_when: true
-    - name: Create kubeconfig folder
-      ansible.builtin.file:
-        mode: '0755'
-        path: '{{ ansible_env.HOME }}/.kube/'
-        state: directory
-    - name: Copy kubeconfig root file
-      become: true
-      ansible.builtin.copy:
-        mode: preserve
-        src: /root/.kube/config
-        dest: '{{ ansible_env.HOME }}/.kube/config'
-        remote_src: true
-        owner: '{{ ansible_ssh_user }}'
-        group: '{{ ansible_ssh_user }}'
+      block:
+        - name: Create k8s cluster
+          become: true
+          ansible.builtin.command: '{{ kind_dest }}/kind create cluster --name molecule --wait=300s --retain'
+          when: not 'molecule' in kind_cluster.stdout
+          changed_when: true
+        - name: Create kubeconfig folder
+          ansible.builtin.file:
+            mode: '0755'
+            path: '{{ ansible_env.HOME }}/.kube/'
+            state: directory
+        - name: Copy kubeconfig root file
+          become: true
+          ansible.builtin.copy:
+            mode: preserve
+            src: /root/.kube/config
+            dest: '{{ ansible_env.HOME }}/.kube/config'
+            remote_src: true
+            owner: '{{ ansible_ssh_user }}'
+            group: '{{ ansible_ssh_user }}'
+      rescue:
+        - name: Get Kind logs
+          become: true
+          ansible.builtin.command: '{{ kind_dest }}/kind export logs --name molecule'
     - name: Label PMEM node
       kubernetes.core.k8s:
         api_version: v1
