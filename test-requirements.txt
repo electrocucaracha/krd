@@ -6,7 +6,7 @@
 #
 ansible==8.2.0
     # via -r test-requirements.in
-ansible-compat==4.1.2
+ansible-compat==4.1.5
     # via
     #   ansible-lint
     #   molecule
