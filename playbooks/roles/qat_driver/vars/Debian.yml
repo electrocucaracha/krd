@@ -12,3 +12,5 @@ qat_driver_pkgs:
   - build-essential
   - libudev-dev
   - pkg-config
+  - libnl-genl-3-dev
+  - yasm

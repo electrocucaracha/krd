@@ -31,6 +31,8 @@
   ansible.builtin.command: ./configure
   args:
     chdir: "{{ qat_driver_dest }}"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/usr/sbin"
   when: not qat_driver_configure_log.stat.exists
   changed_when: true
 

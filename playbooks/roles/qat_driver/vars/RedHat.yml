@@ -12,3 +12,5 @@ qat_driver_pkgs:
   - libudev-devel
   - gcc
   - openssl-devel
+  - libnl3-devel
+  - yasm

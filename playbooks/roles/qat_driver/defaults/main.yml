@@ -8,11 +8,11 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-qat_driver_version: 4.11.0
+qat_driver_version: 4.22.0
 qat_driver_revision: "00001"
-qat_version: "1.7.l.{{ qat_driver_version }}-{{ qat_driver_revision }}"
+qat_version: "QAT.L.{{ qat_driver_version }}-{{ qat_driver_revision }}"
 qat_driver_dest: "/tmp/qat_driver"
-qat_driver_url: "https://01.org/sites/default/files/downloads/qat{{ qat_version }}.tar.gz"
+qat_driver_url: "https://downloadmirror.intel.com/780675/{{ qat_version }}.tar.gz"
 qat_plugin_mode: dpdk
 
 # User process configuration
