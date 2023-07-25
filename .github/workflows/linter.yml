@@ -33,6 +33,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: /
           VALIDATE_KUBERNETES_KUBEVAL: false
+          VALIDATE_NATURAL_LANGUAGE: false
           KUBERNETES_KUBECONFORM_OPTIONS: '-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml'
   check-tox:
     name: Check syntax (tox)
