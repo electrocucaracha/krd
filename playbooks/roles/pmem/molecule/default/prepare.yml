@@ -81,6 +81,7 @@
         - name: Get Kind logs
           become: true
           ansible.builtin.command: '{{ kind_dest }}/kind export logs --name molecule'
+          changed_when: false
     - name: Label PMEM node
       kubernetes.core.k8s:
         api_version: v1
