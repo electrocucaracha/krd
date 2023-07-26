@@ -16,7 +16,7 @@ roles:
   - name: andrewrothstein.gcc-toolbox
     version: v1.1.10
   - name: andrewrothstein.kind
-    version: v1.2.6
+    version: v1.2.7
   - name: andrewrothstein.kubectl
     version: v1.2.12
 
