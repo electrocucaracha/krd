@@ -142,6 +142,10 @@ collections:
     version: $(get_version ansible_collection kubernetes.core)
   - name: community.docker
     version: $(get_version ansible_collection community.docker)
+  - name: ansible.posix
+    version: $(get_version ansible_collection ansible.posix)
+  - name: community.general
+    version: $(get_version ansible_collection community.general)
 EOT
 
 # Udpate Playbook default versions

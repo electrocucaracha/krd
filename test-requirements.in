@@ -1,7 +1,5 @@
-ansible # GPLv3
 ansible-lint # MIT
 molecule # MIT
-molecule-plugins[vagrant] # MIT
-python-vagrant # MIT
+molecule-plugins[vagrant]@git+https://github.com/ansible-community/molecule-plugins.git # MIT
 pytest-testinfra # Apache-2.0
 yamllint # GPLv3
