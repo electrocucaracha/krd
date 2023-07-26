@@ -10,6 +10,8 @@
 
 dependency:
   name: galaxy
+  options:
+    requirements-file: ../../../galaxy-requirements.yml
 driver:
   name: vagrant
 lint: |
