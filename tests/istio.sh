@@ -48,7 +48,7 @@ spec:
           value: '10'
 EOF
     kubectl wait --for=condition=ready pods client --timeout=3m
-    kubectl logs -n istio-system -l app=istiod | grep default/client
+    kubectl logs -n istio-system "$(kubectl get pods -n istio-system -l app=istiod -o jsonpath='{.items[*].metadata.name}')" | grep default/client
 
     info "Waiting for istio's client pod..."
     until [[ "$(kubectl logs client)" == *"10 request(s) complete to http://$service_name:80/"* ]]; do
@@ -109,6 +109,6 @@ create_client
 assert_contains "$(kubectl get pods -l=app.kubernetes.io/name=server -o jsonpath='{range .items[0].spec.containers[*]}{.image}{"\n"}{end}')" "istio/proxy" "Istio proxy wasn't injected into the server's pod"
 
 assert_contains "$(kubectl logs client)" "Starting loadgen" "The client's pod doesn't start it"
-assert_contains "$(kubectl logs -n istio-system -l app=istiod)" "Sidecar injection request for default/client" "The Client's sidecar injection request wasn't received"
+assert_contains "$(kubectl logs -n istio-system "$(kubectl get pods -n istio-system -l app=istiod -o jsonpath='{.items[*].metadata.name}')")" "Sidecar injection request for default/client" "The Client's sidecar injection request wasn't received"
 
 info "===== Test completed ====="
