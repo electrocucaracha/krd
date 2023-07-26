@@ -26,7 +26,7 @@ def test_pmem_nodes_ready(host):
     nodes = cmd.stdout[:-1].split(",")
     for node in nodes:
         cmd = host.run(
-            "/usr/local/bin/kubectl wait --for=condition=ready node/%s --timeout=3m"
+            "/usr/local/bin/kubectl wait --for=condition=ready node/%s --timeout=1m"
             % node
         )
         assert cmd.rc == 0
@@ -35,31 +35,31 @@ def test_pmem_nodes_ready(host):
 
 def test_pmem_device_plugin_ready(host):
     cmd = host.run(
-        "/usr/local/bin/kubectl rollout status daemonset/pmem-csi-intel-com-node -n pmem-csi"
+        "/usr/local/bin/kubectl rollout status daemonset/pmem-csi-intel-com-node -n pmem-csi --timeout=1m"
     )
 
     assert cmd.rc == 0
     assert "successfully rolled out" in cmd.stdout
 
 
-def test_pmem_statefulset_ready(host):
+def test_pmem_deployment_ready(host):
     cmd = host.run(
-        "/usr/local/bin/kubectl rollout status statefulset/pmem-csi-intel-com-controller -n pmem-csi"
+        "/usr/local/bin/kubectl rollout status deployment/pmem-csi-intel-com-controller -n pmem-csi --timeout=1m"
     )
 
     assert cmd.rc == 0
-    assert "partitioned roll out complete" in cmd.stdout
+    assert "successfully rolled out" in cmd.stdout
 
 
 def test_get_pmem_node_annotation(host):
     host.run(
-        "/usr/local/bin/kubectl wait --for=condition=ready node/molecule-control-plane --timeout=120s"
+        "/usr/local/bin/kubectl wait --for=condition=ready node/molecule-control-plane --timeout=1m"
     )
     host.run(
-        "/usr/local/bin/kubectl rollout status daemonset/pmem-csi-intel-com-node -n pmem-csi"
+        "/usr/local/bin/kubectl rollout status daemonset/pmem-csi-intel-com-node -n pmem-csi --timeout=1m"
     )
     host.run(
-        "/usr/local/bin/kubectl rollout status statefulset/pmem-csi-intel-com-controller -n pmem-csi"
+        "/usr/local/bin/kubectl rollout status statefulset/pmem-csi-intel-com-controller -n pmem-csi --timeout=1m"
     )
     time.sleep(10)
 
