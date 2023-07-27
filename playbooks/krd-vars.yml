@@ -10,19 +10,19 @@
 
 go_version: 1.15.3
 kubespray_version: v2.22.1
-istio_version: 1.18.1
+istio_version: 1.18.2
 cfssl_version: 1.6.4
 sonobuoy_version: 0.56.16
 mitogen_version: 0.2.10
 
 # Knative versions
 kn_version: knative-v1.10.0
-knative_serving_version: knative-v1.10.2
-knative_eventing_version: v0.37.1
+knative_serving_version: knative-v1.11.0
+knative_eventing_version: v0.38.0
 ## Knative Sandbox versions
-net_kourier_version: knative-v1.10.0
-net_istio_version: v0.37.1
-net_certmanager_version: v0.37.2
+net_kourier_version: knative-v1.11.0
+net_istio_version: v0.38.0
+net_certmanager_version: v0.38.0
 
 octant_version: 0.25.1
 kube-ovn_version: v1.11.8

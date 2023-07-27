@@ -16,7 +16,7 @@ roles:
   - name: andrewrothstein.gcc-toolbox
     version: v1.1.10
   - name: andrewrothstein.kind
-    version: v1.2.6
+    version: v1.2.7
   - name: andrewrothstein.kubectl
     version: v1.2.12
 
@@ -25,7 +25,3 @@ collections:
     version: 2.4.0
   - name: community.docker
     version: 3.4.8
-  - name: ansible.posix
-    version: 1.5.2
-  - name: community.general
-    version: 7.2.0
