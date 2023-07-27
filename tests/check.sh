@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2021
+# Copyright (c) 2021,2023
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
@@ -17,13 +17,20 @@ source _functions.sh
 
 trap get_status ERR
 
-cd ..
-for test in "$@"; do
+function _run_test {
+    local test="$1"
+    # shellcheck disable=SC2064
+    trap "./krd_command.sh -a uninstall_${test}" RETURN
+
     info "+++++ Starting $test test..."
     ./krd_command.sh -a "install_${test}"
     pushd tests
     bash "${test}.sh"
     popd
-    ./krd_command.sh -a "uninstall_${test}"
     info "+++++ $test test completed"
+}
+
+cd ..
+for test in "$@"; do
+    _run_test "$test"
 done
