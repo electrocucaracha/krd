@@ -111,9 +111,9 @@ function uninstall_kubevirt {
     kubevirt_version=$(_get_version kubevirt)
 
     kubectl delete kubevirt kubevirt -n kubevirt
-    kubectl delete -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-operator.yaml" --ignore-not-found --wait=false
+    kubectl delete -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-operator.yaml" --ignore-not-found --wait=false || :
     if kubectl api-resources | grep -q kubevirt; then
-        kubectl delete -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-cr.yaml"
+        kubectl delete -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-cr.yaml" --ignore-not-found --wait=false || :
     fi
 
     _uninstall_krew_plugin virt
