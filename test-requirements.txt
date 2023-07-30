@@ -91,12 +91,12 @@ packaging==23.1
     #   black
     #   molecule
     #   pytest
-pathspec==0.11.1
+pathspec==0.11.2
     # via
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==3.9.1
+platformdirs==3.10.0
     # via black
 pluggy==1.2.0
     # via
@@ -134,7 +134,7 @@ requests==2.31.0
     #   cookiecutter
 resolvelib==1.0.1
     # via ansible-core
-rich==13.4.2
+rich==13.5.0
     # via
     #   ansible-lint
     #   enrich
