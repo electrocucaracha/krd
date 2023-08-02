@@ -31,7 +31,7 @@ certifi==2023.7.22
     # via requests
 cffi==1.15.1
     # via cryptography
-chardet==5.1.0
+chardet==5.2.0
     # via binaryornot
 charset-normalizer==3.2.0
     # via requests
@@ -45,7 +45,7 @@ click-help-colors==0.9.1
     # via molecule
 cookiecutter==2.2.3
     # via molecule
-cryptography==41.0.2
+cryptography==41.0.3
     # via ansible-core
 enrich==1.2.7
     # via molecule
@@ -134,7 +134,7 @@ requests==2.31.0
     #   cookiecutter
 resolvelib==1.0.1
     # via ansible-core
-rich==13.5.1
+rich==13.5.2
     # via
     #   ansible-lint
     #   enrich
