@@ -26,7 +26,7 @@ net_certmanager_version: vMax attempts reached
 
 octant_version: 0.25.1
 kube-ovn_version: v1.11.8
-prometheus-operator_version: v0.67.0
+prometheus-operator_version: v0.67.1
 kubevirt_version: v1.0.0
 virtink_version: v0.15.0
 kubesphere_version: v3.4.0
