@@ -96,7 +96,7 @@ pluggy==1.2.0
     #   pytest
 pycparser==2.21
     # via cffi
-pygments==2.15.1
+pygments==2.16.1
     # via rich
 pytest==7.4.0
     # via pytest-testinfra
