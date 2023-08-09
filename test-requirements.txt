@@ -27,6 +27,8 @@ certifi==2023.7.22
     # via requests
 cffi==1.15.1
     # via cryptography
+chardet==5.2.0
+    # via binaryornot
 charset-normalizer==3.2.0
     # via requests
 click==8.1.6
@@ -36,6 +38,8 @@ click==8.1.6
     #   cookiecutter
     #   molecule
 click-help-colors==0.9.1
+    # via molecule
+cookiecutter==2.3.0
     # via molecule
 cryptography==41.0.3
     # via ansible-core
@@ -71,7 +75,7 @@ molecule==6.0.0a2
     # via
     #   -r test-requirements.in
     #   molecule-plugins
-molecule-plugins[vagrant] @ git+https://github.com/ansible-community/molecule-plugins.git
+molecule-plugins[vagrant]==23.5.0
     # via -r test-requirements.in
 mypy-extensions==1.0.0
     # via black
