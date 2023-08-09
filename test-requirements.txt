@@ -71,7 +71,7 @@ molecule==6.0.0a2
     # via
     #   -r test-requirements.in
     #   molecule-plugins
-molecule-plugins @ git+https://github.com/ansible-community/molecule-plugins.git
+molecule-plugins[vagrant] @ git+https://github.com/ansible-community/molecule-plugins.git
     # via -r test-requirements.in
 mypy-extensions==1.0.0
     # via black
