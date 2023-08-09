@@ -31,7 +31,7 @@ certifi==2023.7.22
     # via requests
 cffi==1.15.1
     # via cryptography
-chardet==5.1.0
+chardet==5.2.0
     # via binaryornot
 charset-normalizer==3.2.0
     # via requests
@@ -43,9 +43,9 @@ click==8.1.6
     #   molecule
 click-help-colors==0.9.1
     # via molecule
-cookiecutter==2.2.3
+cookiecutter==2.3.0
     # via molecule
-cryptography==41.0.2
+cryptography==41.0.3
     # via ansible-core
 enrich==1.2.7
     # via molecule
@@ -62,7 +62,7 @@ jinja2==3.1.2
     #   ansible-core
     #   cookiecutter
     #   molecule
-jsonschema==4.18.4
+jsonschema==4.19.0
     # via
     #   ansible-compat
     #   ansible-lint
@@ -79,7 +79,7 @@ molecule==5.1.0
     # via
     #   -r test-requirements.in
     #   molecule-plugins
-molecule-plugins @ git+https://github.com/ansible-community/molecule-plugins.git
+molecule-plugins[vagrant]==23.5.0
     # via -r test-requirements.in
 mypy-extensions==1.0.0
     # via black
@@ -91,12 +91,12 @@ packaging==23.1
     #   black
     #   molecule
     #   pytest
-pathspec==0.11.1
+pathspec==0.11.2
     # via
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==3.9.1
+platformdirs==3.10.0
     # via black
 pluggy==1.2.0
     # via
@@ -104,7 +104,7 @@ pluggy==1.2.0
     #   pytest
 pycparser==2.21
     # via cffi
-pygments==2.15.1
+pygments==2.16.1
     # via rich
 pytest==7.4.0
     # via pytest-testinfra
@@ -124,7 +124,7 @@ pyyaml==6.0.1
     #   cookiecutter
     #   molecule
     #   yamllint
-referencing==0.30.0
+referencing==0.30.2
     # via
     #   jsonschema
     #   jsonschema-specifications
@@ -134,9 +134,10 @@ requests==2.31.0
     #   cookiecutter
 resolvelib==1.0.1
     # via ansible-core
-rich==13.4.2
+rich==13.5.2
     # via
     #   ansible-lint
+    #   cookiecutter
     #   enrich
     #   molecule
 rpds-py==0.9.2
