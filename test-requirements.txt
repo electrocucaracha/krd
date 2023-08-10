@@ -15,10 +15,14 @@ ansible-core==2.15.2
     #   molecule
 ansible-lint==6.17.2
     # via -r test-requirements.in
+arrow==1.2.3
+    # via cookiecutter
 attrs==23.1.0
     # via
     #   jsonschema
     #   referencing
+binaryornot==0.4.4
+    # via cookiecutter
 black==23.7.0
     # via ansible-lint
 bracex==2.3.post1
@@ -71,7 +75,7 @@ markupsafe==2.1.3
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-molecule==6.0.0a2
+molecule==5.1.0
     # via
     #   -r test-requirements.in
     #   molecule-plugins
@@ -106,6 +110,10 @@ pytest==7.4.0
     # via pytest-testinfra
 pytest-testinfra==8.1.0
     # via -r test-requirements.in
+python-dateutil==2.8.2
+    # via arrow
+python-slugify==8.0.1
+    # via cookiecutter
 python-vagrant==1.0.0
     # via molecule-plugins
 pyyaml==6.0.1
@@ -140,10 +148,14 @@ ruamel-yaml==0.17.32
     # via ansible-lint
 ruamel-yaml-clib==0.2.7
     # via ruamel-yaml
+six==1.16.0
+    # via python-dateutil
 subprocess-tee==0.4.1
     # via
     #   ansible-compat
     #   ansible-lint
+text-unidecode==1.3
+    # via python-slugify
 tomli==2.0.1
     # via
     #   black
