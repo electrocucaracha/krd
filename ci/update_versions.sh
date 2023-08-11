@@ -103,8 +103,8 @@ sed -i "s/kn_version:.*/kn_version: $(get_version github_release knative/client)
 sed -i "s/knative_serving_version:.*/knative_serving_version: $(get_version github_release knative/serving)/g" ./playbooks/krd-vars.yml
 sed -i "s/knative_eventing_version:.*/knative_eventing_version: v$(get_version github_tag knative/eventing)/g" ./playbooks/krd-vars.yml
 sed -i "s/net_kourier_version:.*/net_kourier_version: $(get_version github_release knative-sandbox/net-kourier)/g" ./playbooks/krd-vars.yml
-sed -i "s/net_istio_version:.*/net_istio_version: v$(get_version github_tag knative-sandbox/net-istio)/g" ./playbooks/krd-vars.yml
-sed -i "s/net_certmanager_version:.*/net_certmanager_version: v$(get_version github_tag knative-sandbox/net-certmanager)/g" ./playbooks/krd-vars.yml
+sed -i "s/net_istio_version:.*/net_istio_version: v$(get_version github_release knative-sandbox/net-istio)/g" ./playbooks/krd-vars.yml
+sed -i "s/net_certmanager_version:.*/net_certmanager_version: v$(get_version github_release knative-sandbox/net-certmanager)/g" ./playbooks/krd-vars.yml
 
 sed -i "s/octant_version:.*/octant_version: $(get_version github_release vmware-tanzu/octant)/g" ./playbooks/krd-vars.yml
 sed -i "s/kube-ovn_version:.*/kube-ovn_version: v$(get_version github_release kubeovn/kube-ovn)/g" ./playbooks/krd-vars.yml
