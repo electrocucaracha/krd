@@ -28,4 +28,4 @@ collections:
   - name: ansible.posix
     version: 1.5.4
   - name: community.general
-    version: 7.2.1
+    version: 7.3.0
