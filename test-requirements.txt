@@ -4,25 +4,21 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible-compat==4.1.5
+ansible-compat==4.1.6
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.15.2
+ansible-core==2.15.3
     # via
     #   ansible-compat
     #   ansible-lint
     #   molecule
 ansible-lint==6.17.2
     # via -r test-requirements.in
-arrow==1.2.3
-    # via cookiecutter
 attrs==23.1.0
     # via
     #   jsonschema
     #   referencing
-binaryornot==0.4.4
-    # via cookiecutter
 black==23.7.0
     # via ansible-lint
 bracex==2.3.post1
@@ -31,25 +27,20 @@ certifi==2023.7.22
     # via requests
 cffi==1.15.1
     # via cryptography
-chardet==5.2.0
-    # via binaryornot
 charset-normalizer==3.2.0
     # via requests
 click==8.1.6
     # via
     #   black
     #   click-help-colors
-    #   cookiecutter
     #   molecule
 click-help-colors==0.9.1
-    # via molecule
-cookiecutter==2.3.0
     # via molecule
 cryptography==41.0.3
     # via ansible-core
 enrich==1.2.7
     # via molecule
-exceptiongroup==1.1.2
+exceptiongroup==1.1.3
     # via pytest
 filelock==3.12.2
     # via ansible-lint
@@ -60,7 +51,6 @@ iniconfig==2.0.0
 jinja2==3.1.2
     # via
     #   ansible-core
-    #   cookiecutter
     #   molecule
 jsonschema==4.19.0
     # via
@@ -75,7 +65,7 @@ markupsafe==2.1.3
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-molecule==5.1.0
+molecule==6.0.1
     # via
     #   -r test-requirements.in
     #   molecule-plugins
@@ -110,10 +100,6 @@ pytest==7.4.0
     # via pytest-testinfra
 pytest-testinfra==8.1.0
     # via -r test-requirements.in
-python-dateutil==2.8.2
-    # via arrow
-python-slugify==8.0.1
-    # via cookiecutter
 python-vagrant==1.0.0
     # via molecule-plugins
 pyyaml==6.0.1
@@ -121,7 +107,6 @@ pyyaml==6.0.1
     #   ansible-compat
     #   ansible-core
     #   ansible-lint
-    #   cookiecutter
     #   molecule
     #   yamllint
 referencing==0.30.2
@@ -129,15 +114,12 @@ referencing==0.30.2
     #   jsonschema
     #   jsonschema-specifications
 requests==2.31.0
-    # via
-    #   ansible-lint
-    #   cookiecutter
+    # via ansible-lint
 resolvelib==1.0.1
     # via ansible-core
 rich==13.5.2
     # via
     #   ansible-lint
-    #   cookiecutter
     #   enrich
     #   molecule
 rpds-py==0.9.2
@@ -148,14 +130,10 @@ ruamel-yaml==0.17.32
     # via ansible-lint
 ruamel-yaml-clib==0.2.7
     # via ruamel-yaml
-six==1.16.0
-    # via python-dateutil
 subprocess-tee==0.4.1
     # via
     #   ansible-compat
     #   ansible-lint
-text-unidecode==1.3
-    # via python-slugify
 tomli==2.0.1
     # via
     #   black
@@ -163,7 +141,9 @@ tomli==2.0.1
 urllib3==2.0.4
     # via requests
 wcmatch==8.4.1
-    # via ansible-lint
+    # via
+    #   ansible-lint
+    #   molecule
 yamllint==1.32.0
     # via
     #   -r test-requirements.in
