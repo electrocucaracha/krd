@@ -21,10 +21,10 @@ different scenarios. There are different setups located in the
 
 | Name       | Version           |
 |:-----------|:-----------------:|
-| Ubuntu     | 16.04/18.04/20.04 |
+| Ubuntu     | 18.04/20.04/22.04 |
 | CentOS     | 7/8               |
 | openSUSE   | Leap              |
-| Fedora     | 34/35             |
+| Fedora     | 37/38             |
 
 ## Components
 
