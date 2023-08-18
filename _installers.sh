@@ -161,12 +161,12 @@ strategy_plugins = $(dirname "$(sudo find / -name mitogen_linear.py | head -n 1)
 host_key_checking=False
 gathering = smart
 fact_caching = jsonfile
-fact_caching_connection = /tmp
+fact_caching_connection = /tmp/ansible_cache
 stdout_callback = skippy
 library = ./library:../library
 callbacks_enabled = profile_tasks
 jinja2_extensions = jinja2.ext.do
-roles_path = $galaxy_base_path
+roles_path = $kubespray_folder/roles:$galaxy_base_path
 EOT
 }
 

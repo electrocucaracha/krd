@@ -104,9 +104,6 @@ function _install_kubespray {
             sed -i "s/mitogen_version: .*/mitogen_version: $mitogen_version/g" ./mitogen.yml
             sudo make mitogen
         else
-            if _vercmp "${kubespray_version#*v}" '>=' "2.22"; then
-                sudo sed -i "s|roles_path = .*|roles_path = $kubespray_folder/roles:$galaxy_base_path|g" /etc/ansible/ansible.cfg
-            fi
             $PIP_CMD install --no-cache-dir mitogen
         fi
         popd
