@@ -34,7 +34,7 @@ click==8.1.7
     #   black
     #   click-help-colors
     #   molecule
-click-help-colors==0.9.1
+click-help-colors==0.9.2
     # via molecule
 cryptography==41.0.3
     # via ansible-core
