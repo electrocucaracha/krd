@@ -98,7 +98,7 @@ pygments==2.16.1
     # via rich
 pytest==7.4.0
     # via pytest-testinfra
-pytest-testinfra==8.1.0
+pytest-testinfra==9.0.0
     # via -r test-requirements.in
 python-vagrant==1.0.0
     # via molecule-plugins
