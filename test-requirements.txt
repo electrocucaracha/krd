@@ -122,7 +122,7 @@ rich==13.5.2
     #   ansible-lint
     #   enrich
     #   molecule
-rpds-py==0.10.0
+rpds-py==0.10.2
     # via
     #   jsonschema
     #   referencing
