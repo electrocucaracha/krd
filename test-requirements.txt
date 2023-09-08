@@ -96,7 +96,7 @@ pycparser==2.21
     # via cffi
 pygments==2.16.1
     # via rich
-pytest==7.4.1
+pytest==7.4.2
     # via pytest-testinfra
 pytest-testinfra==9.0.0
     # via -r test-requirements.in
