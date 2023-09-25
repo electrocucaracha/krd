@@ -22,7 +22,7 @@ jobs:
       pull-requests: write  # for technote-space/create-pr-action to create a PR
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v4.1.0
       - uses: actions/cache@v3.3.2
         with:
           path: ~/.vagrant.d/boxes
