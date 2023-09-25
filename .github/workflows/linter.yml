@@ -19,14 +19,14 @@ jobs:
     name: Check documentation external links
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v4.1.0
       - name: Check broken links
         uses: gaurav-nelson/github-action-markdown-link-check@1.0.15
   check-super-linter:
     name: Check syntax (super-linter)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v4.1.0
       - name: Run super-linter validation
         uses: github/super-linter@v5.0.0
         env:
@@ -39,7 +39,7 @@ jobs:
     name: Check syntax (tox)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.0.0
+      - uses: actions/checkout@v4.1.0
       - name: Install tox
         run: pip install tox
       - name: Run tox lint validation
