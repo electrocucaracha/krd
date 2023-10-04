@@ -19,7 +19,7 @@ lint: |
   PATH=${PATH}
   yamllint -c ../../../.yaml-lint.yml .
 platforms:
-  - name: centos7
+  - name: centos7-$POSTFIX_NAME
     box: generic/centos7
     box_version: 4.2.16
     memory: 3072
@@ -28,7 +28,7 @@ platforms:
       gui: false
     provider_raw_config_args:
       - "customize ['modifyvm', :id, '--nictype1', 'virtio', '--cableconnected1', 'on']"
-  - name: bionic
+  - name: bionic-$POSTFIX_NAME
     box: generic/ubuntu1804
     box_version: 4.2.16
     memory: 3072
