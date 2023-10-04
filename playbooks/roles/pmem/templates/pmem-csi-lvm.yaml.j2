@@ -511,7 +511,7 @@ spec:
         env:
         - name: PMEM_CSI_DRIVER_NAME
           value: pmem-csi.intel.com
-        image: registry.k8s.io/sig-storage/csi-node-driver-registrar:{{ driver_registrar_version }}
+        image: registry.k8s.io/sig-storage/csi-node-driver-registrar:{{ pmem_driver_registrar_version }}
         imagePullPolicy: IfNotPresent
         name: driver-registrar
         resources:
@@ -551,7 +551,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        image: registry.k8s.io/sig-storage/csi-provisioner:{{ csi_provisioner_version }}
+        image: registry.k8s.io/sig-storage/csi-provisioner:{{ pmem_csi_provisioner_version }}
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 6

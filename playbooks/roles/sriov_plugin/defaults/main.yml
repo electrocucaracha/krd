@@ -8,9 +8,8 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 
-sriov_template_folder: /tmp/sriov_k8s
 sriov_plugin_version: v3.3.2
-sriovdp_config:
+sriov_plugin_sriovdp_config:
   resourceList:
     - resourceName: virtio_net_device
       resourcePrefix: redhat.com

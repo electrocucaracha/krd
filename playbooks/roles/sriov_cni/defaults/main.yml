@@ -9,7 +9,7 @@
 ##############################################################################
 
 sriov_cni_version: v2.6
-network_attachment_definitions:
+sriov_cni_network_attachment_definitions:
   - name: sriov-net
     resourceName: intel.com/intel_sriov_netdevice
     config:

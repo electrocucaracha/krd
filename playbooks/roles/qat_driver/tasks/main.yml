@@ -44,7 +44,7 @@
     - Start qat_service service
 
 - name: Configure number of processes per qat device
-  when: qat_plugin_mode == "kernel"
+  when: qat_driver_plugin_mode == "kernel"
   block:
     - name: Get qat devices
       ansible.builtin.shell: >
@@ -60,10 +60,10 @@
         dest: "/etc/{{ item }}.conf"
         block: |
           [SHIM]
-          NumberCyInstances = {{ shim.num_crypto_instances }}
-          NumberDcInstances = {{ shim.num_decompression_instances }}
-          NumProcesses = {{ shim.num_processes }}
-          LimitDevAccess = {{ shim.limit_dev_access }}
+          NumberCyInstances = {{ qat_driver_shim.num_crypto_instances }}
+          NumberDcInstances = {{ qat_driver_shim.num_decompression_instances }}
+          NumProcesses = {{ qat_driver_shim.num_processes }}
+          LimitDevAccess = {{ qat_driver_shim.limit_dev_access }}
           # Crypto - User instance #0
           Cy0Name = "UserCY0"
           Cy0IsPolled = 1

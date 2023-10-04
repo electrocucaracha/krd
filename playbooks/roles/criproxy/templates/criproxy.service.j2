@@ -2,7 +2,7 @@
 Description=CRI Proxy
 
 [Service]
-ExecStart={{ criproxy_dest }}/criproxy -v 3 -logtostderr -connect {{ cri_socket_path }},virtlet.cloud:/run/virtlet.sock -listen /run/criproxy.sock
+ExecStart={{ criproxy_dest }}/criproxy -v 3 -logtostderr -connect {{ criproxy_cri_socket_path }},virtlet.cloud:/run/virtlet.sock -listen /run/criproxy.sock
 Restart=always
 StartLimitInterval=0
 RestartSec=10

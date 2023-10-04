@@ -76,7 +76,7 @@
         - Restart criproxy service
     - name: Wait for dockershim socket to be created
       ansible.builtin.wait_for:
-        path: "{{ cri_socket_path }}"
+        path: "{{ criproxy_cri_socket_path }}"
         delay: 5
         timeout: 600
 

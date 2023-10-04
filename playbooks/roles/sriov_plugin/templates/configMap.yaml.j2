@@ -5,4 +5,4 @@ metadata:
   namespace: kube-system
 data:
   config.json: |
-{{ sriovdp_config | to_json | safe | indent(4, True) }}
+{{ sriov_plugin_sriovdp_config | to_json | safe | indent(4, True) }}

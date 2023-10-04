@@ -10,13 +10,12 @@
 
 qat_driver_version: 4.22.0
 qat_driver_revision: "00001"
-qat_version: "QAT.L.{{ qat_driver_version }}-{{ qat_driver_revision }}"
 qat_driver_dest: "/tmp/qat_driver"
-qat_driver_url: "https://downloadmirror.intel.com/780675/{{ qat_version }}.tar.gz"
-qat_plugin_mode: dpdk
+qat_driver_url: "https://downloadmirror.intel.com/780675/QAT.L.{{ qat_driver_version }}-{{ qat_driver_revision }}.tar.gz"
+qat_driver_plugin_mode: dpdk
 
 # User process configuration
-shim:
+qat_driver_shim:
   num_crypto_instances: 1
   num_decompression_instances: 0
   # Indicates the maximum number of processes that can call icp_sal_userStart on
