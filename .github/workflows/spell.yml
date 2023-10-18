@@ -24,7 +24,7 @@ jobs:
     name: Check spelling (reviewdog)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.0
+      - uses: actions/checkout@v4.1.1
       - uses: reviewdog/action-misspell@v1.14.0
         with:
           github_token: ${{ secrets.github_token }}
@@ -32,6 +32,6 @@ jobs:
     name: Check spelling (pyspelling)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.0
+      - uses: actions/checkout@v4.1.1
       - uses: igsekor/pyspelling-any@v1.0.4
         name: Spellcheck
