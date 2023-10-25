@@ -99,7 +99,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4.1.1
       - name: Run the sh-checker
-        uses: luizm/action-sh-checker@v0.7.0
+        uses: luizm/action-sh-checker@v0.8.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SHFMT_OPTS: -i 4 -s
