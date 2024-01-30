@@ -1,7 +1,7 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2019 - 2023
+# Copyright (c) 2019 - 2024
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
@@ -10,24 +10,24 @@
 centos:
   7:
     name: generic/centos7
-    version: "4.2.16"
+    version: "4.3.12"
   8:
     name: generic/centos8
-    version: "4.2.16"
+    version: "4.3.12"
 ubuntu:
   bionic:
     name: generic/ubuntu1804
-    version: "4.2.16"
+    version: "4.3.12"
   focal:
     name: generic/ubuntu2004
-    version: "4.2.16"
+    version: "4.3.12"
   jammy:
     name: generic/ubuntu2204
-    version: "4.2.16"
+    version: "4.3.12"
 opensuse:
   leap:
     name: generic/opensuse15
-    version: "4.2.16"
+    version: "4.3.12"
 fedora:
   37:
     name: fedora/37-cloud-base
