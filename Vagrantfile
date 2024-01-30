@@ -27,6 +27,7 @@ pdf = "#{File.dirname(__FILE__)}/config/default.yml"
 pdf = "#{File.dirname(__FILE__)}/config/pdf.yml" if File.exist?("#{File.dirname(__FILE__)}/config/pdf.yml")
 nodes = YAML.load_file(pdf)
 vagrant_boxes = YAML.load_file("#{File.dirname(__FILE__)}/distros_supported.yml")
+installer_box = vagrant_boxes["ubuntu"]["jammy"]
 
 # Inventory file creation
 etchosts_dict = ""
@@ -316,13 +317,14 @@ Vagrant.configure("2") do |config|
 
   config.vm.define :installer, primary: true, autostart: false do |installer|
     installer.vm.hostname = "undercloud"
-    installer.vm.box = vagrant_boxes["ubuntu"]["focal"]["name"]
+    installer.vm.box = installer_box["name"]
+    installer.vm.box_version = installer_box["version"]
     installer.vm.network :forwarded_port, guest: 9090, host: 9090
 
     %w[virtualbox libvirt].each do |provider|
       installer.vm.provider provider do |p|
         p.cpus = 1
-        p.memory = 512
+        p.memory = 1024
       end
     end
 

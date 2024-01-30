@@ -21,6 +21,12 @@ fi
 function uninstall_k8s {
     [ ! -d $kubespray_folder ] && _install_kubespray
     _run_ansible_cmd "$kubespray_folder/reset.yml --extra-vars \"reset_confirmation=yes\"" "destroy-kubernetes.log"
+
+    if _vercmp "$(python -V | awk '{print $2}')" '<' "3.8"; then
+        sudo -E "$(command -v pip)" uninstall -y -r "$kubespray_folder/requirements-2.11.txt"
+    else
+        sudo -E "$(command -v pip)" uninstall -y -r "$kubespray_folder/requirements.txt"
+    fi
 }
 
 function _uninstall_helm {
