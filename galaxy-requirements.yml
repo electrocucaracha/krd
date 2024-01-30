@@ -7,7 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 roles:
   - name: geerlingguy.docker
     version: 6.2.0
@@ -19,7 +18,6 @@ roles:
     version: v1.2.6
   - name: andrewrothstein.kubectl
     version: v1.2.12
-
 collections:
   - name: kubernetes.core
     version: 2.4.0

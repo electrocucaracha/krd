@@ -7,16 +7,13 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 - name: Check if binary exists
   ansible.builtin.stat:
     path: /usr/local/bin/{{ pmem_cfssl_binary }}
   register: pmem_cfssl_binary_location
-
 - name: Print binary value
   ansible.builtin.debug:
     var: pmem_cfssl_binary_location
-
 - name: Retrieve binary
   ansible.builtin.get_url:
     url: https://github.com/cloudflare/cfssl/releases/download/v{{ pmem_cfssl_version }}/{{ pmem_cfssl_binary }}_{{ pmem_cfssl_version }}_linux_amd64

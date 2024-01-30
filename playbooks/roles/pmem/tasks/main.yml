@@ -7,7 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 - name: Deploy cfssl binaries
   ansible.builtin.include_tasks: bootstrap.yml
   vars:
@@ -15,13 +14,11 @@
   with_items:
     - cfssl
     - cfssljson
-
 - name: Ensure destination folder exists
   ansible.builtin.file:
     mode: '0755'
     state: directory
     path: "{{ pmem_template_folder }}"
-
 - name: Copy shell scripts
   ansible.builtin.copy:
     src: "{{ item }}"
@@ -31,35 +28,30 @@
     - setup-ca-kubernetes
     - setup-ca
     - test-config
-
 - name: Create a PMEM namespace
   kubernetes.core.k8s:
     name: "{{ pmem_namespace }}"
     api_version: v1
     kind: Namespace
     state: present
-
 - name: Get PMEM CSI node secret
   kubernetes.core.k8s_info:
     kind: Secret
     name: pmem-csi-intel-com-controller-secret
     namespace: "{{ pmem_namespace }}"
   register: pmem_node_secret
-
 - name: Get PMEM CSI registry secret
   kubernetes.core.k8s_info:
     kind: Secret
     name: pmem-csi-intel-com-controller-secret
     namespace: "{{ pmem_namespace }}"
   register: pmem_registry_secret
-
 - name: Print node and registry values
   ansible.builtin.debug:
     var: '{{ item }}_secret'
   with_items:
     - node
     - registry
-
 - name: Create PMEM secrets
   become: true
   ansible.builtin.shell: 'PATH=$PATH:/usr/local/bin/ {{ pmem_template_folder }}/setup-ca-kubernetes.sh'
@@ -71,12 +63,10 @@
     - pmem_node_secret.resources | length == 0
     - pmem_registry_secret.resources | length == 0
   changed_when: true
-
 - name: Create PMEM CSI for LVM driver
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'pmem-csi-lvm.yaml.j2') }}"
-
 - name: Create PMEM storage classes
   kubernetes.core.k8s:
     state: present

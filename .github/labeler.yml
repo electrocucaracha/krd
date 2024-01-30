@@ -7,19 +7,14 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 documentation:
   - docs/*
   - "*.md"
-
 tests:
   - tests/*
-
 ci:
   - .github/*
-
 all-in-one:
   - aio.sh
-
 addons:
   - playbooks/*

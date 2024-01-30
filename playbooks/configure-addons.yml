@@ -7,7 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 - name: Install SR-IOV Network CNI
   hosts: localhost
   tags:
@@ -24,7 +23,6 @@
         name: kubernetes==27.2.0
   roles:
     - sriov_cni
-
 - name: Install SR-IOV Network Device Plugin
   hosts: localhost
   tags:
@@ -41,7 +39,6 @@
         name: kubernetes==27.2.0
   roles:
     - sriov_plugin
-
 - name: Install Node Feature Discovery add-on
   hosts: localhost
   tags: nfd
@@ -56,7 +53,6 @@
         name: kubernetes==27.2.0
   roles:
     - nfd
-
 - name: Label worker nodes with pmem devices
   hosts: all
   gather_facts: true
@@ -83,7 +79,6 @@
             labels:
               storage: pmem
       when: pmem_dev_check.stat.exists
-
 - name: Install Persistent Memory add-on
   hosts: localhost
   pre_tasks:
@@ -102,7 +97,6 @@
   roles:
     - role: andrewrothstein.gcc-toolbox
     - pmem
-
 - name: Install QuickAssist drivers
   hosts: qat-node
   become: true
@@ -117,7 +111,6 @@
     - role: geerlingguy.repo-epel
       when: ansible_os_family == 'RedHat'
     - qat_driver
-
 - name: Build intel-qat-plugin in kerneldrv mode
   vars:
     qat_plugin_repo_folder: /tmp/intel-device-plugins-for-kubernetes
@@ -188,7 +181,6 @@
               pull: true
             name: intel/intel-qat-plugin
             tag: "{{ qat_plugin_version }}"
-
 - name: Install QuickAssist Plugin
   hosts: localhost
   tags:

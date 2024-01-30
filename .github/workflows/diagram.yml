@@ -7,7 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 name: Documentation and diagram generation
 # yamllint disable-line rule:truthy
 on:
@@ -16,7 +15,6 @@ on:
       - codebase-structure.svg
       - .github/
   workflow_dispatch:
-
 jobs:
   check-diagram:
     name: Update the codebase structure diagram

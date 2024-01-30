@@ -7,17 +7,14 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 - name: Get service status
   ansible.builtin.service_facts:
-
 - name: Stop qat_service service
   become: true
   ansible.builtin.service:
     name: qat_service
     state: stopped
   when: ansible_facts.services["qat_service.service"] is defined
-
 - name: Get intel_qat kernel module dependencies
   ansible.builtin.shell: |
     set -o pipefail
@@ -27,18 +24,15 @@
   register: qat_driver_deps
   changed_when: false
   failed_when: (qat_driver_deps.rc not in [0, 1])
-
 - name: Print intel_qat_deps value
   ansible.builtin.debug:
     var: qat_driver_deps
-
 - name: Remove intel_qat kernel module dependencies
   become: true
   community.general.modprobe:
     name: "{{ item }}"
     state: absent
   loop: "{{ qat_driver_deps.stdout_lines }}"
-
 - name: Remove kernel module
   become: true
   community.general.modprobe:

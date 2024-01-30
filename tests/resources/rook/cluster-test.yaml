@@ -1,3 +1,4 @@
+---
 #################################################################################################################
 # Define the settings for the rook-ceph cluster with common settings for a small test cluster.
 # All nodes with available raw devices will be used for the Ceph cluster. One node is sufficient
@@ -11,7 +12,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: rook-config-override
-  namespace: rook-ceph # namespace:cluster
+  namespace: rook-ceph  # namespace:cluster
 data:
   config: |
     [global]
@@ -25,7 +26,7 @@ apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
   name: my-cluster
-  namespace: rook-ceph # namespace:cluster
+  namespace: rook-ceph  # namespace:cluster
 spec:
   dataDirHostPath: /var/lib/rook
   cephVersion:
@@ -62,7 +63,7 @@ apiVersion: ceph.rook.io/v1
 kind: CephBlockPool
 metadata:
   name: builtin-mgr
-  namespace: rook-ceph # namespace:cluster
+  namespace: rook-ceph  # namespace:cluster
 spec:
   name: .mgr
   replicated:

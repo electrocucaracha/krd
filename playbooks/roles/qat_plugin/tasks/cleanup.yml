@@ -7,18 +7,14 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
-
 - name: Remove the PyYAML package
   ansible.builtin.package:
     name: python3-yaml
     state: absent
   when: ansible_distribution == 'Ubuntu'
-
 - name: Install kubernetes python package
   ansible.builtin.pip:
     name: kubernetes
-
 - name: Delete qat plugin daemonset
   kubernetes.core.k8s:
     state: absent

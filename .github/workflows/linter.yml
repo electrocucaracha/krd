@@ -7,13 +7,11 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 name: Lint Code Base
 # yamllint disable-line rule:truthy
 on:
   push:
   pull_request:
-
 jobs:
   check-broken-links:
     name: Check documentation external links

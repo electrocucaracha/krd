@@ -7,14 +7,12 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 name: Scheduled Kubernetes Dashboard + Metrics Server verification
 # yamllint disable-line rule:truthy
 on:
   schedule:
     - cron: '0 0 * * 5'
   workflow_dispatch:
-
 jobs:
   check-dashboard-and-metrics:
     name: Check All-in-One setup in a Ubuntu Focal virtual environment

@@ -7,7 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 - name: Install SuSE build tools
   become: true
   community.general.zypper:
@@ -16,39 +15,33 @@
     type: pattern
     update_cache: true
   when: ansible_os_family == 'Suse'
-
 - name: Install RedHat build tools
   become: true
   ansible.builtin.yum:
     name: "@Development tools"
     state: present
   when: ansible_os_family == 'RedHat'
-
 - name: Load distro variables
   ansible.builtin.include_vars:
     file: "{{ ansible_os_family }}.yml"
-
 - name: Update apt packages
   become: true
   ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600
   when: ansible_os_family == 'Debian'
-
 - name: Install qat compilation packages
   become: true
   ansible.builtin.package:
     name: "{{ item }}"
     state: present
   with_items: "{{ qat_driver_pkgs }}"
-
 - name: Install Debian kernel development tools
   become: true
   ansible.builtin.package:
     name: "linux-headers-{{ ansible_kernel }}"
     state: present
   when: ansible_os_family == 'Debian'
-
 - name: Install RedHat kernel development tools
   ansible.builtin.package:
     name: kernel-devel

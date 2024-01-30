@@ -7,7 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 - name: Configure CRIU hosts
   hosts: criu
   roles:
@@ -67,4 +66,5 @@
       ansible.builtin.service:
         name: docker
         state: restarted
+
 # TODO: Disable seccomp

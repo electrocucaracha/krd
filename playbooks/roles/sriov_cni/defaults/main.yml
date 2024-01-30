@@ -7,7 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 sriov_cni_version: v2.6
 sriov_cni_network_attachment_definitions:
   - name: sriov-net

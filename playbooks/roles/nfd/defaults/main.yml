@@ -7,6 +7,5 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 nfd_template_folder: "/tmp/nfd_k8s"
 nfd_version: v0.13.3

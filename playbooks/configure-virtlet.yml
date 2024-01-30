@@ -7,13 +7,11 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 - name: Install virtlet
   hosts: localhost
   tags: virtlet
   roles:
     - virtlet
-
 - name: Install virtlet
   hosts: kube-node
   tags: virtlet

@@ -7,13 +7,10 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 persistence:
   enabled: false
-
 service:
   type: NodePort
   nodePort: 30086
-
 adminUser: admin
 adminPassword: secret

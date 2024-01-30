@@ -7,36 +7,30 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 - name: Clean up
   ansible.builtin.import_tasks: cleanup.yml
-
 - name: Ensure destination folder exists
   ansible.builtin.file:
     mode: '0755'
     state: directory
     path: "{{ qat_plugin_tmpl_dir }}"
-
 - name: Generate QAT DPDK k8s resources based on templates
   ansible.builtin.template:
     mode: preserve
     src: plugin.yaml.j2
     dest: "{{ qat_plugin_tmpl_dir }}/plugin.yml"
   when: qat_plugin_mode == "dpdk"
-
 - name: Generate QAT kernel k8s resources based on templates
   ansible.builtin.template:
     mode: preserve
     src: plugin_kernel_mode.yaml.j2
     dest: "{{ qat_plugin_tmpl_dir }}/plugin.yml"
   when: qat_plugin_mode == "kernel"
-
 - name: Get QAT configmap files
   ansible.builtin.copy:
     mode: preserve
     src: configmap.yaml
     dest: "{{ qat_plugin_tmpl_dir }}/configmap.yaml"
-
 - name: Create QAT k8s resources
   kubernetes.core.k8s:
     state: present

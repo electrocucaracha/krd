@@ -80,7 +80,6 @@ cat <<EOT >.distros_supported.yml
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 EOT
 
 echo "centos:" >>.distros_supported.yml

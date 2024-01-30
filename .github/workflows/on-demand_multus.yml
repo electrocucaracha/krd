@@ -7,7 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 name: Check Multus CNI
 # yamllint disable-line rule:truthy
 on:
@@ -24,7 +23,6 @@ on:
   pull_request_review:
     types:
       - submitted
-
 jobs:
   check-multus:
     name: Check Multus CNI in an Ubuntu Focal All-in-One setup
@@ -32,8 +30,7 @@ jobs:
       (
         github.event_name == 'pull_request_review' &&
         github.event.review.state == 'approved'
-      ) ||
-      github.event_name != 'pull_request_review'
+      ) || github.event_name != 'pull_request_review'
     runs-on: ubuntu-20.04
     env:
       KRD_DEBUG: true

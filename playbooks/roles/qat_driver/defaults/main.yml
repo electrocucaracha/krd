@@ -7,13 +7,11 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 qat_driver_version: 4.22.0
 qat_driver_revision: "00001"
 qat_driver_dest: "/tmp/qat_driver"
 qat_driver_url: "https://downloadmirror.intel.com/780675/QAT.L.{{ qat_driver_version }}-{{ qat_driver_revision }}.tar.gz"
 qat_driver_plugin_mode: dpdk
-
 # User process configuration
 qat_driver_shim:
   num_crypto_instances: 1

@@ -7,10 +7,8 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 - name: Get service status
   ansible.builtin.service_facts:
-
 - name: Disable AppArmor in all nodes
   become: true
   ansible.builtin.service:
@@ -20,23 +18,19 @@
   when:
     - ansible_os_family == "Debian"
     - ansible_facts.services["apparmor.service"] is defined
-
 - name: Disable SELinux in all nodes
   selinux:  # noqa fqcn
     state: disabled
   when:
     - ansible_os_family == "RedHat"
     - ansible_facts.services["selinux.service"] is defined
-
 - name: Check that kubelet env file exists
   ansible.builtin.stat:
     path: /etc/kubernetes/kubelet.env
   register: criproxy_kubelet_env
-
 - name: Print kubelet_env_stat value
   ansible.builtin.debug:
     var: criproxy_kubelet_env
-
 - name: Create dockershim service
   become: true
   when:
@@ -79,48 +73,40 @@
         path: "{{ criproxy_cri_socket_path }}"
         delay: 5
         timeout: 600
-
 - name: Create CRIProxy binary folder
   ansible.builtin.file:
     mode: '0755'
     state: directory
     path: "{{ criproxy_dest }}"
-
 - name: Check that criproxy binary exists
   ansible.builtin.stat:
     path: "{{ criproxy_dest }}/criproxy"
   register: criproxy_stat
-
 - name: Print criproxy_stat value
   ansible.builtin.debug:
     var: criproxy_stat
-
 - name: Download CRIproxy package
   ansible.builtin.get_url:
     url: "{{ criproxy_url }}"
     dest: "{{ criproxy_dest }}/criproxy"
     mode: '0755'
   when: not criproxy_stat.stat.exists
-
 - name: Set criproxy execution permissions
   ansible.builtin.file:
     path: "{{ criproxy_dest }}/criproxy"
     mode: "+x"
-
 - name: Recreate criproxy service
   become: true
   ansible.builtin.template:
     mode: preserve
     src: criproxy.service.j2
     dest: /etc/systemd/system/criproxy.service
-
 - name: Start criproxy service
   become: true
   ansible.builtin.service:
     name: criproxy
     state: started
     enabled: true
-
 - name: Modify args for kubelet service
   become: true
   ansible.builtin.lineinfile:

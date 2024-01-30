@@ -7,7 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 - name: Get intel_qat version
   ansible.builtin.shell: |
     set -o pipefail
@@ -16,23 +15,18 @@
     executable: /bin/bash
   register: qat_driver_installed_version
   changed_when: false
-
 - name: Print intel_qat_version value
   ansible.builtin.debug:
     var: qat_driver_installed_version
-
 - name: Clean up
   ansible.builtin.include_tasks: cleanup.yml
   when: qat_driver_installed_version.stdout != qat_driver_version
-
 - name: Bootstrap QAT drivers source code
   ansible.builtin.include_tasks: bootstrap.yml
   when: qat_driver_installed_version.stdout != qat_driver_version
-
 - name: Build QAT drivers source code
   ansible.builtin.include_tasks: build.yml
   when: qat_driver_installed_version.stdout != qat_driver_version
-
 - name: Create qat_service systemd wrapper
   become: true
   ansible.builtin.copy:
@@ -42,15 +36,13 @@
   when: ansible_os_family in ['ClearLinux', 'Suse']
   notify:
     - Start qat_service service
-
 - name: Configure number of processes per qat device
   when: qat_driver_plugin_mode == "kernel"
   block:
     - name: Get qat devices
       ansible.builtin.shell: >
-        set -o pipefail ;
-        /usr/local/bin/adf_ctl status | grep up |
-        awk '{print $4 substr($1, 4)}' | tr -d ','
+        set -o pipefail ; /usr/local/bin/adf_ctl status | grep up | awk '{print $4 substr($1, 4)}' | tr -d ','
+
       args:
         executable: /bin/bash
       register: qat_driver_devices

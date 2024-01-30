@@ -7,13 +7,11 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 - name: Create CRD for Network Attachment Definition
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('file', 'net-attach-def.yml') }}"
     namespace: kube-system
-
 - name: Create SR-IOV k8s resources
   kubernetes.core.k8s:
     state: present

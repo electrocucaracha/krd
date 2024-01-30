@@ -7,7 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-
 qat_plugin_tmpl_dir: /tmp/qat_k8s
 qat_plugin_version: "0.17.0"
 qat_plugin_mode: dpdk
