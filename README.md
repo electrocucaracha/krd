@@ -170,7 +170,6 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_NDOTS                            | 1              | Threshold for the number of dots which must appear in name resolution           |
 | KRD_RESOLVCONF_MODE                  | none           | Specifies the DNS setup for non-k8s containers.                                 |
 | KRD_KUBE_PROXY_SCHEDULER             | sh             | Specifies the [IPVS scheduling algorithm][7] for allocating connections         |
-| KRD_EPHEMERAL_CONTAINERS_ENABLED     | true           | Enable/Disable [Ephemeral Containers][21]                                       |
 | KRD_METALLB_ENABLED                  | false          | Enable/Disable [MetalLB load-balancer][22]                                      |
 | KRD_METALLB_ADDRESS_POOLS_LIST       |                | Specifies a lists of Layer 2 Address pools for MetalLB                          |
 | KRD_KUBERNETES_AUDIT                 | false          | Enable/Disable [Auditing][23]                                                   |
@@ -215,7 +214,6 @@ Thanks to all the people who already contributed!
 [18]: https://github.com/containers/crun
 [19]: https://metallb.universe.tf/
 [20]: https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner
-[21]: https://kubernetes.io/docs/concepts/workloads/pods/ephemeral-containers/
 [22]: https://metallb.universe.tf/
 [23]: https://kubernetes.io/docs/tasks/debug-application-cluster/audit/
 [24]: https://kubernetes.io/docs/concepts/cluster-administration/logging/

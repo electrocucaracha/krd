@@ -153,8 +153,7 @@ resolvconf_mode: $KRD_RESOLVCONF_MODE
 # nq: Never Queue assigns an incoming job to an idle server if there is, instead of waiting for a fast one; if all the servers are busy, it adopts the Shortest Expected Delay policy to assign the job.
 kube_proxy_scheduler: $KRD_KUBE_PROXY_SCHEDULER
 
-kube_feature_gates:
-  - EphemeralContainers=$KRD_EPHEMERAL_CONTAINERS_ENABLED # Ability to add ephemeral containers to running pods.
+kube_feature_gates: []
 
 # configure arp_ignore and arp_announce to avoid answering ARP queries from kube-ipvs0 interface
 # must be set to true for MetalLB to work
