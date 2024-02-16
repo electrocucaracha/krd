@@ -79,7 +79,7 @@ jobs:
       scripts: ${{ steps.filter.outputs.scripts }}
     steps:
       - uses: actions/checkout@v4.1.1
-      - uses: dorny/paths-filter@v3.0.0
+      - uses: dorny/paths-filter@v3.0.1
         if: ${{ !env.ACT }}
         id: filter
         with:
