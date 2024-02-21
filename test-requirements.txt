@@ -32,7 +32,7 @@ click==8.1.7
     #   molecule
 click-help-colors==0.9.4
     # via molecule
-cryptography==42.0.2
+cryptography==42.0.4
     # via ansible-core
 enrich==1.2.7
     # via molecule
