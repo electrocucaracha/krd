@@ -356,6 +356,29 @@ function _vercmp {
     esac
 }
 
+function _deploy_kpt_pkg {
+    local pkg=$1
+    local repo=${2:-https://github.com/nephio-project/catalog.git}
+    local dest=${3:-${pkg##*/}}
+    local revision=${4:-main}
+    local for_deployment=${5:-false}
+
+    if ! command -v kpt >/dev/null; then
+        curl -s "https://i.jpillora.com/kptdev/kpt@v$(_get_version kpt)!" | bash
+        kpt completion bash | sudo tee /etc/bash_completion.d/kpt >/dev/null
+    fi
+
+    [[ ! $dest =~ "/" ]] || mkdir -p "${dest%/*}"
+    [ "$(ls -A "$dest")" ] || kpt pkg get "$repo/${pkg}@${revision}" "$dest" --for-deployment "$for_deployment"
+    newgrp docker <<BASH
+    kpt fn render $dest
+BASH
+    kpt live init "$dest" --force
+    newgrp docker <<BASH
+    kpt live apply $dest
+BASH
+}
+
 function _run_ansible_cmd {
     local playbook=$1
     local log=$2

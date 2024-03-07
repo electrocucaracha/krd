@@ -94,6 +94,7 @@ for img in cainjector controller webhook; do
     set_kubespray_img_version "$kubespray_defaults" "cert-manager-$img" "cert_manager_version"
 done
 
+sed -i "s/kpt_version:.*/kpt_version: $(get_version github_release kptdev/kpt)/g" ./playbooks/krd-vars.yml
 sed -i "s/istio_version:.*/istio_version: $(get_version github_release istio/istio)/g" ./playbooks/krd-vars.yml
 sed -i "s/cfssl_version:.*/cfssl_version: $(get_version github_release cloudflare/cfssl)/g" ./playbooks/krd-vars.yml
 sed -i "s/sonobuoy_version:.*/sonobuoy_version: $(get_version github_release vmware-tanzu/sonobuoy)/g" ./playbooks/krd-vars.yml

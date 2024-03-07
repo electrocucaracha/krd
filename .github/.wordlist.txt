@@ -83,7 +83,9 @@ METALLB
 Mirantis
 MULTUS
 NDOTS
+Nephio
 NFD
+NFs
 NGINX
 NodeLocal
 NODELOCALDNS

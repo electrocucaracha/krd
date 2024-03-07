@@ -330,3 +330,18 @@ function install_virtink {
     kubectl apply -f "https://github.com/smartxworks/virtink/releases/download/$virtink_version/virtink.yaml"
     wait_for_pods virtink-system
 }
+
+# install_nephio() - Installs Nephio project
+function install_nephio {
+    pushd "$(mktemp -d -t "nephio-pkg-XXX")" >/dev/null || exit
+    pkgs="nephio/core/porch "
+    pkgs+="nephio/core/nephio-operator nephio/optional/resource-backend "
+    pkgs+="nephio/core/configsync "         # Required for access tokens to connect to gitea services
+    pkgs+="nephio/optional/network-config " # Required for workload cluster provisioning process
+
+    for pkg in $pkgs; do
+        _deploy_kpt_pkg "$pkg"
+    done
+    popd >/dev/null
+    #kubectl prof -t 5m --lang go -n porch-system -o flamegraph --local-path=/tmp $(kubectl get pods -n porch-system -l app=porch-server -o jsonpath='{.items[*].metadata.name}')
+}
