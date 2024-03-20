@@ -19,7 +19,7 @@ attrs==23.2.0
     # via
     #   jsonschema
     #   referencing
-black==24.1.1
+black==24.3.0
     # via ansible-lint
 bracex==2.4
     # via wcmatch
