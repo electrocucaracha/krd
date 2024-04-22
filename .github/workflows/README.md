@@ -4,7 +4,7 @@
 | :--------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------- |
 | [diagram](./diagram.yml)                       | Generates the codebase diagram used by the main README.md file               | on new commit/push on master |
 | [distros](./distros.yml)                       | Updates the Vagrant box versions for Distro list supported file              | scheduled/manual trigger     |
-| [linter](./linter.yml)                         | Verifies broken links in documentation and runs multiple linter tools        | on new commit/push on master |
+| [linter](./linter.yml)                         | Counts Line of Codes, verifies broken links in docs and runs linter tools    | on new commit/push on master |
 | [on-demand_ci](./on-demand_ci.yml)             | Runs BDD and integration tests for different container runtimes and projects | on new commit/push on master |
 | [on-demand_corner](./on-demand_corner.yml)     | Runs integration tests for corner cases (kong, rook, haproxy, kubewarden)    | on new commit/push on master |
 | [on-demand_molecule](./on-demand_molecule.yml) | Runs unit tests for ansible roles                                            | on new commit/push on master |

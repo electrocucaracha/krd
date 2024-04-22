@@ -7,11 +7,13 @@ Autoscaler
 BACKEND
 balancer
 blockquote
+boyter
 BPF
 brightgreen
 Bugfixes
 CentOS
 CNI
+COCOMO
 codebase
 config
 CONTAINERD
@@ -111,10 +113,12 @@ RESOLVCONF
 rubocop
 RUNTIME
 runtimes
+scc
 serverless
 SERVICEMESH
 SIG
 SIGs
+sloc
 snetworkplumbingwg
 src
 sriov
@@ -136,6 +140,7 @@ vmwrapper
 VXLAN
 WEBHOOK
 WIP
+xyz
 YAML
 yml
 YOUKI
