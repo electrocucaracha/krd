@@ -113,7 +113,7 @@ RESOLVCONF
 rubocop
 RUNTIME
 runtimes
-scc
+Scc
 serverless
 SERVICEMESH
 SIG
