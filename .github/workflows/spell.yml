@@ -22,7 +22,7 @@ jobs:
     name: Check spelling (reviewdog)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.3
+      - uses: actions/checkout@v4.1.4
       - uses: reviewdog/action-misspell@v1.17.0
         with:
           github_token: ${{ secrets.github_token }}
@@ -30,6 +30,6 @@ jobs:
     name: Check spelling (pyspelling)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.3
+      - uses: actions/checkout@v4.1.4
       - uses: igsekor/pyspelling-any@v1.0.4
         name: Spellcheck
