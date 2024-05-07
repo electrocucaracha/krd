@@ -12,6 +12,7 @@ BPF
 brightgreen
 Bugfixes
 CentOS
+checkpointing
 CNI
 COCOMO
 codebase

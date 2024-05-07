@@ -180,6 +180,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_AUDIT_WEBHOOK_SERVER_URL         |                | Audit Webhook server URL                                                        |
 | KRD_KUBELET_LOGFILES_MAX_NR          | 5              | Maximum number of [container log][24] files that can be present for a container |
 | KRD_KUBELET_LOGFILES_MAX_SIZE        | 10Mi           | Maximum size of the [container log][24] file before it is rotated               |
+| KRD_CONTAINER_CHECKPOINT_ENABLED     | false          | Enable/Disable [Containers checkpoints creation][21]                            |
 
 ## Contribution
 
@@ -217,6 +218,7 @@ Thanks to all the people who already contributed!
 [18]: https://github.com/containers/crun
 [19]: https://metallb.universe.tf/
 [20]: https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner
+[21]: https://kubernetes.io/blog/2022/12/05/forensic-container-checkpointing-alpha/
 [22]: https://metallb.universe.tf/
 [23]: https://kubernetes.io/docs/tasks/debug-application-cluster/audit/
 [24]: https://kubernetes.io/docs/concepts/cluster-administration/logging/

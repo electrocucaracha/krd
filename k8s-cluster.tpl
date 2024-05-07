@@ -153,7 +153,11 @@ resolvconf_mode: $KRD_RESOLVCONF_MODE
 # nq: Never Queue assigns an incoming job to an idle server if there is, instead of waiting for a fast one; if all the servers are busy, it adopts the Shortest Expected Delay policy to assign the job.
 kube_proxy_scheduler: $KRD_KUBE_PROXY_SCHEDULER
 
-kube_feature_gates: []
+kube_feature_gates:
+  - ContainerCheckpoint=$KRD_CONTAINER_CHECKPOINT_ENABLED # Ability to create stateful copies of a running container.
+
+# When set to `true`, enables the container checkpoint/restore in CRI-O.
+crio_criu_support_enabled: $KRD_CONTAINER_CHECKPOINT_ENABLED
 
 # configure arp_ignore and arp_announce to avoid answering ARP queries from kube-ipvs0 interface
 # must be set to true for MetalLB to work
