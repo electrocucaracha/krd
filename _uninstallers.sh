@@ -171,3 +171,9 @@ function uninstall_kubewarden {
 function uninstall_kube-monkey {
     _uninstall_helm kubemonkey
 }
+
+# uninstall_local-ai() - Uninstall LocalAI server
+function uninstall_local-ai {
+    _uninstall_helm local-ai
+    _delete_namespace local-ai-system
+}

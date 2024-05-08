@@ -1,0 +1,42 @@
+---
+- name: aio
+  os:
+    name: ubuntu
+    release: bionic
+  networks:
+    - name: public-net
+      ip: "10.10.16.3"
+  memory: 16384
+  cpus: 8
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+    - name: sdc
+      size: 50
+      controller: Virtual I/O Device SCSI controller
+      port: 2
+      device: 0
+    - name: sdd
+      size: 20
+      mount: /mnt/disks/vol1
+      controller: Virtual I/O Device SCSI controller
+      port: 3
+      device: 0
+    - name: sde
+      size: 20
+      mount: /mnt/disks/vol2
+      controller: Virtual I/O Device SCSI controller
+      port: 4
+      device: 0
+  roles:
+    - kube-master
+    - etcd
+    - kube-node

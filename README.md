@@ -53,6 +53,7 @@ different scenarios. There are different setups located in the
 | Kubewarden     | Kubernetes Native Policy Management             |                                   | Tested      |
 | kube-monkey    | Netflix's Chaos Monkey for Kubernetes clusters  |                                   | Implemented |
 | Nephio         | Management platform to on-board NFs at scale    |                                   | Implemented |
+| LocalAI        | Allows to run LLMs locally                      |                                   | Implemented |
 
 ## Quick Deployment
 

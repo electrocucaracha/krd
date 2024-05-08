@@ -79,6 +79,8 @@ libndctl
 Libvirt
 Lifecycle
 Linter
+LLMs
+LocalAI
 LOCALHOST
 LOGFILES
 ly

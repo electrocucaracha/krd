@@ -1,0 +1,29 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2024
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+deployment:
+  image:
+    repository: quay.io/go-skynet/local-ai
+    tag: v2.15.0-aio-cpu
+  modelsPath: "/models"
+models:
+  list:
+    - url: "https://gpt4all.io/models/ggml-gpt4all-j.bin"
+service:
+  type: ClusterIP
+  port: 8080
+persistence:
+  models:
+    storageClass: local-storage
+    accessModes: ReadWriteOnce
+    size: 19Gi
+  output:
+    storageClass: local-storage
+    accessModes: ReadWriteOnce
+    size: 19Gi

@@ -251,3 +251,9 @@ function install_kube-monkey {
     _add_helm_repo kubemonkey https://asobti.github.io/kube-monkey/charts/repo
     _install_chart kubemonkey kubemonkey/kube-monkey
 }
+
+# install_local-ai() - Install LocalAI server
+function install_local-ai {
+    _add_helm_repo go-skynet https://go-skynet.github.io/helm-charts/
+    KRD_CHART_FILE="helm/local-ai/values.yaml" _install_chart local-ai go-skynet/local-ai
+}
