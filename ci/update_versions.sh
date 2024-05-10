@@ -176,3 +176,6 @@ sed -i "s|image.tag=.*|image.tag=v$(get_version docker_tag rancher/metrics-serve
 # Update Rook test resources
 wget -q -O ./tests/resources/rook/toolbox.yaml https://raw.githubusercontent.com/rook/rook/master/deploy/examples/toolbox.yaml
 wget -q -O ./tests/resources/rook/cluster-test.yaml https://raw.githubusercontent.com/rook/rook/master/deploy/examples/cluster-test.yaml
+
+# Update K8sGPT resources
+sed -i "s/version: .*/version: v$(get_version github_release k8sgpt-ai/k8sgpt)/g" resources/k8sgpt-local.yml

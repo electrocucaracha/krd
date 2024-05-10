@@ -54,6 +54,7 @@ different scenarios. There are different setups located in the
 | kube-monkey    | Netflix's Chaos Monkey for Kubernetes clusters  |                                   | Implemented |
 | Nephio         | Management platform to on-board NFs at scale    |                                   | Implemented |
 | LocalAI        | Allows to run LLMs locally                      |                                   | Implemented |
+| K8SGPT         | Scans K8s clusters for diagnosing issues        |                                   | Implemented |
 
 ## Quick Deployment
 

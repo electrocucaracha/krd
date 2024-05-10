@@ -257,3 +257,9 @@ function install_local-ai {
     _add_helm_repo go-skynet https://go-skynet.github.io/helm-charts/
     KRD_CHART_FILE="helm/local-ai/values.yaml" _install_chart local-ai go-skynet/local-ai
 }
+
+# install_k8sgpt() - Install K8sGPT operator
+function install_k8sgpt {
+    _add_helm_repo k8sgpt https://charts.k8sgpt.ai/
+    _install_chart k8sgpt-operator k8sgpt/k8sgpt-operator
+}

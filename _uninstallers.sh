@@ -177,3 +177,9 @@ function uninstall_local-ai {
     _uninstall_helm local-ai
     _delete_namespace local-ai-system
 }
+
+# uninstall_k8sgpt() - Uninstall K8sGPT operator
+function uninstall_k8sgpt {
+    _uninstall_helm k8sgpt-operator
+    _delete_namespace k8sgpt-operator-system
+}
