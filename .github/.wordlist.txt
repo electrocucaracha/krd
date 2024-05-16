@@ -119,6 +119,7 @@ runtimes
 Scc
 serverless
 SERVICEMESH
+SGPT
 SIG
 SIGs
 sloc
