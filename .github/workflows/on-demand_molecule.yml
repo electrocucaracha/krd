@@ -23,7 +23,7 @@ jobs:
     name: Pull python dependencies
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - uses: actions/setup-python@v5.1.0
         with:
           python-version: '3.x'
@@ -49,7 +49,7 @@ jobs:
     outputs:
       environments: ${{ steps.filter.outputs.changes }}
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - uses: dorny/paths-filter@v3.0.2
         if: ${{ !env.ACT }}
         id: filter
@@ -86,7 +86,7 @@ jobs:
         environment: ${{ fromJSON(needs.changes.outputs.environments) }}
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
         if: matrix.environment != 'reqs'
       - uses: ./.github/actions/molecule-test
         if: matrix.environment != 'reqs'
