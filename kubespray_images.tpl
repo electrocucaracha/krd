@@ -1,12 +1,12 @@
 registry.k8s.io/coredns/coredns:v1.8.6
 registry.k8s.io/cpa/cluster-proportional-autoscaler-amd64:1.8.5
-registry.k8s.io/dns/k8s-dns-node-cache:1.22.18
-registry.k8s.io/ingress-nginx/controller:v1.7.1
+registry.k8s.io/dns/k8s-dns-node-cache:1.22.28
+registry.k8s.io/ingress-nginx/controller:v1.10.1
 registry.k8s.io/kube-apiserver:$kube_version
 registry.k8s.io/kube-controller-manager:$kube_version
 registry.k8s.io/kube-proxy:$kube_version
 registry.k8s.io/kube-scheduler:$kube_version
 registry.k8s.io/sig-storage/local-volume-provisioner:v2.5.0
-quay.io/jetstack/cert-manager-cainjector:v1.11.1
-quay.io/jetstack/cert-manager-controller:v1.11.1
-quay.io/jetstack/cert-manager-webhook:v1.11.1
+quay.io/jetstack/cert-manager-cainjector:v1.13.2
+quay.io/jetstack/cert-manager-controller:v1.13.2
+quay.io/jetstack/cert-manager-webhook:v1.13.2
