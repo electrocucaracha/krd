@@ -15,12 +15,6 @@
     type: pattern
     update_cache: true
   when: ansible_os_family == 'Suse'
-- name: Install RedHat build tools
-  become: true
-  ansible.builtin.yum:
-    name: "@Development tools"
-    state: present
-  when: ansible_os_family == 'RedHat'
 - name: Load distro variables
   ansible.builtin.include_vars:
     file: "{{ ansible_os_family }}.yml"
@@ -42,8 +36,3 @@
     name: "linux-headers-{{ ansible_kernel }}"
     state: present
   when: ansible_os_family == 'Debian'
-- name: Install RedHat kernel development tools
-  ansible.builtin.package:
-    name: kernel-devel
-    state: present
-  when: ansible_os_family == 'RedHat'
