@@ -79,6 +79,45 @@ function update_pip_pkg {
     done < <(grep -r "$pkg==" ./playbooks/ | awk -F ':' '{ print $1}')
 }
 
+# _vercmp() - Function that compares two versions
+function _vercmp {
+    local v1=$1
+    local op=$2
+    local v2=$3
+    local result
+
+    # sort the two numbers with sort's "-V" argument.  Based on if v2
+    # swapped places with v1, we can determine ordering.
+    result=$(echo -e "$v1\n$v2" | sort -V | head -1)
+
+    case $op in
+    "==")
+        [ "$v1" = "$v2" ]
+        return
+        ;;
+    ">")
+        [ "$v1" != "$v2" ] && [ "$result" = "$v2" ]
+        return
+        ;;
+    "<")
+        [ "$v1" != "$v2" ] && [ "$result" = "$v1" ]
+        return
+        ;;
+    ">=")
+        [ "$result" = "$v2" ]
+        return
+        ;;
+    "<=")
+        [ "$result" = "$v1" ]
+        return
+        ;;
+    *)
+        echo "unrecognised op: $op"
+        exit 1
+        ;;
+    esac
+}
+
 kubespray_version="$(get_version github_release kubernetes-sigs/kubespray)"
 sed -i "s/kubespray_version:.*/kubespray_version: v$kubespray_version/g" ./playbooks/krd-vars.yml
 sed -i "s/KRD_KUBESPRAY_VERSION                 |.*/KRD_KUBESPRAY_VERSION                 | v$kubespray_version                                        | Specifies the Kubespray version to be used during the upgrade process           |/g" README.md
@@ -86,7 +125,11 @@ sed -i "s/KRD_KUBESPRAY_VERSION:-.* \"\$(git describe --abbrev=0 --tags)\"/KRD_K
 sed -i "s/KRD_KUBESPRAY_VERSION:-.* \"\$(\$VAGRANT_CMD_SSH_INSTALLER \"cd \/opt\/kubespray; git describe --abbrev=0 --tags\")\"/KRD_KUBESPRAY_VERSION:-v$kubespray_version}\" \"\$(\$VAGRANT_CMD_SSH_INSTALLER \"cd \/opt\/kubespray; git describe --abbrev=0 --tags\")\"/g" ./ci/check.sh
 
 # Image versions
-kubespray_defaults=$(curl -sfL "https://raw.githubusercontent.com/kubernetes-sigs/kubespray/v$kubespray_version/roles/download/defaults/main.yml" | grep -e "^[a-zA-Z].*_version: " -e "^[a-zA-Z].*image_tag: ")
+kubespray_url="https://raw.githubusercontent.com/kubernetes-sigs/kubespray/v$kubespray_version/roles/download/defaults/main.yml"
+if _vercmp "$kubespray_version" '>=' '2.25.0'; then
+    kubespray_url="https://raw.githubusercontent.com/kubernetes-sigs/kubespray/v$kubespray_version/roles/kubespray-defaults/defaults/main/download.yml"
+fi
+kubespray_defaults=$(curl -sfL "$kubespray_url" | grep -e "^[a-zA-Z].*_version: " -e "^[a-zA-Z].*image_tag: ")
 set_kubespray_img_version "$kubespray_defaults" "k8s-dns-node-cache" "nodelocaldns_version"
 set_kubespray_img_version "$kubespray_defaults" "controller" "ingress_nginx_version"
 set_kubespray_img_version "$kubespray_defaults" "local-volume-provisioner" "local_volume_provisioner_version"
