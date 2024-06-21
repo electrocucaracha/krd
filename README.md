@@ -195,7 +195,7 @@ If you are interested in contributing, please refer to the code
 Thanks to all the people who already contributed!
 
 <a href="https://github.com/electrocucaracha/krd/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=electrocucaracha/krd" />
+  <img src="https://contrib.rocks/image?repo=electrocucaracha/krd" alt="contributors" />
 </a>
 
 ![Visualization of the codebase](./codebase-structure.svg)
