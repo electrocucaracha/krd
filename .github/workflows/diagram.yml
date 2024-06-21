@@ -23,14 +23,14 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # refs/tags/v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # refs/tags/v4.1.7
       - name: Update diagram
         uses: githubocto/repo-visualizer@a999615bdab757559bf94bda1fe6eef232765f85 # refs/tags/0.9.1
         with:
           excluded_paths: "ignore,.github"
           output_file: codebase-structure.svg
           should_push: false
-      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5 # refs/tags/v2
+      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5 # refs/tags/v2.1.4
         with:
           COMMIT_MESSAGE: 'Upgrade documentation diagram'
           COMMIT_NAME: 'electrocucaracha bot'

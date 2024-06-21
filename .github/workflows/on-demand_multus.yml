@@ -38,7 +38,7 @@ jobs:
       KRD_MULTUS_ENABLED: true
       PKG_KREW_PLUGINS_LIST: "cert-manager"
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # refs/tags/v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # refs/tags/v4.1.7
       - name: Deploy services
         run: KRD_FOLDER=$(git rev-parse --show-toplevel) ./aio.sh
       - name: Run Sonobuoy tool
