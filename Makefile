@@ -16,14 +16,14 @@ lint:
 	-e LINTER_RULES_PATH=/ \
 	-e VALIDATE_KUBERNETES_KUBEVAL=false \
 	-e VALIDATE_NATURAL_LANGUAGE=false \
+	-e EDITORCONFIG_FILE_NAME=.editorconfig \
 	-e KUBERNETES_KUBECONFORM_OPTIONS='-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml' \
 	github/super-linter
 	tox -e lint
 
 .PHONY: fmt
 fmt:
-	sudo -E $(DOCKER_CMD) run --rm -u "$$(id -u):$$(id -g)" \
-	-v "$$(pwd):/mnt" -v /mnt/spec -v /mnt/playbooks/roles/pmem/files/ \
-	-w /mnt mvdan/shfmt -l -w -i 4 -s .
+	command -v shfmt > /dev/null || curl -s "https://i.jpillora.com/mvdan/sh!!?as=shfmt" | bash
+	shfmt -l -w -s .
 	command -v yamlfmt > /dev/null || curl -s "https://i.jpillora.com/google/yamlfmt!!" | bash
 	yamlfmt -dstar **/*.{yaml,yml}
