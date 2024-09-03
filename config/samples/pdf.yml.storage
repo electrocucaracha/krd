@@ -11,7 +11,7 @@
 - name: "master"
   os:
     name: ubuntu
-    release: xenial
+    release: focal
   networks:
     - name: public-net
       ip: "10.10.16.3"
@@ -27,7 +27,7 @@
 - name: "minion01"
   os:
     name: ubuntu
-    release: xenial
+    release: focal
   networks:
     - name: public-net
       ip: "10.10.16.4"
@@ -66,7 +66,7 @@
 - name: "minion02"
   os:
     name: ubuntu
-    release: xenial
+    release: focal
   networks:
     - name: public-net
       ip: "10.10.16.5"
@@ -105,7 +105,7 @@
 - name: "minion03"
   os:
     name: ubuntu
-    release: xenial
+    release: focal
   networks:
     - name: public-net
       ip: "10.10.16.6"
@@ -144,7 +144,7 @@
 - name: "minion04"
   os:
     name: ubuntu
-    release: xenial
+    release: focal
   networks:
     - name: public-net
       ip: "10.10.16.7"
@@ -183,7 +183,7 @@
 - name: "minion05"
   os:
     name: ubuntu
-    release: xenial
+    release: focal
   networks:
     - name: public-net
       ip: "10.10.16.8"

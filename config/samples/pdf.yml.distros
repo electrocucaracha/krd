@@ -24,7 +24,7 @@
 - name: ubuntu16
   os:
     name: ubuntu
-    release: xenial
+    release: focal
   networks:
     - name: public-net
       ip: "10.10.16.4"

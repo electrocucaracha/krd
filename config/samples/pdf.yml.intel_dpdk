@@ -11,7 +11,7 @@
 - name: "controller01"
   os:
     name: "ubuntu"
-    release: "xenial"
+    release: "focal"
   networks:
     - name: public-net
       ip: "10.10.16.3"
@@ -23,7 +23,7 @@
 - name: "compute01"
   os:
     name: "ubuntu"
-    release: "xenial"
+    release: "focal"
   networks:
     - name: public-net
       ip: "10.10.16.6"
@@ -65,7 +65,7 @@
 - name: "compute02"
   os:
     name: "ubuntu"
-    release: "xenial"
+    release: "focal"
   networks:
     - name: public-net
       ip: "10.10.16.7"
@@ -107,7 +107,7 @@
 - name: "compute03"
   os:
     name: "ubuntu"
-    release: "xenial"
+    release: "focal"
   networks:
     - name: public-net
       ip: "10.10.16.8"
