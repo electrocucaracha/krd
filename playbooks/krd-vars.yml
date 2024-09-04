@@ -7,27 +7,27 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-kpt_version: 1.0.0-beta.49
+kpt_version: 1.0.0-beta.55
 go_version: 1.15.3
 kubespray_version: v2.25.0
-istio_version: 1.18.2
-cfssl_version: 1.6.4
-sonobuoy_version: 0.56.16
+istio_version: 1.23.0
+cfssl_version: 1.6.5
+sonobuoy_version: 0.57.2
 mitogen_version: 0.2.10
 # Knative versions
-kn_version: knative-v1.11.0
-knative_serving_version: knative-v1.11.0
-knative_eventing_version: v0.38.0
+kn_version: knative-v1.15.0
+knative_serving_version: knative-v1.15.2
+knative_eventing_version: v0.42.1
 ## Knative Sandbox versions
-net_kourier_version: knative-v1.11.1
-net_istio_version: vknative-v1.11.0
-net_certmanager_version: vknative-v1.11.0
+net_kourier_version: knative-v1.15.1
+net_istio_version: vknative-v1.15.1
+net_certmanager_version: vknative-v1.14.0
 octant_version: 0.25.1
-kube-ovn_version: v1.12.0
-prometheus-operator_version: v0.67.1
-kubevirt_version: v1.0.0
-virtink_version: v0.15.0
-kubesphere_version: v3.4.0
-metallb_version: v0.13.10
+kube-ovn_version: vkube-ovn-v1.12.22
+prometheus-operator_version: v0.76.1
+kubevirt_version: v1.3.1
+virtink_version: v0.16.0
+kubesphere_version: v3.4.1
+metallb_version: v0.14.8
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
