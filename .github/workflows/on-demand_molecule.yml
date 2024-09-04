@@ -23,16 +23,16 @@ jobs:
     name: Pull python dependencies
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # refs/tags/v4.1.7
-      - uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # refs/tags/v5.1.0
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # refs/tags/v4.1.7
+      - uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3  # refs/tags/v5.2.0
         with:
           python-version: '3.x'
-      - uses: syphar/restore-virtualenv@e536692e76315a068b4905f792e25febfe6d4391 # refs/tags/v1.3
+      - uses: syphar/restore-virtualenv@e536692e76315a068b4905f792e25febfe6d4391  # refs/tags/v1.3
         id: cache-tox-molecule
         with:
           requirement_files: test-requirements.txt
           custom_virtualenv_dir: .tox/molecule
-      - uses: syphar/restore-pip-download-cache@0b350c2ce930145e820c087e73d5479c2eb44afb # refs/tags/v1.2
+      - uses: syphar/restore-pip-download-cache@0b350c2ce930145e820c087e73d5479c2eb44afb  # refs/tags/v1.2
         if: steps.cache-tox-molecule.outputs.cache-hit != 'true'
         with:
           requirement_files: test-requirements.txt
@@ -42,6 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       (
+
         github.event_name == 'pull_request_review' &&
         github.event.review.state == 'approved'
       ) || github.event_name != 'pull_request_review'
@@ -49,8 +50,8 @@ jobs:
     outputs:
       environments: ${{ steps.filter.outputs.changes }}
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # refs/tags/v4.1.7
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # refs/tags/v3.0.2
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # refs/tags/v4.1.7
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36  # refs/tags/v3.0.2
         if: ${{ !env.ACT }}
         id: filter
         with:
@@ -86,7 +87,7 @@ jobs:
         environment: ${{ fromJSON(needs.changes.outputs.environments) }}
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # refs/tags/v4.1.7
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # refs/tags/v4.1.7
         if: matrix.environment != 'reqs'
       - uses: ./.github/actions/molecule-test
         if: matrix.environment != 'reqs'

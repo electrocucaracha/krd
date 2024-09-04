@@ -20,8 +20,8 @@ jobs:
       pull-requests: write  # for technote-space/create-pr-action to create a PR
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # refs/tags/v4.1.7
-      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5 # refs/tags/v2.1.4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # refs/tags/v4.1.7
+      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5  # refs/tags/v2.1.4
         with:
           EXECUTE_COMMANDS: |
             ./ci/update_versions.sh
@@ -34,8 +34,8 @@ jobs:
   check-dictionary:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # refs/tags/v4.1.7
-      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5 # refs/tags/v2.1.4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # refs/tags/v4.1.7
+      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5  # refs/tags/v2.1.4
         with:
           EXECUTE_COMMANDS: |
             sudo apt-get update

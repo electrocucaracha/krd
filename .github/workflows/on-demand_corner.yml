@@ -28,6 +28,7 @@ jobs:
     name: Check K8s Plugins installation methods in an Ubuntu Bionic All-in-One setup
     if: >-
       (
+
         github.event_name == 'pull_request_review' &&
         github.event.review.state == 'approved'
       ) || github.event_name != 'pull_request_review'
@@ -41,7 +42,7 @@ jobs:
           - test: kubewarden
             cert-mgr: true
     steps:
-      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # refs/tags/v4.1.7
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332  # refs/tags/v4.1.7
       - uses: ./.github/actions/vagrant-up
         with:
           cert-manager-enabled: ${{ matrix.cert-mgr }}
