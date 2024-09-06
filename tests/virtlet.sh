@@ -52,6 +52,7 @@ function create_deployment {
             - export no_proxy=$NO_PROXY
             - export NO_PROXY=$NO_PROXY"
     fi
+    # editorconfig-checker-disable
     cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
@@ -119,6 +120,7 @@ spec:
             # This memory limit is applied to the libvirt domain definition
             memory: 1Gi
 EOF
+    # editorconfig-checker-enable
     wait_deployment "$virtlet_deployment_name"
 }
 

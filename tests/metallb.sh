@@ -25,6 +25,7 @@ function cleanup {
 trap cleanup EXIT
 
 # Setup
+# editorconfig-checker-disable
 cat <<EOF | kubectl apply -f -
 apiVersion: metallb.io/v1beta1
 kind: IPAddressPool
@@ -35,10 +36,12 @@ spec:
   addresses:
   - 172.18.0.0/20
 EOF
+# editorconfig-checker-enable
 
 # Test
 info "===== Test started ====="
 
+# editorconfig-checker-disable
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Service
@@ -52,6 +55,7 @@ spec:
     app: nginx
   type: LoadBalancer
 EOF
+# editorconfig-checker-enable
 
 assert_non_empty "$(kubectl get svc nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" "IP address wasn't assigned to nginx service"
 assert_are_equal "$(kubectl get svc nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')" "172.18.0.0" "IP address wasn't different than expected"

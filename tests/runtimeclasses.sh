@@ -32,6 +32,7 @@ function create_deployment {
     name="$1"
     runtime="$2"
 
+    # editorconfig-checker-disable
     cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
@@ -56,6 +57,7 @@ spec:
           command: ["sleep"]
           args: ["infity"]
 EOF
+    # editorconfig-checker-enable
 }
 
 trap cleanup EXIT

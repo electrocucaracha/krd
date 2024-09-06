@@ -37,6 +37,7 @@ trap cleanup EXIT
 # Test
 info "===== Test started ====="
 
+# editorconfig-checker-disable
 cat <<EOL | kubectl apply -f -
 apiVersion: kubevirt.io/v1alpha3
 kind: VirtualMachine
@@ -76,6 +77,7 @@ spec:
           cloudInitNoCloud:
             userDataBase64: SGkuXG4=
 EOL
+# editorconfig-checker-enable
 
 kubectl get vms
 [ -d "${KREW_ROOT:-$HOME/.krew}/bin" ] && export PATH="$PATH:${KREW_ROOT:-$HOME/.krew}/bin"

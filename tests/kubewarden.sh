@@ -22,6 +22,7 @@ function cleanup {
 }
 
 # Setup
+# editorconfig-checker-disable
 cat <<EOF | kubectl apply -f -
 apiVersion: policies.kubewarden.io/v1alpha2
 kind: ClusterAdmissionPolicy
@@ -38,6 +39,7 @@ spec:
     - UPDATE
   mutating: false
 EOF
+# editorconfig-checker-enable
 trap cleanup EXIT
 attempt_counter=0
 max_attempts=6

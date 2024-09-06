@@ -312,6 +312,7 @@ function install_kubesphere {
 
     kubectl apply -f "https://github.com/kubesphere/ks-installer/releases/download/$kubesphere_version/kubesphere-installer.yaml"
     kubectl rollout status deployment/ks-installer -n kubesphere-system --timeout=5m
+    # editorconfig-checker-disable
     cat <<EOF | kubectl apply -f -
 ---
 apiVersion: installer.kubesphere.io/v1alpha1
@@ -386,6 +387,7 @@ spec:
   servicemesh:         # (0.3 Core, 300 MiB) Whether to install KubeSphere Service Mesh (Istio-based). It provides fine-grained traffic management, observability and tracing, and offer visualization for traffic topology.
     enabled: $KRD_KUBESPHERE_SERVICEMESH_ENABLED
 EOF
+    # editorconfig-checker-enable
     for namespace in "" -controls -monitoring -devops; do
         if kubectl get "namespace/kubesphere$namespace-system" --no-headers -o custom-columns=name:.metadata.name; then
             for deployment in $(kubectl get deployments --no-headers -o custom-columns=name:.metadata.name -n "kubesphere$namespace-system"); do
@@ -430,6 +432,7 @@ function install_longhorn {
         fi
     done
     if _vercmp "${kube_version#*v}" '>=' "1.19"; then
+        # editorconfig-checker-disable
         cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -448,7 +451,9 @@ spec:
                 port:
                   number: 80
 EOF
+        # editorconfig-checker-enable
     else
+        # editorconfig-checker-disable
         cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -466,5 +471,6 @@ spec:
           serviceName: longhorn-frontend
           servicePort: 80
 EOF
+        # editorconfig-checker-enable
     fi
 }

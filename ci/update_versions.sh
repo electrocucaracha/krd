@@ -158,6 +158,7 @@ sed -i "s/virtink_version:.*/virtink_version: v$(get_version github_release smar
 sed -i "s/kubesphere_version:.*/kubesphere_version: v$(get_version github_release kubesphere/kubesphere)/g" ./playbooks/krd-vars.yml
 sed -i "s/metallb_version:.*/metallb_version: v$(get_version github_tag metallb/metallb)/g" ./playbooks/krd-vars.yml
 
+# editorconfig-checker-disable
 cat <<EOT >galaxy-requirements.yml
 ---
 # SPDX-license-identifier: Apache-2.0
@@ -191,6 +192,7 @@ collections:
   - name: community.general
     version: $(get_version ansible_collection community.general)
 EOT
+# editorconfig-checker-enable
 
 # Udpate Playbook default versions
 # NOTE: There is no images released for minor versions https://hub.docker.com/r/nfvpe/sriov-cni/tags

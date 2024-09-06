@@ -120,6 +120,7 @@ function run_external_k6 {
     # Perform bechmarking
     docker rm k6 || :
     pushd "$(mktemp -d)" >/dev/null
+    # editorconfig-checker-disable
     cat <<EOF >script.js
     import http from "k6/http";
     import { check, sleep } from "k6";
@@ -139,6 +140,7 @@ function run_external_k6 {
       });
     };
 EOF
+    # editorconfig-checker-enable
     docker run --name k6 -i loadimpact/k6 run - <script.js
     popd >/dev/null
 

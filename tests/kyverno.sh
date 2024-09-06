@@ -22,6 +22,7 @@ function cleanup {
 }
 
 # Setup
+# editorconfig-checker-disable
 cat <<EOF | kubectl apply -f -
 apiVersion: kyverno.io/v1
 kind: ClusterPolicy
@@ -42,6 +43,7 @@ spec:
           labels:
             app.kubernetes.io/name: "?*"
 EOF
+# editorconfig-checker-enable
 sleep 5
 trap cleanup EXIT
 

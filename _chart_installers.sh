@@ -36,6 +36,7 @@ function install_helm {
             kubectl create serviceaccount --namespace "$KRD_TILLER_NAMESPACE" tiller
         fi
         if ! kubectl get role/tiller-role -n "$KRD_TILLER_NAMESPACE" --no-headers -o custom-columns=name:.metadata.name; then
+            # editorconfig-checker-disable
             cat <<EOF | kubectl apply -f -
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
@@ -47,8 +48,10 @@ rules:
   resources: ["*"]
   verbs: ["*"]
 EOF
+            # editorconfig-checker-enable
         fi
         if ! kubectl get rolebinding/tiller-role-binding -n "$KRD_TILLER_NAMESPACE" --no-headers -o custom-columns=name:.metadata.name; then
+            # editorconfig-checker-disable
             cat <<EOF | kubectl apply -f -
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -64,6 +67,7 @@ roleRef:
   name: tiller-role
   apiGroup: rbac.authorization.k8s.io
 EOF
+            # editorconfig-checker-enable
         fi
         sudo mkdir -p /home/helm/.kube/
         sudo cp ~/.kube/config /home/helm/.kube/
@@ -135,6 +139,7 @@ function install_metrics_server {
     helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
 
     if _vercmp "${helm_installed_version#*v}" '<' '3'; then
+        # editorconfig-checker-disable
         cat <<EOF | kubectl auth reconcile -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -171,6 +176,7 @@ roleRef:
   kind: ClusterRole
   name: metrics-server-role
 EOF
+        # editorconfig-checker-enable
         if ! helm ls --tiller-namespace "$KRD_TILLER_NAMESPACE" | grep -q metrics-server; then
             helm install stable/metrics-server --name metrics-server \
                 --wait \

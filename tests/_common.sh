@@ -19,6 +19,7 @@ function populate_nfd {
     mkdir -p "/tmp/${nfd_deployment_name}"
     pushd "/tmp/${nfd_deployment_name}"
 
+    # editorconfig-checker-disable
     cat <<DEPLOYMENT >"$nfd_deployment_name.yaml"
 apiVersion: apps/v1
 kind: Deployment
@@ -53,6 +54,7 @@ spec:
                 operator: Gt
                 values: ["2"]
 DEPLOYMENT
+    # editorconfig-checker-enable
     popd
 }
 
@@ -65,6 +67,7 @@ function populate_qat {
     mkdir -p "/tmp/${qat_deployment_name}"
     pushd "/tmp/${qat_deployment_name}"
 
+    # editorconfig-checker-disable
     cat <<DEPLOYMENT >"$qat_deployment_name.yaml"
 apiVersion: apps/v1
 kind: Deployment
@@ -170,5 +173,6 @@ data:
           address: 0.0.0.0
           port_value: 9001
 DEPLOYMENT
+    # editorconfig-checker-enable
     popd
 }

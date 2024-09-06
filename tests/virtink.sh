@@ -24,6 +24,7 @@ function cleanup {
 }
 
 # Setup
+# editorconfig-checker-disable
 cat <<EOF | kubectl apply -f -
 apiVersion: virt.virtink.smartx.com/v1alpha1
 kind: VirtualMachine
@@ -57,6 +58,7 @@ spec:
     - name: pod
       pod: {}
 EOF
+# editorconfig-checker-enable
 sleep 5
 trap cleanup EXIT
 

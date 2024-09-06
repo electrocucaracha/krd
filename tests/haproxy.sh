@@ -38,6 +38,7 @@ info "===== Test started ====="
 info "Ensure HAProxy Ingress Class"
 kubectl get ingressclasses.networking.k8s.io haproxy
 
+# editorconfig-checker-disable
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Service
@@ -97,9 +98,11 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
 EOF
+# editorconfig-checker-enable
 wait_deployment "$echo_deployment_name"
 
 if [[ "$(_get_kube_version)" == *"v1.18"* ]]; then
+    # editorconfig-checker-disable
     cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -118,7 +121,9 @@ spec:
               serviceName: echo
               servicePort: 80
 EOF
+    # editorconfig-checker-enable
 else
+    # editorconfig-checker-disable
     cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -139,6 +144,7 @@ spec:
                 port:
                   number: 80
 EOF
+    # editorconfig-checker-enable
 fi
 wait_ingress demo
 assert_contains "$(eval "$CURL_PROXY_CMD/foo")" "Pod Information:" "The server response doesn't have pod's info"

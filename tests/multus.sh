@@ -31,6 +31,7 @@ function create_deployment {
     local name=$1
     local net_definition=$2
 
+    # editorconfig-checker-disable
     cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
@@ -58,6 +59,7 @@ $net_definition
           args:
             - "120"
 EOF
+    # editorconfig-checker-enable
     wait_deployment "$name"
 }
 
@@ -65,6 +67,7 @@ trap cleanup EXIT
 trap get_status ERR
 
 # Setup
+# editorconfig-checker-disable
 cat <<EOF | kubectl apply -f -
 apiVersion: "k8s.cni.cncf.io/v1"
 kind: NetworkAttachmentDefinition
@@ -101,11 +104,13 @@ spec:
     }
 }'
 EOF
+# editorconfig-checker-enable
 
 # Test
 info "===== Test started ====="
 
 info "+++++ Multiple Network Interfaces validation:"
+# editorconfig-checker-disable
 net_definition=$(
     cat <<EOF
         k8s.v1.cni.cncf.io/networks: '[
@@ -113,6 +118,7 @@ net_definition=$(
           { "name": "$bridge_net_name", "interfaceRequest": "eth2" }
         ]'
 EOF
+    # editorconfig-checker-enable
 )
 create_deployment multinet "$net_definition"
 deployment_pod=$(kubectl get pods -l=app.kubernetes.io/name=multinet -o jsonpath='{.items[0].metadata.name}')

@@ -32,6 +32,7 @@ function create_client {
     local attempt_counter=0
     max_attempts=10
 
+    # editorconfig-checker-disable
     cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod
@@ -47,6 +48,7 @@ spec:
         - name: REQUESTS_PER_SECOND
           value: '10'
 EOF
+    # editorconfig-checker-enable
     kubectl wait --for=condition=ready pods client --timeout=3m
     kubectl logs -n istio-system "$(kubectl get pods -n istio-system -l app=istiod -o jsonpath='{.items[*].metadata.name}')" | grep default/client
 
@@ -70,6 +72,7 @@ kubectl get namespaces --show-labels
 # Test https://istiobyexample.dev/mtls/
 info "===== Test started ====="
 
+# editorconfig-checker-disable
 cat <<EOF | kubectl apply -f -
 apiVersion: apps/v1
 kind: Deployment
@@ -102,6 +105,7 @@ spec:
     app.kubernetes.io/name: server
   type: ClusterIP
 EOF
+# editorconfig-checker-enable
 wait_deployment "$deployment_name"
 wait_service "$service_name"
 create_client

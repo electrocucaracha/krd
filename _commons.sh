@@ -241,6 +241,7 @@ function install_metallb {
         for range in ${KRD_METALLB_ADDRESS_POOLS_LIST//,/ }; do
             ranges+="          - ${range}\n"
         done
+        # editorconfig-checker-disable
         cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: ConfigMap
@@ -255,6 +256,7 @@ data:
         addresses:
 $(printf '%b' "$ranges")
 EOF
+        # editorconfig-checker-enable
     fi
 }
 

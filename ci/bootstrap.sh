@@ -26,6 +26,7 @@ function destroy_vm {
 
 info "Define target node"
 if [[ ${TEST_MULTINODE:-false} == "false" ]]; then
+    # editorconfig-checker-disable
     cat <<EOL >../config/pdf.yml
 - name: aio
   os:
@@ -71,8 +72,10 @@ if [[ ${TEST_MULTINODE:-false} == "false" ]]; then
     - kube-node
     - qat-node
 EOL
+    # editorconfig-checker-enable
     destroy_vm aio
 else
+    # editorconfig-checker-disable
     cat <<EOL >../config/pdf.yml
 - name: controller
   os:
@@ -98,7 +101,9 @@ else
     - kube-master
     - etcd
 EOL
+    # editorconfig-checker-enable
     for i in {1..2}; do
+        # editorconfig-checker-disable
         cat <<EOL >>../config/pdf.yml
 - name: worker0${i}
   os:
@@ -123,6 +128,7 @@ EOL
   roles:
     - kube-node
 EOL
+        # editorconfig-checker-enable
     done
     destroy_vm controller
     for i in {1..2}; do

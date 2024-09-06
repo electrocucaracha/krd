@@ -36,6 +36,7 @@ CURL_PROXY_CMD="curl -s http://${HOST}:${PORT}"
 
 # Test
 info "===== Test started ====="
+# editorconfig-checker-disable
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Service
@@ -95,12 +96,14 @@ spec:
                 fieldRef:
                   fieldPath: status.podIP
 EOF
+# editorconfig-checker-enable
 wait_deployment "$echo_deployment_name"
 
 assert_non_empty "$($CURL_PROXY_CMD)" "There is no output from Kong's proxy"
 assert_contains "$($CURL_PROXY_CMD)" '{"message":"no Route matched with those values"}' "Routes has been defined for this service"
 
 if [[ "$(_get_kube_version)" == *"v1.18"* ]]; then
+    # editorconfig-checker-disable
     cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -117,7 +120,9 @@ spec:
               serviceName: echo
               servicePort: 80
 EOF
+    # editorconfig-checker-enable
 else
+    # editorconfig-checker-disable
     cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -136,10 +141,12 @@ spec:
                 port:
                   number: 80
 EOF
+    # editorconfig-checker-enable
 fi
 wait_ingress demo
 assert_contains "$(eval "$CURL_PROXY_CMD/foo")" "Pod Information:" "The server response doesn't have pod's info"
 
+# editorconfig-checker-disable
 cat <<EOF | kubectl apply -f -
 apiVersion: configuration.konghq.com/v1
 kind: KongPlugin
@@ -149,7 +156,9 @@ config:
   header_name: my-request-id
 plugin: correlation-id
 EOF
+# editorconfig-checker-enable
 if [[ "$(_get_kube_version)" == *"v1.18"* ]]; then
+    # editorconfig-checker-disable
     cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
@@ -168,7 +177,9 @@ spec:
               serviceName: echo
               servicePort: 80
 EOF
+    # editorconfig-checker-enable
 else
+    # editorconfig-checker-disable
     cat <<EOF | kubectl apply -f -
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -190,6 +201,7 @@ spec:
                 port:
                   number: 80
 EOF
+    # editorconfig-checker-enable
 fi
 wait_ingress demo-example
 assert_contains "$(eval "$CURL_PROXY_CMD/bar -H 'Host: example.com'")" "Pod Information:" "The server response doesn't have pod's info for example.com host"
