@@ -125,7 +125,7 @@ instruction shows how to upgrade the existing Kubernetes cluster to
 | KRD_DEBUG                             | false                                          | Enables verbose execution                                                       |
 | KRD_ANSIBLE_DEBUG                     | false                                          | Enables ansible verbose execution                                               |
 | PKG_DEBUG                             | false                                          | Enables cURL package installer verbose execution                                |
-| KRD_KUBE_VERSION                      | v1.28.6                                        | Specifies the Kubernetes version to be upgraded                                 |
+| KRD_KUBE_VERSION                      | v1.30.4                                        | Specifies the Kubernetes version to be upgraded                                 |
 | KRD_KUBESPRAY_VERSION                 | v2.26.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | `https://github.com/kubernetes-sigs/kubespray` | Specifies the Git repository to fetch the Kubespray's source code               |
 | KRD_ENABLE_TESTS                      | false                                          | Enables the functional tests during the deployment process                      |
