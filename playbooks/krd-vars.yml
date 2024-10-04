@@ -10,7 +10,7 @@
 kpt_version: 1.0.0-beta.55
 go_version: 1.15.3
 kubespray_version: v2.26.0
-istio_version: 1.23.0
+istio_version: 1.23.2
 cfssl_version: 1.6.5
 sonobuoy_version: 0.57.2
 mitogen_version: 0.2.10
@@ -23,11 +23,11 @@ net_kourier_version: knative-v1.15.1
 net_istio_version: vknative-v1.15.1
 net_certmanager_version: vknative-v1.14.0
 octant_version: 0.25.1
-kube-ovn_version: vkube-ovn-v1.12.22
-prometheus-operator_version: v0.76.1
+kube-ovn_version: vkube-ovn-v1.12.26
+prometheus-operator_version: v0.77.1
 kubevirt_version: v1.3.1
 virtink_version: v0.16.0
-kubesphere_version: v3.4.1
+kubesphere_version: v4.1.2
 metallb_version: v0.14.8
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
