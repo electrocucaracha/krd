@@ -27,10 +27,7 @@ jobs:
   check-corner-cases:
     name: Check K8s Plugins installation methods in an Ubuntu Bionic All-in-One setup
     if: >-
-      (
-        github.event_name == 'pull_request_review' &&
-        github.event.review.state == 'approved'
-      ) || github.event_name != 'pull_request_review'
+      ( github.event_name == 'pull_request_review' && github.event.review.state == 'approved' ) || github.event_name != 'pull_request_review'
     runs-on: macos-12
     strategy:
       fail-fast: false

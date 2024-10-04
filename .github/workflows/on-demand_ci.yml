@@ -27,10 +27,7 @@ jobs:
   check-ci:
     name: Check Integration tests in an Ubuntu Focal Virtual Machines
     if: >-
-      (
-        github.event_name == 'pull_request_review' &&
-        github.event.review.state == 'approved'
-      ) || github.event_name != 'pull_request_review'
+      ( github.event_name == 'pull_request_review' && github.event.review.state == 'approved' ) || github.event_name != 'pull_request_review'
     runs-on: macos-12
     strategy:
       fail-fast: false
@@ -71,10 +68,7 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     if: >-
-      (
-        github.event_name == 'pull_request_review' &&
-        github.event.review.state == 'approved'
-      ) || github.event_name != 'pull_request_review'
+      ( github.event_name == 'pull_request_review' && github.event.review.state == 'approved' ) || github.event_name != 'pull_request_review'
     outputs:
       scripts: ${{ steps.filter.outputs.scripts }}
     steps:

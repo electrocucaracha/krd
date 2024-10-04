@@ -27,10 +27,7 @@ jobs:
   check-multus:
     name: Check Multus CNI in an Ubuntu Focal All-in-One setup
     if: >-
-      (
-        github.event_name == 'pull_request_review' &&
-        github.event.review.state == 'approved'
-      ) || github.event_name != 'pull_request_review'
+      ( github.event_name == 'pull_request_review' && github.event.review.state == 'approved' ) || github.event_name != 'pull_request_review'
     runs-on: ubuntu-22.04
     env:
       KRD_DEBUG: true
