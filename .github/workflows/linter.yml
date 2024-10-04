@@ -45,6 +45,7 @@ jobs:
           LINTER_RULES_PATH: /
           VALIDATE_KUBERNETES_KUBEVAL: false
           VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_SHELL_SHFMT: false
           EDITORCONFIG_FILE_NAME: .editorconfig
           KUBERNETES_KUBECONFORM_OPTIONS: '-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml'
   check-tox:
