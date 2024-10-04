@@ -7,3 +7,6 @@ ignore = true
 
 [spec/**]
 ignore = true
+
+[.tox/**]
+ignore = true
