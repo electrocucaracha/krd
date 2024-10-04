@@ -35,3 +35,4 @@ jobs:
           container-runtime: docker
           docker-version: latest
           containerd-version: latest
+          release: bionic

@@ -20,7 +20,7 @@ inputs:
     default: ubuntu
   release:
     description: 'Release'
-    default: bionic
+    default: jammy
   vbox-controller:
     description: 'VirtualBox Controller'
     default: 'Virtual I/O Device SCSI controller'
