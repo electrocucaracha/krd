@@ -17,11 +17,11 @@ jobs:
     name: Count Lines of Code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938  # 4.2.0
+      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # 4.2.0
       - name: Setup Go
-        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32  # 5.0.2
+        uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # 5.0.2
         with:
-          go-version: '>=1.20.0'
+          go-version: ">=1.20.0"
       - name: Install dependencies
         run: go install github.com/boyter/scc/v3@latest
       - name: Run scc tool
@@ -30,16 +30,16 @@ jobs:
     name: Check documentation external links
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938  # 4.2.0
+      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # 4.2.0
       - name: Check broken links
-        uses: gaurav-nelson/github-action-markdown-link-check@d53a906aa6b22b8979d33bc86170567e619495ec  # 1.0.15
+        uses: gaurav-nelson/github-action-markdown-link-check@d53a906aa6b22b8979d33bc86170567e619495ec # 1.0.15
   check-super-linter:
     name: Check syntax (super-linter)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938  # 4.2.0
+      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # 4.2.0
       - name: Run super-linter validation
-        uses: github/super-linter@b807e99ddd37e444d189cfd2c2ca1274d8ae8ef1  # 7
+        uses: github/super-linter@b807e99ddd37e444d189cfd2c2ca1274d8ae8ef1 # 7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: /
@@ -47,12 +47,12 @@ jobs:
           VALIDATE_NATURAL_LANGUAGE: false
           VALIDATE_SHELL_SHFMT: false
           EDITORCONFIG_FILE_NAME: .editorconfig
-          KUBERNETES_KUBECONFORM_OPTIONS: '-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml'
+          KUBERNETES_KUBECONFORM_OPTIONS: "-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml"
   check-tox:
     name: Check syntax (tox)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938  # 4.2.0
+      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # 4.2.0
       - name: Install tox
         run: pip install tox
       - name: Run tox lint validation

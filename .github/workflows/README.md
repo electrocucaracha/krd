@@ -20,7 +20,7 @@
 ## Available labels
 
 | Label name    | Description                                        |
-| :-------------|----------------------------------------------------|
+| :------------ | -------------------------------------------------- |
 | documentation | Changes on documentation files                     |
 | test          | Changes on script files located in `tests/` folder |
 | ci            | Changes on GitHub files                            |

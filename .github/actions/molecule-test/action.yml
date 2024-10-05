@@ -10,14 +10,14 @@
 name: Molecule execution
 inputs:
   tox-env:
-    description: 'Python TOX environment'
+    description: "Python TOX environment"
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3  # 5.2.0
+    - uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # 5.2.0
       with:
-        python-version: '3.x'
-    - uses: syphar/restore-virtualenv@e536692e76315a068b4905f792e25febfe6d4391  # 1.3
+        python-version: "3.x"
+    - uses: syphar/restore-virtualenv@e536692e76315a068b4905f792e25febfe6d4391 # 1.3
       id: cache-tox-molecule
       with:
         requirement_files: test-requirements.txt

@@ -12,9 +12,9 @@ name: Check Virtlet service
 on:
   push:
     paths:
-      - 'playbooks/roles/virtlet/**'
-      - 'playbooks/roles/criproxy/**'
-      - '!**.md'
+      - "playbooks/roles/virtlet/**"
+      - "playbooks/roles/criproxy/**"
+      - "!**.md"
   pull_request_review:
     types:
       - submitted
@@ -25,7 +25,7 @@ jobs:
       ( github.event_name == 'pull_request_review' && github.event.review.state == 'approved' ) || github.event_name != 'pull_request_review'
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938  # 4.2.0
+      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # 4.2.0
       - uses: ./.github/actions/vagrant-up
         with:
           kube-version: v1.18.17

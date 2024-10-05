@@ -5,9 +5,9 @@ Welcome! We are glad that you want to contribute to our project! 💖
 As you get started, you are in the best position to give us feedback on areas of
 our project that we need help with including:
 
-* Problems found during setting up a new environment
-* Gaps in our documentation
-* Bugs in our automation scripts
+- Problems found during setting up a new environment
+- Gaps in our documentation
+- Bugs in our automation scripts
 
 If anything doesn't make sense, or doesn't work when you run it, please open a
 bug report and let us know!
@@ -16,10 +16,10 @@ bug report and let us know!
 
 We welcome many different types of contributions including:
 
-* New features
-* Builds, CI/CD
-* Bugfixes
-* Documentation
+- New features
+- Builds, CI/CD
+- Bugfixes
+- Documentation
 
 ## When to open a pull request
 
@@ -41,17 +41,18 @@ before you've spent a lot of time implementing it.
    ready for review.
 
    If you create a regular pull request, a reviewer won't wait to review it.
+
 1. A reviewer will assign themselves to the pull request. If you don't see
    anyone assigned after 3 business days, you can leave a comment asking for a
    review. Sometimes we have busy days, sick days, weekends and vacations, so a
    little patience is appreciated! 🙇‍♀️
 1. The reviewer will leave feedback.
-    * `nits`: These are suggestions that you may decide incorporate into your
-      pull request or not without further comment.
-    * It can help to put a 👍 on comments that you have implemented so that you
-      can keep track.
-    * It is okay to clarify if you are being told to make a change or if it is a
-      suggestion.
+   - `nits`: These are suggestions that you may decide incorporate into your
+     pull request or not without further comment.
+   - It can help to put a 👍 on comments that you have implemented so that you
+     can keep track.
+   - It is okay to clarify if you are being told to make a change or if it is a
+     suggestion.
 1. After you have made the changes (in new commits please!), leave a comment. If
    3 business days go by with no review, it is okay to bump.
 1. When a pull request has been approved, the reviewer will squash and merge
@@ -87,10 +88,10 @@ request comment so that we don't collectively forget.
 ## Environment Setup
 
 This project uses [Vagrant tool][1] for provisioning Virtual Machines
-automatically. The *setup.sh* script of the [bootstrap-vagrant project][2]
+automatically. The _setup.sh_ script of the [bootstrap-vagrant project][2]
 contains the Linux instructions to install dependencies and plugins required for
 its usage. This script supports two Virtualization technologies (Libvirt and
-VirtualBox) and they can be specified by *PROVIDER* environment variable.
+VirtualBox) and they can be specified by _PROVIDER_ environment variable.
 
     curl -fsSL http://bit.ly/initVagrant | PROVIDER=libvirt bash
 
@@ -100,13 +101,15 @@ following instruction:
     vagrant up
 
 <!-- textlint-disable -->
+
 > Note: Vagrant will utilize the default configuration values defined in
-[*this*](config/default.yml) file to setup the VM nodes of the cluster. Those
-values can be overwritten creating a valid  *pdf.yml* file in
-the [config](config) folder.
+> [_this_](config/default.yml) file to setup the VM nodes of the cluster. Those
+> values can be overwritten creating a valid _pdf.yml_ file in
+> the [config](config) folder.
+
 <!-- textlint-enable -->`
 
-An additional *installer* VM will be used for provisioning the Kubernetes
+An additional _installer_ VM will be used for provisioning the Kubernetes
 cluster. Several [environment variables](README.md#environment-variables)
 can be used to control the provisioning workflow.
 

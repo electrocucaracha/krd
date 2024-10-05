@@ -11,7 +11,7 @@
   ansible.builtin.import_tasks: cleanup.yml
 - name: Ensure destination folder exists
   ansible.builtin.file:
-    mode: '0755'
+    mode: "0755"
     state: directory
     path: "{{ qat_plugin_tmpl_dir }}"
 - name: Generate QAT DPDK k8s resources based on templates

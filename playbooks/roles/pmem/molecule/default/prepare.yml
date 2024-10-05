@@ -35,7 +35,7 @@
         file: ../../../../krd-vars.yml
   roles:
     - role: andrewrothstein.kind
-      kind_install_dir: '{{ kind_dest }}'
+      kind_install_dir: "{{ kind_dest }}"
     - andrewrothstein.kubectl
     - role: geerlingguy.docker
       docker_install_compose: false
@@ -44,11 +44,11 @@
     - name: Add existing user ansible's user to docker's group
       become: true
       ansible.builtin.user:
-        name: '{{ ansible_ssh_user }}'
+        name: "{{ ansible_ssh_user }}"
         groups: docker
         append: true
     - name: Get k8s clusters
-      ansible.builtin.command: '{{ kind_dest }}/kind get clusters --quiet'
+      ansible.builtin.command: "{{ kind_dest }}/kind get clusters --quiet"
       register: kind_cluster
       failed_when: (kind_cluster.rc not in [0, 1])
       changed_when: false
@@ -59,27 +59,27 @@
       block:
         - name: Create k8s cluster
           become: true
-          ansible.builtin.command: '{{ kind_dest }}/kind create cluster --name molecule --wait=300s --retain'
+          ansible.builtin.command: "{{ kind_dest }}/kind create cluster --name molecule --wait=300s --retain"
           when: not 'molecule' in kind_cluster.stdout
           changed_when: true
         - name: Create kubeconfig folder
           ansible.builtin.file:
-            mode: '0755'
-            path: '{{ ansible_env.HOME }}/.kube/'
+            mode: "0755"
+            path: "{{ ansible_env.HOME }}/.kube/"
             state: directory
         - name: Copy kubeconfig root file
           become: true
           ansible.builtin.copy:
             mode: preserve
             src: /root/.kube/config
-            dest: '{{ ansible_env.HOME }}/.kube/config'
+            dest: "{{ ansible_env.HOME }}/.kube/config"
             remote_src: true
-            owner: '{{ ansible_ssh_user }}'
-            group: '{{ ansible_ssh_user }}'
+            owner: "{{ ansible_ssh_user }}"
+            group: "{{ ansible_ssh_user }}"
       rescue:
         - name: Get Kind logs
           become: true
-          ansible.builtin.command: '{{ kind_dest }}/kind export logs --name molecule'
+          ansible.builtin.command: "{{ kind_dest }}/kind export logs --name molecule"
           changed_when: false
     - name: Label PMEM node
       kubernetes.core.k8s:

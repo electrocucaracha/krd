@@ -10,7 +10,7 @@
 - name: Create NFD k8s resources based on templates
   kubernetes.core.k8s:
     state: present
-    definition: "{{ lookup('template', 'nfd-{{ item }}.yaml.j2') }}"  # noqa jinja[invalid]
+    definition: "{{ lookup('template', 'nfd-{{ item }}.yaml.j2') }}" # noqa jinja[invalid]
   with_items:
     - master
     - worker-daemonset

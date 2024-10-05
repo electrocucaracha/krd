@@ -13,7 +13,7 @@
   changed_when: false
 - name: Create Virtlet binary folder
   ansible.builtin.file:
-    mode: '0755'
+    mode: "0755"
     state: directory
     path: "{{ virtlet_dest }}"
 - name: Generate image translations confimap file
@@ -56,7 +56,7 @@
   when: virtlet_kubectl_version.stdout is version('1.23', '<')
   changed_when: true
 - name: Download virtletctl
-  ansible.builtin.command: curl -Ls -o {{ virtlet_dest }}/virtletctl {{ virtlet_url }}  # noqa command-instead-of-module
+  ansible.builtin.command: curl -Ls -o {{ virtlet_dest }}/virtletctl {{ virtlet_url }} # noqa command-instead-of-module
   changed_when: false
 - name: Set virtletctl execution permissions
   ansible.builtin.file:
@@ -77,6 +77,6 @@
   changed_when: false
   register: virtlet_daemonset
   until:
-    - '1'
+    - "1"
   retries: 6
   delay: 10

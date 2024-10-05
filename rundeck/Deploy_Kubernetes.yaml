@@ -14,7 +14,7 @@
     commands:
       - configuration:
           ansible-base-dir-path: /opt/kubespray/
-          ansible-become: 'true'
+          ansible-become: "true"
           ansible-playbook: cluster.yml
         nodeStep: true
         type: com.batix.rundeck.plugins.AnsiblePlaybookWorflowNodeStep

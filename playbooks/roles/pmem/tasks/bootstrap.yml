@@ -18,6 +18,6 @@
   ansible.builtin.get_url:
     url: https://github.com/cloudflare/cfssl/releases/download/v{{ pmem_cfssl_version }}/{{ pmem_cfssl_binary }}_{{ pmem_cfssl_version }}_linux_amd64
     dest: /usr/local/bin/{{ pmem_cfssl_binary }}
-    mode: '0755'
+    mode: "0755"
   become: true
   when: not pmem_cfssl_binary_location.stat.exists

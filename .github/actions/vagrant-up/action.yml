@@ -10,73 +10,73 @@
 name: Vagrant up
 inputs:
   debug:
-    description: 'Enable debug level'
+    description: "Enable debug level"
     default: false
   memory:
-    description: 'Memory'
+    description: "Memory"
     default: 12288
   os:
-    description: 'Operating System'
+    description: "Operating System"
     default: ubuntu
   release:
-    description: 'Release'
+    description: "Release"
     default: jammy
   vbox-controller:
-    description: 'VirtualBox Controller'
-    default: 'Virtual I/O Device SCSI controller'
+    description: "VirtualBox Controller"
+    default: "Virtual I/O Device SCSI controller"
   test-multinode:
-    description: 'Multinode test environment'
+    description: "Multinode test environment"
     default: false
   host-installer:
-    description: 'Run KRD deployment script on the host machine'
+    description: "Run KRD deployment script on the host machine"
     default: false
   kube-version:
-    description: 'Kubernetes version'
+    description: "Kubernetes version"
   kubespray-version:
-    description: 'Kubespray version'
+    description: "Kubespray version"
   cert-manager-enabled:
-    description: 'Enable Kubernetes Cert-Manager'
+    description: "Enable Kubernetes Cert-Manager"
     default: false
   ingress-enabled:
-    description: 'Enable Kubernetes Ingress Controller'
+    description: "Enable Kubernetes Ingress Controller"
     default: false
   container-runtime:
-    description: 'Container Runtime'
+    description: "Container Runtime"
   kata-containers-enabled:
-    description: 'Enable Katacontainers'
+    description: "Enable Katacontainers"
     default: false
   crun-enabled:
-    description: 'Enable crun'
+    description: "Enable crun"
     default: false
   gvisor-enabled:
-    description: 'Enable gVisor'
+    description: "Enable gVisor"
     default: false
   metallb-enabled:
-    description: 'Enable MetalLB'
+    description: "Enable MetalLB"
     default: false
   krew-plugins-list:
-    description: 'List of Krew plugins to be installed'
-    default: ' '
+    description: "List of Krew plugins to be installed"
+    default: " "
   docker-version:
-    description: 'Docker version'
+    description: "Docker version"
   containerd-version:
-    description: 'ContainerD version'
+    description: "ContainerD version"
   network-plugin:
-    description: 'CNI plugin'
-    default: 'flannel'
+    description: "CNI plugin"
+    default: "flannel"
   enable-tests:
-    description: 'Enable KRD functional tests'
+    description: "Enable KRD functional tests"
     default: false
   int-tests:
-    description: 'List of KRD integration tests'
+    description: "List of KRD integration tests"
   test-virtlet:
-    description: 'Validate Virtlet services'
+    description: "Validate Virtlet services"
     default: false
   run-conformance-tools:
-    description: 'Run conformance tools'
+    description: "Run conformance tools"
     default: false
   run-benchmarks:
-    description: 'Run K6 and iperf networking benchmark tools'
+    description: "Run K6 and iperf networking benchmark tools"
     default: false
 runs:
   using: "composite"

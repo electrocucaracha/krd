@@ -135,7 +135,7 @@
               ansible.builtin.file:
                 state: directory
                 path: /root/.docker/
-                mode: '0755'
+                mode: "0755"
             - name: Configure docker client to use proxy values
               ansible.builtin.copy:
                 mode: preserve

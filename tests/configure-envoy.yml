@@ -18,7 +18,7 @@
       block:
         - name: create docker config folder
           file:
-            mode: '0755'
+            mode: "0755"
             state: directory
             path: /root/.docker/
         - name: configure docker client to use proxy values

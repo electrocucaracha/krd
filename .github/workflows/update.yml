@@ -11,31 +11,31 @@ name: Scheduled Versions and Dictionary verification
 # yamllint disable-line rule:truthy
 on:
   schedule:
-    - cron: '0 0 * * 5'
+    - cron: "0 0 * * 5"
   workflow_dispatch:
 jobs:
   check-versions:
     permissions:
-      contents: write  # for technote-space/create-pr-action to push code
-      pull-requests: write  # for technote-space/create-pr-action to create a PR
+      contents: write # for technote-space/create-pr-action to push code
+      pull-requests: write # for technote-space/create-pr-action to create a PR
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938  # 4.2.0
-      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5  # 2.1.4
+      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # 4.2.0
+      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5 # 2.1.4
         with:
           EXECUTE_COMMANDS: |
             ./ci/update_versions.sh
             pip install pip-tools
             pip-compile test-requirements.in --output-file test-requirements.txt --upgrade --resolver=backtracking
-          COMMIT_MESSAGE: 'Upgrade galaxy requirements and krd versions files'
-          COMMIT_NAME: 'electrocucaracha bot'
+          COMMIT_MESSAGE: "Upgrade galaxy requirements and krd versions files"
+          COMMIT_NAME: "electrocucaracha bot"
           PR_BRANCH_NAME: "versions-update-${PR_ID}"
-          PR_TITLE: 'chore: update versions'
+          PR_TITLE: "chore: update versions"
   check-dictionary:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938  # 4.2.0
-      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5  # 2.1.4
+      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # 4.2.0
+      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5 # 2.1.4
         with:
           EXECUTE_COMMANDS: |
             sudo apt-get update
@@ -52,7 +52,7 @@ jobs:
             # Add missing words
             pyspelling -c .spellcheck.yml | sed '/^<.*>/d;/^!!!/d;/^--/d;/^Misspelled words:/d;/^$/d;/^Spelling check passed :)$/d' | sort --ignore-case | uniq --ignore-case | tee --append .github/.wordlist.txt
             sort --ignore-case --output=.github/.wordlist.txt .github/.wordlist.txt
-          COMMIT_MESSAGE: 'Update dictionary definitions'
-          COMMIT_NAME: 'spellchecker bot'
+          COMMIT_MESSAGE: "Update dictionary definitions"
+          COMMIT_NAME: "spellchecker bot"
           PR_BRANCH_NAME: "versions-update-${PR_ID}"
-          PR_TITLE: 'chore: update dictionary'
+          PR_TITLE: "chore: update dictionary"

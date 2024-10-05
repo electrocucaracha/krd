@@ -2,8 +2,8 @@
 name: Bug Report
 about: Report a bug encountered while operating Kubernetes
 labels: kind/bug
-
 ---
+
 <!--
 Please, be ready for followup questions, and please respond in a timely
 manner.  If we can't reproduce a bug or think a feature already exists, we
@@ -38,6 +38,7 @@ How to reproduce this issue
 `git rev-parse --short HEAD`
 
 ### Output of Setup Kubernetes log file
+
 <!-- We recommend using snippets services like https://gist.github.com/ etc. -->
 
 `vagrant ssh installer -- cat /vagrant/setup-kubernetes.log`

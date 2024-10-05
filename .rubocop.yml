@@ -14,4 +14,4 @@ Metrics/BlockLength:
 Layout/LineLength:
   Enabled: false
 Style/StringLiterals:
-  EnforcedStyle: double_quotes  # https://github.com/rubocop/rubocop/issues/5306
+  EnforcedStyle: double_quotes # https://github.com/rubocop/rubocop/issues/5306

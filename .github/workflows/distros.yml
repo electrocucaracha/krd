@@ -11,27 +11,27 @@ name: Scheduled Latest Vagrant Boxes verification
 # yamllint disable-line rule:truthy
 on:
   schedule:
-    - cron: '0 0 1 * *'
+    - cron: "0 0 1 * *"
   workflow_dispatch:
 jobs:
   check-versions:
     permissions:
-      contents: write  # for technote-space/create-pr-action to push code
-      pull-requests: write  # for technote-space/create-pr-action to create a PR
+      contents: write # for technote-space/create-pr-action to push code
+      pull-requests: write # for technote-space/create-pr-action to create a PR
     runs-on: macos-12
     steps:
-      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938  # 4.2.0
-      - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9  # 4.0.2
+      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # 4.2.0
+      - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # 4.0.2
         with:
           path: ~/.vagrant.d/boxes
           key: ${{ runner.os }}-vagrant-${{ hashFiles('distros_supported.yml') }}
           restore-keys: |
             ${{ runner.os }}-vagrant-
-      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5  # 2.1.4
+      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5 # 2.1.4
         with:
           EXECUTE_COMMANDS: |
             ./ci/update_distros.sh
-          COMMIT_MESSAGE: 'Upgrade distro list versions'
-          COMMIT_NAME: 'electrocucaracha bot'
+          COMMIT_MESSAGE: "Upgrade distro list versions"
+          COMMIT_NAME: "electrocucaracha bot"
           PR_BRANCH_NAME: "versions-update-${PR_ID}"
-          PR_TITLE: 'chore: update distro versions'
+          PR_TITLE: "chore: update distro versions"

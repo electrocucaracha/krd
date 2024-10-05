@@ -16,7 +16,7 @@
     - cfssljson
 - name: Ensure destination folder exists
   ansible.builtin.file:
-    mode: '0755'
+    mode: "0755"
     state: directory
     path: "{{ pmem_template_folder }}"
 - name: Copy shell scripts
@@ -48,17 +48,17 @@
   register: pmem_registry_secret
 - name: Print node and registry values
   ansible.builtin.debug:
-    var: '{{ item }}_secret'
+    var: "{{ item }}_secret"
   with_items:
     - node
     - registry
 - name: Create PMEM secrets
   become: true
-  ansible.builtin.shell: 'PATH=$PATH:/usr/local/bin/ {{ pmem_template_folder }}/setup-ca-kubernetes.sh'
+  ansible.builtin.shell: "PATH=$PATH:/usr/local/bin/ {{ pmem_template_folder }}/setup-ca-kubernetes.sh"
   environment:
     TEST_DRIVER_NAMESPACE: "{{ pmem_namespace }}"
   args:
-    chdir: '{{ pmem_template_folder }}'
+    chdir: "{{ pmem_template_folder }}"
   when:
     - pmem_node_secret.resources | length == 0
     - pmem_registry_secret.resources | length == 0
@@ -70,7 +70,7 @@
 - name: Create PMEM storage classes
   kubernetes.core.k8s:
     state: present
-    definition: "{{ lookup('file', 'pmem-{{ item }}.yaml') }}"  # noqa jinja[invalid]
+    definition: "{{ lookup('file', 'pmem-{{ item }}.yaml') }}" # noqa jinja[invalid]
   with_items:
     - storageclass-ext4
     - storageclass-xfs
