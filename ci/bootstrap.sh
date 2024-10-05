@@ -31,7 +31,7 @@ if [[ ${TEST_MULTINODE:-false} == "false" ]]; then
 - name: aio
   os:
     name: ${OS:-ubuntu}
-    release: ${RELEASE:-bionic}
+    release: ${RELEASE:-jammy}
   networks:
     - name: public-net
       ip: "10.10.16.3"
@@ -80,7 +80,7 @@ else
 - name: controller
   os:
     name: ${OS:-ubuntu}
-    release: ${RELEASE:-bionic}
+    release: ${RELEASE:-jammy}
   networks:
     - name: public-net
       ip: "10.10.16.3"
@@ -108,7 +108,7 @@ EOL
 - name: worker0${i}
   os:
     name: ${OS:-ubuntu}
-    release: ${RELEASE:-bionic}
+    release: ${RELEASE:-jammy}
   networks:
     - name: public-net
       ip: "10.10.16.$((i + 3))"

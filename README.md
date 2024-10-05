@@ -24,9 +24,8 @@ different scenarios. There are different setups located in the
 | Name       | Version           |
 |:-----------|:-----------------:|
 | Ubuntu     | 18.04/20.04/22.04 |
-| CentOS     | 7/8               |
 | openSUSE   | Leap              |
-| Fedora     | 37/38             |
+| Fedora     | 37/38/39/40       |
 
 ## Components
 

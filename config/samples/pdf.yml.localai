@@ -2,7 +2,7 @@
 - name: aio
   os:
     name: ubuntu
-    release: bionic
+    release: jammy
   networks:
     - name: public-net
       ip: "10.10.16.3"

@@ -7,13 +7,6 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-centos:
-  7:
-    name: generic/centos7
-    version: "4.3.12"
-  8:
-    name: generic/centos8
-    version: "4.3.12"
 ubuntu:
   bionic:
     name: generic/ubuntu1804
@@ -35,3 +28,9 @@ fedora:
   38:
     name: fedora/38-cloud-base
     version: "38.20230413.1"
+  39:
+    name: fedora/39-cloud-base
+    version: "39.20231031.1"
+  40:
+    name: fedora/40-cloud-base
+    version: "40.20240414.0"

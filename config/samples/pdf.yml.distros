@@ -1,7 +1,7 @@
 - name: controller
   os:
     name: ubuntu
-    release: focal
+    release: jammy
   networks:
     - name: public-net
       ip: "10.10.16.3"
@@ -21,35 +21,13 @@
   roles:
     - kube-master
     - etcd
-- name: ubuntu16
-  os:
-    name: ubuntu
-    release: focal
-  networks:
-    - name: public-net
-      ip: "10.10.16.4"
-  memory: 4096
-  cpus: 1
-  storage_controllers:
-    - name: Virtual I/O Device SCSI controller
-      type: virtio-scsi
-      controller: VirtIO
-  volumes:
-    - name: sdb
-      size: 25
-      mount: /var/lib/docker/
-      controller: Virtual I/O Device SCSI controller
-      port: 1
-      device: 0
-  roles:
-    - kube-node
 - name: ubuntu18
   os:
     name: ubuntu
     release: bionic
   networks:
     - name: public-net
-      ip: "10.10.16.5"
+      ip: "10.10.16.4"
   memory: 4096
   cpus: 1
   storage_controllers:
@@ -69,6 +47,28 @@
   os:
     name: ubuntu
     release: focal
+  networks:
+    - name: public-net
+      ip: "10.10.16.5"
+  memory: 4096
+  cpus: 1
+  storage_controllers:
+    - name: Virtual I/O Device SCSI controller
+      type: virtio-scsi
+      controller: VirtIO
+  volumes:
+    - name: sdb
+      size: 25
+      mount: /var/lib/docker/
+      controller: Virtual I/O Device SCSI controller
+      port: 1
+      device: 0
+  roles:
+    - kube-node
+- name: ubuntu22
+  os:
+    name: ubuntu
+    release: jammy
   networks:
     - name: public-net
       ip: "10.10.16.6"
@@ -109,10 +109,10 @@
       device: 0
   roles:
     - kube-node
-- name: fedora34
+- name: fedora37
   os:
     name: fedora
-    release: 34
+    release: 37
   networks:
     - name: public-net
       ip: "10.10.16.8"
@@ -131,10 +131,10 @@
       device: 0
   roles:
     - kube-node
-- name: fedora35
+- name: fedora38
   os:
     name: fedora
-    release: 35
+    release: 38
   networks:
     - name: public-net
       ip: "10.10.16.9"
@@ -153,10 +153,10 @@
       device: 0
   roles:
     - kube-node
-- name: centos7
+- name: fedora39
   os:
-    name: centos
-    release: 7
+    name: fedora39
+    release: 39
   networks:
     - name: public-net
       ip: "10.10.16.10"
@@ -175,10 +175,10 @@
       device: 0
   roles:
     - kube-node
-- name: centos8
+- name: fedora40
   os:
-    name: centos
-    release: 8
+    name: fedora
+    release: 40
   networks:
     - name: public-net
       ip: "10.10.16.11"

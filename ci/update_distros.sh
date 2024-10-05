@@ -84,9 +84,6 @@ cat <<EOT >.distros_supported.yml
 ##############################################################################
 EOT
 
-echo "centos:" >>.distros_supported.yml
-_vagrant_pull "7" "generic/centos7"
-_vagrant_pull "8" "generic/centos8"
 echo "ubuntu:" >>.distros_supported.yml
 _vagrant_pull "bionic" "generic/ubuntu1804"
 _vagrant_pull "focal" "generic/ubuntu2004"
@@ -96,6 +93,8 @@ _vagrant_pull "leap" "generic/opensuse15"
 echo "fedora:" >>.distros_supported.yml
 _vagrant_pull "37" "fedora/37-cloud-base"
 _vagrant_pull "38" "fedora/38-cloud-base"
+_vagrant_pull "39" "fedora/39-cloud-base"
+_vagrant_pull "40" "fedora/40-cloud-base"
 
 if [ "$msg" ]; then
     echo -e "$msg"
