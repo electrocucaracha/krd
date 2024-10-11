@@ -8,7 +8,6 @@ balancer
 blockquote
 BPF
 Bugfixes
-CentOS
 CNI
 COCOMO
 codebase
