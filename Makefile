@@ -19,7 +19,7 @@ lint:
 	-e VALIDATE_SHELL_SHFMT=false \
 	-e EDITORCONFIG_FILE_NAME=.editorconfig \
 	-e KUBERNETES_KUBECONFORM_OPTIONS='-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml' \
-	github/super-linter
+	ghcr.io/super-linter/super-linter
 	tox -e lint
 
 .PHONY: fmt
