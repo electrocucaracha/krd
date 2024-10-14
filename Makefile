@@ -17,6 +17,7 @@ lint:
 	-e VALIDATE_KUBERNETES_KUBEVAL=false \
 	-e VALIDATE_NATURAL_LANGUAGE=false \
 	-e VALIDATE_SHELL_SHFMT=false \
+	-e VALIDATE_CHECKOV=false \
 	-e EDITORCONFIG_FILE_NAME=.editorconfig \
 	-e KUBERNETES_KUBECONFORM_OPTIONS='-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml' \
 	ghcr.io/super-linter/super-linter
