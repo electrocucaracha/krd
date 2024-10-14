@@ -8,6 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 name: Vagrant up
+description: Start vagrant provisioning process
 inputs:
   debug:
     description: "Enable debug level"

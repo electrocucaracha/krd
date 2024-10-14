@@ -8,6 +8,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 name: Molecule execution
+description: Executes an Ansible molecule integration test
 inputs:
   tox-env:
     description: "Python TOX environment"
