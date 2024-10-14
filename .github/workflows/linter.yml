@@ -54,7 +54,7 @@ jobs:
     steps:
       - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # 4.2.0
       - name: Install tox
-        run: pip install tox
+        run: pip install tox --break-system-packages
       - name: Run tox lint validation
         run: tox -e lint
       - name: Run tox documents validation
