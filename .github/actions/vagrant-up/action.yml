@@ -137,3 +137,11 @@ runs:
         RUN_BENCHMARKS: ${{ inputs.run-benchmarks }}
       working-directory: ./ci
       run: ./check.sh
+    - name: Check HW resources
+      if: failure()
+      shell: bash
+      run: |
+        vm_stat
+        top -l 1 -n 0
+        VBoxManage list runningvms --long
+        cat ~/VirtualBox\ VMs/*/Logs/*.log
