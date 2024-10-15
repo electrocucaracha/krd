@@ -23,32 +23,29 @@ def test_pmem_nodes_ready(host):
 
     assert cmd.rc == 0
 
-    nodes = cmd.stdout[:-1].split(",")
-    for node in nodes:
+    for node in cmd.stdout[:-1].split(","):
         cmd = host.run(
-            "/usr/local/bin/kubectl wait --for=condition=ready node/%s --timeout=1m"
-            % node
+            f"/usr/local/bin/kubectl wait --for=condition=ready node/{node} --timeout=1m"
         )
         assert cmd.rc == 0
         assert "condition met" in cmd.stdout
 
 
-def test_pmem_device_plugin_ready(host):
+def _wait_resource_ready(host, resource):
     cmd = host.run(
-        "/usr/local/bin/kubectl rollout status daemonset/pmem-csi-intel-com-node -n pmem-csi --timeout=1m"
+        f"/usr/local/bin/kubectl rollout status {resource} -n pmem-csi --timeout=1m"
     )
 
     assert cmd.rc == 0
     assert "successfully rolled out" in cmd.stdout
+
+
+def test_pmem_device_plugin_ready(host):
+    _wait_resource_ready(host, "daemonset/pmem-csi-intel-com-node")
 
 
 def test_pmem_deployment_ready(host):
-    cmd = host.run(
-        "/usr/local/bin/kubectl rollout status deployment/pmem-csi-intel-com-controller -n pmem-csi --timeout=1m"
-    )
-
-    assert cmd.rc == 0
-    assert "successfully rolled out" in cmd.stdout
+    _wait_resource_ready(host, "deployment/pmem-csi-intel-com-controller")
 
 
 def test_get_pmem_node_annotation(host):

@@ -26,8 +26,7 @@ def test_pmem_nodes_ready(host):
     nodes = cmd.stdout[:-1].split(",")
     for node in nodes:
         cmd = host.run(
-            "/usr/local/bin/kubectl wait --for=condition=ready node/%s --timeout=3m"
-            % node
+            f"/usr/local/bin/kubectl wait --for=condition=ready node/{node} --timeout=3m"
         )
         assert cmd.rc == 0
         assert "condition met" in cmd.stdout

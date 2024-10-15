@@ -15,4 +15,4 @@ import random
 
 for i in range(random.randint(600, 3600)):
     os.system("sleep 1")
-    print("Running for %s secs" % (i + 1))
+    print(f"Running for {i+1} secs")

@@ -15,33 +15,23 @@
 
 
 def test_get_nfd_ready_nodes(host):
-    assert host.run(
-        "/usr/local/bin/kubectl rollout status"
-        " deployment/nfd-master"
-        " --namespace node-feature-discovery"
-        " --timeout=3m"
-    ).succeeded
-    assert host.run(
-        "/usr/local/bin/kubectl rollout status"
-        " daemonset/nfd-worker"
-        " --namespace node-feature-discovery"
-        " --timeout=3m"
-    ).succeeded
-    assert (
-        host.run(
-            "/usr/local/bin/kubectl get deployment"
-            " --namespace node-feature-discovery"
-            " -o jsonpath='{.items[0].status."
-            "readyReplicas}'"
-        ).stdout
-        == "1"  # noqa: W503
-    )
-    assert (
-        host.run(
-            "/usr/local/bin/kubectl get daemonset"
-            " --namespace node-feature-discovery"
-            " -o jsonpath='{.items[0].status."
-            "numberReady}'"
-        ).stdout
-        == "1"  # noqa: W503
-    )
+    for resource in ["deployment/nfd-master", "daemonset/nfd-worker"]:
+        assert host.run(
+            "/usr/local/bin/kubectl rollout status "
+            + resource
+            + " --namespace node-feature-discovery"
+            " --timeout=3m"
+        ).succeeded
+    for item in [
+        {"type": "deployment", "metric": "readyReplicas"},
+        {"type": "daemonset", "metric": "numberReady"},
+    ]:
+        assert (
+            host.run(
+                "/usr/local/bin/kubectl get "
+                + item["type"]
+                + " --namespace node-feature-discovery"
+                " -o jsonpath='{.items[0].status." + item["metric"] + "}'"
+            ).stdout
+            == "1"  # noqa: W503
+        )

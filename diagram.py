@@ -18,12 +18,15 @@ import yaml
 from diagrams.generic.os import Centos, Suse, Ubuntu
 
 with diagrams.Diagram(filename="krd", direction="BT"):
-    try:
-        config_nodes = yaml.load(open(r"config/default.yml"), Loader=yaml.FullLoader)
-        if os.path.isfile("config/pdf.yml"):
-            config_nodes = yaml.load(open(r"config/pdf.yml"), Loader=yaml.FullLoader)
-    except IOError:
-        print("File not accessible")
+    configuration_file = r"config/default.yml"
+    if os.path.isfile("config/pdf.yml"):
+        configuration_file = r"config/pdf.yml"
+
+    with open(configuration_file, encoding="utf8") as conf:
+        try:
+            config_nodes = yaml.load(conf, Loader=yaml.FullLoader)
+        except IOError:
+            print("File not accessible")
 
     nodes = []
     for node in config_nodes:
@@ -49,4 +52,5 @@ with diagrams.Diagram(filename="krd", direction="BT"):
                     roles.append(k8s_infra.Node())
 
     installer = Ubuntu("installer\n10.10.16.2")
+    # pylint: disable-next=pointless-statement
     installer >> nodes
