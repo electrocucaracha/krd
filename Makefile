@@ -14,8 +14,7 @@ lint:
 	sudo -E $(DOCKER_CMD) run --rm -v $$(pwd):/tmp/lint \
 	-e RUN_LOCAL=true \
 	-e LINTER_RULES_PATH=/ \
-	-e VALIDATE_KUBERNETES_KUBEVAL=false \
-	-e VALIDATE_NATURAL_LANGUAGE=false \
+	-e VALIDATE_JSCPD=false \
 	-e VALIDATE_SHELL_SHFMT=false \
 	-e VALIDATE_CHECKOV=false \
 	-e EDITORCONFIG_FILE_NAME=.editorconfig \

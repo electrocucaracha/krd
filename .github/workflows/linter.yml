@@ -43,8 +43,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: /
-          VALIDATE_KUBERNETES_KUBEVAL: false
-          VALIDATE_NATURAL_LANGUAGE: false
+          VALIDATE_JSCPD: false
           VALIDATE_SHELL_SHFMT: false
           VALIDATE_CHECKOV: false
           EDITORCONFIG_FILE_NAME: .editorconfig
