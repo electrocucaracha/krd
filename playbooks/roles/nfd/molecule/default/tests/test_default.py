@@ -17,9 +17,8 @@
 def test_get_nfd_ready_nodes(host):
     for resource in ["deployment/nfd-master", "daemonset/nfd-worker"]:
         assert host.run(
-            "/usr/local/bin/kubectl rollout status "
-            + resource
-            + " --namespace node-feature-discovery"
+            f"/usr/local/bin/kubectl rollout status {resource}"
+            " --namespace node-feature-discovery"
             " --timeout=3m"
         ).succeeded
     for item in [
@@ -28,10 +27,9 @@ def test_get_nfd_ready_nodes(host):
     ]:
         assert (
             host.run(
-                "/usr/local/bin/kubectl get "
-                + item["type"]
-                + " --namespace node-feature-discovery"
-                " -o jsonpath='{.items[0].status." + item["metric"] + "}'"
+                f"/usr/local/bin/kubectl get {item['type']}"
+                " --namespace node-feature-discovery"
+                " -o jsonpath='{.items[0].status.{item['metric']}}'"
             ).stdout
             == "1"  # noqa: W503
         )
