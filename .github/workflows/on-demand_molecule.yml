@@ -78,6 +78,7 @@ jobs:
     name: Check Ansible role with Molecule tests
     needs: changes
     strategy:
+      max-parallel: 1
       fail-fast: false
       matrix:
         environment: ${{ fromJSON(needs.changes.outputs.environments) }}
