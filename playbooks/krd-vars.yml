@@ -31,3 +31,4 @@ kubesphere_version: v4.1.2
 metallb_version: v0.14.8
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
+argocd_version: v2.12.5

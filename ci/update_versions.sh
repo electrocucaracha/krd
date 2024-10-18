@@ -157,6 +157,7 @@ sed -i "s/kubevirt_version:.*/kubevirt_version: v$(get_version github_release ku
 sed -i "s/virtink_version:.*/virtink_version: v$(get_version github_release smartxworks/virtink)/g" ./playbooks/krd-vars.yml
 sed -i "s/kubesphere_version:.*/kubesphere_version: v$(get_version github_release kubesphere/kubesphere)/g" ./playbooks/krd-vars.yml
 sed -i "s/metallb_version:.*/metallb_version: v$(get_version github_tag metallb/metallb)/g" ./playbooks/krd-vars.yml
+sed -i "s/argocd_version:.*/argocd_version: v$(get_version github_tag argoproj/argo-cd)/g" ./playbooks/krd-vars.yml
 
 # editorconfig-checker-disable
 cat <<EOT >galaxy-requirements.yml

@@ -58,6 +58,7 @@ different scenarios. There are different setups located in the
 |     Nephio     | Management platform to on-board NFs at scale    |                            | Implemented |
 |    LocalAI     | Allows to run LLMs locally                      |                            | Implemented |
 |     K8SGPT     | Scans K8s clusters for diagnosing issues        |                            | Implemented |
+|     ArgoCD     | Declarative GitOps continuous delivery tool     |                            | Implemented |
 
 ## Quick Deployment
 

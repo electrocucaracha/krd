@@ -2,6 +2,7 @@ ADDONS
 aio
 Allocatable
 ANSIBLE
+ArgoCD
 Autoscaler
 BACKEND
 balancer
@@ -31,6 +32,7 @@ filesystem
 FPGAs
 fsSL
 geneve
+GitOps
 GPUs
 Grafana
 GVISOR
