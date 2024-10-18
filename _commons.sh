@@ -128,6 +128,9 @@ EOF
     if [ -n "${NO_PROXY-}" ]; then
         echo "no_proxy: \"$NO_PROXY\"" | tee --append "$krd_inventory_folder/group_vars/all.yml"
     fi
+    if [ "${KRD_METALLB_ENABLED-false}" == "true" ]; then
+        echo 'metallb_namespace: "metallb-system"' | tee --append "$krd_inventory_folder/group_vars/all.yml"
+    fi
     KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE="docker"
     if [ "$KRD_CONTAINER_RUNTIME" != "docker" ]; then
         # https://github.com/kubernetes-sigs/kubespray/pull/6997
