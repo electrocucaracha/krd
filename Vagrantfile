@@ -299,6 +299,7 @@ Vagrant.configure("2") do |config|
         sh.env = {
           KRD_DEBUG: debug.to_s,
           PKG_DEBUG: debug.to_s,
+          NODE_SRIOV_NUMVFS: node.fetch("sriov_numvfs", 0),
           NODE_VOLUME: volume_mounts_dict[0...-1].to_s
         }
         sh.inline = <<-SHELL

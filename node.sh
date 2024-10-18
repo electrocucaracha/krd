@@ -234,6 +234,23 @@ function set_dns_server {
     fi
 }
 
+function create_simulated_sriov_dev {
+    local vfs=$1
+
+    [[ $vfs -le 0 ]] && return
+    ensure_kmod netdevsim
+    id=0
+    while [[ $vfs -gt 0 ]]; do
+        sudo bash -c "echo '$id 1' > /sys/bus/netdevsim/new_device"
+        devlink port
+        [[ $((vfs - (vfs % 4))) -ge 4 ]] && sriov_numvfs=4 || sriov_numvfs=$((vfs % 4))
+        sudo bash -c "echo '$sriov_numvfs' > /sys/bus/netdevsim/devices/netdevsim$id/sriov_numvfs"
+        vfs=$((vfs - 4))
+        id=$((id + 1))
+    done
+    ip link show
+}
+
 while getopts "h?v:" opt; do
     case $opt in
     v)
@@ -263,6 +280,7 @@ mount_partitions
 disable_k8s_ports
 create_pmem_namespaces
 enable_nvdimm_mixed_mode
+create_simulated_sriov_dev ${NODE_SRIOV_NUMVFS-0}
 
 if [ "$KRD_DEBUG" == "true" ]; then
     if command -v lstopo-no-graphics >/dev/null; then

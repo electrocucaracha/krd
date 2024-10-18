@@ -37,6 +37,7 @@ if [[ ${TEST_MULTINODE:-false} == "false" ]]; then
       ip: "10.10.16.3"
   memory: ${MEMORY:-6144}
   cpus: 3
+  sriov_numvfs: 6
   numa_nodes: # Total memory for NUMA nodes must be equal to RAM size
     - cpus: 0-2
       memory: ${MEMORY:-6144}
@@ -114,6 +115,7 @@ EOL
       ip: "10.10.16.$((i + 3))"
   memory: 4096
   cpus: 1
+  sriov_numvfs: 3
   storage_controllers:
     - name: Virtual I/O Device SCSI controller
       type: virtio-scsi

@@ -51,6 +51,7 @@
     - name: public-net
       ip: "10.10.16.6"
   memory: 32768
+  sriov_numvfs: 3
   qat_dev:
     - "3d:00.0"
   sriov_dev:
