@@ -280,7 +280,7 @@ mount_partitions
 disable_k8s_ports
 create_pmem_namespaces
 enable_nvdimm_mixed_mode
-create_simulated_sriov_dev ${NODE_SRIOV_NUMVFS-0}
+create_simulated_sriov_dev "${NODE_SRIOV_NUMVFS-0}"
 
 if [ "$KRD_DEBUG" == "true" ]; then
     if command -v lstopo-no-graphics >/dev/null; then

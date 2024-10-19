@@ -173,29 +173,20 @@ EOT
 # install_k8s_addons() - Install Kubenertes AddOns
 function install_k8s_addons {
     echo "Installing Kubernetes AddOns"
-    pkgs=""
-    for pkg in ansible pip; do
-        if ! command -v "$pkg"; then
-            pkgs+=" $pkg"
-        fi
-    done
-    if [ -n "$pkgs" ]; then
-        curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
-    fi
-
     _configure_ansible
     _ansible_galaxy_install role
     _ansible_galaxy_install collection
 
-    for addon in ${KRD_ADDONS_LIST//,/ }; do
-        echo "Deploying $addon using configure-$addon.yml playbook.."
-        _run_ansible_cmd "$krd_playbooks/configure-${addon}.yml" "setup-${addon}.log"
-        if [[ $KRD_ENABLE_TESTS == "true" ]]; then
-            pushd "$KRD_FOLDER"/tests
-            bash "${addon}".sh
-            popd
-        fi
-    done
+    _run_ansible_cmd "$krd_playbooks/configure-addons.yml" "setup-addons.log" "$KRD_ADDONS_LIST"
+}
+
+# install_virtlet() - Install Virtlet
+function install_virtlet {
+    _configure_ansible
+    _ansible_galaxy_install role
+    _ansible_galaxy_install collection
+
+    _run_ansible_cmd "$krd_playbooks/configure-virtlet.yml" "setup-virtlet.log"
 }
 
 # install_istio() - Function that installs Istio
@@ -369,7 +360,7 @@ function install_argocd {
     export ARGOCD_OPTS='--port-forward-namespace argocd-system --port-forward'
     admin_pass=$(kubectl get secrets -n argocd-system argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d)
     argocd login --username admin --password "$admin_pass"
-    argocd account update-password --account admin --current-password $admin_pass --new-password P4$$w0rd
-    argocd cluster add $(kubectl config get-contexts -o name) --yes
+    argocd account update-password --account admin --current-password "$admin_pass" --new-password P4$$w0rd
+    argocd cluster add "$(kubectl config get-contexts -o name)" --yes
     kubectl delete secrets -n argocd-system argocd-initial-admin-secret --ignore-not-found
 }
