@@ -389,9 +389,20 @@ BASH
 function _run_ansible_cmd {
     local playbook=$1
     local log=$2
+    local tags="${3:-all}"
     local krd_log_dir="/var/log/krd"
 
-    ansible_cmd="COLLECTIONS_PATHS=$galaxy_base_path sudo -E $(command -v ansible-playbook) --become --become-user=root "
+    pkgs=""
+    for pkg in ansible pip; do
+        if ! command -v "$pkg"; then
+            pkgs+=" $pkg"
+        fi
+    done
+    if [ -n "$pkgs" ]; then
+        curl -fsSL http://bit.ly/install_pkg | PKG=$pkgs bash
+    fi
+
+    ansible_cmd="COLLECTIONS_PATHS=$galaxy_base_path sudo -E $(command -v ansible-playbook) --become --tags $tags --become-user=root "
     if [[ $KRD_ANSIBLE_DEBUG == "true" ]]; then
         ansible_cmd+="-vvv "
     fi
