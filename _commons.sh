@@ -73,6 +73,8 @@ function _install_kubespray {
         if [ "$kubespray_version" != "master" ]; then
             git checkout -b "${kubespray_version#"origin/"}" "$kubespray_version"
         fi
+        # TODO: Remove until this is merged (https://github.com/kubernetes-sigs/kubespray/pull/11434/commits/3036d7ef28b837ce7209a7cd72293fbce54a280c)
+        curl -fsSL "https://raw.githubusercontent.com/kubernetes-sigs/kubespray/refs/heads/master/roles/kubernetes-apps/network_plugin/multus/tasks/main.yml" --output "roles/kubernetes-apps/network_plugin/multus/tasks/main.yml"
 
         curl -fsSL http://bit.ly/install_pkg | PKG_COMMANDS_LIST="pip" bash
         PIP_CMD="sudo -E $(command -v pip)"
