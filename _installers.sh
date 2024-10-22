@@ -341,26 +341,15 @@ function install_nephio {
 function install_argocd {
     argocd_version=$(_get_version argocd)
 
-    kubectl create namespace argocd-system || :
-    kubectl apply -n argocd-system -f "https://raw.githubusercontent.com/argoproj/argo-cd/$argocd_version/manifests/install.yaml"
+    kubectl create namespace argocd || :
+    kubectl apply -n argocd -f "https://raw.githubusercontent.com/argoproj/argo-cd/$argocd_version/manifests/install.yaml"
     if [[ -n $(kubectl get ipaddresspools.metallb.io -n metallb-system -o jsonpath='{range .items[*].metadata.name}{@}{"\n"}{end}') ]]; then
-        kubectl patch svc argocd-server -n argocd-system -p '{"spec": {"type": "LoadBalancer"}}'
+        kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
     fi
+    wait_for_pods argocd
 
-    # Installing ArgoCD CLI
-    if ! command -v argocd >/dev/null; then
-        OS="$(uname | tr '[:upper:]' '[:lower:]')"
-        ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')"
-        sudo curl -fsSL -o /usr/bin/argocd "https://github.com/argoproj/argo-cd/releases/download/$argocd_version/argocd-$OS-$ARCH"
-        sudo chmod +x /usr/bin/argocd
-    fi
-    wait_for_pods argocd-system
-
-    # Cluster registration
-    export ARGOCD_OPTS='--port-forward-namespace argocd-system --port-forward'
-    admin_pass=$(kubectl get secrets -n argocd-system argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d)
-    argocd login --username admin --password "$admin_pass"
-    argocd account update-password --account admin --current-password "$admin_pass" --new-password P4$$w0rd
-    argocd cluster add "$(kubectl config get-contexts -o name)" --yes
-    kubectl delete secrets -n argocd-system argocd-initial-admin-secret --ignore-not-found
+    admin_pass=$(kubectl get secrets -n argocd argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d)
+    _run_argocd_cmd login --username admin --password "$admin_pass"
+    _run_argocd_cmd account update-password --account admin --current-password "$admin_pass" --new-password P4$$w0rd
+    kubectl delete secrets -n argocd argocd-initial-admin-secret --ignore-not-found
 }

@@ -386,6 +386,22 @@ BASH
 BASH
 }
 
+function _run_argocd_cmd {
+    # Installing ArgoCD CLI
+    if ! command -v argocd >/dev/null; then
+        argocd_version=$(_get_version argocd)
+        OS="$(uname | tr '[:upper:]' '[:lower:]')"
+        ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')"
+
+        sudo curl -fsSL -o /usr/bin/argocd "https://github.com/argoproj/argo-cd/releases/download/$argocd_version/argocd-$OS-$ARCH"
+        sudo chmod +x /usr/bin/argocd
+    fi
+
+    argocd_cmd="ARGOCD_OPTS='--port-forward-namespace argocd --port-forward' $(command -v argocd) "
+    echo "$argocd_cmd $*"
+    eval "$argocd_cmd $*"
+}
+
 function _run_ansible_cmd {
     local playbook=$1
     local log=$2
