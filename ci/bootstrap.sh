@@ -64,8 +64,20 @@ if [[ ${TEST_MULTINODE:-false} == "false" ]]; then
       device: 0
     - name: sdc
       size: 50
-      controller: Virtual I/O Device SCSI controller
+      controller: ${VBOX_CONTROLLER:-Virtual I/O Device SCSI controller}
       port: 2
+      device: 0
+    - name: sdd
+      size: 20
+      mount: /mnt/disks/vol1
+      controller: ${VBOX_CONTROLLER:-Virtual I/O Device SCSI controller}
+      port: 3
+      device: 0
+    - name: sde
+      size: 20
+      mount: /mnt/disks/vol2
+      controller: ${VBOX_CONTROLLER:-Virtual I/O Device SCSI controller}
+      port: 4
       device: 0
   roles:
     - kube-master
