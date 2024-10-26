@@ -68,11 +68,6 @@ function uninstall_kong {
     _uninstall_helm kong
 }
 
-# uninstall_haproxy() - Uninstall HAProxy ingress services
-function uninstall_haproxy {
-    _uninstall_helm haproxy
-}
-
 # uninstall_falco() - Uninstall Falco services
 function uninstall_falco {
     _uninstall_helm falco
@@ -165,21 +160,4 @@ function uninstall_kubewarden {
     _uninstall_helm kubewarden-controller
     _uninstall_helm kubewarden-crds
     _delete_namespace kubewarden-system
-}
-
-# uninstall_kube-monkey() - Uninstall Kube-Monkey services
-function uninstall_kube-monkey {
-    _uninstall_helm kubemonkey
-}
-
-# uninstall_local-ai() - Uninstall LocalAI server
-function uninstall_local-ai {
-    _uninstall_helm local-ai
-    _delete_namespace local-ai-system
-}
-
-# uninstall_k8sgpt() - Uninstall K8sGPT operator
-function uninstall_k8sgpt {
-    _uninstall_helm k8sgpt-operator
-    _delete_namespace k8sgpt-operator-system
 }

@@ -220,8 +220,8 @@ function install_kong {
     KRD_CHART_VALUES="proxy.type=NodePort" _install_chart kong kong/kong default
 }
 
-# install_haproxy() - Install HAProxy ingress services
-function install_haproxy {
+# _install_chart_haproxy() - Install HAProxy ingress services
+function _install_chart_haproxy {
     _add_helm_repo haproxytech https://haproxytech.github.io/helm-charts
     _install_chart haproxy haproxytech/kubernetes-ingress
 }
@@ -252,20 +252,20 @@ function install_kubewarden {
     _install_chart kubewarden-controller kubewarden/kubewarden-controller kubewarden-system
 }
 
-# install_kube-monkey() - Install Kube-Monkey chaos services
-function install_kube-monkey {
+# _install_chart_kube-monkey() - Install Kube-Monkey chaos services
+function _install_chart_kube-monkey {
     _add_helm_repo kubemonkey https://asobti.github.io/kube-monkey/charts/repo
     _install_chart kubemonkey kubemonkey/kube-monkey
 }
 
-# install_local-ai() - Install LocalAI server
-function install_local-ai {
+# _install_chart_local-ai() - Install LocalAI server
+function _install_chart_local-ai {
     _add_helm_repo go-skynet https://go-skynet.github.io/helm-charts/
     KRD_CHART_FILE="helm/local-ai/values.yaml" _install_chart local-ai go-skynet/local-ai
 }
 
-# install_k8sgpt() - Install K8sGPT operator
-function install_k8sgpt {
+# _install_chart_k8sgpt-operator() - Install K8sGPT operator
+function _install_chart_k8sgpt-operator {
     _add_helm_repo k8sgpt https://charts.k8sgpt.ai/
     _install_chart k8sgpt-operator k8sgpt/k8sgpt-operator
 }

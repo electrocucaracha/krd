@@ -31,7 +31,18 @@ if ! sudo -n "true"; then
     exit 1
 fi
 
+function join_by {
+    local delimiter=${1-}
+    local items=${2-}
+    if shift 2; then
+        printf %s "$items" "${@/#/$delimiter}"
+    fi
+}
+
+applications=(k8sgpt-operator local-ai kube-monkey haproxy)
 valid_options=$(find . -maxdepth 1 -name "_*.sh" -exec grep -o "^function [a-z].*" {} + | awk '{printf "%s|", $2}')
+valid_options+="install_$(join_by '|install_' "${applications[@]}")|uninstall_$(join_by '|uninstall_' "${applications[@]}")|"
+
 function usage {
     cat <<EOF
 Usage: $0 [-a <${valid_options%?}>]
@@ -44,7 +55,7 @@ while getopts ":a:" OPTION; do
         eval "case \$OPTARG in
                 ${valid_options%?})
                     echo \"::group::Running \$OPTARG...\"
-                    \$OPTARG
+                    [[ \" ${applications[*]} \" =~ [[:space:]]\${OPTARG#*install_}[[:space:]] ]] && _\${OPTARG/install_/install_app } || \$OPTARG
                     if [ \"\$KRD_ENABLE_TESTS\" == \"true\" ] && [ -f \$KRD_FOLDER/tests/\${OPTARG#*install_}.sh ]  ; then
                         pushd \$KRD_FOLDER/tests
                         bash \${OPTARG#*install_}.sh

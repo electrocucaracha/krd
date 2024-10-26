@@ -1,0 +1,35 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2024
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: local-ai
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://go-skynet.github.io/helm-charts/
+      chart: local-ai
+      targetRevision: 3.4.0
+      helm:
+        valueFiles:
+          - $values/helm/local-ai/values.yaml
+    - repoURL: https://github.com/electrocucaracha/krd.git
+      targetRevision: HEAD
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: local-ai-system
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true

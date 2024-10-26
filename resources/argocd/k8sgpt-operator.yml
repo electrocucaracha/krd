@@ -1,0 +1,26 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2024
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: k8sgpt-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: k8sgpt-operator
+    repoURL: https://charts.k8sgpt.ai/
+    targetRevision: v0.2.0
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: k8sgpt-operator-system
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true

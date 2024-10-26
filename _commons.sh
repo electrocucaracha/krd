@@ -458,3 +458,24 @@ function _delete_namespace {
         fi
     fi
 }
+
+function _install_app {
+    local app=$1
+
+    if command -v argocd >/dev/null; then
+        kubectl apply -f "$KRD_FOLDER/resources/argocd/$app.yml"
+        _run_argocd_cmd app sync "$app"
+    else
+        "_install_chart_$app"
+    fi
+}
+
+function _uninstall_app {
+    local app=$1
+
+    if command -v argocd >/dev/null; then
+        _run_argocd_cmd app delete "$app" --yes --cascade
+    else
+        _uninstall_chart "$app"
+    fi
+}
