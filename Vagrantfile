@@ -34,13 +34,13 @@ etchosts_dict = ""
 File.open("#{File.dirname(__FILE__)}/inventory/hosts.ini", "w") do |inventory_file|
   inventory_file.puts("[all]")
   nodes.each do |node|
-    inventory_file.puts(node["name"])
+    inventory_file.puts("#{node['name']}\t\tansible_host=#{node['networks'][0]['ip']}\tip=#{node['networks'][0]['ip']}")
     etchosts_dict += "#{node['networks'][0]['ip']}-#{node['name']},"
   end
   %w[kube-master kube-node etcd qat-node criu].each do |group|
     inventory_file.puts("\n[#{group}]")
     nodes.each do |node|
-      inventory_file.puts("#{node['name']}\t\tansible_host=#{node['networks'][0]['ip']}\tip=#{node['networks'][0]['ip']}") if node["roles"].include?(group.to_s)
+      inventory_file.puts(node["name"]) if node["roles"].include?(group.to_s)
     end
   end
   inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
