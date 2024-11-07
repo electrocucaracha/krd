@@ -21,9 +21,10 @@ function cleanup {
     attempt_counter=0
     max_attempts=5
 
-    kubectl delete vm testvm --ignore-not-found=true
+    kubectl virt stop testvm || :
+    kubectl delete -f resources/kubevirt
 
-    while kubectl get pods -l kubevirt.io=virt-launcher | grep -q "virt-launcher"; do
+    while [[ -n $(kubectl get pods -o jsonpath='{.items[*].metadata.name}' -l vm.kubevirt.io/name=testvm) ]]; do
         if [ ${attempt_counter} -eq ${max_attempts} ]; then
             error "Max attempts reached"
         fi
@@ -37,58 +38,30 @@ trap cleanup EXIT
 # Test
 info "===== Test started ====="
 
-# editorconfig-checker-disable
-cat <<EOL | kubectl apply -f -
-apiVersion: kubevirt.io/v1alpha3
-kind: VirtualMachine
-metadata:
-  name: testvm
-spec:
-  running: false
-  template:
-    metadata:
-      labels:
-        kubevirt.io/size: tiny  #  tiny(1 core, 1 Gi memory), small (1 core, 2 Gi memory), medium (1 core, 4 Gi memory), large (2 cores, 8 Gi memory). 
-        kubevirt.io/domain: testvm
-    spec:
-      domain:
-        devices:
-          disks:
-            - name: containerdisk
-              disk:
-                bus: virtio
-            - name: cloudinitdisk
-              disk:
-                bus: virtio
-          interfaces:
-          - name: default
-            bridge: {}
-        resources:
-          requests:
-            memory: 64M
-      networks:
-      - name: default
-        pod: {}
-      volumes:
-        - name: containerdisk
-          containerDisk:
-            image: kubevirt/cirros-registry-disk-demo
-        - name: cloudinitdisk
-          cloudInitNoCloud:
-            userDataBase64: SGkuXG4=
-EOL
-# editorconfig-checker-enable
-
+kubectl apply -f resources/kubevirt
 kubectl get vms
 [ -d "${KREW_ROOT:-$HOME/.krew}/bin" ] && export PATH="$PATH:${KREW_ROOT:-$HOME/.krew}/bin"
 ! kubectl plugin list | grep -q virt && kubectl krew install virt
 kubectl virt start testvm
-kubectl wait --for=condition=ready vmis testvm --timeout=5m >/dev/null
-vm_pod=$(kubectl get pods -o jsonpath='{.items[0].metadata.name}' | grep virt-launcher-testvm)
-info "$vm_pod details:"
-kubectl logs "$vm_pod" -c compute | jq -R "fromjson? | .msg"
+kubectl wait --for=condition=Ready vmis testvm --timeout=5m >/dev/null
+vm_pod=$(kubectl get pods -o jsonpath='{.items[0].metadata.name}' -l vm.kubevirt.io/name=testvm)
+kubectl wait --for=condition=Ready pod "$vm_pod" --timeout=5m >/dev/null
+
 info "$vm_pod assertions:"
 assert_non_empty "$(kubectl logs "$vm_pod" -c compute | grep 'Successfully connected to domain notify socket at')" "testvm unsuccessfully created"
+attempt_counter=0
+max_attempts=5
+until [[ "$(kubectl logs "$vm_pod" -c guest-console-log)" == *"printed from cloud-init userdata"* ]]; do
+    if [ ${attempt_counter} -eq ${max_attempts} ]; then
+        error "testvm unsuccessfully ran cloud-init"
+    fi
+    attempt_counter=$((attempt_counter + 1))
+    sleep $((attempt_counter * 5))
+done
+
+info "$vm_pod details:"
+kubectl logs "$vm_pod" -c compute | jq -R "fromjson? | .msg"
+kubectl logs "$vm_pod" -c guest-console-log
 #kubectl virt console testvm
 
 info "===== Test completed ====="

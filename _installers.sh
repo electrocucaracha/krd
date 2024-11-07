@@ -295,6 +295,7 @@ function install_kubevirt {
     max_attempts=5
 
     kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-operator.yaml"
+    # TODO: Fix the following instruction to get targets information
     if ! grep 'svm\|vmx' /proc/cpuinfo && ! kubectl get configmap -n kubevirt kubevirt-config; then
         kubectl create configmap kubevirt-config -n kubevirt --from-literal debug.useEmulation=true
     fi
