@@ -1,0 +1,90 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2024
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+apiVersion: kubevirt.io/v1
+kind: VirtualMachine
+metadata:
+  name: vm-template
+spec:
+  runStrategy: Manual
+  template:
+    metadata:
+      name: runner
+    spec:
+      architecture: amd64
+      terminationGracePeriodSeconds: 30
+      domain:
+        devices:
+          filesystems:
+            - name: runner-info
+              virtiofs: {}
+          disks:
+            - name: containerdisk
+              disk:
+                bus: virtio
+            - name: cloudinitdisk
+              disk:
+                bus: virtio
+          interfaces:
+            - name: default
+              masquerade: {}
+        cpu:
+          cores: 3
+        resources:
+          requests:
+            memory: 14Gi
+      networks:
+        - name: default
+          pod: {}
+      volumes:
+        - name: containerdisk
+          containerDisk:
+            image: quay.io/containerdisks/fedora:latest
+        - name: cloudinitdisk
+          cloudInitNoCloud:
+            userData: |-
+              #cloud-config
+              users:
+                - name: runner
+                  homedir: /home/runner
+                  sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+              mounts:
+                - [ runner-info, /runner-info/, virtiofs, "rw,relatime,user=runner" ]
+              packages:
+                - jq
+              bootcmd:
+                - "sudo mkdir /opt/runner"
+                - "curl -sL https://github.com/actions/runner/releases/download/v2.320.0/actions-runner-linux-x64-2.320.0.tar.gz | sudo tar -xz -C /opt/runner"
+                - "sudo /opt/runner/bin/installdependencies.sh"
+              runcmd:
+                - "sudo chown -R runner: /opt/runner"
+                - "sudo runuser -l runner -c '/opt/runner/run.sh --jitconfig $(jq -r '.jitconfig' /runner-info/runner-info.json)'"
+              power_state:
+                delay: now
+                mode: poweroff
+                message: Runner completed
+                timeout: 2
+                condition: true
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubevirt-actions-runner
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kubevirt-actions-runner
+rules:
+  - apiGroups: ["kubevirt.io"]
+    resources: ["virtualmachines"]
+    verbs: ["get", "watch", "list"]
+  - apiGroups: ["kubevirt.io"]
+    resources: ["virtualmachineinstances"]
+    verbs: ["get", "watch", "list", "create", "delete"]

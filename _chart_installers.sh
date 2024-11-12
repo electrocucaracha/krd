@@ -85,6 +85,7 @@ function _install_chart {
     local name="$1"
     local chart="$2"
     local namespace="${3:-"$name-system"}"
+    local wait="${4:-"true"}"
 
     install_helm
     helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
@@ -104,7 +105,7 @@ function _install_chart {
         eval "$cmd" "$name" "$chart"
     fi
 
-    wait_for_pods "$namespace"
+    [[ $wait == "true" ]] && wait_for_pods "$namespace"
 }
 
 function _add_helm_repo {
@@ -268,4 +269,24 @@ function _install_chart_local-ai {
 function _install_chart_k8sgpt-operator {
     _add_helm_repo k8sgpt https://charts.k8sgpt.ai/
     _install_chart k8sgpt-operator k8sgpt/k8sgpt-operator
+}
+
+function _install_arc_controller {
+    _install_chart arc oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+}
+
+# install_arc() - Install Actions Runner
+function install_chart_arc {
+    ! kubectl get crds autoscalinglisteners.actions.github.com >/dev/null && _install_arc_controller
+
+    namespace="${KRD_ARC_GITHUB_URL##*/}-runners"
+    KRD_CHART_VALUES="githubConfigUrl=$KRD_ARC_GITHUB_URL,githubConfigSecret=gh-runners-token"
+    ! kubectl get namespaces "${namespace}" && kubectl create namespace "${namespace}"
+    ! kubectl get secrets -n "${namespace}" gh-runners-token && kubectl -n "${namespace}" create secret generic gh-runners-token --from-literal=github_token="$KRD_ARC_TOKEN"
+    ! helm get metadata arc-runner-set -n "${namespace}" >/dev/null && _install_chart arc-runner-set oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set "$namespace" "false"
+    if kubectl get crds virtualmachines.kubevirt.io >/dev/null; then
+        kubectl apply -f resources/kubevirt-runner.yml -n "$namespace"
+        kubectl create rolebinding kubevirt-actions-runner -n "$namespace" --serviceaccount "${namespace}:kubevirt-actions-runner" --role=kubevirt-actions-runner || :
+        KRD_CHART_FILE="helm/arc/kubevirt-values.yml" _install_chart kubevirt-runner-set oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set "$namespace" "false"
+    fi
 }
