@@ -231,4 +231,4 @@ Thanks to all the people who already contributed!
 [23]: https://kubernetes.io/docs/tasks/debug-application-cluster/audit/
 [24]: https://kubernetes.io/docs/concepts/cluster-administration/logging/
 [25]: https://gvisor.dev/docs/
-[26]: https://containers.github.io/youki/
+[26]: https://youki-dev.github.io/youki/
