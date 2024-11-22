@@ -159,6 +159,18 @@ function wait_for_pods {
     attempt_counter=0
     max_attempts=5
 
+    printf "Waiting for %s namespace...\n" "$namespace"
+    until kubectl get namespace "$namespace" >/dev/null; do
+        if [ ${attempt_counter} -eq ${max_attempts} ]; then
+            printf "Namespace creation failed  after %s seconds\n" "$timeout"
+            kubectl get namespaces
+            exit 1
+        fi
+        attempt_counter=$((attempt_counter + 1))
+        sleep $((attempt_counter * 10))
+    done
+
+    attempt_counter=0
     printf "Waiting for %s's pods...\n" "$namespace"
     until kubectl wait pod --all --field-selector=status.phase!=Succeeded --for=condition=Ready -n "$namespace" --timeout "${timeout}s"; do
         if [ ${attempt_counter} -eq ${max_attempts} ]; then
