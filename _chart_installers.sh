@@ -105,7 +105,7 @@ function _install_chart {
         eval "$cmd" "$name" "$chart"
     fi
 
-    [[ $wait == "true" ]] && wait_for_pods "$namespace"
+    [[ $wait != "true" ]] || wait_for_pods "$namespace"
 }
 
 function _add_helm_repo {
@@ -279,9 +279,8 @@ function _install_arc_controller {
 function install_chart_arc {
     ! kubectl get crds autoscalinglisteners.actions.github.com >/dev/null && _install_arc_controller
 
-    namespace="${KRD_ARC_GITHUB_URL##*/}-runners"
+    namespace="default"
     KRD_CHART_VALUES="githubConfigUrl=$KRD_ARC_GITHUB_URL,githubConfigSecret=gh-runners-token"
-    ! kubectl get namespaces "${namespace}" && kubectl create namespace "${namespace}"
     ! kubectl get secrets -n "${namespace}" gh-runners-token && kubectl -n "${namespace}" create secret generic gh-runners-token --from-literal=github_token="$KRD_ARC_TOKEN"
     ! helm get metadata arc-runner-set -n "${namespace}" >/dev/null && _install_chart arc-runner-set oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set "$namespace" "false"
     if kubectl get crds virtualmachines.kubevirt.io >/dev/null; then

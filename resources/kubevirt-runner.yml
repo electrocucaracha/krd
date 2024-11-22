@@ -12,12 +12,20 @@ kind: VirtualMachine
 metadata:
   name: vm-template
 spec:
+  dataVolumeTemplates:
+    - metadata:
+        name: ubuntu-dv
+      spec:
+        storage:
+          volumeMode: Filesystem
+        source:
+          pvc:
+            name: ubuntu-img-jammy
   runStrategy: Manual
   template:
     metadata:
       name: runner
     spec:
-      architecture: amd64
       terminationGracePeriodSeconds: 30
       domain:
         devices:
@@ -25,7 +33,7 @@ spec:
             - name: runner-info
               virtiofs: {}
           disks:
-            - name: containerdisk
+            - name: os
               disk:
                 bus: virtio
             - name: cloudinitdisk
@@ -35,35 +43,24 @@ spec:
             - name: default
               masquerade: {}
         cpu:
-          cores: 3
+          cores: 2
         resources:
           requests:
-            memory: 14Gi
+            memory: 8G
       networks:
         - name: default
           pod: {}
       volumes:
-        - name: containerdisk
-          containerDisk:
-            image: quay.io/containerdisks/fedora:latest
+        - dataVolume:
+            name: ubuntu-dv
+          name: os
         - name: cloudinitdisk
           cloudInitNoCloud:
             userData: |-
               #cloud-config
-              users:
-                - name: runner
-                  homedir: /home/runner
-                  sudo: ["ALL=(ALL) NOPASSWD:ALL"]
               mounts:
                 - [ runner-info, /runner-info/, virtiofs, "rw,relatime,user=runner" ]
-              packages:
-                - jq
-              bootcmd:
-                - "sudo mkdir /opt/runner"
-                - "curl -sL https://github.com/actions/runner/releases/download/v2.320.0/actions-runner-linux-x64-2.320.0.tar.gz | sudo tar -xz -C /opt/runner"
-                - "sudo /opt/runner/bin/installdependencies.sh"
               runcmd:
-                - "sudo chown -R runner: /opt/runner"
                 - "sudo runuser -l runner -c '/opt/runner/run.sh --jitconfig $(jq -r '.jitconfig' /runner-info/runner-info.json)'"
               power_state:
                 delay: now
