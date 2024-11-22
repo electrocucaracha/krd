@@ -1,0 +1,217 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2024
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ubuntu-runner-deployer
+spec:
+  params:
+    - name: RELEASE_VERSION
+      description: Ubuntu release version
+      type: string
+    - name: RELEASE_NAME
+      description: Ubuntu release name
+      type: string
+    - name: RUNNER_VERSION
+      description: GitHub tarball Runner version
+      type: string
+      default: 2.321.0
+  tasks:
+    - name: pull-ubuntu-img
+      params:
+        - name: manifest
+          value: |
+            apiVersion: cdi.kubevirt.io/v1beta1
+            kind: DataVolume
+            metadata:
+              annotations:
+                cdi.kubevirt.io/storage.bind.immediate.requested: "true"
+              name: ubuntu-img-$(params.RELEASE_NAME)
+            spec:
+              pvc:
+                accessModes:
+                  - ReadWriteOnce
+                resources:
+                  requests:
+                    storage: 5Gi
+                volumeMode: Filesystem
+              source:
+                http:
+                  url: https://cloud-images.ubuntu.com/minimal/releases/$(params.RELEASE_NAME)/release/ubuntu-$(params.RELEASE_VERSION)-minimal-cloudimg-amd64.img
+        - name: waitForSuccess
+          value: "true"
+        - name: allowReplace
+          value: "true"
+      taskRef:
+        kind: Task
+        name: modify-data-object
+    - name: create-vm-runner-from-manifest
+      params:
+        - name: manifest
+          value: |
+            apiVersion: kubevirt.io/v1
+            kind: VirtualMachine
+            metadata:
+              generateName: runner-vm-
+            spec:
+              terminationGracePeriodSeconds: 5
+              running: true
+              template:
+                metadata:
+                  name: runner
+                spec:
+                  domain:
+                    cpu:
+                      cores: 2
+                    resources:
+                      requests:
+                        memory: 8Gi
+                    devices:
+                      disks:
+                        - name: rootdisk
+                          disk:
+                            bus: virtio
+                        - name: cloudinitdrive
+                          disk:
+                            bus: virtio
+                      interfaces:
+                        - name: default
+                          masquerade: {}
+                  networks:
+                    - name: default
+                      pod: {}
+                  volumes:
+                    - name: rootdisk
+                      dataVolume:
+                        name: $(tasks.pull-ubuntu-img.results.name)
+                    - name: cloudinitdrive
+                      cloudInitConfigDrive:
+                        userData: |-
+                          #cloud-config
+                          users:
+                            - name: runner
+                          packages:
+                            - jq
+                          bootcmd:
+                            - "sudo mkdir /opt/runner"
+                            - "curl -sL https://github.com/actions/runner/releases/download/v$(params.RUNNER_VERSION)/actions-runner-linux-x64-$(params.RUNNER_VERSION).tar.gz | sudo tar -xz -C /opt/runner"
+                            - "sudo /opt/runner/bin/installdependencies.sh"
+                          runcmd:
+                            - "sudo chown -R runner: /opt/runner"
+                          power_state:
+                            delay: now
+                            mode: poweroff
+                            message: Bootstrap completed
+                            timeout: 1
+                            condition: true
+      runAfter:
+        - pull-ubuntu-img
+      taskRef:
+        kind: Task
+        name: create-vm-from-manifest
+    - name: wait-for-runner-complete
+      params:
+        - name: vmiName
+          value: "$(tasks.create-vm-runner-from-manifest.results.name)"
+        - name: successCondition
+          value: status.phase == Succeeded
+        - name: failureCondition
+          value: status.phase in (Failed, Unknown)
+      runAfter:
+        - create-vm-runner-from-manifest
+      taskRef:
+        kind: Task
+        name: wait-for-vmi-status
+  finally:
+    - name: cleanup-vm-runner
+      params:
+        - name: vmName
+          value: $(tasks.create-vm-runner-from-manifest.results.name)
+        - name: delete
+          value: true
+      timeout: 10m
+      taskRef:
+        kind: Task
+        name: cleanup-vm
+  results:
+    - name: ubuntu-data-volume
+      description: Name of the created base DataVolume
+      value: $(tasks.pull-ubuntu-img.results.name)
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: ubuntu-runner-deployer-role
+rules:
+  - apiGroups:
+      - cdi.kubevirt.io
+    resources:
+      - datavolumes
+      - datasources
+    verbs:
+      - get
+      - create
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - create
+  - apiGroups:
+      - ""
+    resources:
+      - persistentvolumeclaims
+    verbs:
+      - get
+      - delete
+  - apiGroups:
+      - kubevirt.io
+    resources:
+      - virtualmachines
+      - virtualmachineinstances
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - delete
+  - apiGroups:
+      - subresources.kubevirt.io
+    resources:
+      - virtualmachines/start
+      - virtualmachines/stop
+      - virtualmachines/restart
+    verbs:
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - persistentvolumeclaims
+    verbs:
+      - update
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ubuntu-runner-deployer-account
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ubuntu-runner-deployer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: ubuntu-runner-deployer-role
+subjects:
+  - kind: ServiceAccount
+    name: ubuntu-runner-deployer-account
