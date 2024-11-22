@@ -154,6 +154,7 @@ sed -i "s/octant_version:.*/octant_version: $(get_version github_release vmware-
 sed -i "s/kube-ovn_version:.*/kube-ovn_version: v$(get_version github_release kubeovn/kube-ovn)/g" ./playbooks/krd-vars.yml
 sed -i "s/prometheus-operator_version:.*/prometheus-operator_version: v$(get_version github_tag prometheus-operator/prometheus-operator)/g" ./playbooks/krd-vars.yml
 sed -i "s/kubevirt_version:.*/kubevirt_version: v$(get_version github_release kubevirt/kubevirt)/g" ./playbooks/krd-vars.yml
+sed -i "s/containerized_data_importer_version:.*/containerized_data_importer_version: v$(get_version github_release kubevirt/containerized-data-importer)/g" ./playbooks/krd-vars.yml
 sed -i "s/virtink_version:.*/virtink_version: v$(get_version github_release smartxworks/virtink)/g" ./playbooks/krd-vars.yml
 sed -i "s/kubesphere_version:.*/kubesphere_version: v$(get_version github_release kubesphere/kubesphere)/g" ./playbooks/krd-vars.yml
 sed -i "s/metallb_version:.*/metallb_version: v$(get_version github_tag metallb/metallb)/g" ./playbooks/krd-vars.yml

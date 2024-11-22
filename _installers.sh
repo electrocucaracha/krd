@@ -313,6 +313,16 @@ function install_kubevirt {
         sleep $((attempt_counter * 15))
     done
     wait_for_pods kubevirt
+    _install_containerized_data_importer
+}
+
+function _install_containerized_data_importer {
+    containerized_data_importer_version=$(_get_version containerized_data_importer)
+
+    kubectl apply -f "https://github.com/kubevirt/containerized-data-importer/releases/download/${containerized_data_importer_version}/cdi-operator.yaml"
+    kubectl apply -f "https://github.com/kubevirt/containerized-data-importer/releases/download/${containerized_data_importer_version}/cdi-cr.yaml"
+
+    wait_for_pods cdi
 }
 
 # install_virtink() - Installs Virtink solution
