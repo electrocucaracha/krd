@@ -364,3 +364,14 @@ function install_argocd {
     _run_argocd_cmd account update-password --account admin --current-password "$admin_pass" --new-password P4$$w0rd
     kubectl delete secrets -n argocd argocd-initial-admin-secret --ignore-not-found
 }
+
+# install_tekton() - Install Tekton project
+function install_tekton {
+    kubectl apply -f "https://storage.googleapis.com/tekton-releases/operator/previous/$(_get_version tekton)/release.yaml"
+    kubectl apply -f "https://raw.githubusercontent.com/tektoncd/operator/main/config/crs/kubernetes/config/${KRD_TEKTON_OPERATOR_PROFILE-lite}/operator_v1alpha1_config_cr.yaml"
+    wait_for_pods tekton-operator
+    wait_for_pods tekton-pipelines
+
+    ! command -v tkn >/dev/null && curl -fsSL http://bit.ly/install_pkg | PKG=tkn bash
+    kubectl get crds virtualmachines.kubevirt.io >/dev/null && kubectl apply -f "https://github.com/kubevirt/kubevirt-tekton-tasks/releases/download/$(_get_version kubevirt_tekton_tasks)/kubevirt-tekton-tasks.yaml"
+}

@@ -159,6 +159,8 @@ sed -i "s/virtink_version:.*/virtink_version: v$(get_version github_release smar
 sed -i "s/kubesphere_version:.*/kubesphere_version: v$(get_version github_release kubesphere/kubesphere)/g" ./playbooks/krd-vars.yml
 sed -i "s/metallb_version:.*/metallb_version: v$(get_version github_tag metallb/metallb)/g" ./playbooks/krd-vars.yml
 sed -i "s/argocd_version:.*/argocd_version: v$(get_version github_tag argoproj/argo-cd)/g" ./playbooks/krd-vars.yml
+sed -i "s/tekton_version:.*/tekton_version: v$(get_version github_tag tektoncd/operator)/g" ./playbooks/krd-vars.yml
+sed -i "s/kubevirt_tekton_tasks_version:.*/kubevirt_tekton_tasks_version: v$(get_version github_tag kubevirt/kubevirt-tekton-tasks)/g" ./playbooks/krd-vars.yml
 
 # editorconfig-checker-disable
 cat <<EOT >galaxy-requirements.yml

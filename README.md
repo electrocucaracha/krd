@@ -59,6 +59,7 @@ different scenarios. There are different setups located in the
 |    LocalAI     | Allows to run LLMs locally                      |                            | Implemented |
 |     K8SGPT     | Scans K8s clusters for diagnosing issues        |                            | Implemented |
 |     ArgoCD     | Declarative GitOps continuous delivery tool     |                            | Implemented |
+|     Tekton     | CI/CD system                                    |                            | Implemented |
 
 ## Quick Deployment
 
