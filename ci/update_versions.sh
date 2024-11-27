@@ -223,8 +223,10 @@ wget -q -O ./resources/checkov-job.yaml https://raw.githubusercontent.com/bridge
 sed -i "s|image.tag=.*|image.tag=v$(get_version docker_tag rancher/metrics-server),args[0]='--kubelet-insecure-tls',args[1]='--kubelet-preferred-address-types=InternalIP'\" _install_chart metrics-server metrics-server/metrics-server default|g" _chart_installers.sh
 
 # Update Rook test resources
-wget -q -O ./tests/resources/rook/toolbox.yaml https://raw.githubusercontent.com/rook/rook/master/deploy/examples/toolbox.yaml
-wget -q -O ./tests/resources/rook/cluster-test.yaml https://raw.githubusercontent.com/rook/rook/master/deploy/examples/cluster-test.yaml
+rook_version=$(get_version github_tag rook/rook)
+wget -q -O ./tests/resources/rook/toolbox.yaml "https://raw.githubusercontent.com/rook/rook/refs/tags/v$rook_version/deploy/examples/toolbox.yaml"
+wget -q -O ./tests/resources/rook/cluster-test.yaml "https://raw.githubusercontent.com/rook/rook/refs/tags/v$rook_version/deploy/examples/cluster-test.yaml"
+wget -q -O ./resources/storageclass.yml "https://raw.githubusercontent.com/rook/rook/refs/tags/v$rook_version/deploy/examples/csi/rbd/storageclass.yaml"
 
 # Update K8sGPT resources
 sed -i "s/version: .*/version: v$(get_version github_release k8sgpt-ai/k8sgpt)/g" resources/k8sgpt-local.yml
