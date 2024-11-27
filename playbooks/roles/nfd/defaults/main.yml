@@ -8,4 +8,4 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 nfd_template_folder: "/tmp/nfd_k8s"
-nfd_version: v0.16.4
+nfd_version: v0.16.6
