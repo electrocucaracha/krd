@@ -107,6 +107,7 @@ src
 sriov
 subproject
 svg
+Tekton
 textlint
 tox
 udp
