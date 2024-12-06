@@ -48,18 +48,6 @@ function install_local_registry {
     done </tmp/kubespray_images.txt
 }
 
-function _install_krew_plugin {
-    local plugin=$1
-
-    if ! kubectl plugin list | grep -q kubectl-krew; then
-        return
-    fi
-
-    if kubectl krew search "$plugin" | grep -q "${plugin}.*no"; then
-        kubectl krew install "$plugin"
-    fi
-}
-
 function _update_ngnix_ingress_ca {
     local cert_dir=/opt/cert-manager/certs
     cfssl_version=$(_get_version cfssl)
