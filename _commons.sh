@@ -483,6 +483,6 @@ function _uninstall_app {
 function _install_krew_plugin {
     local plugin=$1
 
-    kubectl plugin list | grep -q kubectl-krew || return
+    kubectl plugin list | grep -q kubectl-krew && return
     ! kubectl krew search "$plugin" | grep -q "${plugin}.*no" || kubectl krew install "$plugin"
 }

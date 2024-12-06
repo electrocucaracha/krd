@@ -18,14 +18,15 @@ source _functions.sh
 source _assertions.sh
 
 function cleanup {
-    kubectl delete -f resources/rook
-    kubectl patch cephblockpools.ceph.rook.io replicapool -n rook-ceph --type='json' -p="[{'op': 'replace', 'path': '/spec/replicated/size', 'value': 3}]"
+    kubectl rook-ceph health || :
+    echo "yes-really-destroy-cluster" | kubectl rook-ceph destroy-cluster
+    kubectl delete -f resources/rook --ignore-not-found
 }
 
 # Setup
-kubectl patch cephblockpools.ceph.rook.io replicapool -n rook-ceph --type='json' -p="[{'op': 'replace', 'path': '/spec/replicated/size', 'value': 1}]"
+kubectl apply -f resources/rook/replicapool.yaml
 sleep 3
-kubectl apply -f resources/rook
+kubectl apply -f resources/rook/cluster-test.yaml
 trap cleanup EXIT
 
 attempt_counter=0
@@ -37,21 +38,18 @@ until [[ "$(kubectl get CephCluster -n rook-ceph my-cluster -o jsonpath='{.statu
     attempt_counter=$((attempt_counter + 1))
     sleep $((attempt_counter * 15))
 done
-wait_deployment rook-ceph-tools rook-ceph
+wait_deployment rook-ceph
 
 info "Ceph Stats:"
-# Rook Toolbox - Common tools used for rook debugging and testing
-toolbox_cmd="kubectl -n rook-ceph exec -it $(kubectl -n rook-ceph get pod -l 'app=rook-ceph-tools' -o jsonpath='{.items[0].metadata.name}') -- "
-
-$toolbox_cmd rados df
-$toolbox_cmd ceph df
+kubectl rook-ceph rados df
+kubectl rook-ceph ceph df
 
 # Test
 info "===== Test started ====="
 
 assert_contains "$(kubectl get storageclasses --no-headers -o custom-columns=name:.metadata.name)" "rook-ceph-block" "Rook Ceph Block storage class doesn't exist"
 assert_are_equal "$(kubectl get storageclasses -o=jsonpath='{.items[?(@.metadata.annotations.storageclass\.kubernetes\.io/is-default-class=="true")].metadata.name}')" "rook-ceph-block" "Rook Ceph Block isn't default storage class"
-assert_contains "$($toolbox_cmd ceph health)" "HEALTH_OK" "Ceph clusters is not  OK"
-assert_contains "$($toolbox_cmd rados lspools)" "replicapool" "RADOS cluster"
+assert_contains "$(kubectl rook-ceph health)" "HEALTH_OK" "Ceph clusters is not OK"
+assert_contains "$(kubectl rook-ceph rados lspools)" "replicapool" "RADOS cluster"
 
 info "===== Test completed ====="

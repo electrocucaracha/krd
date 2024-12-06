@@ -132,6 +132,7 @@ function install_rook {
         kubectl apply -f resources/storageclass.yml
         kubectl patch storageclass rook-ceph-block -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
     fi
+    _install_krew_plugin rook-ceph
 }
 
 # install_metrics_server() - Installs Metrics Server services
