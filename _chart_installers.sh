@@ -290,3 +290,10 @@ function install_chart_arc {
         KRD_CHART_FILE="helm/arc/kubevirt-values.yml" _install_chart kubevirt-runner-set oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set "$namespace" "false"
     fi
 }
+
+# install_longhorn() - Installs Longhorn is a lightweight, reliable
+# and easy-to-use distributed block storage system
+function install_longhorn {
+    _add_helm_repo longhorn https://charts.longhorn.io
+    KRD_CHART_VALUES="defaultSettings.defaultDataPath=/var/lib/csi-block" _install_chart longhorn longhorn/longhorn
+}

@@ -42,7 +42,7 @@ jobs:
           - enable_tests: true
             krew_plugins_list: "virt"
             metallb_enabled: true
-            int_tests: "metallb istio kubevirt knative"
+            int_tests: "metallb istio kubevirt knative longhorn"
           - test_multinode: true
             run_conformance_tools: true
           - enable_tests: true

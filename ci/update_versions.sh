@@ -225,6 +225,7 @@ sed -i "s|image.tag=.*|image.tag=v$(get_version docker_tag rancher/metrics-serve
 # Update Rook test resources
 rook_version=$(get_version github_tag rook/rook)
 wget -q -O ./tests/resources/rook/cluster-test.yaml "https://raw.githubusercontent.com/rook/rook/refs/tags/v$rook_version/deploy/examples/cluster-test.yaml"
+sed -i 's|dataDirHostPath: .*|dataDirHostPath: /var/lib/csi-block|g' ./tests/resources/rook/cluster-test.yaml
 wget -q -O ./resources/storageclass.yml "https://raw.githubusercontent.com/rook/rook/refs/tags/v$rook_version/deploy/examples/csi/rbd/storageclass.yaml"
 
 # Update K8sGPT resources

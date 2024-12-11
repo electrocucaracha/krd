@@ -161,3 +161,8 @@ function uninstall_kubewarden {
     _uninstall_helm kubewarden-crds
     _delete_namespace kubewarden-system
 }
+
+# uninstall_longhorn() - Uninstall Longhorn services
+function uninstall_longhorn {
+    _uninstall_helm longhorn
+}

@@ -14,7 +14,7 @@ metadata:
   name: my-cluster
   namespace: rook-ceph # namespace:cluster
 spec:
-  dataDirHostPath: /var/lib/rook
+  dataDirHostPath: /var/lib/csi-block
   cephVersion:
     image: quay.io/ceph/ceph:v19
     allowUnsupported: true
