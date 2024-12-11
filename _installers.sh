@@ -355,9 +355,12 @@ function install_argocd {
 
 # install_tekton() - Install Tekton project
 function install_tekton {
-    kubectl apply -f "https://storage.googleapis.com/tekton-releases/operator/previous/$(_get_version tekton)/release.yaml"
-    kubectl apply -f "https://raw.githubusercontent.com/tektoncd/operator/main/config/crs/kubernetes/config/${KRD_TEKTON_OPERATOR_PROFILE-lite}/operator_v1alpha1_config_cr.yaml"
+    tekton_version=$(_get_version tekton)
+
+    kubectl apply -f "https://storage.googleapis.com/tekton-releases/operator/previous/$tekton_version/release.yaml"
     wait_for_pods tekton-operator
+
+    kubectl apply -f "https://raw.githubusercontent.com/tektoncd/operator/refs/tags/$tekton_version/config/crs/kubernetes/config/${KRD_TEKTON_OPERATOR_PROFILE-lite}/operator_v1alpha1_config_cr.yaml"
     wait_for_pods tekton-pipelines
 
     ! command -v tkn >/dev/null && curl -fsSL http://bit.ly/install_pkg | PKG=tkn bash
