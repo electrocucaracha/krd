@@ -13,13 +13,13 @@ metadata:
   name: ubuntu-runner-deployer
 spec:
   params:
-    - name: RELEASE_VERSION
+    - name: release-version
       description: Ubuntu release version
       type: string
-    - name: RELEASE_NAME
+    - name: release-name
       description: Ubuntu release name
       type: string
-    - name: RUNNER_VERSION
+    - name: runner-version
       description: GitHub tarball Runner version
       type: string
       default: 2.321.0
@@ -33,7 +33,7 @@ spec:
             metadata:
               annotations:
                 cdi.kubevirt.io/storage.bind.immediate.requested: "true"
-              name: ubuntu-img-$(params.RELEASE_NAME)
+              name: ubuntu-img-$(params.release-name)
             spec:
               pvc:
                 accessModes:
@@ -44,7 +44,7 @@ spec:
                 volumeMode: Filesystem
               source:
                 http:
-                  url: https://cloud-images.ubuntu.com/minimal/releases/$(params.RELEASE_NAME)/release/ubuntu-$(params.RELEASE_VERSION)-minimal-cloudimg-amd64.img
+                  url: https://cloud-images.ubuntu.com/minimal/releases/$(params.release-name)/release/ubuntu-$(params.release-version)-minimal-cloudimg-amd64.img
         - name: waitForSuccess
           value: "true"
         - name: allowReplace
@@ -101,7 +101,7 @@ spec:
                             - vagrant
                           bootcmd:
                             - "sudo mkdir /opt/runner"
-                            - "curl -sL https://github.com/actions/runner/releases/download/v$(params.RUNNER_VERSION)/actions-runner-linux-x64-$(params.RUNNER_VERSION).tar.gz | sudo tar -xz -C /opt/runner"
+                            - "curl -sL https://github.com/actions/runner/releases/download/v$(params.runner-version)/actions-runner-linux-x64-$(params.runner-version).tar.gz | sudo tar -xz -C /opt/runner"
                           runcmd:
                             - "sudo /opt/runner/bin/installdependencies.sh"
                             - "sudo chown -R runner: /opt/runner"
@@ -113,10 +113,10 @@ spec:
                             condition: true
                           sources:
                             virtualbox:
-                              source: "deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian $(params.RELEASE_NAME) contrib"
+                              source: "deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian $(params.release-name) contrib"
                               keyid: B9F8D658297AF3EFC18D5CDFA2F683C52980AECF
                             hashicorp:
-                              source: "deb [arch=amd64] https://apt.releases.hashicorp.com $(params.RELEASE_NAME) main"
+                              source: "deb [arch=amd64] https://apt.releases.hashicorp.com $(params.release-name) main"
                               keyid: 798AEC654E5C15428C8E42EEAA16FCBCA621E701
       runAfter:
         - pull-ubuntu-img

@@ -7,17 +7,10 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-apiVersion: tekton.dev/v1
-kind: PipelineRun
-metadata:
-  name: create-ubuntu-jammy-runner
-spec:
-  pipelineRef:
-    name: ubuntu-runner-deployer
-  params:
-    - name: release-name
-      value: jammy
-    - name: release-version
-      value: 22.04
-  taskRunTemplate:
-    serviceAccountName: ubuntu-runner-deployer-account
+rules:
+  # yamllint disable-line rule:truthy
+  prefer-kebab-case: off
+external-tasks:
+  - name: kubevirt
+    uri: https://github.com/kubevirt/kubevirt-tekton-tasks
+    path: release/tasks
