@@ -280,14 +280,17 @@ function _install_arc_controller {
 function install_chart_arc {
     ! kubectl get crds autoscalinglisteners.actions.github.com >/dev/null && _install_arc_controller
 
-    namespace="default"
+    namespace="${KRD_ARC_GITHUB_URL##*/}"
     KRD_CHART_VALUES="githubConfigUrl=$KRD_ARC_GITHUB_URL,githubConfigSecret=gh-runners-token"
+    ! kubectl get namespaces "${namespace}" && kubectl create namespace "${namespace}"
     ! kubectl get secrets -n "${namespace}" gh-runners-token && kubectl -n "${namespace}" create secret generic gh-runners-token --from-literal=github_token="$KRD_ARC_TOKEN"
-    ! helm get metadata arc-runner-set -n "${namespace}" >/dev/null && _install_chart arc-runner-set oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set "$namespace" "false"
+    ! helm get metadata arc-runner-set -n "${namespace}" >/dev/null && _install_chart self-hosted oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set "$namespace" "false"
     if kubectl get crds virtualmachines.kubevirt.io >/dev/null; then
-        kubectl apply -f resources/kubevirt-runner.yml -n "$namespace"
+        kubectl apply -f resources/kubevirt-runner/rbac.yml -n "$namespace"
         kubectl create rolebinding kubevirt-actions-runner -n "$namespace" --serviceaccount "${namespace}:kubevirt-actions-runner" --role=kubevirt-actions-runner || :
-        KRD_CHART_FILE="helm/arc/kubevirt-values.yml" _install_chart kubevirt-runner-set oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set "$namespace" "false"
+        kubectl create rolebinding "${namespace}-cdi-cloner" --serviceaccount "${namespace}:default" --clusterrole=cdi-cloner || :
+        kubectl apply -f resources/kubevirt-runner/vm.yml -n "$namespace"
+        KRD_CHART_FILE="helm/arc/ubuntu-jammy-values.yml" _install_chart vm-self-hosted oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set "$namespace" "false"
     fi
 }
 

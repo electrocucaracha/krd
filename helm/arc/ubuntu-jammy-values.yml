@@ -16,4 +16,8 @@ template:
         command: []
         env:
           - name: KUBEVIRT_VM_TEMPLATE
-            value: vm-template
+            value: ubuntu-jammy-vm
+          - name: RUNNER_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name

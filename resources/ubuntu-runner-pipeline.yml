@@ -40,7 +40,7 @@ spec:
                   - ReadWriteOnce
                 resources:
                   requests:
-                    storage: 5Gi
+                    storage: 14G
                 volumeMode: Filesystem
               source:
                 http:
@@ -64,15 +64,13 @@ spec:
               terminationGracePeriodSeconds: 5
               running: true
               template:
-                metadata:
-                  name: runner
                 spec:
                   domain:
                     cpu:
-                      cores: 2
+                      cores: 4
                     resources:
                       requests:
-                        memory: 8Gi
+                        memory: 16G
                     devices:
                       disks:
                         - name: rootdisk
@@ -99,11 +97,13 @@ spec:
                             - name: runner
                           packages:
                             - jq
+                            - virtualbox
+                            - vagrant
                           bootcmd:
                             - "sudo mkdir /opt/runner"
                             - "curl -sL https://github.com/actions/runner/releases/download/v$(params.RUNNER_VERSION)/actions-runner-linux-x64-$(params.RUNNER_VERSION).tar.gz | sudo tar -xz -C /opt/runner"
-                            - "sudo /opt/runner/bin/installdependencies.sh"
                           runcmd:
+                            - "sudo /opt/runner/bin/installdependencies.sh"
                             - "sudo chown -R runner: /opt/runner"
                           power_state:
                             delay: now
@@ -111,6 +111,13 @@ spec:
                             message: Bootstrap completed
                             timeout: 1
                             condition: true
+                          sources:
+                            virtualbox:
+                              source: "deb [arch=amd64] https://download.virtualbox.org/virtualbox/debian $(params.RELEASE_NAME) contrib"
+                              keyid: B9F8D658297AF3EFC18D5CDFA2F683C52980AECF
+                            hashicorp:
+                              source: "deb [arch=amd64] https://apt.releases.hashicorp.com $(params.RELEASE_NAME) main"
+                              keyid: 798AEC654E5C15428C8E42EEAA16FCBCA621E701
       runAfter:
         - pull-ubuntu-img
       taskRef:
