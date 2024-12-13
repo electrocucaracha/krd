@@ -61,6 +61,7 @@ different scenarios. There are different setups located in the
 |     ArgoCD     | Declarative GitOps continuous delivery tool     |                            | Implemented |
 |     Tekton     | CI/CD system                                    |                            | Implemented |
 |    Longhorn    | Storage Operator                                |                            |   Tested    |
+|    TopoLVM     | Storage Operator                                |                            |   Tested    |
 
 ## Quick Deployment
 

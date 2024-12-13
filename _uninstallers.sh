@@ -166,3 +166,8 @@ function uninstall_kubewarden {
 function uninstall_longhorn {
     _uninstall_helm longhorn
 }
+
+# uninstall_topolvm() - Uninstall TopoLVM services
+function uninstall_topolvm {
+    _uninstall_helm topolvm
+}

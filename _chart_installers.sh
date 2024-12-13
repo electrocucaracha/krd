@@ -300,3 +300,16 @@ function install_longhorn {
     _add_helm_repo longhorn https://charts.longhorn.io
     KRD_CHART_VALUES="defaultSettings.defaultDataPath=/var/lib/csi-block" _install_chart longhorn longhorn/longhorn
 }
+
+# install_topolvm() - Installs TopoLVM  distributed block storage system
+function install_topolvm {
+    _add_helm_repo topolvm https://topolvm.github.io/topolvm
+    cert_manager_deployed="true"
+    kubectl get deployments cert-manager -n cert-manager >/dev/null && cert_manager_deployed="false"
+    replica_count=$(kubectl get node --selector='!node-role.kubernetes.io/master' -o=jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | wc -l)
+    for class in $(kubectl get storageclasses --no-headers -o custom-columns=name:.metadata.name); do
+        kubectl patch storageclass "$class" -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+    done
+    KRD_CHART_VALUES="lvmd.deviceClasses[0].name=ssd,lvmd.deviceClasses[0].default=true,lvmd.deviceClasses[0].spare-gb=10,lvmd.deviceClasses[0].volume-group=${KRD_TOPOLVM_VOLUME_GROUP_NAME-myvg1},cert-manager.enabled=$cert_manager_deployed,controller.replicaCount=$replica_count" _install_chart topolvm topolvm/topolvm
+    kubectl patch storageclass topolvm-provisioner -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+}
