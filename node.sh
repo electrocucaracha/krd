@@ -23,13 +23,14 @@ function usage {
     cat <<EOF
 usage: $0 [-v volumes]
 Optional Argument:
-    -v List of key pair values for volumes and mount points ( e. g. sda=/var/lib/docker/,sdb=/var/lib/libvirt/ )
+    -v List of key pair values for volumes and mount points ( e. g. /dev/sda=/var/lib/docker/,/dev/sdb=/var/lib/libvirt/ )
+    -c List of key pair values for volumes groups and physical volumes ( e. g. vg1=/dev/sda /dev/sdb,vg2=/dev/sdc )
 EOF
 }
 
 # mount_external_partition() - Create partition and mount the external volume
 function mount_external_partition {
-    local dev_name="/dev/$1"
+    local dev_name=$1
     local mount_dir=$2
 
     sudo sfdisk "$dev_name" --no-reread <<EOF
@@ -167,6 +168,18 @@ function mount_partitions {
     fi
 }
 
+# create_volume_groups() - Create Logical Volume groups
+function create_volume_groups {
+    if [ -n "${dict_volumes_groups-}" ]; then
+        command -v vgs >/dev/null || curl -fsSL http://bit.ly/install_pkg | PKG="lvm2" bash
+        for kv in ${dict_volumes_groups//,/ }; do
+            eval "sudo vgcreate ${kv%=*} ${kv#*=} -f"
+        done
+        sudo vgs
+        sudo pvdisplay
+    fi
+}
+
 # disable_k8s_ports() - Disable FirewallD ports used by Kubernetes Kubelet
 function disable_k8s_ports {
     local kubelet_ports=(6443 10250 10259 10257)
@@ -251,10 +264,13 @@ function create_simulated_sriov_dev {
     ip link show
 }
 
-while getopts "h?v:" opt; do
+while getopts "h?v:g:" opt; do
     case $opt in
     v)
         dict_volumes="$OPTARG"
+        ;;
+    g)
+        dict_volumes_groups="$OPTARG"
         ;;
     h | \?)
         usage
@@ -277,6 +293,7 @@ for kmod in rbd ip6table_filter; do
 done
 install_deps
 mount_partitions
+create_volume_groups
 disable_k8s_ports
 create_pmem_namespaces
 enable_nvdimm_mixed_mode

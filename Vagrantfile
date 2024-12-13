@@ -265,12 +265,23 @@ Vagrant.configure("2") do |config|
         chmod 600 ~/.ssh/authorized_keys
         sudo sed -i '/^PermitRootLogin no/d' /etc/ssh/sshd_config
       SHELL
+
+      # Define mount and/or volumes
       volume_mounts_dict = ""
+      volume_groups_dict = Hash.new { |h, k| h[k] = [] }
       if node.key? "volumes"
         node["volumes"].each do |volume|
-          volume_mounts_dict += "#{volume['name']}=#{volume['mount']}," if volume.key? "mount"
+          if volume.key? "mount"
+            raise "`mount` and `volume_group` values have been provided for #{volume['name']} volume in #{node['name']} node, use only one of them." if volume.key? "volume_group"
+
+            volume_mounts_dict += "/dev/#{volume['name']}=#{volume['mount']},"
+          end
+          volume_groups_dict[volume["volume_group"]] << "/dev/#{volume['name']}" if volume.key? "volume_group"
         end
       end
+      vgs = ""
+      volume_groups_dict.each { |k, v| vgs += "#{k}=#{v.join(' ')}," }
+
       # Setup QAT nodes
       nodeconfig.vm.provision "shell", inline: <<-SHELL
         source /etc/os-release || source /usr/lib/os-release
@@ -300,14 +311,18 @@ Vagrant.configure("2") do |config|
           KRD_DEBUG: debug.to_s,
           PKG_DEBUG: debug.to_s,
           NODE_SRIOV_NUMVFS: node.fetch("sriov_numvfs", 0),
-          NODE_VOLUME: volume_mounts_dict[0...-1].to_s
+          NODE_VOLUME_MOUNTS: volume_mounts_dict[0...-1].to_s,
+          NODE_VOLUME_GROUPS: vgs[0...-1].to_s
         }
         sh.inline = <<-SHELL
           set -o xtrace
           cd /vagrant
           cmd="./node.sh"
-          if [[ $NODE_VOLUME ]]; then
-              cmd+=" -v $NODE_VOLUME"
+          if [[ $NODE_VOLUME_MOUNTS ]]; then
+              cmd+=" -v $NODE_VOLUME_MOUNTS"
+          fi
+          if [[ $NODE_VOLUME_GROUPS ]]; then
+              cmd+=" -g $NODE_VOLUME_GROUPS"
           fi
           cmd+=" | tee ~/node.log"
           eval $cmd

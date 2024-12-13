@@ -76,7 +76,7 @@ if [[ ${TEST_MULTINODE:-false} == "false" ]]; then
       device: 0
     - name: sde
       size: 20
-      mount: /mnt/disks/vol3
+      volume_group: myvg1
       controller: ${VBOX_CONTROLLER:-Virtual I/O Device SCSI controller}
       port: 4
       device: 0
