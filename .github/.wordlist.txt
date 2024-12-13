@@ -107,7 +107,9 @@ src
 sriov
 subproject
 svg
+Tekton
 textlint
+TopoLVM
 tox
 udp
 VFs
