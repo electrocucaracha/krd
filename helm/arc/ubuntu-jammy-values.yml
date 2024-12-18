@@ -12,7 +12,7 @@ template:
     serviceAccountName: kubevirt-actions-runner
     containers:
       - name: runner
-        image: ghcr.io/zhaofengli/kubevirt-actions-runner:latest
+        image: electrocucaracha/kubevirt-actions-runner:latest
         command: []
         env:
           - name: KUBEVIRT_VM_TEMPLATE

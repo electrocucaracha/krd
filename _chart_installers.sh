@@ -288,7 +288,8 @@ function install_chart_arc {
     if kubectl get crds virtualmachines.kubevirt.io >/dev/null; then
         kubectl apply -f resources/kubevirt-runner/rbac.yml -n "$namespace"
         kubectl create rolebinding kubevirt-actions-runner -n "$namespace" --serviceaccount "${namespace}:kubevirt-actions-runner" --role=kubevirt-actions-runner || :
-        kubectl create rolebinding "${namespace}-cdi-cloner" --serviceaccount "${namespace}:default" --clusterrole=cdi-cloner || :
+        kubectl create rolebinding "${namespace}-default-cdi-cloner" --serviceaccount "${namespace}:default" --clusterrole=cdi-cloner || :
+        kubectl create rolebinding "${namespace}-kubevirt-actions-runner-cdi-cloner" --serviceaccount "${namespace}:kubevirt-actions-runner" --clusterrole=cdi-cloner || :
         kubectl apply -f resources/kubevirt-runner/vm.yml -n "$namespace"
         KRD_CHART_FILE="helm/arc/ubuntu-jammy-values.yml" _install_chart vm-self-hosted oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set "$namespace" "false"
     fi
