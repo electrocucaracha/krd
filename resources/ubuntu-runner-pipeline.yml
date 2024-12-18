@@ -96,6 +96,7 @@ spec:
                           users:
                             - name: runner
                           packages:
+                            - git
                             - jq
                             - virtualbox
                             - vagrant
