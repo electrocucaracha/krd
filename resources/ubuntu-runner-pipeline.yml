@@ -111,6 +111,10 @@ spec:
                             - "sudo ln -s /usr/bin/python3 /usr/bin/python"
                             - "sudo /opt/runner/bin/installdependencies.sh"
                             - "sudo chown -R runner: /opt/runner"
+                          write_files:
+                            - path: /etc/profile.d/vagrant.sh
+                              content: |
+                                export VAGRANT_DEFAULT_PROVIDER=virtualbox
                           power_state:
                             delay: now
                             mode: poweroff
