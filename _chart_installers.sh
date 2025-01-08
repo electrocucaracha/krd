@@ -285,7 +285,7 @@ function install_chart_arc {
     ! kubectl get crds autoscalinglisteners.actions.github.com >/dev/null && _install_arc_controller
 
     namespace="${KRD_ARC_GITHUB_URL##*/}"
-    KRD_CHART_VALUES="githubConfigUrl=$KRD_ARC_GITHUB_URL,githubConfigSecret=gh-runners-token"
+    KRD_CHART_VALUES="githubConfigUrl=$KRD_ARC_GITHUB_URL,githubConfigSecret=gh-runners-token,maxRunners=3"
     ! kubectl get namespaces "${namespace}" && kubectl create namespace "${namespace}"
     ! kubectl get secrets -n "${namespace}" gh-runners-token && kubectl -n "${namespace}" create secret generic gh-runners-token --from-literal=github_token="$KRD_ARC_TOKEN"
     ! helm get metadata arc-runner-set -n "${namespace}" >/dev/null && KRD_CHART_VERSION="$action_runner_controller_version" _install_chart self-hosted oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set "$namespace" "false"
