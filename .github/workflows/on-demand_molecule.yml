@@ -21,7 +21,7 @@ on:
 jobs:
   bootstrap:
     name: Pull python dependencies
-    runs-on: macos-12
+    runs-on: vm-self-hosted
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
       - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # 5.3.0
@@ -82,7 +82,7 @@ jobs:
       fail-fast: false
       matrix:
         environment: ${{ fromJSON(needs.changes.outputs.environments) }}
-    runs-on: macos-12
+    runs-on: vm-self-hosted
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
         if: matrix.environment != 'reqs'

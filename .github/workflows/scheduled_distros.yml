@@ -38,7 +38,7 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
   check-all-distros:
     name: Check all Linux Distributions supported in an All-in-One setup
-    runs-on: macos-12
+    runs-on: vm-self-hosted
     needs: generate-json-matrix
     strategy:
       fail-fast: false

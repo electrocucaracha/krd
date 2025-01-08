@@ -23,7 +23,7 @@ jobs:
     name: Check Mirantis Virtlet solution in an Ubuntu Bionic All-in-One setup
     if: >-
       ( github.event_name == 'pull_request_review' && github.event.review.state == 'approved' ) || github.event_name != 'pull_request_review'
-    runs-on: macos-12
+    runs-on: vm-self-hosted
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
       - uses: ./.github/actions/vagrant-up

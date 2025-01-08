@@ -18,7 +18,7 @@ jobs:
     permissions:
       contents: write # for technote-space/create-pr-action to push code
       pull-requests: write # for technote-space/create-pr-action to create a PR
-    runs-on: macos-12
+    runs-on: vm-self-hosted
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
       - uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # 4.1.2

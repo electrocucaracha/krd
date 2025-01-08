@@ -83,12 +83,6 @@ runs:
   using: "composite"
   steps:
     - uses: ./.github/actions/vagrant-setup
-    - name: Replace shorten links
-      shell: bash
-      run: |
-        find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_pkg|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/install.sh|g' {} \;
-        find . -type f -iname "*sh" -exec sed -i '.bak' 's|http://bit.ly/install_bin|https://raw.githubusercontent.com/electrocucaracha/pkg-mgr_scripts/master/bindep_install.sh|g' {} \;
-        find . -type f -name "*.bak" -delete
     - name: Bootstrap Kubernetes Nodes
       shell: bash
       env:
@@ -142,7 +136,5 @@ runs:
       if: failure()
       shell: bash
       run: |
-        vm_stat
-        top -l 1 -n 0
         VBoxManage list runningvms --long
         cat ~/VirtualBox\ VMs/*/Logs/*.log
