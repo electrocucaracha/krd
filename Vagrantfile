@@ -43,7 +43,7 @@ File.open("#{File.dirname(__FILE__)}/inventory/hosts.ini", "w") do |inventory_fi
       inventory_file.puts(node["name"]) if node["roles"].include?(group.to_s)
     end
   end
-  inventory_file.puts("\n[k8s-cluster:children]\nkube-node\nkube-master")
+  inventory_file.puts("\n[k8s_cluster:children]\nkube-node\nkube-master")
 end
 
 system("echo -e \"\n\n\n\" | ssh-keygen -f #{File.dirname(__FILE__)}/insecure_keys/key -t rsa -N ''") unless File.exist?("#{File.dirname(__FILE__)}/insecure_keys/key")
