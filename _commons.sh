@@ -36,7 +36,7 @@ function _get_kube_version {
     elif [ -n "${KRD_KUBE_VERSION-}" ]; then
         echo "${KRD_KUBE_VERSION}"
     else
-        echo "v1.30.4"
+        echo "v1.31.4"
     fi
 }
 
