@@ -210,8 +210,6 @@ function install_istio {
         fi
     fi
     wait_for_pods istio-system
-    istioctl manifest generate >/tmp/generated-manifest.yaml
-    istioctl verify-install -f /tmp/generated-manifest.yaml
 }
 
 # install_knative() - Function that installs Knative and its dependencies
