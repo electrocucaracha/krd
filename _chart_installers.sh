@@ -277,6 +277,7 @@ function _install_chart_k8sgpt-operator {
 
 function _install_arc_controller {
     KRD_CHART_VERSION=$(_get_version action_runner_controller) _install_chart arc oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+    kubectl apply -f resources/arc-cleanup.yml
 }
 
 # install_arc() - Install Actions Runner

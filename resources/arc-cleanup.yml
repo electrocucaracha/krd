@@ -1,0 +1,61 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2025
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cleaner
+  namespace: arc-system
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cleaner
+rules:
+  - apiGroups: ["actions.github.com"]
+    resources: ["ephemeralrunners"]
+    verbs: ["delete", "get", "watch", "list"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cleaner-to-cleaner
+roleRef:
+  kind: ClusterRole
+  name: cleaner
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: cleaner
+    namespace: arc-system
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ephemeralrunners-garbage-collector
+  namespace: arc-system
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          serviceAccount: cleaner
+          containers:
+            - name: kubectl
+              image: alpine/k8s:1.32.0
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  kubectl get -A ephemeralrunner -o jsonpath='{range .items[?(@.status.reason=="TooManyPodFailures")]}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}'|awk '{ print "kubectl delete ephemeralrunner" " -n " $1 " " $2 }'|xargs -P4 -I{} sh -c "{}"
