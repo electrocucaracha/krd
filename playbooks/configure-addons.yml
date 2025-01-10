@@ -114,7 +114,7 @@
 - name: Build intel-qat-plugin in kerneldrv mode
   vars:
     qat_plugin_repo_folder: /tmp/intel-device-plugins-for-kubernetes
-  hosts: kube-node
+  hosts: kube_node
   tags:
     - qat
     - qat-plugin

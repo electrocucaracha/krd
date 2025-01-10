@@ -44,11 +44,11 @@ with diagrams.Diagram(filename="krd", direction="BT"):
                 nodes.append(Suse())
             with diagrams.Cluster("Kubernetes Roles"):
                 roles = []
-                if "kube-master" in node["roles"]:
+                if "kube_control_plane" in node["roles"]:
                     roles.append(k8s_infra.Master())
                 if "etcd" in node["roles"]:
                     roles.append(k8s_infra.ETCD())
-                if "kube-node" in node["roles"]:
+                if "kube_node" in node["roles"]:
                     roles.append(k8s_infra.Node())
 
     installer = Ubuntu("installer\n10.10.16.2")

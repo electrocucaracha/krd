@@ -9,7 +9,7 @@
 ##############################################################################
 - name: Apply virtlet extraRuntime label
   ansible.builtin.command: "/usr/local/bin/kubectl label node {{ item }} extraRuntime=virtlet --overwrite"
-  with_inventory_hostnames: kube-node
+  with_inventory_hostnames: kube_node
   changed_when: false
 - name: Create Virtlet binary folder
   ansible.builtin.file:

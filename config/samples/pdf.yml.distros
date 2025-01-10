@@ -19,7 +19,7 @@
       port: 1
       device: 0
   roles:
-    - kube-master
+    - kube_control_plane
     - etcd
 - name: ubuntu18
   os:
@@ -42,7 +42,7 @@
       port: 1
       device: 0
   roles:
-    - kube-node
+    - kube_node
 - name: ubuntu20
   os:
     name: ubuntu
@@ -64,7 +64,7 @@
       port: 1
       device: 0
   roles:
-    - kube-node
+    - kube_node
 - name: ubuntu22
   os:
     name: ubuntu
@@ -86,7 +86,7 @@
       port: 1
       device: 0
   roles:
-    - kube-node
+    - kube_node
 - name: opensuse15
   os:
     name: opensuse
@@ -108,7 +108,7 @@
       port: 1
       device: 0
   roles:
-    - kube-node
+    - kube_node
 - name: fedora37
   os:
     name: fedora
@@ -130,7 +130,7 @@
       port: 1
       device: 0
   roles:
-    - kube-node
+    - kube_node
 - name: fedora38
   os:
     name: fedora
@@ -152,7 +152,7 @@
       port: 1
       device: 0
   roles:
-    - kube-node
+    - kube_node
 - name: fedora39
   os:
     name: fedora39
@@ -174,7 +174,7 @@
       port: 1
       device: 0
   roles:
-    - kube-node
+    - kube_node
 - name: fedora40
   os:
     name: fedora
@@ -196,4 +196,4 @@
       port: 1
       device: 0
   roles:
-    - kube-node
+    - kube_node

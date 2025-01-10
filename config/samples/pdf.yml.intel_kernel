@@ -18,7 +18,7 @@
   memory: 8192
   cpus: 8
   roles:
-    - kube-master
+    - kube_control_plane
     - etcd
 - name: "compute01"
   os:
@@ -45,7 +45,7 @@
       size: 50
       mount: /var/lib/docker/
   roles:
-    - kube-node
+    - kube_node
     - qat-node
 - name: "compute02"
   os:
@@ -72,7 +72,7 @@
       size: 50
       mount: /var/lib/docker/
   roles:
-    - kube-node
+    - kube_node
     - qat-node
 - name: "compute03"
   os:
@@ -99,5 +99,5 @@
       size: 50
       mount: /var/lib/docker/
   roles:
-    - kube-node
+    - kube_node
     - qat-node

@@ -37,6 +37,6 @@
       port: 4
       device: 0
   roles:
-    - kube-master
+    - kube_control_plane
     - etcd
-    - kube-node
+    - kube_node

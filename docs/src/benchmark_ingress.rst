@@ -73,7 +73,7 @@ This setup can be achieved creating the following  *config/pdf.yml* file:
           size: 25
           mount: /var/lib/docker/
       roles:
-        - kube-master
+        - kube_control_plane
         - etcd
     - name: worker01
       os:
@@ -89,7 +89,7 @@ This setup can be achieved creating the following  *config/pdf.yml* file:
           size: 25
           mount: /var/lib/docker/
       roles:
-        - kube-node
+        - kube_node
     - name: worker02
       os:
         name: ubuntu
@@ -104,7 +104,7 @@ This setup can be achieved creating the following  *config/pdf.yml* file:
           size: 25
           mount: /var/lib/docker/
       roles:
-        - kube-node
+        - kube_node
 
 Once the Kubernetes cluster is provisioned by vagrant is possible to execute
 the networking benchmark process. A new k6 log file will be created on the

@@ -78,7 +78,7 @@ achieved creating the following  *config/pdf.yml* file:
           port: 1
           device: 0
       roles:
-        - kube-master
+        - kube_control_plane
         - etcd
     - name: worker01
       os:
@@ -101,7 +101,7 @@ achieved creating the following  *config/pdf.yml* file:
           port: 1
           device: 0
       roles:
-        - kube-node
+        - kube_node
     - name: worker02
       os:
         name: ubuntu
@@ -123,7 +123,7 @@ achieved creating the following  *config/pdf.yml* file:
           port: 1
           device: 0
       roles:
-        - kube-node
+        - kube_node
 
 Once the Kubernetes cluster is provisioned by vagrant is possible to execute
 the networking benchmark process. A new iperf log file will be created on the

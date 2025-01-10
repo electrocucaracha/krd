@@ -45,7 +45,7 @@ function upgrade_k8s {
         $PIP_CMD -r ./requirements.txt
         popd
     fi
-    sed -i "s/^kube_version: .*\$/kube_version: $KRD_KUBE_VERSION/" "$krd_inventory_folder/group_vars/k8s-cluster.yml"
+    sed -i "s/^kube_version: .*\$/kube_version: $KRD_KUBE_VERSION/" "$krd_inventory_folder/group_vars/k8s_cluster.yml"
     _run_ansible_cmd "$kubespray_folder/upgrade-cluster.yml" "upgrade-cluster-kubernetes.log"
 
     sudo cp "$krd_inventory_folder/artifacts/admin.conf" "$HOME/.kube/config"

@@ -17,7 +17,7 @@
   memory: 8192
   cpus: 2
   roles:
-    - kube-master
+    - kube_control_plane
     - etcd
 - name: "controller02"
   os:
@@ -29,7 +29,7 @@
   memory: 8192
   cpus: 2
   roles:
-    - kube-master
+    - kube_control_plane
     - etcd
 - name: "controller03"
   os:
@@ -41,7 +41,7 @@
   memory: 8192
   cpus: 2
   roles:
-    - kube-master
+    - kube_control_plane
     - etcd
 - name: "compute01"
   os:
@@ -84,7 +84,7 @@
       port: 1
       device: 1
   roles:
-    - kube-node
+    - kube_node
     - qat-node
 - name: "compute02"
   os:
@@ -121,4 +121,4 @@
       port: 1
       device: 1
   roles:
-    - kube-node
+    - kube_node

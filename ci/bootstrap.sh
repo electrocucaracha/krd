@@ -81,9 +81,9 @@ if [[ ${TEST_MULTINODE:-false} == "false" ]]; then
       port: 4
       device: 0
   roles:
-    - kube-master
+    - kube_control_plane
     - etcd
-    - kube-node
+    - kube_node
     - qat-node
 EOL
     # editorconfig-checker-enable
@@ -112,7 +112,7 @@ else
       port: 1
       device: 0
   roles:
-    - kube-master
+    - kube_control_plane
     - etcd
 EOL
     # editorconfig-checker-enable
@@ -141,7 +141,7 @@ EOL
       port: 1
       device: 0
   roles:
-    - kube-node
+    - kube_node
 EOL
         # editorconfig-checker-enable
     done

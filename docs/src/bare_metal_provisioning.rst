@@ -83,18 +83,18 @@ addressing those tasks to localhost.
     [all]
     localhost
 
-    [kube-master]
+    [kube_control_plane]
     localhost
 
-    [kube-node]
+    [kube_node]
     localhost
 
     [etcd]
     localhost
 
     [k8s-cluster:children]
-    kube-node
-    kube-master
+    kube_node
+    kube_control_plane
     EOL
 
 Ansible uses SSH protocol for executing remote instructions. The

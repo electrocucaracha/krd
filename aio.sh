@@ -82,18 +82,18 @@ if [[ $krd_actions_list == *k8s* ]]; then
 [all]
 $hostname
 
-[kube-master]
+[kube_control_plane]
 $hostname	ansible_host=$ip_address ip=$ip_address
 
-[kube-node]
+[kube_node]
 $hostname	ansible_host=$ip_address ip=$ip_address
 
 [etcd]
 $hostname	ansible_host=$ip_address ip=$ip_address
 
-[k8s-cluster:children]
-kube-node
-kube-master
+[k8s_cluster:children]
+kube_node
+kube_control_plane
 EOL
 fi
 

@@ -18,7 +18,7 @@
   memory: 4096
   cpus: 1
   roles:
-    - kube-master
+    - kube_control_plane
     - etcd
 - name: minion01
   os:
@@ -30,7 +30,7 @@
   memory: 4096
   cpus: 1
   roles:
-    - kube-node
+    - kube_node
 - name: minion02
   os:
     name: ubuntu
@@ -41,4 +41,4 @@
   memory: 4096
   cpus: 1
   roles:
-    - kube-node
+    - kube_node

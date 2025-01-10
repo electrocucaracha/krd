@@ -37,13 +37,13 @@ File.open("#{File.dirname(__FILE__)}/inventory/hosts.ini", "w") do |inventory_fi
     inventory_file.puts("#{node['name']}\t\tansible_host=#{node['networks'][0]['ip']}\tip=#{node['networks'][0]['ip']}")
     etchosts_dict += "#{node['networks'][0]['ip']}-#{node['name']},"
   end
-  %w[kube-master kube-node etcd qat-node criu].each do |group|
+  %w[kube_control_plane kube_node etcd qat-node criu].each do |group|
     inventory_file.puts("\n[#{group}]")
     nodes.each do |node|
       inventory_file.puts(node["name"]) if node["roles"].include?(group.to_s)
     end
   end
-  inventory_file.puts("\n[k8s_cluster:children]\nkube-node\nkube-master")
+  inventory_file.puts("\n[k8s_cluster:children]\nkube_node\nkube_control_plane")
 end
 
 system("echo -e \"\n\n\n\" | ssh-keygen -f #{File.dirname(__FILE__)}/insecure_keys/key -t rsa -N ''") unless File.exist?("#{File.dirname(__FILE__)}/insecure_keys/key")
@@ -162,7 +162,7 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.box = vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["name"]
       nodeconfig.vm.box_version = vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["version"] if vagrant_boxes[node["os"]["name"]][node["os"]["release"]].key? "version"
       nodeconfig.vm.provider "virtualbox" do |v, _override|
-        v.customize ["modifyvm", :id, "--nested-hw-virt", "on"] if node["roles"].include?("kube-node")
+        v.customize ["modifyvm", :id, "--nested-hw-virt", "on"] if node["roles"].include?("kube_node")
         if node.key? "storage_controllers"
           node["storage_controllers"].each do |storage_controller|
             # Add VirtualBox storage controllers if they weren't added before
@@ -203,7 +203,7 @@ Vagrant.configure("2") do |config|
       end
       nodeconfig.vm.provider "libvirt" do |v, _override|
         v.disk_bus = "sata"
-        v.nested = true if node["roles"].include?("kube-node")
+        v.nested = true if node["roles"].include?("kube_node")
         v.loader = loader if node["os"] == "clearlinux"
         v.cpu_mode = "host-passthrough"
         if node.key? "volumes"

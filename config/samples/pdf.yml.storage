@@ -18,7 +18,7 @@
   memory: 8192
   cpus: 4
   roles:
-    - kube-master
+    - kube_control_plane
     - etcd
   volumes:
     - name: sda
@@ -34,7 +34,7 @@
   memory: 16384
   cpus: 8
   roles:
-    - kube-node
+    - kube_node
   storage_controllers:
     - name: Virtual I/O Device SCSI controller
       type: virtio-scsi
@@ -73,7 +73,7 @@
   memory: 16384
   cpus: 8
   roles:
-    - kube-node
+    - kube_node
   storage_controllers:
     - name: Virtual I/O Device SCSI controller
       type: virtio-scsi
@@ -112,7 +112,7 @@
   memory: 16384
   cpus: 8
   roles:
-    - kube-node
+    - kube_node
   storage_controllers:
     - name: Virtual I/O Device SCSI controller
       type: virtio-scsi
@@ -151,7 +151,7 @@
   memory: 16384
   cpus: 8
   roles:
-    - kube-node
+    - kube_node
   storage_controllers:
     - name: Virtual I/O Device SCSI controller
       type: virtio-scsi
@@ -190,7 +190,7 @@
   memory: 16384
   cpus: 8
   roles:
-    - kube-node
+    - kube_node
   storage_controllers:
     - name: Virtual I/O Device SCSI controller
       type: virtio-scsi
