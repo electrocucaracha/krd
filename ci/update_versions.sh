@@ -14,6 +14,8 @@ if [[ ${DEBUG:-false} == "true" ]]; then
     set -o xtrace
 fi
 
+trap "make fmt" EXIT
+
 function get_version {
     local type="$1"
     local name="$2"
@@ -238,4 +240,3 @@ for action in $gh_actions; do
     # shellcheck disable=SC2267
     grep -ElRZ "uses: $action@" .github/ | xargs -0 -l sed -i -e "s|uses: $action@.*|uses: $action@$commit_hash|g"
 done
-make fmt
