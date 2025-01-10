@@ -10,7 +10,7 @@
 kpt_version: 1.0.0-beta.55
 go_version: 1.15.3
 kubespray_version: v2.27.0
-istio_version: 1.24.1
+istio_version: 1.24.2
 cfssl_version: 1.6.5
 sonobuoy_version: 0.57.2
 mitogen_version: 0.2.10
