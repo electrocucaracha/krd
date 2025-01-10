@@ -34,5 +34,5 @@ qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
 argocd_version: v2.13.1
 tekton_version: v0.74.0
-kubevirt_tekton_tasks_version: v0.22.0
+kubevirt_tekton_tasks_version: v0.23.0
 action_runner_controller_version: 0.10.1
