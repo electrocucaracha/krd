@@ -199,6 +199,3 @@ calico_vxlan_mode: $KRD_CALICO_VXLAN_MODE
 
 # Calico network backend: "bird", "vxlan" or "none"
 calico_network_backend: $KRD_CALICO_NETWORK_BACKEND
-
-# TODO: Remove this workaround until fix is published (https://github.com/kubernetes-sigs/kubespray/pull/9845)
-crun_bin_dir: /usr/local/bin/

@@ -38,7 +38,7 @@ jobs:
             kata_containers_enabled: false
           - runtime: containerd
             gvisor_enabled: true
-            kata_containers_enabled: false # TODO: Enable this once this PR is included(https://github.com/kubernetes-sigs/kubespray/pull/8797)
+            kata_containers_enabled: true
           - enable_tests: true
             krew_plugins_list: "virt"
             metallb_enabled: true
