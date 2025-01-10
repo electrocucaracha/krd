@@ -23,7 +23,7 @@ net_kourier_version: knative-v1.16.0
 net_istio_version: vknative-v1.16.0
 net_certmanager_version: vknative-v1.14.0
 octant_version: 0.25.1
-kube-ovn_version: vkube-ovn-1.13.0
+kube-ovn_version: v1.13.2
 prometheus-operator_version: v0.78.2
 kubevirt_version: v1.4.0
 containerized_data_importer_version: v1.60.4
