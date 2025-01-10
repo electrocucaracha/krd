@@ -26,7 +26,7 @@ octant_version: 0.25.1
 kube-ovn_version: v1.13.2
 prometheus-operator_version: v0.79.2
 kubevirt_version: v1.4.0
-containerized_data_importer_version: v1.60.4
+containerized_data_importer_version: v1.61.0
 virtink_version: v0.16.0
 kubesphere_version: v4.1.2
 metallb_version: v0.14.8
