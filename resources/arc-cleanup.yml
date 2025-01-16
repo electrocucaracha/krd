@@ -16,7 +16,7 @@ metadata:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: cleaner
+  name: ephemeralrunners-cleaner
 rules:
   - apiGroups: ["actions.github.com"]
     resources: ["ephemeralrunners"]
@@ -25,10 +25,32 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: cleaner-to-cleaner
+  name: ephemeralrunners-cleaner
 roleRef:
   kind: ClusterRole
-  name: cleaner
+  name: ephemeralrunners-cleaner
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: cleaner
+    namespace: arc-system
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: virtualmachineinstances-cleaner
+rules:
+  - apiGroups: ["kubevirt.io"]
+    resources: ["virtualmachineinstances"]
+    verbs: ["delete", "get", "watch", "list"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: virtualmachineinstances-cleaner
+roleRef:
+  kind: ClusterRole
+  name: virtualmachineinstances-cleaner
   apiGroup: rbac.authorization.k8s.io
 subjects:
   - kind: ServiceAccount
@@ -59,3 +81,28 @@ spec:
                 - -c
                 - |
                   kubectl get -A ephemeralrunner -o jsonpath='{range .items[?(@.status.reason=="TooManyPodFailures")]}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}'|awk '{ print "kubectl delete ephemeralrunner" " -n " $1 " " $2 }'|xargs -P4 -I{} sh -c "{}"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: virtualmachineinstances-garbage-collector
+  namespace: arc-system
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          serviceAccount: cleaner
+          containers:
+            - name: kubectl
+              image: alpine/k8s:1.32.0
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  kubectl get -A virtualmachineinstance -o jsonpath='{range .items[?(@.status.phase=="Succeeded")]}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}'|awk '{ print "kubectl delete virtualmachineinstance" " -n " $1 " " $2 }'|xargs -P4 -I{} sh -c "{}"
