@@ -19,8 +19,8 @@ lint: |
   PATH=${PATH}
   yamllint -c ../../../.yamllint .
 platforms:
-  - name: bionic-$POSTFIX_NAME
-    box: generic/ubuntu1804
+  - name: focal-$POSTFIX_NAME
+    box: generic/ubuntu2004
     box_version: 4.3.12
     memory: 3072
     cpus: 1

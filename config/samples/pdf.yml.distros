@@ -21,28 +21,6 @@
   roles:
     - kube_control_plane
     - etcd
-- name: ubuntu18
-  os:
-    name: ubuntu
-    release: bionic
-  networks:
-    - name: public-net
-      ip: "10.10.16.4"
-  memory: 4096
-  cpus: 1
-  storage_controllers:
-    - name: Virtual I/O Device SCSI controller
-      type: virtio-scsi
-      controller: VirtIO
-  volumes:
-    - name: sdb
-      size: 25
-      mount: /var/lib/docker/
-      controller: Virtual I/O Device SCSI controller
-      port: 1
-      device: 0
-  roles:
-    - kube_node
 - name: ubuntu20
   os:
     name: ubuntu

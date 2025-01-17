@@ -25,11 +25,11 @@ different scenarios. There are different setups located in the
 
 ## Linux Distros Supported
 
-| Name     |      Version      |
-| :------- | :---------------: |
-| Ubuntu   | 18.04/20.04/22.04 |
-| openSUSE |       Leap        |
-| Fedora   |    37/38/39/40    |
+| Name     |   Version   |
+| :------- | :---------: |
+| Ubuntu   | 20.04/22.04 |
+| openSUSE |    Leap     |
+| Fedora   | 37/38/39/40 |
 
 ## Components
 
