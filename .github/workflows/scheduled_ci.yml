@@ -16,7 +16,7 @@ on:
 jobs:
   check-dashboard-and-metrics:
     name: Check All-in-One setup in a Ubuntu Focal virtual environment
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       KRD_DEBUG: true
       KRD_DASHBOARD_ENABLED: true
