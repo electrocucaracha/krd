@@ -84,15 +84,17 @@ cat <<EOT >.distros_supported.yml
 ##############################################################################
 EOT
 
+echo "debian:" >>.distros_supported.yml
+_vagrant_pull "bullseye" "debian/bullseye64"
+echo "rocky:" >>.distros_supported.yml
+_vagrant_pull "9" "community/rockylinux-9"
 echo "ubuntu:" >>.distros_supported.yml
-_vagrant_pull "bionic" "generic/ubuntu1804"
+_vagrant_pull "bionic" "generic/ubuntu1804" # NOTE: Required for Virtlet testing
 _vagrant_pull "focal" "generic/ubuntu2004"
 _vagrant_pull "jammy" "generic/ubuntu2204"
 echo "opensuse:" >>.distros_supported.yml
-_vagrant_pull "leap" "generic/opensuse15"
+_vagrant_pull "leap" "opensuse/Leap-15.6.x86_64"
 echo "fedora:" >>.distros_supported.yml
-_vagrant_pull "37" "fedora/37-cloud-base"
-_vagrant_pull "38" "fedora/38-cloud-base"
 _vagrant_pull "39" "fedora/39-cloud-base"
 _vagrant_pull "40" "fedora/40-cloud-base"
 

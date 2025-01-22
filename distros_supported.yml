@@ -1,12 +1,20 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2019 - 2024
+# Copyright (c) 2019 - 2025
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
+debian:
+  bullseye:
+    name: debian/bullseye64
+    version: "11.20241217.1"
+rocky:
+  9:
+    name: community/rockylinux-9
+    version: "1.0.0"
 ubuntu:
   bionic:
     name: generic/ubuntu1804
@@ -19,15 +27,9 @@ ubuntu:
     version: "4.3.12"
 opensuse:
   leap:
-    name: generic/opensuse15
-    version: "4.3.12"
+    name: opensuse/Leap-15.6.x86_64
+    version: "15.6.13.356"
 fedora:
-  37:
-    name: fedora/37-cloud-base
-    version: "37.20221105.0"
-  38:
-    name: fedora/38-cloud-base
-    version: "38.20230413.1"
   39:
     name: fedora/39-cloud-base
     version: "39.20231031.1"
