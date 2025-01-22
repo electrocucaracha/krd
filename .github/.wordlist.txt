@@ -20,7 +20,6 @@ criproxy
 CrossSubnet
 CRUN
 CSI
-datasets
 DEVOPS
 Distros
 DNS
@@ -95,7 +94,6 @@ README
 rebase
 REPO
 RESOLVCONF
-RUNTIME
 runtimes
 Scc
 serverless
