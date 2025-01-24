@@ -1,0 +1,32 @@
+---
+#!/bin/bash
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2025
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: kata-qemu
+  name: runtime-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kata-qemu
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kata-qemu
+    spec:
+      runtimeClassName: kata-qemu
+      containers:
+        - name: test
+          image: quay.io/quay/busybox
+          command: ["sleep"]
+          args: ["infity"]
