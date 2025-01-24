@@ -34,11 +34,15 @@ jobs:
       matrix:
         include:
           - runtime: crio
-            crun_enabled: true
-            kata_containers_enabled: false
-          - runtime: containerd
-            gvisor_enabled: true
             kata_containers_enabled: true
+            crun_enabled: true
+            gvisor_enabled: true
+            youki_enabled: true
+          - runtime: containerd
+            kata_containers_enabled: true
+            crun_enabled: true
+            gvisor_enabled: true
+            youki_enabled: true
           - enable_tests: true
             krew_plugins_list: "virt"
             metallb_enabled: true

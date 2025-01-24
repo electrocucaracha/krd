@@ -52,6 +52,9 @@ inputs:
   gvisor-enabled:
     description: "Enable gVisor"
     default: false
+  youki-enabled:
+    description: "Enable Youki"
+    default: false
   metallb-enabled:
     description: "Enable MetalLB"
     default: false
@@ -109,6 +112,7 @@ runs:
         KRD_KATA_CONTAINERS_ENABLED: ${{ inputs.kata-containers-enabled }}
         KRD_CRUN_ENABLED: ${{ inputs.crun-enabled }}
         KRD_GVISOR_ENABLED: ${{ inputs.gvisor-enabled }}
+        KRD_YOUKI_ENABLED: ${{ inputs.youki-enabled }}
         KRD_METALLB_ENABLED: ${{ inputs.metallb-enabled }}
         PKG_KREW_PLUGINS_LIST: ${{ inputs.krew-plugins-list }}
         KRD_DOCKER_VERSION: ${{ inputs.docker-version }}
@@ -129,6 +133,7 @@ runs:
         KRD_KATA_CONTAINERS_ENABLED: ${{ inputs.kata-containers-enabled }}
         KRD_CRUN_ENABLED: ${{ inputs.crun-enabled }}
         KRD_GVISOR_ENABLED: ${{ inputs.gvisor-enabled }}
+        KRD_YOUKI_ENABLED: ${{ inputs.youki-enabled }}
         RUN_BENCHMARKS: ${{ inputs.run-benchmarks }}
       working-directory: ./ci
       run: ./check.sh
