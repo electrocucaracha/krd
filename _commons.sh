@@ -147,6 +147,9 @@ EOF
         if [ "$KRD_CONTAINER_RUNTIME" == "containerd" ]; then
             export KRD_CRUN_ENABLED=false
         fi
+        if [ "$KRD_CONTAINER_RUNTIME" == "crio" ]; then
+            export KRD_GVISOR_ENABLED=false
+        fi
     elif _vercmp "${kube_version#*v}" '>=' "1.24"; then
         echo "Dockershim has been deprecated in <1.24"
         exit 1
