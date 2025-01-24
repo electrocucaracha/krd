@@ -113,7 +113,7 @@ spec:
                             - "sudo ln -s /usr/bin/python3 /usr/bin/python"
                             - "sudo /opt/runner/bin/installdependencies.sh"
                             - "sudo chown -R runner: /opt/runner"
-                            - "sudo runuser -l runner -c 'for box in community/rockylinux-9 generic/ubuntu2004 generic/ubuntu2204 debian/bullseye64 opensuse/Leap-15.6.x86_64 fedora/40-cloud-base; do vagrant box add --provider virtualbox $box; done'"
+                            - "sudo runuser -l runner -c 'vagrant box add --provider virtualbox generic/ubuntu2204'"
                           write_files:
                             - path: /etc/profile.d/vagrant.sh
                               content: |
