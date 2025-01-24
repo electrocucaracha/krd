@@ -171,3 +171,8 @@ function uninstall_longhorn {
 function uninstall_topolvm {
     _uninstall_helm topolvm
 }
+
+# uninstall_fluent() - Uninstall Fluent services
+function uninstall_fluent {
+    _uninstall_helm fluent
+}

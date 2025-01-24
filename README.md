@@ -62,6 +62,7 @@ different scenarios. There are different setups located in the
 |     Tekton     | CI/CD system                                    |                            | Implemented |
 |    Longhorn    | Storage Operator                                |                            |   Tested    |
 |    TopoLVM     | Storage Operator                                |                            |   Tested    |
+|     Fluent     | Logging agent                                   |                            |   Tested    |
 
 ## Quick Deployment
 

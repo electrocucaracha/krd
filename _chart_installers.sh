@@ -321,3 +321,9 @@ function install_topolvm {
     KRD_CHART_VALUES="lvmd.deviceClasses[0].name=ssd,lvmd.deviceClasses[0].default=true,lvmd.deviceClasses[0].spare-gb=10,lvmd.deviceClasses[0].volume-group=${KRD_TOPOLVM_VOLUME_GROUP_NAME-myvg1},cert-manager.enabled=$cert_manager_deployed,controller.replicaCount=$replica_count" _install_chart topolvm topolvm/topolvm
     kubectl patch storageclass topolvm-provisioner -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 }
+
+# install_fluent() - Installs Fluent for taking care of the log collection, parsing and distribution
+function install_fluent {
+    _add_helm_repo fluent https://fluent.github.io/helm-charts
+    _install_chart fluent fluent/fluentd
+}
