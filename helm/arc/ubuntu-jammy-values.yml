@@ -13,6 +13,7 @@ template:
     containers:
       - name: runner
         image: ghcr.io/electrocucaracha/kubevirt-actions-runner:master
+        imagePullPolicy: Always
         command: []
         env:
           - name: KUBEVIRT_VM_TEMPLATE
