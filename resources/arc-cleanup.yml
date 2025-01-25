@@ -63,7 +63,7 @@ metadata:
   name: ephemeralrunners-garbage-collector
   namespace: arc-system
 spec:
-  schedule: "*/15 * * * *"
+  schedule: "0 */1 * * *"
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 3
@@ -80,7 +80,7 @@ spec:
                 - /bin/bash
                 - -c
                 - |
-                  kubectl get -A ephemeralrunner -o jsonpath='{range .items[?(@.status.reason=="TooManyPodFailures")]}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}'|awk '{ print "kubectl delete ephemeralrunner" " -n " $1 " " $2 }'|xargs -P4 -I{} sh -c "{}"
+                  kubectl get -A ephemeralrunner --sort-by=.metadata.creationTimestamp -o jsonpath='{range .items[?(@.status.reason=="TooManyPodFailures")]}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}'|awk '{ print "kubectl delete ephemeralrunner" " -n " $1 " " $2 }'|xargs -P4 -I{} sh -c "{}"
 ---
 apiVersion: batch/v1
 kind: CronJob
