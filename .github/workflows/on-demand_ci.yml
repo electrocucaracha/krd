@@ -44,9 +44,13 @@ jobs:
             gvisor_enabled: true
             youki_enabled: true
           - enable_tests: true
-            krew_plugins_list: "virt"
             metallb_enabled: true
-            int_tests: "metallb istio kubevirt knative longhorn topolvm"
+            int_tests: "metallb istio"
+          - enable_tests: true
+            krew_plugins_list: "virt"
+            int_tests: "kubevirt topolvm"
+          - enable_tests: true
+            int_tests: "knative longhorn"
           - test_multinode: true
             run_conformance_tools: true
           - enable_tests: true
