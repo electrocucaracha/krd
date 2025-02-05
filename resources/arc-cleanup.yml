@@ -85,7 +85,7 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: virtualmachineinstances-garbage-collector
+  name: succeeded-vmis-garbage-collector
   namespace: arc-system
 spec:
   schedule: "*/15 * * * *"
@@ -106,3 +106,28 @@ spec:
                 - -c
                 - |
                   kubectl get -A virtualmachineinstance -o jsonpath='{range .items[?(@.status.phase=="Succeeded")]}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}'|awk '{ print "kubectl delete virtualmachineinstance" " -n " $1 " " $2 }'|xargs -P4 -I{} sh -c "{}"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: failed-vmis-garbage-collector
+  namespace: arc-system
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          serviceAccount: cleaner
+          containers:
+            - name: kubectl
+              image: alpine/k8s:1.32.0
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  kubectl get -A virtualmachineinstance -o jsonpath='{range .items[?(@.status.phase=="Failed")]}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}'|awk '{ print "kubectl delete virtualmachineinstance" " -n " $1 " " $2 }'|xargs -P4 -I{} sh -c "{}"
