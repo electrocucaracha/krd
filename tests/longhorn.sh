@@ -18,6 +18,7 @@ source _functions.sh
 source _assertions.sh
 
 function cleanup {
+    kubectl get pvc,pv
     kubectl delete -f resources/longhorn/
 }
 
@@ -27,7 +28,7 @@ info "===== Test started ====="
 
 kubectl apply -f resources/longhorn/
 
-kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/pv-claim
+kubectl wait --for=jsonpath='{.status.phase}'=Bound pvc/pv-claim --timeout=5m
 assert_contains "$(kubectl get pv --no-headers)" 'pv-claim' "Persistent volume claim has not bind properly"
 
 info "===== Test completed ====="
