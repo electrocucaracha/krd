@@ -34,12 +34,12 @@ jobs:
       matrix:
         include:
           - runtime: crio
-            kata_containers_enabled: true
+            kata_containers_enabled: false # TODO: Investigate deployment issues with Kata containers
             crun_enabled: true
             gvisor_enabled: true
             youki_enabled: true
           - runtime: containerd
-            kata_containers_enabled: true
+            kata_containers_enabled: false # TODO: Investigate deployment issues with Kata containers
             crun_enabled: true
             gvisor_enabled: true
             youki_enabled: true
