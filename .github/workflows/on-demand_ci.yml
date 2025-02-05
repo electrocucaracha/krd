@@ -34,7 +34,7 @@ jobs:
       matrix:
         include:
           - runtime: crio
-            kata_containers_enabled: false # TODO: Troubleshoot this scenario (CRI-O + Kata containers) and possible solutions
+            kata_containers_enabled: true
             crun_enabled: true
             gvisor_enabled: true
             youki_enabled: true
@@ -66,6 +66,8 @@ jobs:
           container-runtime: ${{ matrix.runtime }}
           kata-containers-enabled: ${{ matrix.kata_containers_enabled }}
           crun-enabled: ${{ matrix.crun_enabled }}
+          gvisor-enabled: ${{ matrix.gvisor_enabled }}
+          youki-enabled: ${{ matrix.youki_enabled }}
           enable-tests: ${{ matrix.enable_tests }}
           krew-plugins-list: ${{ matrix.krew_plugins_list }}
           metallb-enabled: ${{ matrix.metallb_enabled }}
