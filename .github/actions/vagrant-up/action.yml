@@ -142,4 +142,3 @@ runs:
       shell: bash
       run: |
         VBoxManage list runningvms --long
-        cat ~/VirtualBox\ VMs/*/Logs/*.log
