@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
       - name: Setup Go
-        uses: actions/setup-go@3041bf56c941b39c61721a86cd11f3bb1338122a # 5.2.0
+        uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # 5.3.0
         with:
           go-version: ">=1.20.0"
       - name: Install dependencies
@@ -32,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
       - name: Check broken links
-        uses: gaurav-nelson/github-action-markdown-link-check@d53a906aa6b22b8979d33bc86170567e619495ec # 1.0.15
+        uses: gaurav-nelson/github-action-markdown-link-check@636e17b35a5803e014b7272d9e46a8262705416a # 1.0.16
   check-super-linter:
     name: Check syntax (super-linter)
     runs-on: ubuntu-latest

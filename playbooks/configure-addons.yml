@@ -20,7 +20,7 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==31.0.0
+        name: kubernetes==32.0.0
   roles:
     - sriov_cni
 - name: Install SR-IOV Network Device Plugin
@@ -36,7 +36,7 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==31.0.0
+        name: kubernetes==32.0.0
   roles:
     - sriov_plugin
 - name: Install Node Feature Discovery add-on
@@ -50,7 +50,7 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==31.0.0
+        name: kubernetes==32.0.0
   roles:
     - nfd
 - name: Label worker nodes with pmem devices
@@ -64,7 +64,7 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==31.0.0
+        name: kubernetes==32.0.0
     - name: Check if pmem device exists
       ansible.builtin.stat:
         path: /dev/pmem0
@@ -92,7 +92,7 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==31.0.0
+        name: kubernetes==32.0.0
   tags: pmem
   roles:
     - role: andrewrothstein.gcc-toolbox
@@ -196,6 +196,6 @@
       when: ansible_distribution == 'Ubuntu'
     - name: Install kubernetes python package
       ansible.builtin.pip:
-        name: kubernetes==31.0.0
+        name: kubernetes==32.0.0
   roles:
     - qat_plugin
