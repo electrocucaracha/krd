@@ -8,13 +8,17 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
 documentation:
-  - docs/*
-  - "*.md"
+  - changed-files:
+      - any-glob-to-any-file: ['docs/*', '*.md']
 tests:
-  - tests/*
+  - changed-files:
+      - any-glob-to-any-file: ['tests/*']
 ci:
-  - .github/*
+  - changed-files:
+      - any-glob-to-any-file: ['.github/*']
 all-in-one:
-  - aio.sh
+  - changed-files:
+      - any-glob-to-any-file: ['aio.sh']
 addons:
-  - playbooks/*
+  - changed-files:
+      - any-glob-to-any-file: ['playbooks/*']
