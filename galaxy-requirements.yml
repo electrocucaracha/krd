@@ -20,10 +20,10 @@ roles:
     version: v1.4.2
 collections:
   - name: kubernetes.core
-    version: Max attempts reached
+    version: 5.0.0
   - name: community.docker
-    version: Max attempts reached
+    version: 4.3.0
   - name: ansible.posix
-    version: Max attempts reached
+    version: 2.0.0
   - name: community.general
-    version: Max attempts reached
+    version: 10.2.0
