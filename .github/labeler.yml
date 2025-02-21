@@ -9,16 +9,16 @@
 ##############################################################################
 documentation:
   - changed-files:
-      - any-glob-to-any-file: ['docs/*', '*.md']
+      - any-glob-to-any-file: ["docs/*", "*.md"]
 tests:
   - changed-files:
-      - any-glob-to-any-file: ['tests/*']
+      - any-glob-to-any-file: ["tests/*"]
 ci:
   - changed-files:
-      - any-glob-to-any-file: ['.github/*']
+      - any-glob-to-any-file: [".github/*"]
 all-in-one:
   - changed-files:
-      - any-glob-to-any-file: ['aio.sh']
+      - any-glob-to-any-file: ["aio.sh"]
 addons:
   - changed-files:
-      - any-glob-to-any-file: ['playbooks/*']
+      - any-glob-to-any-file: ["playbooks/*"]
