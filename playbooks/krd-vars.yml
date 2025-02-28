@@ -32,7 +32,7 @@ kubesphere_version: v4.1.2
 metallb_version: v0.14.9
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
-argocd_version: v2.14.2
+argocd_version: v2.14.3
 tekton_version: v0.75.0
 kubevirt_tekton_tasks_version: v0.24.0
 action_runner_controller_version: 0.10.1
