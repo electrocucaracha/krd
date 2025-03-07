@@ -32,7 +32,7 @@ click==8.1.8
     #   molecule
 click-help-colors==0.9.4
     # via molecule
-cryptography==44.0.1
+cryptography==44.0.2
     # via ansible-core
 enrich==1.2.7
     # via molecule
@@ -42,7 +42,7 @@ importlib-metadata==8.6.1
     # via ansible-lint
 iniconfig==2.0.0
     # via pytest
-jinja2==3.1.5
+jinja2==3.1.6
     # via
     #   ansible-core
     #   molecule
@@ -90,7 +90,7 @@ pycparser==2.22
     # via cffi
 pygments==2.19.1
     # via rich
-pytest==8.3.4
+pytest==8.3.5
     # via pytest-testinfra
 pytest-testinfra==10.1.1
     # via -r test-requirements.in
