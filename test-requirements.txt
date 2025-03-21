@@ -36,11 +36,11 @@ cryptography==44.0.2
     # via ansible-core
 enrich==1.2.7
     # via molecule
-filelock==3.17.0
+filelock==3.18.0
     # via ansible-lint
 importlib-metadata==8.6.1
     # via ansible-lint
-iniconfig==2.0.0
+iniconfig==2.1.0
     # via pytest
 jinja2==3.1.6
     # via
@@ -80,7 +80,7 @@ pathspec==0.12.1
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==4.3.6
+platformdirs==4.3.7
     # via black
 pluggy==1.5.0
     # via
@@ -132,7 +132,7 @@ wcmatch==10.0
     # via
     #   ansible-lint
     #   molecule
-yamllint==1.36.0
+yamllint==1.36.2
     # via
     #   -r test-requirements.in
     #   ansible-lint
