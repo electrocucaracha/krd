@@ -8,7 +8,7 @@ ansible-compat==25.1.4
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.18.3
+ansible-core==2.18.4
     # via
     #   ansible-compat
     #   ansible-lint
@@ -114,7 +114,7 @@ rich==13.9.4
     # via
     #   enrich
     #   molecule
-rpds-py==0.23.1
+rpds-py==0.24.0
     # via
     #   jsonschema
     #   referencing
@@ -126,13 +126,13 @@ subprocess-tee==0.4.2
     # via
     #   ansible-compat
     #   ansible-lint
-typing-extensions==4.12.2
+typing-extensions==4.13.0
     # via referencing
 wcmatch==10.0
     # via
     #   ansible-lint
     #   molecule
-yamllint==1.36.2
+yamllint==1.37.0
     # via
     #   -r test-requirements.in
     #   ansible-lint
