@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible-compat==25.1.4
+ansible-compat==25.1.5
     # via
     #   ansible-lint
     #   molecule
@@ -13,7 +13,7 @@ ansible-core==2.18.4
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==25.1.3
+ansible-lint==25.2.1
     # via -r test-requirements.in
 attrs==25.3.0
     # via
@@ -59,7 +59,7 @@ markupsafe==3.0.2
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-molecule==25.3.1
+molecule==25.4.0
     # via
     #   -r test-requirements.in
     #   molecule-plugins
@@ -92,7 +92,7 @@ pygments==2.19.1
     # via rich
 pytest==8.3.5
     # via pytest-testinfra
-pytest-testinfra==10.1.1
+pytest-testinfra==10.2.2
     # via -r test-requirements.in
 python-vagrant==1.0.0
     # via molecule-plugins
@@ -110,7 +110,7 @@ referencing==0.36.2
     #   jsonschema-specifications
 resolvelib==1.0.1
     # via ansible-core
-rich==13.9.4
+rich==14.0.0
     # via
     #   enrich
     #   molecule
@@ -126,7 +126,7 @@ subprocess-tee==0.4.2
     # via
     #   ansible-compat
     #   ansible-lint
-typing-extensions==4.13.0
+typing-extensions==4.13.1
     # via referencing
 wcmatch==10.0
     # via
