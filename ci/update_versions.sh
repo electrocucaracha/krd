@@ -57,7 +57,7 @@ function _get_latest_ansible_role {
 }
 
 function _get_latest_ansible_collection {
-    curl -sfL "https://galaxy.ansible.com/api/v2/collections/${1%.*}/${1#*.}/versions" | jq -r '.results[0].version'
+    curl -sfL "https://galaxy.ansible.com/api/v3/collections/${1%.*}/${1#*.}/versions" | jq -r '.data[0].version'
 }
 
 function _get_latest_docker_tag {
