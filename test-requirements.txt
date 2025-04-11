@@ -126,7 +126,7 @@ subprocess-tee==0.4.2
     # via
     #   ansible-compat
     #   ansible-lint
-typing-extensions==4.13.1
+typing-extensions==4.13.2
     # via referencing
 wcmatch==10.0
     # via
