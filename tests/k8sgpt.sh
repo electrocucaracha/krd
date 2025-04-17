@@ -1,7 +1,7 @@
 #!/bin/bash
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2024
+# Copyright (c) 2025
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
@@ -18,40 +18,16 @@ source _functions.sh
 source _assertions.sh
 
 function cleanup {
-    kubectl delete -f resources/gatekeeper
-    kubectl delete namespace opa-test
+    kubectl delete -f resources/broken-pod.yaml
 }
 
 # Setup
-kubectl apply -f resources/gatekeeper/template.yml
-sleep 5
-kubectl apply -f resources/gatekeeper/lb-constraint.yml
-if ! kubectl get namespaces/opa-test --no-headers -o custom-columns=name:.metadata.name; then
-    kubectl create namespace opa-test
-fi
 trap cleanup EXIT
 
 # Test
 info "===== Test started ====="
+kubectl apply -f resources/broken-pod.yaml
 
-# editorconfig-checker-disable
-cat <<EOF >/tmp/restricted.yaml
-kind: Service
-apiVersion: v1
-metadata:
-  name: lb-service
-  namespace: opa-test
-spec:
-  type: LoadBalancer
-  selector:
-    app: opa-test
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8080
-EOF
-# editorconfig-checker-enable
-
-assert_contains "$(kubectl apply -f /tmp/restricted.yaml 2>&1 || :)" "Service type LoadBalancer are restricted" "OPA Gatekeeper didn't restrict the service creation using LoadBalancer type"
+assert_non_empty "$(kubectl get results.core.k8sgpt.ai -n k8sgpt-operator-system defaultbrokenpod)" "K8sGPT didn't generate a result object"
 
 info "===== Test completed ====="

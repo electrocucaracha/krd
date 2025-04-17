@@ -231,7 +231,9 @@ sed -i 's|dataDirHostPath: .*|dataDirHostPath: /var/lib/csi-block|g' ./tests/res
 wget -q -O ./resources/storageclass.yml "https://raw.githubusercontent.com/rook/rook/refs/tags/v$rook_version/deploy/examples/csi/rbd/storageclass.yaml"
 
 # Update K8sGPT resources
-sed -i "s/version: .*/version: v$(get_version github_release k8sgpt-ai/k8sgpt)/g" resources/k8sgpt-local.yml
+k8sgpt_version=$(get_version github_release k8sgpt-ai/k8sgpt)
+sed -i "s/version: .*/version: v$k8sgpt_version/g" resources/k8sgpt-localai.yml
+sed -i "s/version: .*/version: v$k8sgpt_version/g" resources/k8sgpt-ollama.yml
 
 # Update GitHub Action commit hashes
 gh_actions=$(grep -r "uses: [a-zA-Z\-]*/[\_a-z\-]*@" .github/ | sed 's/@.*//' | awk -F ': ' '{ print $3 }' | sort -u)
