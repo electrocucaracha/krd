@@ -327,3 +327,9 @@ function install_fluent {
     _add_helm_repo fluent https://fluent.github.io/helm-charts
     _install_chart fluent fluent/fluentd
 }
+
+# install_cnpg() - Installs CloudNativePG operator
+function install_cnpg {
+    _add_helm_repo cnpg https://cloudnative-pg.github.io/charts
+    _install_chart cnpg cnpg/cloudnative-pg
+}

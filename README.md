@@ -63,6 +63,7 @@ different scenarios. There are different setups located in the
 |    Longhorn    | Storage Operator                                |                            |   Tested    |
 |    TopoLVM     | Storage Operator                                |                            |   Tested    |
 |     Fluent     | Logging agent                                   |                            |   Tested    |
+| CloudNativePG  | PostgreSQL operator                             |                            |   Tested    |
 
 ## Quick Deployment
 

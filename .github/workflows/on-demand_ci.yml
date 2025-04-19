@@ -50,7 +50,7 @@ jobs:
             krew_plugins_list: "virt"
             int_tests: "kubevirt topolvm"
           - enable_tests: true
-            int_tests: "knative longhorn"
+            int_tests: "knative longhorn cnpg"
           - test_multinode: true
             run_conformance_tools: true
           - enable_tests: true
