@@ -9,6 +9,7 @@ balancer
 blockquote
 BPF
 Bugfixes
+CloudNativePG
 CNI
 COCOMO
 codebase
@@ -20,6 +21,7 @@ criproxy
 CrossSubnet
 CRUN
 CSI
+datasets
 DEVOPS
 Distros
 DNS
@@ -64,6 +66,8 @@ libndctl
 Libvirt
 Lifecycle
 Linter
+LiteLLM
+LLM
 LLMs
 LocalAI
 LOCALHOST
@@ -94,6 +98,7 @@ README
 rebase
 REPO
 RESOLVCONF
+Runtime
 runtimes
 Scc
 serverless

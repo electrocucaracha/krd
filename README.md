@@ -64,6 +64,7 @@ different scenarios. There are different setups located in the
 |    TopoLVM     | Storage Operator                                |                            |   Tested    |
 |     Fluent     | Logging agent                                   |                            |   Tested    |
 | CloudNativePG  | PostgreSQL operator                             |                            |   Tested    |
+|    LiteLLM     | Gateway LLM Provider                            |                            | Implemented |
 
 ## Quick Deployment
 

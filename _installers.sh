@@ -364,3 +364,13 @@ function install_tekton {
     ! command -v tkn >/dev/null && curl -fsSL http://bit.ly/install_pkg | PKG=tkn bash
     kubectl get crds virtualmachines.kubevirt.io >/dev/null && kubectl apply -f "https://github.com/kubevirt/kubevirt-tekton-tasks/releases/download/$(_get_version kubevirt_tekton_tasks)/kubevirt-tekton-tasks.yaml"
 }
+
+# install_litellm() - Install LiteLLM server
+function install_litellm {
+    install_cnpg
+
+    ! kubectl get namespaces litellm-system && kubectl create namespace litellm-system
+    ! kubectl get secrets -n litellm-system litellm-secrets && kubectl create secret generic litellm-secrets -n litellm-system --from-literal=LITELLM_MASTER_KEY="$KRD_LITELLM_MASTER_KEY"
+    kubectl apply -f "$KRD_FOLDER/resources/litellm.yml"
+    wait_for_pods litellm-system
+}
