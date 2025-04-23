@@ -46,7 +46,7 @@ jobs:
           VALIDATE_JSCPD: false
           VALIDATE_SHELL_SHFMT: false
           VALIDATE_CHECKOV: false
-          EDITORCONFIG_FILE_NAME: .editorconfig
+          EDITORCONFIG_FILE_NAME: .editorconfig-checker.json
           KUBERNETES_KUBECONFORM_OPTIONS: "-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml"
   check-tox:
     name: Check syntax (tox)
