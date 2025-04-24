@@ -33,7 +33,7 @@ spec:
               masquerade: {}
         resources:
           requests:
-            memory: 128Mi
+            memory: 64M
       networks:
         - name: default
           pod: {}
