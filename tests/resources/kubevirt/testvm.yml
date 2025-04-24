@@ -16,7 +16,6 @@ spec:
   template:
     metadata:
       labels:
-        kubevirt.io/size: tiny #  tiny(1 core, 1 Gi memory), small (1 core, 2 Gi memory), medium (1 core, 4 Gi memory), large (2 cores, 8 Gi memory).
         kubevirt.io/domain: testvm
     spec:
       domain:
@@ -33,7 +32,7 @@ spec:
               masquerade: {}
         resources:
           requests:
-            memory: 128Mi
+            memory: 64M
       networks:
         - name: default
           pod: {}
