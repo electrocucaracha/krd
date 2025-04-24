@@ -235,6 +235,9 @@ k8sgpt_version=$(get_version github_release k8sgpt-ai/k8sgpt)
 sed -i "s/version: .*/version: v$k8sgpt_version/g" resources/k8sgpt-localai.yml
 sed -i "s/version: .*/version: v$k8sgpt_version/g" resources/k8sgpt-ollama.yml
 
+# Update GitHub Runner
+sed -i "s/default: .*/default: $(get_version github_release actions/runner)/g" resources/ubuntu-runner-pipeline.yml
+
 # Update GitHub Action commit hashes
 gh_actions=$(grep -r "uses: [a-zA-Z\-]*/[\_a-z\-]*@" .github/ | sed 's/@.*//' | awk -F ': ' '{ print $3 }' | sort -u)
 for action in $gh_actions; do

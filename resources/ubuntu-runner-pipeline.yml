@@ -22,7 +22,7 @@ spec:
     - name: runner-version
       description: GitHub tarball Runner version
       type: string
-      default: 2.321.0
+      default: 2.323.0
   tasks:
     - name: pull-ubuntu-img
       params:
