@@ -28,6 +28,22 @@ Optional Argument:
 EOF
 }
 
+# setup_sysctl() - Sets a kernel value
+function setup_sysctl {
+    local key="$1"
+    local value="$2"
+
+    if [ "$(sysctl -n "$key")" != "$value" ]; then
+        if [ -d /etc/sysctl.d ]; then
+            echo "$key=$value" | sudo tee "/etc/sysctl.d/99-$key.conf"
+        elif [ -f /etc/sysctl.conf ]; then
+            echo "$key=$value" | sudo tee --append /etc/sysctl.conf
+        fi
+
+        sudo sysctl "$key=$value"
+    fi
+}
+
 # mount_external_partition() - Create partition and mount the external volume
 function mount_external_partition {
     local dev_name=$1
@@ -286,6 +302,10 @@ disable_swap
 if [ "$KRD_HUGEPAGES_ENABLED" == "true" ]; then
     enable_hugepages
 fi
+# Increase inotify resources to prevent failures on fsnotify watcher when run `kubectl logs`
+setup_sysctl "fs.inotify.max_user_watches" "2099999999"
+setup_sysctl "fs.inotify.max_user_instances" "2099999999"
+setup_sysctl "fs.inotify.max_queued_events" "2099999999"
 # rbd - Rook Ceph requires a Linux kernel built with the RBD module
 # ip6table_filter - Ensure Filter IP6 table exists
 for kmod in rbd ip6table_filter; do
