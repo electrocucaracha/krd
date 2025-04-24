@@ -46,7 +46,10 @@ spec:
           cores: 4
         resources:
           requests:
-            memory: 16G
+            overcommitGuestOverhead: true
+            memory: 8G
+        memory:
+          guest: 16G
       networks:
         - name: default
           pod: {}
