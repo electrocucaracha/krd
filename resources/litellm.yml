@@ -155,6 +155,7 @@ spec:
       port: 4000
       targetPort: 4000
 ---
+# NOTE: Enable "Local Network" access for Firefox and Chrome. In Mac System Settings > Privacy & Security > Local Network > Firefox (set to true)
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
