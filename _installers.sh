@@ -299,6 +299,9 @@ function install_kubevirt {
         sleep $((attempt_counter * 15))
     done
     wait_for_pods kubevirt
+
+    # CPU Allocation Ratio
+    kubectl patch kubevirts.kubevirt.io -n kubevirt kubevirt --type merge -p "{\"spec\" :{\"configuration\": {\"developerConfiguration\": {\"cpuAllocationRatio\": ${KRD_KUBEVIRT_CPU_ALLOCATION_RATIO-5} }}}}"
     _install_containerized_data_importer
 }
 
