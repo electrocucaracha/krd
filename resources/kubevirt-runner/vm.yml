@@ -45,8 +45,11 @@ spec:
           model: host-passthrough
           cores: 4
         resources:
+          overcommitGuestOverhead: true
           requests:
-            memory: 16G
+            memory: 8G
+        memory:
+          guest: 16G
       networks:
         - name: default
           pod: {}
