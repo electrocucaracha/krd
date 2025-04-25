@@ -17,7 +17,7 @@ source _common.sh
 
 if [ "$($VAGRANT_CMD status installer | grep "^installer" | awk '{ print $2}')" != "running" ]; then
     if [[ ${HOST_INSTALLER:-false} == "true" ]]; then
-        KRD_DEBUG=true ./krd_command.sh -a install_k8s
+        ./krd_command.sh -a install_k8s
     else
         $VAGRANT_CMD_UP installer
     fi

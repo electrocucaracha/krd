@@ -30,7 +30,6 @@ jobs:
       ( github.event_name == 'pull_request_review' && github.event.review.state == 'approved' ) || github.event_name != 'pull_request_review'
     runs-on: ubuntu-22.04
     env:
-      KRD_DEBUG: true
       KRD_ANSIBLE_DEBUG: true
       KRD_MULTUS_ENABLED: true
       PKG_KREW_PLUGINS_LIST: "cert-manager"

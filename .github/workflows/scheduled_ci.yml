@@ -18,7 +18,6 @@ jobs:
     name: Check All-in-One setup in a Ubuntu Focal virtual environment
     runs-on: ubuntu-22.04
     env:
-      KRD_DEBUG: true
       KRD_DASHBOARD_ENABLED: true
       KRD_ANSIBLE_DEBUG: true
       KRD_CONTAINER_RUNTIME: crio
