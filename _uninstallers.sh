@@ -164,7 +164,9 @@ function uninstall_kubewarden {
 
 # uninstall_longhorn() - Uninstall Longhorn services
 function uninstall_longhorn {
+    kubectl patch settings.longhorn.io -n longhorn-system deleting-confirmation-flag --type merge -p '{"value": "true"}'
     _uninstall_helm longhorn
+    _delete_namespace longhorn-system
 }
 
 # uninstall_topolvm() - Uninstall TopoLVM services
