@@ -233,7 +233,8 @@ wget -q -O ./resources/storageclass.yml "https://raw.githubusercontent.com/rook/
 # Update K8sGPT resources
 k8sgpt_version=$(get_version github_release k8sgpt-ai/k8sgpt)
 sed -i "s/version: .*/version: v$k8sgpt_version/g" resources/k8sgpt-localai.yml
-sed -i "s/version: .*/version: v$k8sgpt_version/g" resources/k8sgpt-ollama.yml
+sed -i "s/version: .*/version: v$k8sgpt_version/g" resources/k8sgpt-openai.yml
+sed -i "s/version: .*/version: v$k8sgpt_version/g" resources/k8sgpt-openai_incluster.yml
 
 # Update GitHub Runner
 sed -i "s/default: .*/default: $(get_version github_release actions/runner)/g" resources/ubuntu-runner-pipeline.yml

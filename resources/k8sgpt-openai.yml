@@ -1,0 +1,68 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2025
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+apiVersion: core.k8sgpt.ai/v1alpha1
+kind: K8sGPT
+metadata:
+  name: k8sgpt-openai
+  namespace: k8sgpt-operator-system
+spec:
+  ai:
+    model: llama3.2
+    backend: openai
+    baseUrl: http://nuc10-node08/litellm
+    enabled: true
+    secret:
+      name: k8sgpt-sample-secret
+      key: openai-api-key
+  version: v0.4.13
+  noCache: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nuc10-node08
+  namespace: k8sgpt-operator-system
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: nuc10-node08-01
+  namespace: k8sgpt-operator-system
+  labels:
+    kubernetes.io/service-name: nuc10-node08
+addressType: IPv4
+ports:
+  - name: http
+    appProtocol: http
+    protocol: TCP
+    port: 80
+endpoints:
+  - addresses:
+      - "192.168.1.101"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: k8sgpt-openai-role
+  namespace: k8sgpt-operator-system
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - "configmaps"
+    verbs:
+      - "get"
+      - "list"

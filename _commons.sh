@@ -481,7 +481,7 @@ function _uninstall_app {
     if command -v argocd >/dev/null; then
         _run_argocd_cmd app delete "$app" --yes --cascade
     else
-        _uninstall_chart "$app"
+        "_uninstall_chart_$app"
     fi
 }
 

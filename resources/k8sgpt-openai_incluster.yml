@@ -1,7 +1,7 @@
 ---
 # SPDX-license-identifier: Apache-2.0
 ##############################################################################
-# Copyright (c) 2024
+# Copyright (c) 2025
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Apache License, Version 2.0
 # which accompanies this distribution, and is available at
@@ -10,13 +10,30 @@
 apiVersion: core.k8sgpt.ai/v1alpha1
 kind: K8sGPT
 metadata:
-  name: k8sgpt-ollama
+  name: k8sgpt-openai
   namespace: k8sgpt-operator-system
 spec:
   ai:
     model: llama3.2
-    backend: localai
-    baseUrl: http://localhost:11434/v1
+    backend: openai
+    baseUrl: http://litellm-service.litellm-system.svc.cluster.local:4000/litellm
     enabled: true
+    secret:
+      name: k8sgpt-sample-secret
+      key: openai-api-key
   version: v0.4.13
   noCache: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: k8sgpt-openai-role
+  namespace: k8sgpt-operator-system
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - "configmaps"
+    verbs:
+      - "get"
+      - "list"

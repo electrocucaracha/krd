@@ -273,6 +273,17 @@ function _install_chart_local-ai {
 function _install_chart_k8sgpt-operator {
     _add_helm_repo k8sgpt https://charts.k8sgpt.ai/
     _install_chart k8sgpt-operator k8sgpt/k8sgpt-operator
+
+    # Connect with LiteLLM
+    if [ -n "${KRD_K8SGPT_OPENAI_TOKEN-}" ]; then
+        kubectl create secret generic k8sgpt-sample-secret --from-literal=openai-api-key="$KRD_K8SGPT_OPENAI_TOKEN" -n k8sgpt-operator-system
+        if kubectl get services -n litellm-system litellm-service >/dev/null; then
+            kubectl apply -f resources/k8sgpt-openai_incluster.yml
+        else
+            kubectl apply -f resources/k8sgpt-openai.yml
+        fi
+        kubectl create clusterrolebinding k8sgpt-openai-role -n k8sgpt-operator-system --serviceaccount k8sgpt-operator-system:k8sgpt-k8sgpt-operator-system --clusterrole=k8sgpt-openai-role || :
+    fi
 }
 
 function _install_arc_controller {

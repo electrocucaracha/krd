@@ -381,6 +381,7 @@ Vagrant.configure("2") do |config|
         KRD_FLANNEL_BACKEND_TYPE: ENV.fetch("KRD_FLANNEL_BACKEND_TYPE", nil),
         KRD_KUBE_PROXY_MODE: ENV.fetch("KRD_KUBE_PROXY_MODE", nil),
         KRD_DASHBOARD_ENABLED: ENV.fetch("KRD_DASHBOARD_ENABLED", nil),
+        KRD_K8SGPT_OPENAI_TOKEN: ENV.fetch("KRD_K8SGPT_OPENAI_TOKEN", nil),
         PKG_KREW_PLUGINS_LIST: ENV.fetch("PKG_KREW_PLUGINS_LIST", nil),
         KRD_DNS_ETCHOSTS_DICT: etchosts_dict.to_s
       }

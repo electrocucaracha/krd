@@ -178,3 +178,9 @@ function uninstall_topolvm {
 function uninstall_fluent {
     _uninstall_helm fluent
 }
+
+# _uninstall_chart_k8sgpt-operator() - Uninstall K8Sgpt Operator
+function _uninstall_chart_k8sgpt-operator {
+    _uninstall_helm k8sgpt-operator
+    _delete_namespace k8sgpt-operator-system
+}
