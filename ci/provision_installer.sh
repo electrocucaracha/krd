@@ -15,12 +15,8 @@ set -o pipefail
 # shellcheck source=ci/_common.sh
 source _common.sh
 
-if [ "$($VAGRANT_CMD status installer | grep "^installer" | awk '{ print $2}')" != "running" ]; then
-    if [[ ${HOST_INSTALLER:-false} == "true" ]]; then
-        ./krd_command.sh -a install_k8s
-    else
-        $VAGRANT_CMD_UP installer
-    fi
+if [ "$($VAGRANT_CMD status installer | grep "^installer" | awk '{ print $2}')" != "running" ] && [[ ${HOST_INSTALLER-false} == "false" ]]; then
+    $VAGRANT_CMD_UP installer
 else
     run_installer_cmd . ./krd_command.sh -a install_k8s
 fi

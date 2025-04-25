@@ -98,6 +98,12 @@ runs:
         TEST_MULTINODE: ${{ inputs.test-multinode }}
       working-directory: ./ci
       run: ./bootstrap.sh
+    - name: Override All-in-One IP Address in Ansible Inventory
+      if: inputs.host-installer == 'true' && inputs.test-multinode != 'true'
+      shell: bash
+      run: |
+        ip=$(vagrant ssh-config aio | grep 'HostName' | awk '{print $2}' | tr '\\n' ' ' | tr -d '[:space:]')
+        sed -i "s/10.10.16.3/$ip/g" inventory/hosts.ini
     - name: Deploy Kubernetes Cluster
       shell: bash
       env:

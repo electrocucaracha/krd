@@ -18,7 +18,7 @@ source ../tests/_utils.sh
 # run_installer_cmd() - Runs a specific command on the installer node
 function run_installer_cmd {
     if [[ ${HOST_INSTALLER:-false} == "true" ]]; then
-        pushd "${1}" >/dev/null
+        pushd "$(git rev-parse --show-toplevel)/${1}" >/dev/null
         "${@:2}"
         popd >/dev/null
     else
