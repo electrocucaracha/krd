@@ -110,15 +110,20 @@ function uninstall_knative {
 # uninstall_kubevirt() - Uninstall KubeVirt servcies
 function uninstall_kubevirt {
     kubevirt_version=$(_get_version kubevirt)
+    containerized_data_importer_version=$(_get_version containerized_data_importer)
 
-    kubectl delete kubevirt kubevirt -n kubevirt
+    kubectl delete kubevirt kubevirt -n kubevirt --ignore-not-found --wait=false || :
     kubectl delete -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-operator.yaml" --ignore-not-found --wait=false || :
     if kubectl api-resources | grep -q kubevirt; then
         kubectl delete -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-cr.yaml" --ignore-not-found --wait=false || :
     fi
 
+    kubectl delete -f "https://github.com/kubevirt/containerized-data-importer/releases/download/${containerized_data_importer_version}/cdi-operator.yaml" --ignore-not-found --wait=false || :
+    kubectl delete -f "https://github.com/kubevirt/containerized-data-importer/releases/download/${containerized_data_importer_version}/cdi-cr.yaml" --ignore-not-found --wait=false || :
+
     _uninstall_krew_plugin virt
     _delete_namespace kubevirt
+    _delete_namespace cdi
 }
 
 # uninstall_virtink() - Uninstall Virtink servcies
