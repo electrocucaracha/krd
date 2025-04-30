@@ -162,7 +162,7 @@ function uninstall_kyverno {
 
 # uninstall_kubewarden() - Uninstall Kubewarden services
 function uninstall_kubewarden {
-    _uninstall_helm kubewarden-controller
+    _uninstall_helm kubewarden-controllera || :
     _uninstall_helm kubewarden-crds
     _delete_namespace kubewarden-system
 }
@@ -188,4 +188,11 @@ function uninstall_fluent {
 function _uninstall_chart_k8sgpt-operator {
     _uninstall_helm k8sgpt-operator
     _delete_namespace k8sgpt-operator-system
+}
+
+# uninstall_kagent() - Uninstall kagent service
+function uninstall_kagent {
+    _uninstall_helm kagent || :
+    _uninstall_helm kagent-crds
+    _delete_namespace kagent-system
 }

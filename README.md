@@ -65,6 +65,7 @@ different scenarios. There are different setups located in the
 |     Fluent     | Logging agent                                   |                            |   Tested    |
 | CloudNativePG  | PostgreSQL operator                             |                            |   Tested    |
 |    LiteLLM     | Gateway LLM Provider                            |                            | Implemented |
+|     kagent     | Agentic AI KRM platform                         |                            | Implemented |
 
 ## Quick Deployment
 
