@@ -22,7 +22,7 @@ collections:
   - name: kubernetes.core
     version: 5.2.0
   - name: community.docker
-    version: 4.5.2
+    version: 4.6.0
   - name: ansible.posix
     version: 2.0.0
   - name: community.general

@@ -18,5 +18,5 @@ spec:
     backend: localai
     baseUrl: http://localhost:11434/v1
     enabled: true
-  version: v0.4.15
+  version: v0.4.16
   noCache: false
