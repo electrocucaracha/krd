@@ -352,7 +352,6 @@ function install_kagent {
     kubectl apply -f resources/kagent/
 
     # TODO: Requires to pass the model info values (https://microsoft.github.io/autogen/stable/reference/python/autogen_ext.models.openai.html#autogen_ext.models.openai.OpenAIChatCompletionClient)
-    return
     # Connect with LiteLLM
     if [ -n "${KRD_KAGENT_OPENAI_TOKEN-}" ]; then
         if kubectl get services -n litellm-system litellm-service >/dev/null; then
