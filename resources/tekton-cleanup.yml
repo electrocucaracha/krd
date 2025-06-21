@@ -1,0 +1,64 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2025
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cleaner
+  namespace: tekton-pipelines
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cleaner
+rules:
+  - apiGroups: ["tekton.dev"]
+    resources: ["pipelineruns"]
+    verbs: ["delete", "get", "watch", "list"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cleaner-to-cleaner
+roleRef:
+  kind: ClusterRole
+  name: cleaner
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+  - kind: ServiceAccount
+    name: cleaner
+    namespace: tekton-pipelines
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup-pipelineruns
+  namespace: tekton-pipelines
+spec:
+  schedule: "*/15 * * * *"
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          serviceAccount: cleaner
+          containers:
+            - name: kubectl
+              image: alpine/k8s:1.32.0
+              env:
+                - name: NUM_TO_KEEP
+                  value: "3"
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  kubectl get -A pipelinerun -o jsonpath='{range .items[?(@.status.completionTime)]}{.status.completionTime}{" "}{.metadata.namespace}{" "}{.metadata.name}{"\n"}{end}'|sort|head -n -${NUM_TO_KEEP}|awk '{ print "kubectl delete pipelinerun" " -n " $2 " " $3 }'|xargs -P4 -I{} sh -c "{}"

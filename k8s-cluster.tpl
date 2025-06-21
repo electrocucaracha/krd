@@ -42,7 +42,7 @@ kube_network_plugin: $KRD_NETWORK_PLUGIN
 kubeconfig_localhost: true
 
 # Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.31.4
+kube_version: 1.31.4
 
 # Kube-proxy proxyMode configuration.
 # NOTE: Ipvs is based on netfilter hook function, but uses hash table as the underlying data structure and

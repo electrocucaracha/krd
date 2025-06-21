@@ -216,7 +216,7 @@ sed -i "s/nfd_version:.*/nfd_version: v$(get_version github_release kubernetes-s
 update_pip_pkg "kubernetes" "$(get_version github_release kubernetes-client/python)"
 
 # Update Kubespray Default variables
-sed -i "s/{KRD_CERT_MANAGER_VERSION:-.*/{KRD_CERT_MANAGER_VERSION:-v$(get_version github_release jetstack/cert-manager)}/g" ./defaults.env
+sed -i "s/{KRD_CERT_MANAGER_VERSION:-.*/{KRD_CERT_MANAGER_VERSION:-$(get_version github_release jetstack/cert-manager)}/g" ./defaults.env
 
 # Update Checkov
 wget -q -O ./resources/checkov-job.yaml https://raw.githubusercontent.com/bridgecrewio/checkov/master/kubernetes/checkov-job.yaml

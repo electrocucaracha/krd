@@ -139,7 +139,7 @@ _v1.18.10_ using the Kubespray version _v2.14.2_:
 | KRD_ANSIBLE_DEBUG                     | false                                          | Enables ansible verbose execution                                               |
 | PKG_DEBUG                             | false                                          | Enables cURL package installer verbose execution                                |
 | KRD_KUBE_VERSION                      | v1.31.4                                        | Specifies the Kubernetes version to be upgraded                                 |
-| KRD_KUBESPRAY_VERSION                 | v2.27.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
+| KRD_KUBESPRAY_VERSION                 | v2.28.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | `https://github.com/kubernetes-sigs/kubespray` | Specifies the Git repository to fetch the Kubespray's source code               |
 | KRD_ENABLE_TESTS                      | false                                          | Enables the functional tests during the deployment process                      |
 | KRD_HELM_CHART                        |                                                | Specifies the Helm chart to be installed                                        |
