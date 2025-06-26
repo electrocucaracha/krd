@@ -31,12 +31,13 @@ export galaxy_base_path=/tmp/galaxy/
 function _get_kube_version {
     if command -v kubectl >/dev/null && kubectl version >/dev/null 2>&1; then
         kubectl version -o yaml | grep gitVersion | awk 'FNR==2{ print $2}'
-    elif [ -f "$KRD_FOLDER/k8s_cluster.yml" ]; then
-        grep kube_version "$KRD_FOLDER/k8s_cluster.yml" | awk '{ print $2}'
+    elif [ -f "$krd_inventory_folder/group_vars/k8s_cluster.yml" ]; then
+        version=$(grep kube_version "$krd_inventory_folder/group_vars/k8s_cluster.yml" | awk '{ print $2}')
+        echo "v${version#v}"
     elif [ -n "${KRD_KUBE_VERSION-}" ]; then
-        echo "${KRD_KUBE_VERSION}"
+        echo "v${KRD_KUBE_VERSION#v}"
     else
-        echo "1.32.5"
+        echo "v1.32.5"
     fi
 }
 
@@ -166,7 +167,11 @@ EOF
     export KUBESPRAY_ETCD_KUBELET_DEPLOYMENT_TYPE
     envsubst <k8s-cluster.tpl >"$krd_inventory_folder/group_vars/k8s_cluster.yml"
     if [ -n "${KRD_KUBE_VERSION-}" ]; then
-        sed -i "s/^kube_version: .*$/kube_version: ${KRD_KUBE_VERSION}/" "$krd_inventory_folder/group_vars/k8s_cluster.yml"
+        if _vercmp "${kubespray_version#*v}" '>=' "2.28.0"; then
+            sed -i "s/^kube_version: .*$/kube_version: ${KRD_KUBE_VERSION#v}/" "$krd_inventory_folder/group_vars/k8s_cluster.yml"
+        else
+            sed -i "s/^kube_version: .*$/kube_version: v${KRD_KUBE_VERSION#v}/" "$krd_inventory_folder/group_vars/k8s_cluster.yml"
+        fi
     fi
     if [ -n "${KRD_MANUAL_DNS_SERVER-}" ]; then
         sed -i "s/^manual_dns_server: .*$/manual_dns_server: $KRD_MANUAL_DNS_SERVER/" "$krd_inventory_folder/group_vars/k8s_cluster.yml"
