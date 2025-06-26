@@ -1,4 +1,5 @@
 ADDONS
+Agentic
 aio
 Allocatable
 ANSIBLE
@@ -48,10 +49,12 @@ IPIP
 iptables
 IPVS
 ISTIO
+kagent
 KATA
 Kiali
 Knative
 KRD
+KRM
 KUBE
 KUBELET
 KUBERNETES
