@@ -203,9 +203,9 @@ Thanks to everyone who has contributed so far!
 [11]: https://kubernetes.github.io/ingress-nginx/
 [12]: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
 [13]: https://katacontainers.io/
-[14]: https://kubesphere.io/docs/pluggable-components/devops/
+[14]: https://kubesphere.io/docs/11-use-extensions/01-devops/
 [15]: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-[16]: https://kubesphere.io/docs/pluggable-components/service-mesh/
+[16]: https://kubesphere.io/docs/11-use-extensions/03-service-mesh/
 [17]: https://www.kernel.org/doc/html/latest/admin-guide/mm/hugetlbpage.html
 [18]: https://github.com/containers/crun
 [19]: https://metallb.universe.tf/
