@@ -14,124 +14,103 @@
 
 ## Summary
 
-This project offers a reference for deploying a Kubernetes cluster.
-Its ansible playbooks allow to provision a deployment on Bare-metal
-or Virtual Machines.
+KRD (Kubernetes Reference Deployment) is a framework for easily deploying Kubernetes clusters on bare-metal or virtual machines using Ansible.
+It provides a configurable and extensible platform for validating Cloud Native technologies across various Linux distributions.
 
-The _POD Descriptor File (PDF)_ is a YAML file which defines the setup used by
-KRD. The [default PDF file](config/default.yml) can be overwritten to try
-different scenarios. There are different setups located in the
-[samples folder](config/samples) which can be used.
+A central concept in KRD is the use of the POD Descriptor File (PDF)—a YAML file that defines your cluster configuration.
+You can start with the [default configuration](config/default.yml) or explore [the sample setups](config/samples) for advanced scenarios.
 
-## Linux Distros Supported
+## Supported Linux Distributions
 
-| Name     |   Version   |
-| :------- | :---------: |
-| Ubuntu   | 20.04/22.04 |
-| openSUSE |    Leap     |
-| Fedora   | 37/38/39/40 |
+| Distribution |   Version   |
+| :----------- | :---------: |
+| Ubuntu       | 20.04/22.04 |
+| openSUSE     |    Leap     |
+| Fedora       | 37/38/39/40 |
 
-## Components
+## Included Components
 
-|      Name      | Description                                     | Source                     |   Status    |
-| :------------: | :---------------------------------------------- | :------------------------- | :---------: |
-|   Kubernetes   | Base Kubernetes deployment                      | [kubespray][1]             |    Done     |
-|    Virtlet     | Allows to run VMs                               | [configure-virtlet.yml][3] |   Tested    |
-|    Kubevirt    | Allows to run VMs                               |                            |   Tested    |
-|    Virtink     | Allows to run VMs                               |                            |   Tested    |
-|     Multus     | Provides Multiple Network support in a pod      |                            |   Tested    |
-|      NFD       | Node feature discovery                          | [nfd role][4]              |   Tested    |
-|     Istio      | Service Mesh platform                           |                            |   Tested    |
-|      PMEM      | Persistent Memory CSI                           | [pmem role][6]             | Implemented |
-|      QAT       | QuickAssist Technology Plugin                   | [qat_plugin role][8]       |   Tested    |
-|     SR-IOV     | Single Root Input/Output Virtualization Plugin  | [sriov_plugin role][9]     | Implemented |
-|    Knative     | Platform for managing serverless workloads      |                            |   Tested    |
-|      Kong      | Ingress Controller                              |                            |   Tested    |
-|    HAProxy     | Ingress Controller                              |                            |   Tested    |
-|    MetalLB     | Provides a network load-balancer implementation |                            |   Tested    |
-|     Falco      | Deploys a Falco services                        |                            |   Tested    |
-|      Rook      | Storage Operator                                |                            |   Tested    |
-| OPA Gatekeeper | Policy Controller                               |                            |   Tested    |
-|    Kyverno     | Kubernetes Native Policy Management             |                            |   Tested    |
-|   Kubewarden   | Kubernetes Native Policy Management             |                            |   Tested    |
-|  kube-monkey   | Netflix's Chaos Monkey for Kubernetes clusters  |                            | Implemented |
-|     Nephio     | Management platform to on-board NFs at scale    |                            | Implemented |
-|    LocalAI     | Allows to run LLMs locally                      |                            | Implemented |
-|     K8SGPT     | Scans K8s clusters for diagnosing issues        |                            | Implemented |
-|     ArgoCD     | Declarative GitOps continuous delivery tool     |                            | Implemented |
-|     Tekton     | CI/CD system                                    |                            | Implemented |
-|    Longhorn    | Storage Operator                                |                            |   Tested    |
-|    TopoLVM     | Storage Operator                                |                            |   Tested    |
-|     Fluent     | Logging agent                                   |                            |   Tested    |
-| CloudNativePG  | PostgreSQL operator                             |                            |   Tested    |
-|    LiteLLM     | Gateway LLM Provider                            |                            | Implemented |
-|     kagent     | Agentic AI KRM platform                         |                            | Implemented |
+KRD integrates a wide range of Kubernetes-related components for testing, benchmarking, or production experimentation:
+
+|   Component    | Description                         | Source                     |     Status     |
+| :------------: | :---------------------------------- | :------------------------- | :------------: |
+|   Kubernetes   | Base Kubernetes deployment          | [kubespray][1]             |    ✅ Done     |
+|    Virtlet     | Run VMs as Kubernetes pods          | [configure-virtlet.yml][3] |   ✅ Tested    |
+|    Kubevirt    | VM workloads on Kubernetes          |                            |   ✅ Tested    |
+|    Virtink     | VM workloads on Kubernetes          |                            |   ✅ Tested    |
+|     Multus     | Multi-network pod support           |                            |   ✅ Tested    |
+|      NFD       | Node Feature Discovery              | [nfd role][4]              |   ✅ Tested    |
+|     Istio      | Service Mesh                        |                            |   ✅ Tested    |
+|      PMEM      | Persistent Memory CSI               | [pmem role][6]             | 🚧 Implemented |
+|      QAT       | Intel QuickAssist support           | [qat_plugin role][8]       |   ✅ Tested    |
+|     SR-IOV     | SR-IOV Plugin                       | [sriov_plugin role][9]     | 🚧 Implemented |
+|    Knative     | Serverless platform                 |                            |   ✅ Tested    |
+|      Kong      | Ingress Controller                  |                            |   ✅ Tested    |
+|    HAProxy     | Ingress Controller                  |                            |   ✅ Tested    |
+|    MetalLB     | Network load balancer               |                            |   ✅ Tested    |
+|     Falco      | Security runtime monitoring         |                            |   ✅ Tested    |
+|      Rook      | Storage Operator                    |                            |   ✅ Tested    |
+| OPA Gatekeeper | Policy Enforcement                  |                            |   ✅ Tested    |
+|    Kyverno     | Policy Enforcement                  |                            |   ✅ Tested    |
+|   Kubewarden   | Policy Enforcement                  |                            |   ✅ Tested    |
+|  kube-monkey   | Chaos engineering for Kubernetes    |                            | 🚧 Implemented |
+|     Nephio     | Telco-native orchestration          |                            | 🚧 Implemented |
+|    LocalAI     | Local LLM inference support         |                            | 🚧 Implemented |
+|     K8SGPT     | Kubernetes diagnostics              |                            | 🚧 Implemented |
+|     ArgoCD     | GitOps & CI/CD workflows            |                            | 🚧 Implemented |
+|     Tekton     | GitOps & CI/CD workflows            |                            | 🚧 Implemented |
+|    Longhorn    | Storage Operator                    |                            |   ✅ Tested    |
+|    TopoLVM     | CSI storage with topology awareness |                            |   ✅ Tested    |
+|     Fluent     | Logging agent                       |                            |   ✅ Tested    |
+| CloudNativePG  | PostgreSQL operator                 |                            |   ✅ Tested    |
+|    LiteLLM     | Local LLM inference support         |                            | 🚧 Implemented |
+|     kagent     | KRM-native agentic AI platform      |                            | 🚧 Implemented |
 
 ## Quick Deployment
 
-The [All-in-One bash script](aio.sh) bash script offers the minimal unattended
-instructions required for deploying a KRD in a node. It can be externally
-consumed with one single command.
+Use the [All-in-One script](aio.sh) for a streamlined, unattended deployment:
 
     curl -fsSL http://bit.ly/KRDaio | bash
 
-### Installation
-
-The [Environment Setup](CONTRIBUTING.md#environment-setup) section provides the
-steps required to install KRD dependencies and define the Cluster setup before
-its provisioning.
+This will clone the repository, install dependencies, and provision a default cluster setup.
 
 ![Provisioning](docs/src/img/provisioning.png)
 
-## Override Default Cluster setup
+## Customizing your Cluster
 
-<!-- textlint-disable -->
+KRD supports custom cluster definitions using the PDF (YAML) format. Vagrant uses the [default configuration](config/default.yml), but this can be overridden via a `config/pdf.yml` file.
 
-Vagrant uses the [default configuration](config/default.yml) to define
-the Virtual Machines used by the Kubernetes cluster, this
-configuration can be overwritten defining the _config/pdf.yml_ file.
-The **diagram** tox environment generates the _krd.png_ file to
-visualize the topology of the cluster.
-
-<!-- textlint-enable -->
+You can also visualize your cluster topology using:
 
     tox -e diagram
 
 ![Sample diagram](docs/src/img/sample_tox_diagram.png)
 
-## Install KRD actions
+## Installing Add-Ons
 
-The [KRD command script](krd_command.sh) provides an easy way to
-install complementary Kubernetes projects to an existing cluster.
-Those projects are grouped in KRD actions and it's possible to get
-the current list of current supported actions executing the following
-instruction:
+Use [KRD command script](krd_command.sh) to install optional components on an existing cluster.
 
     ./krd_command.sh -h
 
-The actions which require the execution of a distributed commands were
-implemented through the **install_k8s_addons** KRD action. This action
-uses the _KRD_ADDONS_LIST_ environment variable to specify the Ansible
-playbook to be executed.
+To install Kubernetes add-ons (e.g., Virtlet):
 
     KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
 
-> Note: Some KRD AddOns have a corresponding validation script in the
-> [tests](tests) folder.
+> _Note_: Some add-ons include validation scripts in the [tests](tests) directory.
 
 ## Day-2 Operations
 
-The functions defined in this project covers the lifecycle of a
-Kubernetes cluster. In other words, its possible to add more nodes,
-upgrade the existing deployment or remove the services. The following
-instruction shows how to upgrade the existing Kubernetes cluster to
-_v1.18.10_ using the Kubespray version _v2.14.2_:
+KRD supports full lifecycle operations, including upgrades, node addition, and service removal.
+
+Example: Upgrade your Kubernetes cluster to version `v1.18.10` using Kubespray `v2.14.2`:
 
     KRD_KUBE_VERSION=v1.18.10 KRD_KUBESPRAY_VERSION=v2.14.2 ./krd_command.sh -a upgrade_k8s
 
-### Environment variables
+## Environment Configuration
 
-#### Global
+KRD relies on environment variables to control behavior and customization. Below are some of the most relevant variables.
+
+### Global Variables
 
 | Name                                  | Default                                        | Description                                                                     |
 | :------------------------------------ | :--------------------------------------------- | :------------------------------------------------------------------------------ |
@@ -154,7 +133,7 @@ _v1.18.10_ using the Kubespray version _v2.14.2_:
 | KRD_ENABLE_ISTIO_ADDONS               | false                                          | Enable/Disable Istio AddOns(Grafana, Kiali and Prometheus)                      |
 | KRD_METALLB_ADDRESS_POOLS_LIST        |                                                | Specifies a list of L2 address pools for [MetalLB configuration][19]            |
 
-#### Kubespray
+### Kubespray
 
 | Name                                 | Default    | Description                                                                     |
 | :----------------------------------- | :--------- | :------------------------------------------------------------------------------ |
@@ -199,13 +178,11 @@ _v1.18.10_ using the Kubespray version _v2.14.2_:
 
 ## Contribution
 
-This is an open project, several individuals contribute in different forms like
-coding, documenting, testing, spreading the word at events within others.
+KRD is an open-source initiative with contributions from developers, testers, and documenters across the community.
 
-If you are interested in contributing, please refer to the code
-[CONTRIBUTING](CONTRIBUTING.md) guidelines.
+We welcome all forms of collaboration. Please see our [CONTRIBUTING](CONTRIBUTING.md) guide for details.
 
-Thanks to all the people who already contributed!
+Thanks to everyone who has contributed so far!
 
 <a href="https://github.com/electrocucaracha/krd/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=electrocucaracha/krd" alt="contributors" />
