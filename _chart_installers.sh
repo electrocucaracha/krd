@@ -245,7 +245,6 @@ function install_gatekeeper {
 
 # install_kyverno() - Install Kyverno dynamic admission controller
 function install_kyverno {
-    install_gatekeeper
     _add_helm_repo kyverno https://kyverno.github.io/kyverno/
     _install_chart kyverno kyverno/kyverno
 }
