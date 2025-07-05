@@ -13,16 +13,14 @@
 Benchmark results of Kubernetes network plugins
 ***********************************************
 
-This document collects the results obtained from the execution of the
-`kubernetes-iperf3 tool <https://github.com/Pharb/kubernetes-iperf3>`_
-which measures the network bandwidth used by all nodes of a minimal
-Kubernetes setup. 
+This document presents results obtained by running the
+`kubernetes-iperf3 tool <https://github.com/Pharb/kubernetes-iperf3>`_,
+which measures network bandwidth between all nodes in a minimal Kubernetes setup.
 
 Kubernetes Setup
 ################
 
-The Linux distro used for all nodes is  *Ubuntu Bionic*. Hardware resources were
-distributed in the following manner: 
+All nodes used the *Ubuntu Bionic* Linux distribution. Hardware resources were allocated as follows:
 
 +------------------+-------+--------+
 | Hostname         | vCPUs | Memory |
@@ -52,8 +50,7 @@ distributed in the following manner:
 | Cilium       | v1.12.1            |
 +--------------+--------------------+
 
-All the previous configuration uses VXLAN as overlay mode. This setup can be
-achieved creating the following  *config/pdf.yml* file:
+All configurations used VXLAN as the overlay mode. You can reproduce this setup by creating the following *config/pdf.yml* file:
 
 .. code-block:: yaml
 
@@ -125,16 +122,13 @@ achieved creating the following  *config/pdf.yml* file:
       roles:
         - kube_node
 
-Once the Kubernetes cluster is provisioned by vagrant is possible to execute
-the networking benchmark process. A new iperf log file will be created on the
-user's home folder.
+After provisioning the Kubernetes cluster with Vagrant, you can run the networking benchmark. A new iperf log file will be created in the user's home directory.
 
 .. code-block:: bash
 
     ./krd_command.sh -a run_k8s_iperf
 
-In order to get other results is necessary to reprovision the cluster with
-the desired CNI.
+To benchmark different network plugins, reprovision the cluster with the desired CNI. For example:
 
 .. code-block:: bash
 
@@ -177,7 +171,7 @@ Results
 |                        | CPU Utilization(receiver) | 70.9%          | 47.1%          | 59.1%          |
 +------------------------+---------------------------+----------------+----------------+----------------+
 
-This execution uses **kube-proxy** configured with *IPVS* mode.
+This benchmark was run with **kube-proxy** configured in *IPVS* mode.
 
 .. note::
-   EAST-WEST traffic goes from *worker01* and/or *worker02* to *controller*
+   The measured EAST-WEST traffic flows from *worker01* and *worker02* to the *controller* node.

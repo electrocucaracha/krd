@@ -13,15 +13,14 @@
 Benchmark results of Kubernetes Ingress Controllers
 ***************************************************
 
-This document collects the results obtained from the execution of the
-`k6`_ tool which performs and measures a load testing on different `Kubernetes
-Ingress Controllers <https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/>`_ .
+This document presents the results obtained from running the `k6`_ tool,
+which performs load testing and measures performance on different `Kubernetes
+Ingress Controllers <https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/>`_.
 
 Kubernetes setup
 ################
 
-The Linux distro used for all nodes is  *Ubuntu Bionic*. Hardware resources were
-distributed in the following manner: 
+All nodes ran *Ubuntu Bionic*. Hardware resources were allocated as follows:
 
 +------------------+-------+--------+
 | Hostname         | vCPUs | Memory |
@@ -55,7 +54,7 @@ distributed in the following manner:
 | Kong         | 1.2.0              |
 +--------------+--------------------+
 
-This setup can be achieved creating the following  *config/pdf.yml* file:
+This setup can be reproduced by creating the following *config/pdf.yml* file:
 
 .. code-block:: yaml
 
@@ -106,9 +105,8 @@ This setup can be achieved creating the following  *config/pdf.yml* file:
       roles:
         - kube_node
 
-Once the Kubernetes cluster is provisioned by vagrant is possible to execute
-the networking benchmark process. A new k6 log file will be created on the
-user's home folder.
+After provisioning the Kubernetes cluster with Vagrant, you can execute the networking
+benchmark process. A new k6 log file will be created in the user's home directory.
 
 .. code-block:: bash
 
@@ -129,8 +127,8 @@ Results
 
 .. note::
 
-   The following results were obtained running `k6`_ tool using
-   500 virtual users connecting to 10 NGINX webservers during 1 minute. These are
-   the 95 percentile value of the results collected by the tool.
+   These results were obtained by running the `k6`_ tool with
+   500 virtual users connecting to 10 NGINX web servers over a 1-minute period. The
+   reported values represent the 95th percentile of the collected data.
 
 .. _k6: https://k6.io/

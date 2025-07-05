@@ -13,53 +13,69 @@
 Tuning Kube-proxy
 *****************
 
+Overview
+========
+
 `kube-proxy <https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/>`_
-reflects services as defined in the Kubernetes API on each node and can do
-simple TCP, UDP, and SCTP stream forwarding or round robin TCP, UDP, and SCTP
-forwarding across a set of backends. It can be used in different modes:
-*userspace* (older) or *iptables* (faster) or *ipvs* or *kernelspace* (windows).
-This document compares results obtained with  *iptables* and *ipvs* proxy modes.
+is a Kubernetes network component that reflects Services as defined in the API on
+each node. It handles:
 
-**iptables**
+- TCP, UDP, and SCTP stream forwarding
+- Round-robin load balancing across backend Pods
 
-iptables is a user-space utility program that allows a system administrator to
-configure the IP packet filter rules of the Linux kernel firewall, implemented
-as different Netfilter modules. The filters are organized in different tables,
-which contain chains of rules for how to treat network traffic packets.
-Different kernel modules and programs are currently used for different
-protocols; iptables applies to IPv4, ip6tables to IPv6, arptables to ARP, and
-ebtables to Ethernet frames. 
+kube-proxy supports several proxying modes:
 
-**IPVS (IP Virtual Server)**
+- ``userspace`` (legacy)
+- ``iptables`` (default, fast)
+- ``ipvs`` (load-balancer capable)
+- ``kernelspace`` (Windows only)
 
-IPVS running on a host acts as L4 load balancer at the front of a real servers.
-It is built on top of netfilter and utilizes hash table instead of chain,
-therefore it can redirect TCP/UDP based services to the real servers. One
-potential downside is that packets that are handled by IPVS take a very
-different path through the iptables filter hooks than packets under normal
-circumstances. If you plan to use it with other programs that use iptables then
-you will need to research whether they will behave as expected together.
+This document compares the performance of the `iptables` and `ipvs` modes.
 
-IPVS provides different algorithms for allocating TCP connections and UDP
-datagrams to real servers. Scheduling algorithms are implemented as
-kernel modules. *Kubespray* supports the following methods:
+Proxy Modes
+===========
 
-- Round Robin: distributes jobs equally amongst the available real servers.
-- Least-Connection: assigns more jobs to real servers with fewer active jobs.
-- Destination Hashing: assigns jobs to servers through looking up a statically
-  assigned hash table by their destination IP addresses.
-- Source Hashing: assigns jobs to servers through looking up a statically
-  assigned hash table by their source IP addresses.
-- Shortest Expected Delay: assigns an incoming job to the server with the
-  shortest expected delay. The expected delay that the job will experience is
-  (Ci + 1) / Ui if sent to the ith server, in which Ci is the number of jobs on
-  the ith server and Ui is the fixed service rate (weight) of the ith server.
-- Never Queue: assigns an incoming job to an idle server if there is, instead of
-  waiting for a fast one; if all the servers are busy, it adopts the Shortest
-  Expected Delay policy to assign the job.
+iptables
+--------
 
-Setup
-#####
+``iptables`` is a userspace utility for managing firewall rules using the Linux
+kernel's Netfilter framework. It filters packets by matching them to rules organized
+in tables and chains.
+
+- Applies to IPv4
+- Uses rule chains for decision making
+- Part of the traditional Linux networking stack
+
+Other related tools:
+
+- ``ip6tables`` for IPv6
+- ``arptables`` for ARP
+- ``ebtables`` for Ethernet frames
+
+IPVS (IP Virtual Server)
+------------------------
+
+``ipvs`` implements transport-layer load balancing. It’s built on top of Netfilter
+but uses a **hash table** instead of chain-based processing, making it more scalable
+under high load.
+
+Key characteristics:
+
+- Acts as an L4 load balancer
+- More efficient than iptables under high concurrency
+- May bypass some iptables hooks, which can cause compatibility issues
+
+Supported scheduling algorithms in **Kubespray**:
+
+- **Round Robin** – evenly distributes connections
+- **Least Connection** – favors backends with fewer active sessions
+- **Destination Hashing** – uses destination IP to select a backend
+- **Source Hashing** – uses source IP to select a backend
+- **Shortest Expected Delay** – selects the server with the best estimated delay
+- **Never Queue** – assigns only to idle servers; falls back to shortest delay
+
+Cluster Setup
+=============
 
 +------------------+-------+--------+--------------------+--------------------+-------------------+--------------+------------------+
 | Hostname         | vCPUs | Memory | Distro             | Kernel             | Container Runtime | IPVS version | iptables version |
@@ -77,8 +93,8 @@ Setup
 | worker           | 1     | 4 GB   | Ubuntu 18.04.7 LTS | 4.15.0-142-generic | docker://19.3.14  | v1.2.1       | v1.6.1           |
 +------------------+-------+--------+--------------------+--------------------+-------------------+--------------+------------------+
 
-iptables vs IPVS
-################
+Performance: iptables vs IPVS
+=============================
 
 +-----------------------+------------+-------------+
 | Measurement           | iptables   | IPVS        |
@@ -92,12 +108,12 @@ iptables vs IPVS
 
 .. note::
 
-   The following results were obtained running `k6`_ tool using
-   1 virtual user connecting to 100 NGINX webservers during 1 minute. These are
-   the 95 percentile value of the results collected by the tool.
+   These results were gathered using the `k6`_ tool. A single virtual user sent HTTP
+   requests to 100 NGINX web servers over 1 minute. Values shown represent the 95th
+   percentile latency and throughput.
 
-IPVS scheduling methods
-#######################
+IPVS Scheduling Benchmark
+==========================
 
 +-------------------------+----------+---------+---------------+
 | Method                  | Duration | Waiting | Requests      |
@@ -117,9 +133,8 @@ IPVS scheduling methods
 
 .. note::
 
-   The following results were obtained running `k6`_ tool using
-   500 virtual user connecting (no reusing connections) to 10 NGINX webservers
-   (simulating 1 sec slow responses) during 1 minute. These are the 90
-   percentile value of the results collected by the tool.
+   These benchmarks were generated using the `k6`_ tool with 500 virtual users making HTTP
+   requests (without reusing connections) to 10 NGINX servers. Each NGINX instance simulated
+   a 1-second response time. Values shown represent the 90th percentile.
 
 .. _k6: https://k6.io/

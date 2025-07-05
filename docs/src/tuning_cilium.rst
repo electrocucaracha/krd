@@ -13,7 +13,21 @@
 Tuning Kubernetes Cilium CNI deployment
 ***************************************
 
-**Software versions**
+Overview
+========
+
+`Cilium <https://cilium.io/>`_ is an open-source networking, observability, and security
+solution for container workloads. It uses eBPF, a Linux kernel technology, to enable
+high-performance networking with rich visibility and control.
+
+This document compares performance metrics across three tunnel modes supported by Cilium:
+
+- vxlan
+- disabled (native routing)
+- geneve
+
+Software Versions
+=================
 
 +--------------+--------------------+
 | Name         | Version            |
@@ -27,44 +41,35 @@ Tuning Kubernetes Cilium CNI deployment
 | Cilium       | v1.12.1            |
 +--------------+--------------------+
 
-`Cilium <https://cilium.io/>`_ is an open source software for providing,
-securing and observing network connectivity between container workloads - cloud
-native, and fueled by the revolutionary Kernel technology eBPF. This document
-compares results obtained with  *vxlan*, *disabled* and *geneve* tunnel modes.
+Tunnel Modes
+============
 
-**VXLAN (Virtual Extensible LAN)**
+VXLAN (Virtual Extensible LAN)
+------------------------------
 
-VXLAN is a network tunneling protocol that uses a VLAN-like encapsulation
-technique to encapsulate OSI L2 Ethernet frames within L4 UDP datagrams. This
-creates an illusion that containers on the same VXLAN are on the same L2
-network.
+VXLAN is a tunneling protocol that encapsulates OSI Layer 2 Ethernet frames
+into Layer 4 UDP packets. It creates the illusion that containers on different
+hosts are on the same Layer 2 network.
 
 .. image:: ./img/cilium_vxlan.png
 
-**Native-Routing**
+Native Routing
+--------------
 
-Cilium will delegate all packets which are not addressed to another local
-endpoint to the routing subsystem of the Linux kernel. This means that the
-packet will be routed as if a local process would have emitted the packet.
+With tunnel mode disabled, Cilium routes non-local packets using the standard
+Linux routing subsystem. It behaves as though a local process emitted the packet.
 
-Cilium automatically enables IP forwarding in the Linux kernel when native
-routing is configured.
+- Cilium automatically enables IP forwarding when native routing is used.
 
-**GENEVE (Generic Network Virtualization Encapsulation)**
+GENEVE (Generic Network Virtualization Encapsulation)
+------------------------------------------------------
 
-Geneve is designed to support network virtualization use cases, where tunnels
-are typically established to act as a backplane between the virtual switches
-residing in hypervisors, physical switches, or middleboxes or other appliances.
+Geneve is a modern, extensible tunneling protocol for network virtualization.
+It encapsulates Ethernet frames in UDP packets and supports customizable metadata
+via optional headers.
 
-The Geneve frame format consists of a compact tunnel header encapsulated in UDP
-over either IPv4 or IPv6. A small fixed tunnel header provides control
-information plus a base level of functionality and interoperability with a focus
-on simplicity. This header is then followed by a set of variable options to
-allow for future innovation. Finally, the payload consists of a protocol data
-unit of the indicated type, such as an Ethernet frame.
-
-Backend Results
-###############
+Performance Results (Tunnel Modes)
+==================================
 
 +------------------------+---------------------------+----------------+----------------+----------------+
 | Connection             | Measurement               | Native-Routing | VXLAN          | GENEVE         |
@@ -94,25 +99,28 @@ Backend Results
 |                        | CPU Utilization(receiver) | 77.8%          | 66.4%          | 68.1%          |
 +------------------------+---------------------------+----------------+----------------+----------------+
 
-Kube-Proxy Replacement: *Probe*
+Kube-Proxy Replacement: Probe Mode
+==================================
 
-Kube-proxy is running in the Kubernetes cluster where Cilium partially replaces
-and optimizes kube-proxy functionality. Once the Cilium agent is up and running,
-it probes the underlying kernel for the availability of needed eBPF kernel
-features and, if not present, disables a subset of the functionality in eBPF by
-relying on kube-proxy to complement the remaining Kubernetes service handling.
+Cilium partially replaces kube-proxy functionality in Kubernetes clusters.
+
+Once the Cilium agent starts, it probes the kernel for required eBPF capabilities.
+If some are unavailable, Cilium disables specific eBPF features and relies on kube-proxy
+for fallback service handling.
 
 ***********************************************
 Tuning Kubernetes using different Linux Distros
 ***********************************************
 
-Every Linux distribution can provide a kernel version optimized for running
-certain workloads. The following results were obtained running the previous
-benchmark function with different Linux distributions. This setup is using
-*Native-Routing* as Cilium CNI backend in a Kubernetes v1.24.6 cluster.
+Each Linux distribution ships with a kernel version optimized for specific workloads.
+This section benchmarks native routing performance with different distros using the
+same hardware and Cilium setup.
+
+.. note::
+   Cilium requires Linux kernel version **4.9.17** or later.
 
 Setup
-#####
+=====
 
 +------------------+-------+--------+--------------------+-----------------------------+--------------------+
 | Hostname         | vCPUs | Memory | Distro             | Kernel                      | Container Runtime  |
@@ -138,7 +146,7 @@ Setup
     Cilium requires +4.9.17 kernel version
 
 Distro Results
-##############
+==============
 
 +------------+----------------+-------------+
 | Hostname   | Bitrate        | Transfer    |

@@ -13,118 +13,89 @@
 Project Architecture
 ********************
 
-This document explains the different components of the KRD project
-and how they can configured to modify its default behaviour.
+This document describes the components of the KRD project
+and how they can be configured to modify its default behavior.
 
 Vagranfile
 ##########
 
-This file describes how the Virtual Machines are going to be
-configured and the scripts and arguments used during their
-provisioning process. This file uses *elastic/ubuntu-16.04-x86_64*
-vagrant box for VirtualBox and Libvirt providers.
+This file defines the configuration of the Virtual Machines (VMs),
+including the scripts and arguments used during provisioning.
+It uses the *elastic/ubuntu-16.04-x86_64* Vagrant box with support
+for both VirtualBox and Libvirt providers.
 
 config/
 #######
 
-This folder contains the POD Descriptor File (PDF) which is used
-by Vagrant during the provisioning process. The *samples* folder
-contains examples for some setups (All-in-One, Mini, NoHA, HA, etc.)
-that can be used.
+This directory contains the POD Descriptor File (PDF) used by Vagrant
+during provisioning. The *samples* folder provides examples for
+different setups (All-in-One, Mini, NoHA, HA, etc.).
 
-This list contains the valid entries used by Vagrant to define the
-virtual resources used by Vagrant during the creation of the Virtual
-Machines:
+Below is a list of valid entries for defining virtual resources in Vagrant:
 
-    * name - Hostname assigned to the VM. (String value)
-    * os - Operating system of the VM. (String value, Options
-      supported: opensuse/centos/ubuntu/clearlinux)
-    * networks - List of private networks. This list doesn't include
-      the management network.
+    * **name**: Hostname assigned to the VM. *(String)*
+    * **os**: Operating system of the VM. *(String; supported options: opensuse, centos, ubuntu)*
+    * **networks**: List of private networks (excluding the management network).
 
-      * name - Libvirt name assigned to the network. (String value)
-      * ip - The static IP address assigned to the VM. (String value)
-    * memory - The amount of memory RAM. (KB - Integer value)
-    * cpus - Number of CPUs. (Integer value)
-    * volumes - List of volumes to be formatted and mounted to the VM.
+      * **name**: Libvirt-assigned network name. *(String)*
+      * **ip**: Static IP address assigned to the VM. *(String)*
+    * **memory**: RAM size in KB. *(Integer)*
+    * **cpus**: Number of CPUs. *(Integer)*
+    * **volumes**: List of volumes to format and mount on the VM.
 
-      * name - Disk name. (String value)
-      * size - Size of the volume. (GB - Integer value)
-      * mount - Mount point. (String value)
-    * roles - Ansible group which this VM belongs. (String value)
-    * qat_dev - Virtual Functions list of Intel QuickAssist (QAT)
-      Technology devices attached to the VM. (List of String values)
-    * sriov_dev - Virtual Functions list of Single Root I/O
-      Virtualization (SR-IOV) devices attached to the VM. (List of
-      String values)
-    * numa_nodes - List of Non-Uniform Memory Access (NUMA) nodes
-      created for this VM. *Note:* Total memory for NUMA nodes must be
-      equal to RAM size.
+      * **name**: Disk name. *(String)*
+      * **size**: Volume size in GB. *(Integer)*
+      * **mount**: Mount point. *(String)*
+    * **roles**: Ansible group this VM belongs to. *(String)*
+    * **qat_dev**: List of Intel QuickAssist (QAT) virtual functions attached to the VM. *(List of strings)*
+    * **sriov_dev**: List of SR-IOV virtual functions attached to the VM. *(List of strings)*
+    * **numa_nodes**: List of NUMA nodes for the VM. *Note*: Total NUMA memory must match the VM's RAM.
 
-      * cpus - Range of CPUs used by a given node. (String value)
-      * memory - The amount of memory used by a given node. (KB -
-        Integer value)
-    * pmem - Specify the Persistent Memory (PMEM) device(s) to be
-      created and attached to the VM. These devices are configured in
-      App Direct Mode. *Note:* This feature was introduced in QEMU
-      2.6.0.
+      * **cpus**: CPU range for the node. *(String)*
+      * **memory**: Memory assigned to the node in KB. *(Integer)*
+    * **pmem**: Persistent Memory (PMEM) devices to create and attach to the VM (App Direct Mode; requires QEMU 2.6.0+).
 
-      * size - Memory size. This value may affect the currentMemory
-        libvirt tag. (G - String value)
-      * slots - Total amount of normal RAM and vNVDIMM devices.
-        (Integer value)
-      * max_size - Total size of normal RAM and vNVDIMM devices. (G -
-        String value)
-      * vNVDIMMs - List of virtual Non-Volatile Dual In-line Memory
-        Modules.
+      * **size**: Memory size; may affect the `currentMemory` libvirt tag. *(String, in GB)*
+      * **slots**: Total count of normal RAM and vNVDIMM devices. *(Integer)*
+      * **max_size**: Combined RAM and vNVDIMM size. *(String, in GB)*
+      * **vNVDIMMs**: List of virtual Non-Volatile Dual In-line Memory Modules:
 
-        * mem_id - Memory identifier. (String value)
-        * id - Identifier. (String value)
-        * share - Controls the visibility of guest writes. (String
-          value, Options supported: on/off)
-        * path - Host path. (String value)
-        * size - Size of vNVDIMM device. (G - String value)
+        * **mem_id**: Memory identifier. *(String)*
+        * **id**: Device identifier. *(String)*
+        * **share**: Guest write visibility control; options: `on`/`off`. *(String)*
+        * **path**: Host path. *(String)*
+        * **size**: vNVDIMM size. *(String, in GB)*
 
 config/default.yml
 ******************
 
-If there is no *pdf.yml* file present in *config* folder, Vagrant will
-use the information specified in the **config/default.yml**. The following
-diagram displays how the services are installed in the nodes using the 
-default configuration.
+If no *pdf.yml* file exists in the *config* directory, Vagrant falls back to **config/default.yml**.
+The following diagram shows service installation on nodes using the default configuration:
 
 .. image:: ./img/default_pdf.png
 
 docs/
 #####
 
-This folder contains documentation files using reStructuredText
-(RST) syntax. It's possible to generate documentation in  *html*
-format using `python tox module <https://tox.readthedocs.io/en/latest/>`_
-. Once this is installed, it's possible to build html files using
-this following command:
+This folder contains documentation in reStructuredText (RST) format.
+You can generate HTML documentation using the `tox` module. After installing tox, run:
 
 .. code-block:: bash
 
     tox -e docs
 
-After its execution, the **docs/build** subfolder will contain
-subfolders and html files that can be opened from any web browser.
+Generated HTML files will appear in the **docs/build** subfolder and can be opened with any web browser.
 
 galaxy-requirements.yml
 #######################
 
-This file contains third party Ansible roles. Only those tasks which
-are not related with the main installation process has been placed in
-this file.
+Contains third-party Ansible roles. Only tasks unrelated to the core installation process are defined here.
 
 krd_command.sh
 ##############
 
-Main bash script that triggers the installation of configuration
-functions for provisioning KRD components on external nodes. This
-script uses some arguments for the additional installation of
-components. For more information about its usage:
+Main Bash script to install and configure KRD components on external nodes.
+For usage details, run:
 
 .. code-block:: bash
 
@@ -133,47 +104,39 @@ components. For more information about its usage:
 inventory/
 ##########
 
-This folder contains the Ansible host inventory file. The
-**inventory/host.ini** file, which is used during the execution of 
-Ansible playbooks, is autogenerated by Vagrant using the values
-specified in the *config/pdf.yml* file (or *config/default.yml*).
+This folder holds the Ansible inventory file. The **inventory/host.ini** file,
+generated automatically by Vagrant from *config/pdf.yml* or *config/default.yml*,
+is used during Ansible playbook execution.
 
 k8s_cluster.yml
 ***************
 
-A preferred practice in Ansible is to not store variables in the
-main inventory file. The default configuration variables required for 
-`Kubespray <https://github.com/kubernetes-sigs/kubespray>`_ are
-stored in this file.
+In line with best practices, variables are not stored in the main inventory file.
+This file contains the default configuration variables required for
+`Kubespray <https://github.com/kubernetes-sigs/kubespray>`_.
 
-Some **KRD_** environment variables might affect the values of this
-file.
+Some **KRD_** environment variables may override values in this file.
 
 node.sh
 #######
 
-This bash script is executed in every node after this has been
-provisioned. The script provides the possibility to partition and
-mount external volumes.
+A Bash script executed on each node after provisioning, allowing partitioning
+and mounting of external volumes.
 
 playbooks/
 ##########
 
-This folder contains a set of Ansible playbooks and roles which
-performs the tasks required for configuring services and Kubernetes
-Device plugins.
+Contains Ansible playbooks and roles for configuring services and Kubernetes device plugins.
 
 playbooks/krd-vars.yml
 ************************
 
-This file centralizes the version numbers and source URLs used for
-different components offered by the KRD. Bumping a version requires
-extensive testing to ensure compatibility.
+Centralizes version numbers and source URLs for KRD components.
+Updating versions requires thorough testing for compatibility.
 
 tests/
 ######
 
-This folder contains the health check scripts that guarantees the
-proper installation/configuration of Kubernetes AddOns.  In order to
-enable it, it's necessary to provide a *true* value for
-**KRD_ENABLE_TESTS** environment variable.
+Includes health check scripts to validate proper installation and configuration
+of Kubernetes add-ons. To enable tests, set the **KRD_ENABLE_TESTS** environment
+variable to *true*.

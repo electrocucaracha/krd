@@ -13,20 +13,19 @@
 Bare-Metal Provisioning
 ***********************
 
-The Kubernetes Reference Deployment, aka KRD, has been designed to be
-consumed by Virtual Machines as well as Bare-Metal servers. The
-*aio.sh* script contains the bash instructions for provisioning an
-All-in-One Kubernetes deployment in a Bare-Metal server. This document
-lists the Hardware & Software requirements and walkthrough the
-instructions that *aio.sh* contains.
+The Kubernetes Reference Deployment (KRD) is designed to run on both
+Virtual Machines and Bare-Metal servers. The *aio.sh* script contains
+the bash instructions needed to provision an All-in-One Kubernetes
+cluster on a Bare-Metal server. This document outlines the required
+hardware and software, and explains the key phases of *aio.sh*.
 
 Hardware Requirements
 #####################
 
 +------------------+--------+
-| Concept          | Amount |
+| Component        | Value  |
 +==================+========+
-| CPU(amd64,arm64) | 2      |
+| CPU (amd64/arm64)| 2      |
 +------------------+--------+
 | Memory           | 7.5GB  |
 +------------------+--------+
@@ -36,46 +35,44 @@ Hardware Requirements
 Software Requirements
 #####################
 
-- Ubuntu Server +16.04 LTS
+- Ubuntu Server 16.04 LTS or later
 
 aio.sh
 ######
 
-This bash script provides an automated process for deploying an
-All-in-One Kubernetes cluster. 
+The *aio.sh* script automates the process of deploying an All-in-One
+Kubernetes cluster.
 
-The following instruction starts the provisioning process.
+To start the provisioning process, run:
 
 .. code-block:: bash
 
     curl -fsSL http://bit.ly/KRDaio | KRD_ACTIONS_LIST="install_k8s,install_cockpit" bash
 
-In overall, this script can be summarized in the following phases:
+The script performs the following phases:
 
-1. Server validation.
-2. Installation of dependencies.
-3. Configuration..
-4. Deploying KRD services.
+1. Server validation
+2. Dependency installation
+3. Configuration
+4. Deployment of KRD services
 
 **Server validation**
 
-This phase validates that the account of the user running the KRD
-scripts is passworless sudo and the IP address has been included as
-part of the NO_PROXY values.
+The script first checks that the user account running KRD has
+passwordless sudo privileges and that the server’s IP address is
+included in the NO_PROXY environment variable.
 
 **Installation of dependencies**
 
-KRD requires git command line to pulls its source code and also
-executes the instructions provided by the *node.sh* script which
-installs additional management tools.
+KRD requires the `git` command-line tool to fetch its source code.
+It also executes *node.sh*, which installs additional management
+tools required for the deployment.
 
 **Configuration**
 
-Ansible works against multiple systems, the way for selecting them is
-through the usage of the inventory. The inventory file is a static
-source for determining the target servers used for the execution of
-ansible tasks. The *aio.sh* script creates an inventory file for
-addressing those tasks to localhost.
+Ansible uses an inventory file to define the systems it will manage.
+For an All-in-One deployment, the *aio.sh* script creates a local
+inventory file that points Ansible tasks to `localhost`:
 
 .. code-block:: bash
 
@@ -97,9 +94,8 @@ addressing those tasks to localhost.
     kube_control_plane
     EOL
 
-Ansible uses SSH protocol for executing remote instructions. The
-following instructions create and register ssh keys which avoid the
-usage of passwords.
+Since Ansible uses SSH for executing tasks, the following instructions
+generate and register SSH keys to enable passwordless authentication:
 
 .. code-block:: bash
 
@@ -109,9 +105,9 @@ usage of passwords.
 
 **Deploying KRD services**
 
-Finally, the KRD provisioning process can be started through the use
-of *krd_command.sh* bash script. The output of this script is
-collected in the *krd_${krd_action}.log* file for future reference.
+Once configuration is complete, the KRD provisioning process can be
+started by running the *krd_command.sh* script. Logs are saved to
+*krd_${krd_action}.log* for future reference.
 
 .. code-block:: bash
 

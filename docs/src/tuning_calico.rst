@@ -27,32 +27,31 @@ Tuning Kubernetes Calico CNI deployment
 | Calico       | v3.23.3            |
 +--------------+--------------------+
 
-`Calico <https://projectcalico.docs.tigera.io/>`_  is an open source networking
+`Calico <https://projectcalico.docs.tigera.io/>`_ is an open-source networking
 and network security solution for containers, virtual machines, and native
-host-based workloads. Calico supports a broad range of platforms including
+host-based workloads. Calico supports a wide range of platforms, including
 Kubernetes, OpenShift, Mirantis Kubernetes Engine (MKE), OpenStack, and bare
-metal services.
+metal environments.
 
-Calico supports three routing modes.
+Calico offers three routing modes:
 
 **IP-in-IP**
 
-IP-in-IP is a simple form of encapsulation achieved by putting an IP packet
-inside another. A transmitted packet contains an outer header with *host* source
-and destination IPs and an inner header with *pod* source and destination IPs.
+IP-in-IP encapsulates traffic by placing one IP packet inside another. The outer
+header contains the *host* source and destination IPs, while the inner header
+includes the *pod* source and destination IPs.
 
 **VXLAN (Virtual Extensible LAN)**
 
-VXLAN has a slightly higher per-packet overhead because the header is larger,
-but unless you are running very network intensive workloads the difference is
-not something you would typically notice. The other small difference between the
-two types of encapsulation is that Calico’s VXLAN implementation does not use
-BGP, whereas Calico’s IP in IP implementation uses BGP between Calico nodes.
+VXLAN adds more overhead per packet due to a larger header, but unless your
+workloads are extremely network-intensive, the performance difference is usually
+negligible. Unlike IP-in-IP, Calico’s VXLAN implementation does not use BGP
+routing, while IP-in-IP relies on BGP to exchange routes between Calico nodes.
 
 **Direct**
 
-Direct sends packets as if they came directly from the pod. Since there is no
-encapsulation and de-capsulation overhead, direct is highly performant.
+Direct mode sends packets directly from pods to their destinations without
+encapsulation or decapsulation, resulting in the highest performance.
 
 Backend Results
 ###############
@@ -89,10 +88,10 @@ Backend Results
 Tuning Kubernetes using different Linux Distros
 ***********************************************
 
-Every Linux distribution can provide a kernel version optimized for running
-certain workloads. The following results were obtained running the previous
-benchmark function with different Linux distributions. This setup is using
-*Direct* as Calico CNI backend in a Kubernetes v1.24.6 cluster.
+Each Linux distribution provides a kernel version optimized for different types
+of workloads. The following results were obtained by running the previous
+benchmark with various Linux distributions. All tests used *Direct* mode as the
+Calico CNI backend in a Kubernetes v1.24.6 cluster.
 
 Setup
 #####

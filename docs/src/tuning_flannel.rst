@@ -13,44 +13,55 @@
 Tuning Kubernetes Flannel CNI deployment
 ****************************************
 
-**Software versions**
+Overview
+========
+
+`Flannel CNI <https://www.cni.dev/plugins/current/meta/flannel/>`_ is a simple and
+easy way to configure a Layer 3 network fabric for Kubernetes. It supports various
+backend types tailored for different networking scenarios.
+
+This document compares performance results using the following Flannel backends:
+
+- ``vxlan``
+- ``host-gw``
+
+Software Versions
+=================
 
 +--------------+--------------------+
 | Name         | Version            |
 +==============+====================+
-| Ubuntu       | Ubuntu 20.04.4 LTS |
+| Ubuntu       | Ubuntu 20.04.6 LTS |
 +--------------+--------------------+
-| Kernel       | 5.4.0-122-generic  |
+| Kernel       | 5.4.0-169-generic  |
 +--------------+--------------------+
-| Kubernetes   | v1.24.6            |
+| Kubernetes   | v1.28.6            |
 +--------------+--------------------+
-| Flannel      | v1.1.0             |
+| Flannel      | v0.22.0            |
 +--------------+--------------------+
 
-`Flannel CNI <https://www.cni.dev/plugins/current/meta/flannel/>`_ is a simple
-and easy way to configure a L3 network fabric designed for Kubernetes. It
-supports different backend types for specific scenarios. This document compares
-results obtained with  *vxlan* and *host-gw* backends.
+Backend Types
+=============
 
-**VXLAN (Virtual Extensible LAN)**
+VXLAN (Virtual Extensible LAN)
+------------------------------
 
-VXLAN is a network tunneling protocol that uses a VLAN-like encapsulation
-technique to encapsulate OSI L2 Ethernet frames within L4 UDP datagrams. This 
-creates an illusion that containers on the same VXLAN are on the same L2
-network.
+VXLAN encapsulates Layer 2 Ethernet frames within Layer 4 UDP datagrams, simulating a
+virtual Layer 2 domain across host boundaries.
 
 .. image:: ./img/flannel_vxlan.png
 
-**Host Gateway**
+Host-GW (Host Gateway)
+----------------------
 
-Flannel configures each host node as a gateway and replies on routing table to
-route the traffics between Pod network and host. Requires direct L2 connectivity
-between hosts running Flannel daemon.
+In host-gw mode, Flannel configures each host as a gateway. Traffic between pods on
+different nodes is routed using the kernel's native routing table. This requires
+Layer 2 connectivity between all nodes.
 
 .. image:: ./img/flannel_host-gw.png
 
-Backend Results
-###############
+Performance results by backend
+==============================
 
 +------------------------+---------------------------+----------------+----------------+
 | Connection             | Measurement               | host-gw        | VXLAN          |
@@ -84,13 +95,12 @@ Backend Results
 Tuning Kubernetes using different Linux Distros
 ***********************************************
 
-Every Linux distribution can provide a kernel version optimized for running
-certain workloads. The following results were obtained running the previous
-benchmark function with different Linux distributions. This setup is using
-*Host Gateway* as Flannel CNI backend in a Kubernetes v1.24.6 cluster.
+Linux distributions often ship with kernels optimized for specific workloads. The following
+performance data was collected by running the same Flannel host-gw benchmark across various
+Linux distributions in a Kubernetes v1.24.6 cluster.
 
-Setup
-#####
+Test Setup
+==========
 
 +------------------+-------+--------+--------------------+-----------------------------+--------------------+
 | Hostname         | vCPUs | Memory | Distro             | Kernel                      | Container Runtime  |
@@ -112,8 +122,11 @@ Setup
 | centos8          | 1     | 4 GB   | CentOS Linux 8     | 4.18.0-348.7.1.el8_5.x86_64 | containerd://1.5.8 |
 +------------------+-------+--------+--------------------+-----------------------------+--------------------+
 
-Distro Results
-##############
+.. note::
+   Flannel host-gw mode requires direct Layer 2 connectivity between nodes.
+
+Performance results by distro
+=============================
 
 +------------+----------------+-------------+
 | Hostname   | Bitrate        | Transfer    |

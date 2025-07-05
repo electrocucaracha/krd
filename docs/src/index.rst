@@ -1,9 +1,9 @@
 Kubernetes Reference Deployment
 ===============================
 
-This project offers a set of Ansible playbooks for deploying a
-Kubernetes cluster that meets the minimal components required 
-for the MultiCloud/K8s plugin.
+This project provides a collection of Ansible playbooks to deploy a
+Kubernetes cluster with the minimal set of components required to
+support the MultiCloud/K8s plugin.
 
 Table of contents
 -----------------
