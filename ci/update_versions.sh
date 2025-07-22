@@ -130,8 +130,11 @@ sed -i "s/KRD_KUBESPRAY_VERSION:-.* \"\$(\$VAGRANT_CMD_SSH_INSTALLER \"cd \/opt\
 kubespray_url="https://raw.githubusercontent.com/kubernetes-sigs/kubespray/v$kubespray_version/roles/download/defaults/main.yml"
 if _vercmp "$kubespray_version" '>=' '2.25.0'; then
     kubespray_url="https://raw.githubusercontent.com/kubernetes-sigs/kubespray/v$kubespray_version/roles/kubespray-defaults/defaults/main/download.yml"
+    if _vercmp "$kubespray_version" '>=' '2.28.0'; then
+        kubespray_url="https://raw.githubusercontent.com/kubernetes-sigs/kubespray/v$kubespray_version/roles/kubespray_defaults/defaults/main/download.yml"
+    fi
 fi
-kubespray_defaults=$(curl -sfL "$kubespray_url" | grep -e "^[a-zA-Z].*_version: " -e "^[a-zA-Z].*image_tag: ")
+kubespray_defaults=$(curl -sfL "$kubespray_url" | grep -e "^[a-zA-Z].*_version: " -e "^[a-zA-Z].*image_tag: " | grep -v "{")
 set_kubespray_img_version "$kubespray_defaults" "k8s-dns-node-cache" "nodelocaldns_version"
 set_kubespray_img_version "$kubespray_defaults" "controller" "ingress_nginx_version"
 set_kubespray_img_version "$kubespray_defaults" "local-volume-provisioner" "local_volume_provisioner_version"

@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
       - name: Setup Go
-        uses: actions/setup-go@0aaccfd150d50ccaeb58ebd88d36e91967a5f35b # 5.4.0
+        uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # 5.5.0
         with:
           go-version: ">=1.20.0"
       - name: Install dependencies
@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
       - name: Run super-linter validation
-        uses: super-linter/super-linter@4e8a7c2bf106c4c766c816b35ec612638dc9b6b2 # 7.3.0
+        uses: super-linter/super-linter@5119dcd8011e92182ce8219d9e9efc82f16fddb6 # 8.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: /

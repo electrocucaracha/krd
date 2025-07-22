@@ -7,32 +7,32 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-kpt_version: 1.0.0-beta.56
+kpt_version: 1.0.0-beta.57
 go_version: 1.15.3
 kubespray_version: v2.28.0
-istio_version: 1.25.2
+istio_version: 1.26.2
 cfssl_version: 1.6.5
 sonobuoy_version: 0.57.3
 mitogen_version: 0.2.10
 # Knative versions
 kn_version: knative-v1.18.0
-knative_serving_version: knative-v1.18.0
-knative_eventing_version: v0.45.0
+knative_serving_version: knative-v1.18.1
+knative_eventing_version: v0.45.2
 ## Knative Sandbox versions
 net_kourier_version: knative-v1.18.0
 net_istio_version: vknative-v1.18.0
 net_certmanager_version: vknative-v1.14.0
 octant_version: 0.25.1
-kube-ovn_version: v1.13.11
-prometheus-operator_version: v0.82.0
-kubevirt_version: v1.5.0
+kube-ovn_version: v1.14.3
+prometheus-operator_version: v0.84.0
+kubevirt_version: v1.5.2
 containerized_data_importer_version: v1.62.0
 virtink_version: v0.17.0
 kubesphere_version: v4.1.3
-metallb_version: v0.14.9
+metallb_version: v0.15.2
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
-argocd_version: v3.0.0-rc4
-tekton_version: v0.75.0
+argocd_version: v3.1.0-rc3
+tekton_version: v0.76.0
 kubevirt_tekton_tasks_version: v0.24.0
 action_runner_controller_version: 0.10.1
