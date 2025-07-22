@@ -68,8 +68,9 @@ function set_kubespray_img_version {
     local img_versions="$1"
     local image="$2"
     local kubespray_key="$3"
+    local prefix="${4-}"
 
-    sed -i "s/$image:.*/$image:$(echo "$img_versions" | grep "$kubespray_key" | awk '{ print $2}' | tr -d '"{}')/g" ./kubespray_images.tpl
+    sed -i "s/$image:.*/$image:${prefix}$(echo "$img_versions" | grep "$kubespray_key" | awk '{ print $2}' | tr -d '"{}')/g" ./kubespray_images.tpl
 }
 
 function update_pip_pkg {
@@ -136,11 +137,19 @@ if _vercmp "$kubespray_version" '>=' '2.25.0'; then
 fi
 kubespray_defaults=$(curl -sfL "$kubespray_url" | grep -e "^[a-zA-Z].*_version: " -e "^[a-zA-Z].*image_tag: " | grep -v "{")
 set_kubespray_img_version "$kubespray_defaults" "k8s-dns-node-cache" "nodelocaldns_version"
-set_kubespray_img_version "$kubespray_defaults" "controller" "ingress_nginx_version"
-set_kubespray_img_version "$kubespray_defaults" "local-volume-provisioner" "local_volume_provisioner_version"
-for img in cainjector controller webhook; do
-    set_kubespray_img_version "$kubespray_defaults" "cert-manager-$img" "cert_manager_version"
-done
+if _vercmp "$kubespray_version" '>=' '2.28.0'; then
+    set_kubespray_img_version "$kubespray_defaults" "controller" "ingress_nginx_version" "v"
+    set_kubespray_img_version "$kubespray_defaults" "local-volume-provisioner" "local_volume_provisioner_version" "v"
+    for img in cainjector controller webhook; do
+        set_kubespray_img_version "$kubespray_defaults" "cert-manager-$img" "cert_manager_version" "v"
+    done
+else
+    set_kubespray_img_version "$kubespray_defaults" "controller" "ingress_nginx_version"
+    set_kubespray_img_version "$kubespray_defaults" "local-volume-provisioner" "local_volume_provisioner_version"
+    for img in cainjector controller webhook; do
+        set_kubespray_img_version "$kubespray_defaults" "cert-manager-$img" "cert_manager_version"
+    done
+fi
 
 sed -i "s/kpt_version:.*/kpt_version: $(get_version github_release kptdev/kpt)/g" ./playbooks/krd-vars.yml
 sed -i "s/istio_version:.*/istio_version: $(get_version github_release istio/istio)/g" ./playbooks/krd-vars.yml
