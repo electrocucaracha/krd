@@ -6,8 +6,8 @@
 | [distros](./distros.yml)                       | Updates the Vagrant box versions for Distro list supported file              | scheduled/manual trigger     |
 | [linter](./linter.yml)                         | Counts Line of Codes, verifies broken links in docs and runs linter tools    | on new commit/push on master |
 | [on-demand_ci](./on-demand_ci.yml)             | Runs BDD and integration tests for different container runtimes and projects | on new commit/push on master |
-| [on-demand_corner](./on-demand_corner.yml)     | Runs integration tests for corner cases (kong, rook, haproxy, kubewarden)    | on new commit/push on master |
-| [on-demand_molecule](./on-demand_molecule.yml) | Runs unit tests for ansible roles                                            | on new commit/push on master |
+| [on-demand_corner](./on-demand_corner.yml)     | Runs integration tests for corner cases (kong, rook, HAProxy, kubewarden)    | on new commit/push on master |
+| [on-demand_molecule](./on-demand_molecule.yml) | Runs unit tests for Ansible roles                                            | on new commit/push on master |
 | [on-demand_multus](./on-demand_multus.yml)     | Deploys a basic cluster on a Virtual environment with Multus CNI enabled     | on new commit/push on master |
 | [on-demand_virtlet](./on-demand_virtlet.yml)   | Verifies that CRIproxy and Virtlet services works                            | on new commit/push on master |
 | [rebase](./rebase.yml)                         | Helps to rebase changes of the Pull request                                  | manual trigger               |

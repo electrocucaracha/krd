@@ -115,7 +115,7 @@ KRD relies on environment variables to control behavior and customization. Below
 | Name                                  | Default                                        | Description                                                                     |
 | :------------------------------------ | :--------------------------------------------- | :------------------------------------------------------------------------------ |
 | KRD_DEBUG                             | false                                          | Enables verbose execution                                                       |
-| KRD_ANSIBLE_DEBUG                     | false                                          | Enables ansible verbose execution                                               |
+| KRD_ANSIBLE_DEBUG                     | false                                          | Enables Ansible verbose execution                                               |
 | PKG_DEBUG                             | false                                          | Enables cURL package installer verbose execution                                |
 | KRD_KUBE_VERSION                      | v1.32.5                                        | Specifies the Kubernetes version to be upgraded                                 |
 | KRD_KUBESPRAY_VERSION                 | v2.28.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
