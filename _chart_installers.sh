@@ -345,18 +345,20 @@ function install_cnpg {
 
 # install_kagent() - Install kagent service
 function install_kagent {
+    local namespace=${KRD_KAGENT_NAMESPACE:-kagent}
+
     command -v kagent >/dev/null || curl -s "https://i.jpillora.com/kagent-dev/kagent!!" | bash
-    _install_chart kagent-crds oci://ghcr.io/kagent-dev/kagent/helm/kagent-crds kagent-system false
-    KRD_CHART_FILE="helm/kagent/without-agents.yml" KRD_CHART_VALUES="openai.apiKey=$KRD_KAGENT_OPENAI_TOKEN" _install_chart kagent oci://ghcr.io/kagent-dev/kagent/helm/kagent
-    kubectl apply -f resources/kagent/
+    _install_chart kagent-crds oci://ghcr.io/kagent-dev/kagent/helm/kagent-crds "$namespace" false
+    KRD_CHART_FILE="helm/kagent/without-agents.yml" KRD_CHART_VALUES="providers.openAI.apiKey=$KRD_KAGENT_OPENAI_TOKEN" _install_chart kagent oci://ghcr.io/kagent-dev/kagent/helm/kagent "$namespace"
+    kubectl apply -n "$namespace" -f resources/kagent/
 
     # TODO: Requires to pass the model info values (https://microsoft.github.io/autogen/stable/reference/python/autogen_ext.models.openai.html#autogen_ext.models.openai.OpenAIChatCompletionClient)
     # Connect with LiteLLM
     if [ -n "${KRD_KAGENT_OPENAI_TOKEN-}" ]; then
         if kubectl get services -n litellm-system litellm-service >/dev/null; then
-            kubectl apply -f resources/kagent-openai-models_incluster.yml
+            kubectl apply -n "$namespace" -f resources/kagent-openai-models_incluster.yml
         else
-            kubectl apply -f resources/kagent-openai-models.yml
+            kubectl apply -n "$namespace" -f resources/kagent-openai-models.yml
         fi
     fi
 }

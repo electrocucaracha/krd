@@ -11,10 +11,9 @@ apiVersion: kagent.dev/v1alpha1
 kind: ModelConfig
 metadata:
   name: litellm-ollama-3-2
-  namespace: kagent-system
 spec:
   apiKeySecretKey: OPENAI_API_KEY
-  apiKeySecretName: kagent-openai
+  apiKeySecretRef: kagent-openai
   model: llama3.2
   provider: OpenAI
   openAI:
