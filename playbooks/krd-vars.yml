@@ -36,3 +36,4 @@ argocd_version: v3.1.0-rc3
 tekton_version: v0.76.0
 kubevirt_tekton_tasks_version: v0.24.0
 action_runner_controller_version: 0.10.1
+kagent_version: 0.4.4
