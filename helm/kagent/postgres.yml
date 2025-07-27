@@ -7,8 +7,10 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
+database:
+  type: postgres
 k8s-agent:
-  enabled: false
+  enabled: true
 kgateway-agent:
   enabled: false
 istio-agent:

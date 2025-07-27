@@ -347,9 +347,15 @@ function install_cnpg {
 function install_kagent {
     local namespace=${KRD_KAGENT_NAMESPACE:-kagent}
 
+    install_cnpg
+    ! kubectl get namespaces "${namespace}" && kubectl create namespace "${namespace}"
+    kubectl apply -n kagent -f resources/kagent-db-cnpg.yml
+    wait_for_pods "$namespace"
+    postgres_url=$(kubectl get secrets -n kagent kagent-db-cnpg-app -o jsonpath='{.data.uri}' | base64 --decode)
+
     command -v kagent >/dev/null || curl -s "https://i.jpillora.com/kagent-dev/kagent!!" | bash
     _install_chart kagent-crds oci://ghcr.io/kagent-dev/kagent/helm/kagent-crds "$namespace" false
-    KRD_CHART_FILE="helm/kagent/without-agents.yml" KRD_CHART_VALUES="providers.openAI.apiKey=$KRD_KAGENT_OPENAI_TOKEN" _install_chart kagent oci://ghcr.io/kagent-dev/kagent/helm/kagent "$namespace"
+    KRD_CHART_FILE="helm/kagent/postgres.yml" KRD_CHART_VALUES="providers.openAI.apiKey=$KRD_KAGENT_OPENAI_TOKEN,database.postgres.url=$postgres_url" _install_chart kagent oci://ghcr.io/kagent-dev/kagent/helm/kagent "$namespace"
     kubectl apply -n "$namespace" -f resources/kagent/
 
     # TODO: Requires to pass the model info values (https://microsoft.github.io/autogen/stable/reference/python/autogen_ext.models.openai.html#autogen_ext.models.openai.OpenAIChatCompletionClient)
