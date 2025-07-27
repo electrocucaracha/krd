@@ -41,15 +41,18 @@ spec:
         - name: mcp-website-fetcher
           image: ghcr.io/electrocucaracha/mcp-website-fetcher:main
           imagePullPolicy: Always
+          env:
+            - name: TRANSPORT
+              value: "streamable-http"
           ports:
             - containerPort: 8000
           resources:
             limits:
-              cpu: "1"
-              memory: "1Gi"
-            requests:
               cpu: "500m"
               memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
           livenessProbe:
             httpGet:
               path: /health
@@ -73,11 +76,11 @@ spec:
 apiVersion: kagent.dev/v1alpha1
 kind: Agent
 metadata:
-  name: simple-fetch-agent
+  name: website-fetch-agent
   namespace: kagent
 spec:
   description: This agent can use a single tool to retrieve the contents of a webpage.
-  modelConfig: ollama-llama3-2
+  modelConfig: kagent/ollama-llama3-2
   systemMessage: |-
     You're a friendly and helpful agent that uses the fetch tool to retrieve webpage contents.
 
@@ -94,7 +97,7 @@ spec:
   tools:
     - type: McpServer
       mcpServer:
-        toolServer: mcp-toolserver
+        toolServer: kagent/mcp-toolserver
         toolNames:
           - fetch
 ---
@@ -107,4 +110,6 @@ spec:
   description: Fetches a website and returns its content
   config:
     streamableHttp:
+      sseReadTimeout: 5m0s
+      timeout: 30s
       url: http://mcp-website-fetcher.kagent.svc.cluster.local/mcp
