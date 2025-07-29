@@ -15,15 +15,15 @@ cfssl_version: 1.6.5
 sonobuoy_version: 0.57.3
 mitogen_version: 0.2.10
 # Knative versions
-kn_version: knative-v1.18.0
+kn_version: knative-v1.19.0
 knative_serving_version: knative-v1.19.0
-knative_eventing_version: v0.45.2
+knative_eventing_version: v0.46.0
 ## Knative Sandbox versions
-net_kourier_version: knative-v1.18.0
-net_istio_version: vknative-v1.18.0
+net_kourier_version: knative-v1.19.0
+net_istio_version: vknative-v1.19.0
 net_certmanager_version: vknative-v1.14.0
 octant_version: 0.25.1
-kube-ovn_version: v1.14.3
+kube-ovn_version: v1.14.4
 prometheus-operator_version: v0.84.0
 kubevirt_version: v1.5.2
 containerized_data_importer_version: v1.62.0
@@ -32,8 +32,8 @@ kubesphere_version: v4.1.3
 metallb_version: v0.15.2
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
-argocd_version: v3.1.0-rc3
+argocd_version: v3.1.0-rc4
 tekton_version: v0.76.0
 kubevirt_tekton_tasks_version: v0.24.0
 action_runner_controller_version: 0.10.1
-kagent_version: 0.4.4
+kagent_version: 0.4.5
