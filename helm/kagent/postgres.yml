@@ -7,15 +7,25 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-contrib:
-  agents:
-    k8s:
-      enabled: false
-    istio:
-      enabled: false
-    helm:
-      enabled: false
-    observability:
-      enabled: false
-    argoRolloutsConversion:
-      enabled: false
+database:
+  type: postgres
+k8s-agent:
+  enabled: true
+kgateway-agent:
+  enabled: false
+istio-agent:
+  enabled: false
+promql-agent:
+  enabled: false
+observability-agent:
+  enabled: false
+argo-rollouts-agent:
+  enabled: false
+helm-agent:
+  enabled: false
+cilium-policy-agent:
+  enabled: false
+cilium-manager-agent:
+  enabled: false
+cilium-debug-agent:
+  enabled: false

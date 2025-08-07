@@ -7,14 +7,21 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-apiVersion: kagent.dev/v1alpha1
-kind: ModelConfig
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
 metadata:
-  name: litellm-ollama-3-2
+  name: kagent-db-cnpg
 spec:
-  apiKeySecretKey: OPENAI_API_KEY
-  apiKeySecretRef: kagent-openai
-  model: llama3.2
-  provider: OpenAI
-  openAI:
-    baseUrl: http://litellm-service.litellm-system.svc.cluster.local:4000/litellm
+  description: Postgres cluster for the kagent application
+  instances: 1
+  storage:
+    size: 10Gi
+  bootstrap:
+    initdb:
+      database: kagent
+      owner: kagent
+  managed:
+    services:
+      disabledDefaultServices:
+        - ro
+        - r

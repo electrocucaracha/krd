@@ -11,10 +11,9 @@ apiVersion: kagent.dev/v1alpha1
 kind: ModelConfig
 metadata:
   name: litellm-ollama-3-2
-  namespace: kagent-system
 spec:
   apiKeySecretKey: OPENAI_API_KEY
-  apiKeySecretName: kagent-openai
+  apiKeySecretRef: kagent-openai
   model: llama3.2
   provider: OpenAI
   openAI:
@@ -24,7 +23,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nuc10-node08
-  namespace: kagent-system
 spec:
   ports:
     - name: http
@@ -36,7 +34,6 @@ apiVersion: discovery.k8s.io/v1
 kind: EndpointSlice
 metadata:
   name: nuc10-node08-01
-  namespace: kagent-system
   labels:
     kubernetes.io/service-name: nuc10-node08
 addressType: IPv4
