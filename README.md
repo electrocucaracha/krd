@@ -127,9 +127,9 @@ KRD relies on environment variables to control behavior and customization. Below
 | KRD_ADDONS_LIST                       | addons                                         | Specifies the Kubernetes AddOns to be installed by install_k8s_addons           |
 | KRD_HUGEPAGES_ENABLED                 | true                                           | Enable/Disable [HugeTLB Pages][17] on cluster nodes                             |
 | KRD_QAT_PLUGIN_MODE                   | dpdk                                           | Specifies the deployment mode for Intel QuickAssist Plugin                      |
-| KRD_KUBESPHERE_DEVOPS_ENABLED         | true                                           | Enable/Disable [KubeSphere DevOps System][14]                                   |
+| KRD_KUBESPHERE_DEVOPS_ENABLED         | true                                           | Enable/Disable KubeSphere DevOps System                                         |
 | KRD_KUBESPHERE_METRICS_SERVER_ENABLED | false                                          | Enable/Disable [Horizontal Pod Autoscaler][15] on KubeSphere                    |
-| KRD_KUBESPHERE_SERVICEMESH_ENABLED    | false                                          | Enable/Disable [KubeSphere Service Mesh][16]                                    |
+| KRD_KUBESPHERE_SERVICEMESH_ENABLED    | false                                          | Enable/Disable KubeSphere Service Mesh                                          |
 | KRD_ENABLE_ISTIO_ADDONS               | false                                          | Enable/Disable Istio AddOns(Grafana, Kiali and Prometheus)                      |
 | KRD_METALLB_ADDRESS_POOLS_LIST        |                                                | Specifies a list of L2 address pools for [MetalLB configuration][19]            |
 
@@ -203,9 +203,7 @@ Thanks to everyone who has contributed so far!
 [11]: https://kubernetes.github.io/ingress-nginx/
 [12]: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
 [13]: https://katacontainers.io/
-[14]: https://kubesphere.io/docs/11-use-extensions/01-devops/
 [15]: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
-[16]: https://kubesphere.io/docs/11-use-extensions/03-service-mesh/
 [17]: https://www.kernel.org/doc/html/latest/admin-guide/mm/hugetlbpage.html
 [18]: https://github.com/containers/crun
 [19]: https://metallb.universe.tf/
