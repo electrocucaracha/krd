@@ -48,6 +48,7 @@ jobs:
           VALIDATE_CHECKOV: false
           EDITORCONFIG_FILE_NAME: .editorconfig-checker.json
           KUBERNETES_KUBECONFORM_OPTIONS: "-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml"
+          DEFAULT_BRANCH: ${{ github.head_ref || github.ref_name }}
   check-tox:
     name: Check syntax (tox)
     runs-on: ubuntu-latest
