@@ -17,7 +17,7 @@ jobs:
     name: Count Lines of Code
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # 5.0.0
       - name: Setup Go
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # 5.5.0
         with:
@@ -30,14 +30,14 @@ jobs:
     name: Check documentation external links
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # 5.0.0
       - name: Check broken links
         uses: gaurav-nelson/github-action-markdown-link-check@4a1af151f4d7cf4d8f8ac5780597672a3671b88b # 1.0.17
   check-super-linter:
     name: Check syntax (super-linter)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # 5.0.0
       - name: Run super-linter validation
         uses: super-linter/super-linter@5119dcd8011e92182ce8219d9e9efc82f16fddb6 # 8.0.0
         env:
@@ -53,7 +53,7 @@ jobs:
     name: Check syntax (tox)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # 5.0.0
       - name: Install tox
         run: pip install tox
       - name: Run tox lint validation

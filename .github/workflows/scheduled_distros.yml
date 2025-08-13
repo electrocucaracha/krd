@@ -17,7 +17,7 @@ jobs:
   generate-json-matrix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # 5.0.0
       - name: Get matrix values
         id: set-matrix
         run: |
@@ -45,7 +45,7 @@ jobs:
       matrix:
         include: ${{ fromJson(needs.generate-json-matrix.outputs.matrix) }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # 5.0.0
       - name: Running Flannel CNI with ContainerD runtime
         if: ${{ always() }}
         uses: ./.github/actions/vagrant-up

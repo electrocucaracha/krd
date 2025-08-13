@@ -10,7 +10,7 @@
 kpt_version: 1.0.0-beta.57
 go_version: 1.15.3
 kubespray_version: v2.28.0
-istio_version: 1.26.2
+istio_version: 1.27.0
 cfssl_version: 1.6.5
 sonobuoy_version: 0.57.3
 mitogen_version: 0.2.10
@@ -23,9 +23,9 @@ net_kourier_version: knative-v1.19.0
 net_istio_version: vknative-v1.19.0
 net_certmanager_version: vknative-v1.14.0
 octant_version: 0.25.1
-kube-ovn_version: v1.14.4
-prometheus-operator_version: v0.84.0
-kubevirt_version: v1.5.2
+kube-ovn_version: v1.14.5
+prometheus-operator_version: v0.84.1
+kubevirt_version: v1.6.0
 containerized_data_importer_version: v1.62.0
 virtink_version: v0.17.0
 kubesphere_version: v4.1.3
@@ -36,4 +36,4 @@ argocd_version: v3.1.0-rc4
 tekton_version: v0.76.0
 kubevirt_tekton_tasks_version: v0.24.0
 action_runner_controller_version: 0.10.1
-kagent_version: 0.4.5
+kagent_version: 0.5.5
