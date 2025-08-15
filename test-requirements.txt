@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible-compat==25.6.0
+ansible-compat==25.8.1
     # via
     #   ansible-lint
     #   molecule
@@ -13,7 +13,7 @@ ansible-core==2.19.0
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==25.7.0
+ansible-lint==25.8.1
     # via -r test-requirements.in
 attrs==25.3.0
     # via
@@ -36,7 +36,7 @@ cryptography==45.0.6
     # via ansible-core
 enrich==1.2.7
     # via molecule
-filelock==3.18.0
+filelock==3.19.1
     # via ansible-lint
 importlib-metadata==8.7.0
     # via ansible-lint
