@@ -13,7 +13,7 @@ ansible-core==2.19.0
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==25.8.1
+ansible-lint==25.8.2
     # via -r test-requirements.in
 attrs==25.3.0
     # via
@@ -46,7 +46,7 @@ jinja2==3.1.6
     # via
     #   ansible-core
     #   molecule
-jsonschema==4.25.0
+jsonschema==4.25.1
     # via
     #   ansible-compat
     #   ansible-lint
@@ -120,7 +120,7 @@ rpds-py==0.27.0
     # via
     #   jsonschema
     #   referencing
-ruamel-yaml==0.18.14
+ruamel-yaml==0.18.15
     # via ansible-lint
 ruamel-yaml-clib==0.2.12
     # via ruamel-yaml
