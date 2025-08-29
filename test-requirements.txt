@@ -4,16 +4,16 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible-compat==25.6.0
+ansible-compat==25.8.1
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.19.0
+ansible-core==2.19.1
     # via
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==25.7.0
+ansible-lint==25.8.2
     # via -r test-requirements.in
 attrs==25.3.0
     # via
@@ -36,7 +36,7 @@ cryptography==45.0.6
     # via ansible-core
 enrich==1.2.7
     # via molecule
-filelock==3.18.0
+filelock==3.19.1
     # via ansible-lint
 importlib-metadata==8.7.0
     # via ansible-lint
@@ -46,7 +46,7 @@ jinja2==3.1.6
     # via
     #   ansible-core
     #   molecule
-jsonschema==4.25.0
+jsonschema==4.25.1
     # via
     #   ansible-compat
     #   ansible-lint
@@ -80,7 +80,7 @@ pathspec==0.12.1
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==4.3.8
+platformdirs==4.4.0
     # via black
 pluggy==1.6.0
     # via
@@ -116,11 +116,11 @@ rich==14.1.0
     # via
     #   enrich
     #   molecule
-rpds-py==0.27.0
+rpds-py==0.27.1
     # via
     #   jsonschema
     #   referencing
-ruamel-yaml==0.18.14
+ruamel-yaml==0.18.15
     # via ansible-lint
 ruamel-yaml-clib==0.2.12
     # via ruamel-yaml
@@ -128,7 +128,7 @@ subprocess-tee==0.4.2
     # via
     #   ansible-compat
     #   ansible-lint
-typing-extensions==4.14.1
+typing-extensions==4.15.0
     # via referencing
 wcmatch==10.1
     # via
