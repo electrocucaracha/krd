@@ -8,7 +8,7 @@ ansible-compat==25.8.1
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.19.0
+ansible-core==2.19.1
     # via
     #   ansible-compat
     #   ansible-lint
@@ -80,7 +80,7 @@ pathspec==0.12.1
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==4.3.8
+platformdirs==4.4.0
     # via black
 pluggy==1.6.0
     # via
@@ -116,7 +116,7 @@ rich==14.1.0
     # via
     #   enrich
     #   molecule
-rpds-py==0.27.0
+rpds-py==0.27.1
     # via
     #   jsonschema
     #   referencing
@@ -128,7 +128,7 @@ subprocess-tee==0.4.2
     # via
     #   ansible-compat
     #   ansible-lint
-typing-extensions==4.14.1
+typing-extensions==4.15.0
     # via referencing
 wcmatch==10.1
     # via
