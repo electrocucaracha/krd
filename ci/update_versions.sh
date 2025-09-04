@@ -237,6 +237,9 @@ wget -q -O ./resources/checkov-job.yaml https://raw.githubusercontent.com/bridge
 # Update Metrics server
 sed -i "s|image.tag=.*|image.tag=v$(get_version docker_tag rancher/metrics-server),args[0]='--kubelet-insecure-tls',args[1]='--kubelet-preferred-address-types=InternalIP'\" _install_chart metrics-server metrics-server/metrics-server default|g" _chart_installers.sh
 
+# Update LLM Lite image
+sed -i "s|image: ghcr.io/berriai/litellm:.*|image: ghcr.io/berriai/litellm:main-v$(get_version github_release BerriAI/litellm)|g" ./resources/litellm.yml
+
 # Update Rook test resources
 rook_version=$(get_version github_tag rook/rook)
 wget -q -O ./tests/resources/rook/cluster-test.yaml "https://raw.githubusercontent.com/rook/rook/refs/tags/v$rook_version/deploy/examples/cluster-test.yaml"
