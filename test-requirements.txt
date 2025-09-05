@@ -32,7 +32,7 @@ click==8.2.1
     #   molecule
 click-help-colors==0.9.4
     # via molecule
-cryptography==45.0.6
+cryptography==45.0.7
     # via ansible-core
 enrich==1.2.7
     # via molecule
@@ -92,7 +92,7 @@ pygments==2.19.2
     # via
     #   pytest
     #   rich
-pytest==8.4.1
+pytest==8.4.2
     # via pytest-testinfra
 pytest-testinfra==10.2.2
     # via -r test-requirements.in
