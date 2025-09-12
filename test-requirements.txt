@@ -8,7 +8,7 @@ ansible-compat==25.8.1
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.19.1
+ansible-core==2.19.2
     # via
     #   ansible-compat
     #   ansible-lint
@@ -23,7 +23,7 @@ black==25.1.0
     # via ansible-lint
 bracex==2.6
     # via wcmatch
-cffi==1.17.1
+cffi==2.0.0
     # via cryptography
 click==8.2.1
     # via
@@ -32,7 +32,7 @@ click==8.2.1
     #   molecule
 click-help-colors==0.9.4
     # via molecule
-cryptography==45.0.6
+cryptography==45.0.7
     # via ansible-core
 enrich==1.2.7
     # via molecule
@@ -51,7 +51,7 @@ jsonschema==4.25.1
     #   ansible-compat
     #   ansible-lint
     #   molecule
-jsonschema-specifications==2025.4.1
+jsonschema-specifications==2025.9.1
     # via jsonschema
 markdown-it-py==4.0.0
     # via rich
@@ -86,13 +86,13 @@ pluggy==1.6.0
     # via
     #   molecule
     #   pytest
-pycparser==2.22
+pycparser==2.23
     # via cffi
 pygments==2.19.2
     # via
     #   pytest
     #   rich
-pytest==8.4.1
+pytest==8.4.2
     # via pytest-testinfra
 pytest-testinfra==10.2.2
     # via -r test-requirements.in
