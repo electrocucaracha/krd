@@ -29,6 +29,8 @@ jobs:
     if: >-
       ( github.event_name == 'pull_request_review' && github.event.review.state == 'approved' ) || github.event_name != 'pull_request_review'
     runs-on: vm-self-hosted
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -39,6 +41,8 @@ jobs:
             cert-mgr: true
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # 5.0.0
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/vagrant-up
         with:
           cert-manager-enabled: ${{ matrix.cert-mgr }}
