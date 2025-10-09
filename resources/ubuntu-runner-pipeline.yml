@@ -104,7 +104,7 @@ spec:
                             - python3-pip
                             - python3-venv
                             - rsync
-                            - virtualbox-7.1
+                            - virtualbox-7.2
                             - vagrant
                           bootcmd:
                             - "sudo mkdir /opt/runner"
