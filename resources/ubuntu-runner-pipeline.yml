@@ -113,7 +113,7 @@ spec:
                             - "sudo ln -s /usr/bin/python3 /usr/bin/python"
                             - "sudo /opt/runner/bin/installdependencies.sh"
                             - "sudo chown -R runner: /opt/runner"
-                            - "sudo runuser -l runner -c 'vagrant box add --provider virtualbox generic/ubuntu2204'"
+                            - "sudo runuser -l runner -c 'vagrant box add --provider virtualbox http://nuc10-node06/generic/ubuntu2204/metadata.json'"
                           write_files:
                             - path: /etc/profile.d/vagrant.sh
                               content: |
@@ -236,3 +236,30 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: ubuntu-runner-deployer-account
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nuc10-node06
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: nuc10-node06-01
+  labels:
+    kubernetes.io/service-name: nuc10-node06
+addressType: IPv4
+ports:
+  - name: http
+    appProtocol: http
+    protocol: TCP
+    port: 80
+endpoints:
+  - addresses:
+      - "192.168.1.100"
