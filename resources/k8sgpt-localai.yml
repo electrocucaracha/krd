@@ -18,5 +18,5 @@ spec:
     backend: localai
     baseUrl: http://local-ai.local-ai-system.svc.cluster.local:8080/v1
     enabled: true
-  version: v0.4.24
+  version: v0.4.26
   noCache: false
