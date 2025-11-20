@@ -1,5 +1,5 @@
 ansible-lint # MIT
-molecule # MIT
+molecule==25.1.0 # MIT
 molecule-plugins[vagrant] # MIT
 pytest-testinfra # Apache-2.0
 yamllint # GPLv3
