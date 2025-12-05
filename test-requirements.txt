@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible-compat==25.11.0
+ansible-compat==25.12.0
     # via
     #   ansible-lint
     #   molecule
@@ -13,7 +13,7 @@ ansible-core==2.20.0
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==25.11.0
+ansible-lint==25.12.0
     # via -r test-requirements.in
 attrs==25.4.0
     # via
@@ -43,8 +43,6 @@ distro==1.9.0
 enrich==1.2.7
     # via molecule
 filelock==3.20.0
-    # via ansible-lint
-importlib-metadata==8.7.0
     # via ansible-lint
 iniconfig==2.3.0
     # via pytest
@@ -124,7 +122,7 @@ rich==14.2.0
     # via
     #   enrich
     #   molecule
-rpds-py==0.29.0
+rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
@@ -148,5 +146,3 @@ yamllint==1.37.1
     # via
     #   -r test-requirements.in
     #   ansible-lint
-zipp==3.23.0
-    # via importlib-metadata
