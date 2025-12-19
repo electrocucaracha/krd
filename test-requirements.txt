@@ -8,18 +8,18 @@ ansible-compat==25.12.0
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.20.0
+ansible-core==2.20.1
     # via
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==25.12.0
+ansible-lint==25.12.1
     # via -r test-requirements.in
 attrs==25.4.0
     # via
     #   jsonschema
     #   referencing
-black==25.11.0
+black==25.12.0
     # via ansible-lint
 bracex==2.6
     # via wcmatch
@@ -42,7 +42,7 @@ distro==1.9.0
     # via ansible-lint
 enrich==1.2.7
     # via molecule
-filelock==3.20.0
+filelock==3.20.1
     # via ansible-lint
 iniconfig==2.3.0
     # via pytest
@@ -84,7 +84,7 @@ pathspec==0.12.1
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==4.5.0
+platformdirs==4.5.1
     # via black
 pluggy==1.6.0
     # via
@@ -96,7 +96,7 @@ pygments==2.19.2
     # via
     #   pytest
     #   rich
-pytest==9.0.1
+pytest==9.0.2
     # via pytest-testinfra
 pytest-testinfra==10.2.2
     # via -r test-requirements.in
@@ -126,7 +126,7 @@ rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
-ruamel-yaml==0.18.16
+ruamel-yaml==0.18.17
     # via ansible-lint
 ruamel-yaml-clib==0.2.15
     # via
