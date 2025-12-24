@@ -99,7 +99,7 @@ else
     - name: public-net
       ip: "10.10.16.3"
   memory: 4096
-  cpus: 1
+  cpus: 2
   storage_controllers:
     - name: Virtual I/O Device SCSI controller
       type: virtio-scsi
