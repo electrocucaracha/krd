@@ -377,3 +377,17 @@ function install_litellm {
     kubectl apply -f "$KRD_FOLDER/resources/litellm.yml"
     wait_for_pods litellm-system
 }
+
+# install_external_snapshotter() Install CSI Snapshotter
+function install_external_snapshotter {
+    external_snapshotter_version=$(_get_version external_snapshotter)
+
+    kubectl apply -f "https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/$external_snapshotter_version/client/config/crd/snapshot.storage.k8s.io_volumesnapshotclasses.yaml"
+    kubectl apply -f "https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/$external_snapshotter_version/client/config/crd/snapshot.storage.k8s.io_volumesnapshotcontents.yaml"
+    kubectl apply -f "https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/$external_snapshotter_version/client/config/crd/snapshot.storage.k8s.io_volumesnapshots.yaml"
+
+    # Deploy snapshot controller
+    kubectl apply -f "https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/$external_snapshotter_version/deploy/kubernetes/snapshot-controller/rbac-snapshot-controller.yaml"
+    kubectl apply -f "https://raw.githubusercontent.com/kubernetes-csi/external-snapshotter/$external_snapshotter_version/deploy/kubernetes/snapshot-controller/setup-snapshot-controller.yaml"
+    kubectl rollout status deployment/snapshot-controller -n kube-system --timeout=5m
+}

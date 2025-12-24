@@ -176,6 +176,7 @@ sed -i "s/argocd_version:.*/argocd_version: v$(get_version github_tag argoproj/a
 sed -i "s/tekton_version:.*/tekton_version: v$(get_version github_tag tektoncd/operator)/g" ./playbooks/krd-vars.yml
 sed -i "s/kubevirt_tekton_tasks_version:.*/kubevirt_tekton_tasks_version: v$(get_version github_tag kubevirt/kubevirt-tekton-tasks)/g" ./playbooks/krd-vars.yml
 sed -i "s/kagent_version:.*/kagent_version: $(get_version github_tag kagent-dev/kagent)/g" ./playbooks/krd-vars.yml
+sed -i "s/external_snapshotter_version:.*/external_snapshotter_version: v$(get_version github_release kubernetes-csi/external-snapshotter)/g" ./playbooks/krd-vars.yml
 
 # editorconfig-checker-disable
 cat <<EOT >galaxy-requirements.yml
