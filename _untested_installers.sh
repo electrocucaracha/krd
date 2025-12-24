@@ -326,7 +326,7 @@ spec:
   persistence:
     storageClass: ""        # If there is not a default StorageClass in your cluster, you need to specify an existing StorageClass here.
   authentication:
-    jwtSecret: ""           # Keep the jwtSecret consistent with the host cluster. Retrive the jwtSecret by executing "kubectl -n kubesphere-system get cm kubesphere-config -o yaml | grep -v "apiVersion" | grep jwtSecret" on the host cluster.
+    jwtSecret: ""           # Keep the jwtSecret consistent with the host cluster. Retrieve the jwtSecret by executing "kubectl -n kubesphere-system get cm kubesphere-config -o yaml | grep -v "apiVersion" | grep jwtSecret" on the host cluster.
   etcd:
     monitoring: false       # Whether to enable etcd monitoring dashboard installation. You have to create a secret for etcd before you enable it.
     endpointIps: localhost  # etcd cluster EndpointIps, it can be a bunch of IPs here.
