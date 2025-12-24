@@ -358,7 +358,7 @@ function install_argocd {
 function install_tekton {
     tekton_version=$(_get_version tekton)
 
-    kubectl apply -f "https://storage.googleapis.com/tekton-releases/operator/previous/$tekton_version/release.yaml"
+    kubectl apply -f "https://infra.tekton.dev/tekton-releases/operator/previous/$tekton_version/release.yaml"
     wait_for_pods tekton-operator
 
     kubectl apply -f "https://raw.githubusercontent.com/tektoncd/operator/refs/tags/$tekton_version/config/crs/kubernetes/config/${KRD_TEKTON_OPERATOR_PROFILE-lite}/operator_v1alpha1_config_cr.yaml"
