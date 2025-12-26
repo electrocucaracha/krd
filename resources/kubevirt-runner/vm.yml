@@ -28,9 +28,6 @@ spec:
       terminationGracePeriodSeconds: 30
       domain:
         devices:
-          filesystems:
-            - name: runner-info
-              virtiofs: {}
           disks:
             - name: os
               disk:
@@ -62,7 +59,7 @@ spec:
             userData: |-
               #cloud-config
               mounts:
-                - [ runner-info, /runner-info/, virtiofs, "rw,relatime,user=runner" ]
+                - [ runner-info, /runner-info/, auto, "rw,relatime,user=runner" ]
               runcmd:
                 - "sudo runuser -l runner -c '/opt/runner/run.sh --jitconfig $(jq -r '.jitconfig' /runner-info/runner-info.json)'"
                 - sleep 30

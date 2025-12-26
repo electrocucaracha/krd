@@ -13,7 +13,7 @@ ansible-core==2.20.1
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==25.12.1
+ansible-lint==25.12.2
     # via -r test-requirements.in
 attrs==25.4.0
     # via
