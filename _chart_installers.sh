@@ -327,8 +327,7 @@ function install_topolvm {
     for class in $(kubectl get storageclasses --no-headers -o custom-columns=name:.metadata.name); do
         kubectl patch storageclass "$class" -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
     done
-    KRD_CHART_VALUES="lvmd.deviceClasses[0].name=ssd,lvmd.deviceClasses[0].default=true,lvmd.deviceClasses[0].spare-gb=10,lvmd.deviceClasses[0].volume-group=${KRD_TOPOLVM_VOLUME_GROUP_NAME-myvg1},cert-manager.enabled=$cert_manager_deployed,controller.replicaCount=$replica_count" _install_chart topolvm topolvm/topolvm
-    kubectl patch storageclass topolvm-provisioner -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+    KRD_CHART_FILE="helm/topolvm/runners.yml" KRD_CHART_VALUES="lvmd.deviceClasses[0].name=ssd,lvmd.deviceClasses[0].default=true,lvmd.deviceClasses[0].spare-gb=10,lvmd.deviceClasses[0].volume-group=${KRD_TOPOLVM_VOLUME_GROUP_NAME-myvg1},cert-manager.enabled=$cert_manager_deployed,controller.replicaCount=$replica_count" _install_chart topolvm topolvm/topolvm
 }
 
 # install_fluent() - Installs Fluent for taking care of the log collection, parsing and distribution
