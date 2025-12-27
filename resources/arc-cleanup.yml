@@ -63,7 +63,7 @@ metadata:
   name: ephemeralrunners-garbage-collector
   namespace: arc-system
 spec:
-  schedule: "0 */1 * * *"
+  schedule: "0 */3 * * *"
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 1
   successfulJobsHistoryLimit: 3
@@ -75,7 +75,7 @@ spec:
           serviceAccount: cleaner
           containers:
             - name: kubectl
-              image: alpine/k8s:1.32.0
+              image: alpine/k8s:1.35.0
               command:
                 - /bin/bash
                 - -c
@@ -100,7 +100,7 @@ spec:
           serviceAccount: cleaner
           containers:
             - name: kubectl
-              image: alpine/k8s:1.32.0
+              image: alpine/k8s:1.35.0
               command:
                 - /bin/bash
                 - -c
@@ -125,7 +125,7 @@ spec:
           serviceAccount: cleaner
           containers:
             - name: kubectl
-              image: alpine/k8s:1.32.0
+              image: alpine/k8s:1.35.0
               command:
                 - /bin/bash
                 - -c

@@ -256,6 +256,9 @@ sed -i "s/version: .*/version: v$k8sgpt_version/g" resources/k8sgpt-openai_inclu
 # Update GitHub Runner
 sed -i "s/default: .*/default: $(get_version github_release actions/runner)/g" resources/ubuntu-runner-pipeline.yml
 
+# Update ARC Garbage collector resources
+sed -i "s|image: alpine/k8s:.*|image: alpine/k8s:$(get_version docker_tag alpine/k8s)|g" resources/arc-cleanup.yml
+
 # Update GitHub Action commit hashes
 gh_actions=$(grep -r "uses: [a-zA-Z\-]*/[\_a-z\-]*@" .github/ | sed 's/@.*//' | awk -F ': ' '{ print $3 }' | sort -u)
 for action in $gh_actions; do
