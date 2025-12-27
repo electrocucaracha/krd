@@ -10,7 +10,6 @@
 | [on-demand_molecule](./on-demand_molecule.yml) | Runs unit tests for Ansible roles                                            | on new commit/push on master |
 | [on-demand_multus](./on-demand_multus.yml)     | Deploys a basic cluster on a Virtual environment with Multus CNI enabled     | on new commit/push on master |
 | [on-demand_virtlet](./on-demand_virtlet.yml)   | Verifies that CRIproxy and Virtlet services works                            | on new commit/push on master |
-| [rebase](./rebase.yml)                         | Helps to rebase changes of the Pull request                                  | manual trigger               |
 | [scheduled_ci](./scheduled_ci.yml)             | Verifies Kubernetes Dashboard operation                                      | scheduled/manual trigger     |
 | [scheduled_distros](./scheduled_distros.yml)   | Validation in all the Linux distros supported (CNI and CRI combinations)     | scheduled/manual trigger     |
 | [spell](./spell.yml)                           | Verifies spelling errors on documentation                                    | on new commit/push on master |
