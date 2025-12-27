@@ -34,7 +34,7 @@ with diagrams.Diagram(filename="krd", direction="BT"):
         for net in node["networks"]:
             ips += net["ip"] + "\n"
         with diagrams.Cluster(
-            f'{node["name"]} ({node["cpus"]} vCPUs, {node["memory"]} KB)\n{ips[:-1]}'
+            f"{node['name']} ({node['cpus']} vCPUs, {node['memory']} KB)\n{ips[:-1]}"
         ):
             if node["os"]["name"] == "ubuntu":
                 nodes.append(Ubuntu())

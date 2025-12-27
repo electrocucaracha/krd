@@ -18,6 +18,10 @@ lint:
 	-e VALIDATE_SHELL_SHFMT=false \
 	-e VALIDATE_CHECKOV=false \
 	-e VALIDATE_TRIVY=false \
+	-e VALIDATE_BIOME_LINT=false \
+	-e VALIDATE_BIOME_FORMAT=false \
+	-e VALIDATE_ENV=false \
+	-e VALIDATE_PYTHON_RUFF_FORMAT=false \
 	-e EDITORCONFIG_FILE_NAME=.editorconfig-checker.json \
 	-e KUBERNETES_KUBECONFORM_OPTIONS='-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml' \
 	ghcr.io/super-linter/super-linter

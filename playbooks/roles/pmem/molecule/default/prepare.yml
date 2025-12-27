@@ -52,18 +52,18 @@
         append: true
     - name: Get k8s clusters
       ansible.builtin.command: "{{ kind_dest }}/kind get clusters --quiet"
-      register: kind_cluster
+      register: pmem_kind_cluster
       failed_when: (kind_cluster.rc not in [0, 1])
       changed_when: false
     - name: Print kind_cluster value
       ansible.builtin.debug:
-        var: kind_cluster
+        var: pmem_kind_cluster
     - name: Create k8s cluster
       block:
         - name: Create k8s cluster
           become: true
           ansible.builtin.command: "{{ kind_dest }}/kind create cluster --name molecule --wait=300s --retain"
-          when: not 'molecule' in kind_cluster.stdout
+          when: not 'molecule' in pmem_kind_cluster.stdout
           changed_when: true
         - name: Create kubeconfig folder
           ansible.builtin.file:
