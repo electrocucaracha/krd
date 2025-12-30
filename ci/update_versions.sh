@@ -217,12 +217,10 @@ EOT
 # Udpate Playbook default versions
 # NOTE: There is no images released for minor versions https://hub.docker.com/r/nfvpe/sriov-cni/tags
 #sed -i "s/sriov_cni_version:.*/sriov_cni_version: v$(get_version github_tag k8snetworkplumbingwg/sriov-cni)/g" ./playbooks/roles/sriov_cni/defaults/main.yml
-sed -i "s/criproxy_version:.*/criproxy_version: $(get_version github_tag Mirantis/criproxy)/g" ./playbooks/roles/criproxy/defaults/main.yml
 sed -i "s/pmem_version:.*/pmem_version: v$(get_version github_tag intel/pmem-csi)/g" ./playbooks/roles/pmem/defaults/main.yml
 sed -i "s/driver_registrar_version:.*/driver_registrar_version: v$(get_version github_tag kubernetes-csi/node-driver-registrar)/g" ./playbooks/roles/pmem/defaults/main.yml
 sed -i "s/csi_provisioner_version:.*/csi_provisioner_version: v$(get_version github_tag kubernetes-csi/external-provisioner)/g" ./playbooks/roles/pmem/defaults/main.yml
 sed -i "s/cfssl_version:.*/cfssl_version: $(get_version github_tag cloudflare/cfssl)/g" ./playbooks/roles/pmem/defaults/main.yml
-sed -i "s/virtlet_version:.*/virtlet_version: $(get_version github_tag Mirantis/virtlet)/g" ./playbooks/roles/virtlet/defaults/main.yml
 sed -i "s/sriov_plugin_version:.*/sriov_plugin_version: v$(get_version docker_tag nfvpe/sriov-device-plugin)/g" ./playbooks/roles/sriov_plugin/defaults/main.yml
 sed -i "s/nfd_version:.*/nfd_version: v$(get_version github_release kubernetes-sigs/node-feature-discovery)/g" ./playbooks/roles/nfd/defaults/main.yml
 

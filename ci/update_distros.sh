@@ -89,7 +89,6 @@ _vagrant_pull "bullseye" "debian/bullseye64"
 echo "rocky:" >>.distros_supported.yml
 _vagrant_pull "9" "community/rockylinux-9"
 echo "ubuntu:" >>.distros_supported.yml
-_vagrant_pull "bionic" "generic/ubuntu1804" # NOTE: Required for Virtlet testing
 _vagrant_pull "focal" "generic/ubuntu2004"
 _vagrant_pull "jammy" "generic/ubuntu2204"
 echo "opensuse:" >>.distros_supported.yml

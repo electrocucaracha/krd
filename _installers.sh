@@ -168,15 +168,6 @@ function install_k8s_addons {
     _run_ansible_cmd "$krd_playbooks/configure-addons.yml" "setup-addons.log" "$KRD_ADDONS_LIST"
 }
 
-# install_virtlet() - Install Virtlet
-function install_virtlet {
-    _configure_ansible
-    _ansible_galaxy_install role
-    _ansible_galaxy_install collection
-
-    _run_ansible_cmd "$krd_playbooks/configure-virtlet.yml" "setup-virtlet.log"
-}
-
 # install_istio() - Function that installs Istio
 # Resources requests (600m CPU + 2,176Mi):
 # Resources limits (2000m CPU + 1Gi):

@@ -16,9 +16,6 @@ rocky:
     name: community/rockylinux-9
     version: "1.0.0"
 ubuntu:
-  bionic:
-    name: generic/ubuntu1804
-    version: "4.3.12"
   focal:
     name: generic/ubuntu2004
     version: "4.3.12"

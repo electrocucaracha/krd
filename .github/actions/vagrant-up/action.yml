@@ -73,9 +73,6 @@ inputs:
     default: false
   int-tests:
     description: "List of KRD integration tests"
-  test-virtlet:
-    description: "Validate Virtlet services"
-    default: false
   run-conformance-tools:
     description: "Run conformance tools"
     default: false
@@ -134,7 +131,6 @@ runs:
         KRD_KUBESPRAY_VERSION: ${{ inputs.kubespray-version }}
         KRD_ENABLE_TESTS: ${{ inputs.enable-tests }}
         KRD_INT_TESTS: ${{ inputs.int-tests }}
-        TEST_VIRTLET: ${{ inputs.test-virtlet }}
         RUN_CONFORMANCE_TOOLS: ${{ inputs.run-conformance-tools }}
         KRD_KATA_CONTAINERS_ENABLED: ${{ inputs.kata-containers-enabled }}
         KRD_CRUN_ENABLED: ${{ inputs.crun-enabled }}

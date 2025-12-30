@@ -88,11 +88,6 @@ function _run_benchmarks {
     run_installer_cmd . ./krd_command.sh -a run_k8s_iperf
 }
 
-function _test_virtlet {
-    info "Testing Virtlet services"
-    run_installer_cmd . KRD_ENABLE_TESTS=true KRD_ADDONS_LIST=virtlet ./krd_command.sh -a install_k8s_addons
-}
-
 function _test_runtime_classes {
     info "Testing Kubernetes Runtime Classes"
     run_installer_cmd tests ./runtimeclasses.sh
@@ -113,9 +108,6 @@ trap _exit_trap ERR
 _run_assertions
 if [[ ${KRD_ENABLE_TESTS:-false} == "true" ]]; then
     _run_integration_tests
-fi
-if [[ ${TEST_VIRTLET:-false} == "true" ]]; then
-    _test_virtlet
 fi
 if [[ ${KRD_KATA_CONTAINERS_ENABLED:-false} == "true" ]] || [[ ${KRD_CRUN_ENABLED:-false} == "true" ]] || [[ ${KRD_GVISOR_ENABLED:-false} == "true" ]]; then
     _test_runtime_classes
