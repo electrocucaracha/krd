@@ -114,6 +114,7 @@ spec:
                             - "sudo /opt/runner/bin/installdependencies.sh"
                             - "sudo chown -R runner: /opt/runner"
                             - "sudo runuser -l runner -c 'vagrant box add --provider virtualbox http://nuc10-node06/generic/ubuntu2204/metadata.json'"
+                            - "sudo runuser -l runner -c 'vagrant box add --provider virtualbox http://nuc10-node06/generic/ubuntu2404/metadata.json'"
                           write_files:
                             - path: /etc/profile.d/vagrant.sh
                               content: |
