@@ -143,4 +143,15 @@ runs:
       if: failure()
       shell: bash
       run: |
-        VBoxManage list runningvms --long
+        echo "===== SYSTEM ====="
+        uptime
+        echo "===== MEMORY ====="
+        free -h
+        vmstat 1 5
+        cat /proc/meminfo | head -n 20
+        echo "===== DISK ====="
+        sudo df -h
+        echo "===== VBOX LOGS ====="
+        tail -n 200 ~/.config/VirtualBox/VBoxSVC.log 2>/dev/null || true
+        echo "===== KERNEL ====="
+        sudo dmesg -T | tail -n 100
