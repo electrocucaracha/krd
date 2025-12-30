@@ -15,8 +15,6 @@ set -o pipefail
 # shellcheck source=tests/_functions.sh
 source _functions.sh
 
-trap get_status ERR
-
 function _run_test {
     local test="$1"
     # shellcheck disable=SC2064

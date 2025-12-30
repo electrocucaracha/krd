@@ -151,3 +151,5 @@ function _get_kube_version {
 if ! command -v kubectl >/dev/null; then
     error "This functional test requires kubectl client"
 fi
+
+trap get_status ERR
