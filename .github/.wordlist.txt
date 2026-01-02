@@ -18,12 +18,9 @@ codebase
 config
 CONTAINERD
 contiv
-CRI
-criproxy
 CrossSubnet
 CRUN
 CSI
-datasets
 DEVOPS
 DNS
 DNSCache
@@ -64,7 +61,6 @@ KUBESPRAY
 Kubespray's
 Kubevirt
 Kubewarden
-KVM
 Kyverno
 libndctl
 Libvirt
@@ -94,15 +90,11 @@ pre
 PROVISIONER
 PRs
 QAT
-QCOW
-qemu
 QuickAssist
 README
 rebase
 REPO
 RESOLVCONF
-runtime
-runtimes
 Scc
 Serverless
 SERVICEMESH
@@ -123,8 +115,6 @@ VFs
 Virtink
 VirtualBox
 VM
-VMs
-vmwrapper
 VXLAN
 WEBHOOK
 WIP
