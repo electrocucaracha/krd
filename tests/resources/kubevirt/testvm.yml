@@ -27,19 +27,21 @@ spec:
             - name: cloudinitdisk
               disk:
                 bus: virtio
+          networkInterfaceMultiqueue: false
           interfaces:
             - name: default
               masquerade: {}
+              model: virtio
         resources:
           requests:
-            memory: 64M
+            memory: 256M
       networks:
         - name: default
           pod: {}
       volumes:
         - name: containerdisk
           containerDisk:
-            image: quay.io/kubevirt/cirros-container-disk-demo
+            image: quay.io/kubevirt/alpine-with-test-tooling-container-disk:v1.7.0
         - name: cloudinitdisk
           cloudInitNoCloud:
             userData: |
