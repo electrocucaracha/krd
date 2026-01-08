@@ -272,10 +272,6 @@ function install_kubevirt {
     max_attempts=5
 
     kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-operator.yaml"
-    # TODO: Fix the following instruction to get targets information
-    if ! grep 'svm\|vmx' /proc/cpuinfo && ! kubectl get configmap -n kubevirt kubevirt-config; then
-        kubectl create configmap kubevirt-config -n kubevirt --from-literal debug.useEmulation=true
-    fi
     kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${kubevirt_version}/kubevirt-cr.yaml"
     _install_krew_plugin virt
 
@@ -291,8 +287,18 @@ function install_kubevirt {
     done
     wait_for_pods kubevirt
 
+    # TODO: Fix the following instruction to get targets information
+    if ! grep 'svm\|vmx' /proc/cpuinfo; then
+        kubectl patch kubevirts.kubevirt.io kubevirt -n kubevirt --type merge -p '{"spec":{"configuration":{"developerConfiguration":{"useEmulation":true}}}}'
+    fi
+
     # CPU Allocation Ratio
     kubectl patch kubevirts.kubevirt.io -n kubevirt kubevirt --type merge -p "{\"spec\" :{\"configuration\": {\"developerConfiguration\": {\"cpuAllocationRatio\": ${KRD_KUBEVIRT_CPU_ALLOCATION_RATIO-5} }}}}"
+
+    # Enable required features
+    kubectl patch kubevirts.kubevirt.io kubevirt -n kubevirt --type merge -p '{"spec":{"configuration":{"developerConfiguration":{"featureGates":["HostDevices","EnableVirtioFsConfigVolumes","EnableVirtioFsStorageVolumes"]}}}}'
+    kubectl rollout restart daemonset virt-handler -n kubevirt
+
     _install_containerized_data_importer
 }
 
