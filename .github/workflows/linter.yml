@@ -40,7 +40,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Check broken links
-        uses: gaurav-nelson/github-action-markdown-link-check@4a1af151f4d7cf4d8f8ac5780597672a3671b88b # 1.0.17
+        uses: tcort/github-action-markdown-link-check@e7c7a18363c842693fadde5d41a3bd3573a7a225 # 1.1.2
   check-super-linter:
     name: Check syntax (super-linter)
     runs-on: ubuntu-latest
@@ -103,6 +103,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           title-template: "Super-linter has failed"
+          create-label: false
           body-template: |
             The linter step has failed. Please check for new major versions and update manually.
 
