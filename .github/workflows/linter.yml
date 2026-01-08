@@ -48,6 +48,7 @@ jobs:
       contents: read
       packages: read
       statuses: write
+      models: read
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # 6.0.1
         with:
@@ -68,6 +69,47 @@ jobs:
           EDITORCONFIG_FILE_NAME: .editorconfig-checker.json
           KUBERNETES_KUBECONFORM_OPTIONS: "-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml"
           DEFAULT_BRANCH: ${{ github.head_ref || github.ref_name }}
+      - uses: GrantBirki/git-diff-action@7420e4d095c27bb23359787640976d60c94fd216 # 2.8.1
+        id: git-diff
+        if: failure()
+      - name: Get failed linter logs
+        id: get-failed-linters
+        if: failure()
+        run: |
+          find ./super-linter-output/super-linter/ -name '*.json' -exec sh -c 'jq -e ".Exitval != 0" "$1" >/dev/null && printf "%s\0" "$1"' _ {} \; | xargs -0 jq -s '.' > linter-errors.json
+      - uses: actions/ai-inference@334892bb203895caaed82ec52d23c1ed9385151e # 2.0.4
+        id: ai-linter-analysis
+        if: failure()
+        with:
+          model: mistral-ai/Ministral-3B
+          input: |
+            diff: ${{ steps.git-diff.outputs.raw-diff }}
+          prompt-file: ./linter-errors.json
+          system-prompt: |
+            You are an expert software engineer who specializes in diagnosing and fixing software build and runtime failures. Always provide structured reasoning and propose concrete fixes when possible.
+
+            Task: Analyze the logs of the super-linter-output/ folder from the failed `ubuntu-latest` CI workflow run. Cross-reference the errors with the code diff to determine the root cause of the failure.
+            {{ diff }}
+
+            Objectives:
+            1. **Diagnosis:** Identify patterns, anomalies, or dependencies that could explain the failure. What is the most probable root cause?
+            2. **Reasoning:** Explain why this root cause is plausible — referencing specific log lines, timestamps, or stack traces.
+            3. **Resolution:** If a fix is evident, describe your reasoning process and propose an exact code or configuration change. Present your solution as a unified diff (diff format).
+            4. **Reflection:** If no clear fix is identifiable, summarize which parts of the log are ambiguous and what further information would be needed to proceed.
+
+            Goal: Deliver an insightful and technically sound explanation that not only solves the issue but also strengthens understanding of the system's behavior and failure patterns.
+      - uses: jayqi/failed-build-issue-action@1a893bbf43ef1c2a8705e2b115cd4f0fe3c5649b # 1.2.0
+        if: failure()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          title-template: "Super-linter has failed"
+          body-template: |
+            The linter step has failed. Please check for new major versions and update manually.
+
+            Please check the [logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for more details.
+
+            ## AI Analysis of Linter Failures
+            ${{ steps.ai-linter-analysis.outputs.response }}
   check-tox:
     name: Check syntax (tox)
     runs-on: ubuntu-latest
