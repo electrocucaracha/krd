@@ -28,6 +28,7 @@ spec:
       terminationGracePeriodSeconds: 30
       domain:
         devices:
+          networkInterfaceMultiqueue: true
           filesystems:
             - name: runner-info
               virtiofs: {}
@@ -40,7 +41,8 @@ spec:
                 bus: virtio
           interfaces:
             - name: default
-              masquerade: {}
+              bridge: {}
+              model: virtio
         cpu:
           model: host-passthrough
           cores: 4
