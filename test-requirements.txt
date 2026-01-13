@@ -42,7 +42,7 @@ distro==1.9.0
     # via ansible-lint
 enrich==1.2.7
     # via molecule
-filelock==3.20.1
+filelock==3.20.3
     # via ansible-lint
 iniconfig==2.3.0
     # via pytest
