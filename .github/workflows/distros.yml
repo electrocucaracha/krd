@@ -20,7 +20,7 @@ jobs:
       pull-requests: write # for technote-space/create-pr-action to create a PR
     runs-on: vm-self-hosted
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # 6.0.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
         with:
           persist-credentials: false
       - uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # 5.0.1
