@@ -9,7 +9,7 @@
 ##############################################################################
 roles:
   - name: geerlingguy.docker
-    version: 7.9.0
+    version: 8.0.0
   - name: geerlingguy.repo-epel
     version: 3.1.1
   - name: andrewrothstein.gcc-toolbox
@@ -17,7 +17,7 @@ roles:
   - name: andrewrothstein.kind
     version: v1.2.17
   - name: andrewrothstein.kubectl
-    version: v1.4.8
+    version: v1.5.0
 collections:
   - name: kubernetes.core
     version: 6.2.0
