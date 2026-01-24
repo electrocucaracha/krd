@@ -32,38 +32,39 @@ You can start with the [default configuration](config/default.yml) or explore [t
 
 KRD integrates a wide range of Kubernetes-related components for testing, benchmarking, or production experimentation:
 
-|   Component    | Description                         | Source                 |     Status     |
-| :------------: | :---------------------------------- | :--------------------- | :------------: |
-|   Kubernetes   | Base Kubernetes deployment          | [kubespray][1]         |    ✅ Done     |
-|    Kubevirt    | VM workloads on Kubernetes          |                        |   ✅ Tested    |
-|    Virtink     | VM workloads on Kubernetes          |                        |   ✅ Tested    |
-|     Multus     | Multi-network pod support           |                        |   ✅ Tested    |
-|      NFD       | Node Feature Discovery              | [nfd role][4]          |   ✅ Tested    |
-|     Istio      | Service Mesh                        |                        |   ✅ Tested    |
-|      PMEM      | Persistent Memory CSI               | [pmem role][6]         | 🚧 Implemented |
-|      QAT       | Intel QuickAssist support           | [qat_plugin role][8]   |   ✅ Tested    |
-|     SR-IOV     | SR-IOV Plugin                       | [sriov_plugin role][9] | 🚧 Implemented |
-|    Knative     | Serverless platform                 |                        |   ✅ Tested    |
-|      Kong      | Ingress Controller                  |                        |   ✅ Tested    |
-|    HAProxy     | Ingress Controller                  |                        |   ✅ Tested    |
-|    MetalLB     | Network load balancer               |                        |   ✅ Tested    |
-|     Falco      | Security runtime monitoring         |                        |   ✅ Tested    |
-|      Rook      | Storage Operator                    |                        |   ✅ Tested    |
-| OPA Gatekeeper | Policy Enforcement                  |                        |   ✅ Tested    |
-|    Kyverno     | Policy Enforcement                  |                        |   ✅ Tested    |
-|   Kubewarden   | Policy Enforcement                  |                        |   ✅ Tested    |
-|  kube-monkey   | Chaos engineering for Kubernetes    |                        | 🚧 Implemented |
-|     Nephio     | Telco-native orchestration          |                        | 🚧 Implemented |
-|    LocalAI     | Local LLM inference support         |                        | 🚧 Implemented |
-|     K8SGPT     | Kubernetes diagnostics              |                        | 🚧 Implemented |
-|     ArgoCD     | GitOps & CI/CD workflows            |                        | 🚧 Implemented |
-|     Tekton     | GitOps & CI/CD workflows            |                        | 🚧 Implemented |
-|    Longhorn    | Storage Operator                    |                        |   ✅ Tested    |
-|    TopoLVM     | CSI storage with topology awareness |                        |   ✅ Tested    |
-|     Fluent     | Logging agent                       |                        |   ✅ Tested    |
-| CloudNativePG  | PostgreSQL operator                 |                        |   ✅ Tested    |
-|    LiteLLM     | Local LLM inference support         |                        | 🚧 Implemented |
-|     kagent     | KRM-native agentic AI platform      |                        | 🚧 Implemented |
+|       Component       | Description                         | Source                 |     Status     |
+| :-------------------: | :---------------------------------- | :--------------------- | :------------: |
+|      Kubernetes       | Base Kubernetes deployment          | [kubespray][1]         |    ✅ Done     |
+|       Kubevirt        | VM workloads on Kubernetes          |                        |   ✅ Tested    |
+|        Virtink        | VM workloads on Kubernetes          |                        |   ✅ Tested    |
+|        Multus         | Multi-network pod support           |                        |   ✅ Tested    |
+|          NFD          | Node Feature Discovery              | [nfd role][4]          |   ✅ Tested    |
+|         Istio         | Service Mesh                        |                        |   ✅ Tested    |
+|         PMEM          | Persistent Memory CSI               | [pmem role][6]         | 🚧 Implemented |
+|          QAT          | Intel QuickAssist support           | [qat_plugin role][8]   |   ✅ Tested    |
+|        SR-IOV         | SR-IOV Plugin                       | [sriov_plugin role][9] | 🚧 Implemented |
+|        Knative        | Serverless platform                 |                        |   ✅ Tested    |
+|         Kong          | Ingress Controller                  |                        |   ✅ Tested    |
+|        HAProxy        | Ingress Controller                  |                        |   ✅ Tested    |
+|        MetalLB        | Network load balancer               |                        |   ✅ Tested    |
+|         Falco         | Security runtime monitoring         |                        |   ✅ Tested    |
+|         Rook          | Storage Operator                    |                        |   ✅ Tested    |
+|    OPA Gatekeeper     | Policy Enforcement                  |                        |   ✅ Tested    |
+|        Kyverno        | Policy Enforcement                  |                        |   ✅ Tested    |
+|      Kubewarden       | Policy Enforcement                  |                        |   ✅ Tested    |
+|      kube-monkey      | Chaos engineering for Kubernetes    |                        | 🚧 Implemented |
+|        Nephio         | Telco-native orchestration          |                        | 🚧 Implemented |
+|        LocalAI        | Local LLM inference support         |                        | 🚧 Implemented |
+|        K8SGPT         | Kubernetes diagnostics              |                        | 🚧 Implemented |
+|        ArgoCD         | GitOps & CI/CD workflows            |                        | 🚧 Implemented |
+|        Tekton         | GitOps & CI/CD workflows            |                        | 🚧 Implemented |
+|       Longhorn        | Storage Operator                    |                        |   ✅ Tested    |
+|        TopoLVM        | CSI storage with topology awareness |                        |   ✅ Tested    |
+|        Fluent         | Logging agent                       |                        |   ✅ Tested    |
+|     CloudNativePG     | PostgreSQL operator                 |                        |   ✅ Tested    |
+|        LiteLLM        | Local LLM inference support         |                        | 🚧 Implemented |
+|        kagent         | KRM-native agentic AI platform      |                        | 🚧 Implemented |
+| kube-prometheus-stack | Prometheus stack                    |                        | 🚧 Implemented |
 
 ## Quick Deployment
 

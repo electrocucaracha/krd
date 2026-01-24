@@ -166,7 +166,6 @@ sed -i "s/net_certmanager_version:.*/net_certmanager_version: v$(get_version git
 
 sed -i "s/octant_version:.*/octant_version: $(get_version github_release vmware-tanzu/octant)/g" ./playbooks/krd-vars.yml
 sed -i "s/kube-ovn_version:.*/kube-ovn_version: v$(get_version github_release kubeovn/kube-ovn)/g" ./playbooks/krd-vars.yml
-sed -i "s/prometheus-operator_version:.*/prometheus-operator_version: v$(get_version github_tag prometheus-operator/prometheus-operator)/g" ./playbooks/krd-vars.yml
 sed -i "s/kubevirt_version:.*/kubevirt_version: v$(get_version github_release kubevirt/kubevirt)/g" ./playbooks/krd-vars.yml
 sed -i "s/containerized_data_importer_version:.*/containerized_data_importer_version: v$(get_version github_release kubevirt/containerized-data-importer)/g" ./playbooks/krd-vars.yml
 sed -i "s/virtink_version:.*/virtink_version: v$(get_version github_release smartxworks/virtink)/g" ./playbooks/krd-vars.yml

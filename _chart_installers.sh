@@ -91,8 +91,7 @@ function _install_chart {
     helm_installed_version=$(helm version --short --client | awk '{sub(/+.*/,X,$0);sub(/Client: /,X,$0);print}')
 
     if _vercmp "${helm_installed_version#*v}" '>=' '3' && ! helm ls | grep -e "$name"; then
-        cmd="helm upgrade --create-namespace"
-        cmd+=" --namespace $namespace --wait --install"
+        cmd="helm upgrade --create-namespace --namespace $namespace --wait --install"
         echo "$cmd"
         if [ -n "${KRD_CHART_VALUES-}" ]; then
             for value in ${KRD_CHART_VALUES//,/ }; do
@@ -366,4 +365,10 @@ function install_kagent {
             kubectl apply -n "$namespace" -f resources/kagent-openai-models.yml
         fi
     fi
+}
+
+# install_prometheus_stack() - Installs kube-prometheus-stack, a collection of Kubernetes manifests, Grafana dashboards, and Prometheus rules.
+function install_prometheus_stack {
+    KRD_CHART_VALUES="grafana.adminUser=admin,grafana.adminPassword=${KRD_GRAFANA_ADMIN_PASSWORD-secret}" _install_chart kube-prometheus-stack oci://ghcr.io/prometheus-community/charts/kube-prometheus-stack
+    kubectl get ingressclasses.networking.k8s.io --no-headers | grep -q . && kubectl apply -f resources/grafana.yml
 }

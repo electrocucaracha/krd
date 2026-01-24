@@ -196,3 +196,9 @@ function uninstall_kagent {
     _uninstall_helm kagent-crds
     _delete_namespace kagent-system
 }
+
+# uninstall_prometheus_stack() - Uninstall kube-prometheus-stack services
+function uninstall_prometheus_stack {
+    _uninstall_helm kube-prometheus-stack
+    kubectl delete -f resources/grafana.yml --ignore-not-found
+}
