@@ -15,7 +15,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/setup-python@83679a892e2d95755f2dac6acb0bfd1e9ac5d548 # 6.1.0
+    - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # 6.2.0
       with:
         python-version: "3.x"
     - uses: syphar/restore-virtualenv@e536692e76315a068b4905f792e25febfe6d4391 # 1.3
