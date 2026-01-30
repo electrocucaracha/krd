@@ -8,18 +8,18 @@ ansible-compat==25.12.0
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.20.1
+ansible-core==2.20.2
     # via
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==26.1.0
+ansible-lint==26.1.1
     # via -r test-requirements.in
 attrs==25.4.0
     # via
     #   jsonschema
     #   referencing
-black==25.12.0
+black==26.1.0
     # via ansible-lint
 bracex==2.6
     # via wcmatch
@@ -34,7 +34,7 @@ click==8.3.1
     #   molecule
 click-help-colors==0.9.4
     # via molecule
-cryptography==46.0.3
+cryptography==46.0.4
     # via
     #   ansible-core
     #   ansible-lint
@@ -71,7 +71,7 @@ molecule-plugins[vagrant]==25.8.12
     # via -r test-requirements.in
 mypy-extensions==1.1.0
     # via black
-packaging==25.0
+packaging==26.0
     # via
     #   ansible-compat
     #   ansible-core
@@ -79,7 +79,7 @@ packaging==25.0
     #   black
     #   molecule
     #   pytest
-pathspec==0.12.1
+pathspec==1.0.4
     # via
     #   ansible-lint
     #   black
@@ -90,7 +90,7 @@ pluggy==1.6.0
     # via
     #   molecule
     #   pytest
-pycparser==2.23
+pycparser==3.0
     # via cffi
 pygments==2.19.2
     # via
@@ -102,7 +102,7 @@ pytest-testinfra==10.2.2
     # via -r test-requirements.in
 python-vagrant==1.0.0
     # via molecule-plugins
-pytokens==0.3.0
+pytokens==0.4.1
     # via black
 pyyaml==6.0.3
     # via
@@ -118,7 +118,7 @@ referencing==0.37.0
     #   jsonschema-specifications
 resolvelib==1.2.1
     # via ansible-core
-rich==14.2.0
+rich==14.3.1
     # via
     #   enrich
     #   molecule
@@ -140,7 +140,7 @@ wcmatch==10.1
     # via
     #   ansible-lint
     #   molecule
-yamllint==1.37.1
+yamllint==1.38.0
     # via
     #   -r test-requirements.in
     #   ansible-lint
