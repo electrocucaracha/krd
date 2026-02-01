@@ -11,7 +11,7 @@ name: Scheduled Latest Vagrant Boxes verification
 # yamllint disable-line rule:truthy
 on:
   schedule:
-    - cron: "0 0 1 * *"
+    - cron: "0 0 2 * *"
   workflow_dispatch:
 jobs:
   check-versions:
