@@ -34,7 +34,7 @@ click==8.3.1
     #   molecule
 click-help-colors==0.9.4
     # via molecule
-cryptography==46.0.4
+cryptography==46.0.5
     # via
     #   ansible-core
     #   ansible-lint
@@ -42,7 +42,7 @@ distro==1.9.0
     # via ansible-lint
 enrich==1.2.7
     # via molecule
-filelock==3.20.3
+filelock==3.21.1
     # via ansible-lint
 iniconfig==2.3.0
     # via pytest
@@ -84,7 +84,7 @@ pathspec==1.0.4
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==4.5.1
+platformdirs==4.7.0
     # via black
 pluggy==1.6.0
     # via
