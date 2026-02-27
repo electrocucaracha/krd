@@ -23,7 +23,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Go
-        uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # 6.2.0
+        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # 6.3.0
         with:
           go-version: ">=1.20.0"
       - name: Install dependencies
@@ -77,7 +77,7 @@ jobs:
         if: failure()
         run: |
           find ./super-linter-output/super-linter/ -name '*.json' -exec sh -c 'jq -e ".Exitval != 0" "$1" >/dev/null && printf "%s\0" "$1"' _ {} \; | xargs -0 jq -s '.' > linter-errors.json
-      - uses: actions/ai-inference@a380166897b5408b8fb7dddd148142794cb5624a # 2.0.6
+      - uses: actions/ai-inference@e09e65981758de8b2fdab13c2bfb7c7d5493b0b6 # 2.0.7
         id: ai-linter-analysis
         if: failure()
         with:
