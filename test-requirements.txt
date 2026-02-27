@@ -4,16 +4,16 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible-compat==25.12.0
+ansible-compat==25.12.1
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.20.2
+ansible-core==2.20.3
     # via
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==26.1.1
+ansible-lint==26.2.0
     # via -r test-requirements.in
 attrs==25.4.0
     # via

@@ -21,7 +21,7 @@ spec:
     secret:
       name: k8sgpt-sample-secret
       key: openai-api-key
-  version: v0.4.28
+  version: v0.4.30
   noCache: false
 ---
 apiVersion: rbac.authorization.k8s.io/v1
