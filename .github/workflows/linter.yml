@@ -68,7 +68,7 @@ jobs:
           EDITORCONFIG_FILE_NAME: .editorconfig-checker.json
           KUBERNETES_KUBECONFORM_OPTIONS: "-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml"
           DEFAULT_BRANCH: ${{ github.head_ref || github.ref_name }}
-      - uses: GrantBirki/git-diff-action@7420e4d095c27bb23359787640976d60c94fd216 # 2.8.1
+      - uses: GrantBirki/git-diff-action@b27608d18e6dd9b31b46ede56a93e045d3881a28 # 3.0.0
         id: git-diff
         if: failure()
       - name: Get failed linter logs
