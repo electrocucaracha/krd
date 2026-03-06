@@ -32,8 +32,8 @@ metallb_version: v0.15.3
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
 argocd_version: v3.3.2
-tekton_version: v0.78.1
+tekton_version: v0.79.0
 kubevirt_tekton_tasks_version: v0.25.0
 action_runner_controller_version: 0.10.1
-kagent_version: 0.7.18
+kagent_version: 0.8.0-beta2
 external_snapshotter_version: v8.5.0
