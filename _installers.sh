@@ -183,10 +183,8 @@ function install_istio {
 
     istioctl install --skip-confirmation || :
     if [[ $KRD_ENABLE_ISTIO_ADDONS == "true" ]]; then
-        for addon in grafana; do
-            echo "Installing $addon Istio AddOn"
-            kubectl apply -f "https://raw.githubusercontent.com/istio/istio/${istio_version}/samples/addons/${addon}.yaml"
-        done
+        echo "Installing grafana Istio AddOn"
+        kubectl apply -f "https://raw.githubusercontent.com/istio/istio/${istio_version}/samples/addons/grafana.yaml"
 
         # Kiali installation
         install_helm
