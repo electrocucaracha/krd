@@ -46,9 +46,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read
-      statuses: write
       models: read
+      issues: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
         with:
@@ -103,7 +102,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           title-template: "Super-linter has failed"
-          create-label: false
+          label-name: super-linter-issue
           body-template: |
             The linter step has failed. Please check for new major versions and update manually.
 

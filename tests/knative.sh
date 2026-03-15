@@ -34,7 +34,7 @@ kn service create "$service_name" --image gcr.io/knative-samples/helloworld-go -
 
 # Test
 info "===== Test started ====="
-assert_non_empty "$(kn service describe "$service_name")" "Knative client could't create a $service_name app"
+assert_non_empty "$(kn service describe "$service_name")" "Knative client couldn't create a $service_name app"
 assert_contains "$(kn service describe "$service_name")" "++ Ready" "$service_name app is no ready"
 assert_contains "$(kn service describe "$service_name")" "++ ConfigurationsReady" "$service_name app's configuration is no ready"
 assert_contains "$(kn service describe "$service_name")" "++ RoutesReady" "$service_name app's routes is no ready"

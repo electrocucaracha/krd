@@ -59,7 +59,7 @@ function wait_deployment {
     fi
 }
 
-# wait_ingress() - Wait process for IP address asignment on Ingress resources
+# wait_ingress() - Wait process for IP address assignment on Ingress resources
 function wait_ingress {
     local ingress_name=$1
     local attempt_counter=0
@@ -77,7 +77,7 @@ function wait_ingress {
     done
 }
 
-# wait_service() - Wait process for IP address asignment on Service resources
+# wait_service() - Wait process for IP address assignment on Service resources
 function wait_service {
     local service_name=$1
     local attempt_counter=0

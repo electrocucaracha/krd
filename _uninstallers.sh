@@ -107,7 +107,7 @@ function uninstall_knative {
     esac
 }
 
-# uninstall_kubevirt() - Uninstall KubeVirt servcies
+# uninstall_kubevirt() - Uninstall KubeVirt services
 function uninstall_kubevirt {
     kubevirt_version=$(_get_version kubevirt)
     containerized_data_importer_version=$(_get_version containerized_data_importer)
@@ -126,7 +126,7 @@ function uninstall_kubevirt {
     _delete_namespace cdi
 }
 
-# uninstall_virtink() - Uninstall Virtink servcies
+# uninstall_virtink() - Uninstall Virtink services
 function uninstall_virtink {
     virtink_version=$(_get_version virtink)
 

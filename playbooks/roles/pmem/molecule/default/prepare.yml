@@ -7,7 +7,7 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-- name: Boostrap servers
+- name: Bootstrap servers
   hosts: all
   vars:
     kind_dest: /usr/local/bin
