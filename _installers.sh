@@ -158,7 +158,7 @@ roles_path = $kubespray_folder/roles:$galaxy_base_path
 EOT
 }
 
-# install_k8s_addons() - Install Kubenertes AddOns
+# install_k8s_addons() - Install Kubernetes AddOns
 function install_k8s_addons {
     echo "Installing Kubernetes AddOns"
     _configure_ansible

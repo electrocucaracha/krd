@@ -213,7 +213,7 @@ collections:
 EOT
 # editorconfig-checker-enable
 
-# Udpate Playbook default versions
+# Update Playbook default versions
 # NOTE: There is no images released for minor versions https://hub.docker.com/r/nfvpe/sriov-cni/tags
 #sed -i "s/sriov_cni_version:.*/sriov_cni_version: v$(get_version github_tag k8snetworkplumbingwg/sriov-cni)/g" ./playbooks/roles/sriov_cni/defaults/main.yml
 sed -i "s/pmem_version:.*/pmem_version: v$(get_version github_tag intel/pmem-csi)/g" ./playbooks/roles/pmem/defaults/main.yml

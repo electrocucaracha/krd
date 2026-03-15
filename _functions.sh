@@ -68,7 +68,7 @@ function run_k8s_iperf {
     # Wait for stabilization
     wait_for_pods iperf3
 
-    # Perform bechmarking
+    # Perform benchmarking
     kubectl get nodes -o wide | tee "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
     kubectl get pods -n iperf3 -o wide -l app=iperf3-client | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
     kubectl get services -n iperf3 | tee --append "$HOME/iperf3-${KRD_NETWORK_PLUGIN}-${KRD_KUBE_PROXY_MODE}.log"
@@ -121,7 +121,7 @@ function run_external_k6 {
         sleep 1
     done
 
-    # Perform bechmarking
+    # Perform benchmarking
     docker rm k6 || :
     pushd "$(mktemp -d)" >/dev/null
     # editorconfig-checker-disable

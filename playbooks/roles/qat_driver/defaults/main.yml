@@ -17,7 +17,7 @@ qat_driver_shim:
   num_crypto_instances: 1
   num_decompression_instances: 0
   # Indicates the maximum number of processes that can call icp_sal_userStart on
-  # this instance. Warning: the ressources are preallocated: if NumProcesses is
+  # this instance. Warning: the resources are preallocated: if NumProcesses is
   # too high, the driver will fail to load
   num_processes: 24
   limit_dev_access: 0
