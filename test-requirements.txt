@@ -15,7 +15,7 @@ ansible-core==2.20.3
     #   molecule
 ansible-lint==26.3.0
     # via -r test-requirements.in
-attrs==25.4.0
+attrs==26.1.0
     # via
     #   jsonschema
     #   referencing
