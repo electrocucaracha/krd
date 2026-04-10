@@ -4,16 +4,16 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible-compat==25.12.1
+ansible-compat==26.3.0
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.20.3
+ansible-core==2.20.4
     # via
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==26.3.0
+ansible-lint==26.4.0
     # via -r test-requirements.in
 attrs==26.1.0
     # via
@@ -27,14 +27,14 @@ cffi==2.0.0
     # via
     #   ansible-lint
     #   cryptography
-click==8.3.1
+click==8.3.2
     # via
     #   black
     #   click-help-colors
     #   molecule
 click-help-colors==0.9.4
     # via molecule
-cryptography==46.0.5
+cryptography==46.0.7
     # via
     #   ansible-core
     #   ansible-lint
@@ -84,7 +84,7 @@ pathspec==1.0.4
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==4.9.4
+platformdirs==4.9.6
     # via black
 pluggy==1.6.0
     # via
@@ -92,11 +92,11 @@ pluggy==1.6.0
     #   pytest
 pycparser==3.0
     # via cffi
-pygments==2.19.2
+pygments==2.20.0
     # via
     #   pytest
     #   rich
-pytest==9.0.2
+pytest==9.0.3
     # via pytest-testinfra
 pytest-testinfra==10.2.2
     # via -r test-requirements.in
