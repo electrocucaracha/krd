@@ -96,7 +96,7 @@ pygments==2.19.2
     # via
     #   pytest
     #   rich
-pytest==9.0.2
+pytest==9.0.3
     # via pytest-testinfra
 pytest-testinfra==10.2.2
     # via -r test-requirements.in
