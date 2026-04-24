@@ -75,7 +75,7 @@ spec:
           serviceAccount: cleaner
           containers:
             - name: kubectl
-              image: alpine/k8s:1.35.3
+              image: alpine/k8s:1.35.4
               command:
                 - /bin/bash
                 - -c
@@ -100,7 +100,7 @@ spec:
           serviceAccount: cleaner
           containers:
             - name: kubectl
-              image: alpine/k8s:1.35.3
+              image: alpine/k8s:1.35.4
               command:
                 - /bin/bash
                 - -c
@@ -125,7 +125,7 @@ spec:
           serviceAccount: cleaner
           containers:
             - name: kubectl
-              image: alpine/k8s:1.35.3
+              image: alpine/k8s:1.35.4
               command:
                 - /bin/bash
                 - -c

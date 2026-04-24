@@ -8,7 +8,7 @@ ansible-compat==26.3.0
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.20.4
+ansible-core==2.20.5
     # via
     #   ansible-compat
     #   ansible-lint
@@ -27,7 +27,7 @@ cffi==2.0.0
     # via
     #   ansible-lint
     #   cryptography
-click==8.3.2
+click==8.3.3
     # via
     #   black
     #   click-help-colors
@@ -42,7 +42,7 @@ distro==1.9.0
     # via ansible-lint
 enrich==1.2.7
     # via molecule
-filelock==3.25.2
+filelock==3.29.0
     # via ansible-lint
 iniconfig==2.3.0
     # via pytest
@@ -71,7 +71,7 @@ molecule-plugins[vagrant]==25.8.12
     # via -r test-requirements.in
 mypy-extensions==1.1.0
     # via black
-packaging==26.0
+packaging==26.1
     # via
     #   ansible-compat
     #   ansible-core
@@ -118,7 +118,7 @@ referencing==0.37.0
     #   jsonschema-specifications
 resolvelib==1.2.1
     # via ansible-core
-rich==14.3.3
+rich==15.0.0
     # via
     #   enrich
     #   molecule
