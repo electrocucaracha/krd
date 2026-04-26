@@ -24,7 +24,7 @@ jobs:
         with:
           persist-credentials: true
           # Fine-grained PAT with contents:write and workflows:write scopes
-          token: ${{ secrets.WORKFLOW_TOKEN }}
+          token: ${{ secrets.WORKFLOW_TOKEN }} # zizmor: ignore[secrets-outside-env]
       - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5 # 2.1.4
         with:
           EXECUTE_COMMANDS: |
