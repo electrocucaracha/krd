@@ -34,7 +34,7 @@ click==8.3.3
     #   molecule
 click-help-colors==0.9.4
     # via molecule
-cryptography==46.0.7
+cryptography==47.0.0
     # via
     #   ansible-core
     #   ansible-lint
@@ -71,7 +71,7 @@ molecule-plugins[vagrant]==25.8.12
     # via -r test-requirements.in
 mypy-extensions==1.1.0
     # via black
-packaging==26.1
+packaging==26.2
     # via
     #   ansible-compat
     #   ansible-core
