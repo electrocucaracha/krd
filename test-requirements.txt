@@ -34,7 +34,7 @@ click==8.3.3
     #   molecule
 click-help-colors==0.9.4
     # via molecule
-cryptography==46.0.7
+cryptography==48.0.0
     # via
     #   ansible-core
     #   ansible-lint
@@ -57,7 +57,7 @@ jsonschema==4.26.0
     #   molecule
 jsonschema-specifications==2025.9.1
     # via jsonschema
-markdown-it-py==4.0.0
+markdown-it-py==4.2.0
     # via rich
 markupsafe==3.0.3
     # via jinja2
@@ -71,7 +71,7 @@ molecule-plugins[vagrant]==25.8.12
     # via -r test-requirements.in
 mypy-extensions==1.1.0
     # via black
-packaging==26.1
+packaging==26.2
     # via
     #   ansible-compat
     #   ansible-core
