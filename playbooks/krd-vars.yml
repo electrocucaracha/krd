@@ -10,7 +10,7 @@
 kpt_version: 1.0.0-beta.62
 go_version: 1.15.3
 kubespray_version: v2.31.0
-istio_version: 1.29.2
+istio_version: 1.30.0
 cfssl_version: 1.6.5
 sonobuoy_version: 0.57.3
 mitogen_version: 0.2.10
@@ -28,7 +28,7 @@ kubevirt_version: v1.8.2
 containerized_data_importer_version: v1.65.0
 virtink_version: v0.17.0
 kubesphere_version: v4.1.3
-metallb_version: v0.15.3
+metallb_version: v0.16.0
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
 argocd_version: v3.4.2

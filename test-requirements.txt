@@ -8,7 +8,7 @@ ansible-compat==26.3.0
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.20.5
+ansible-core==2.21.0
     # via
     #   ansible-compat
     #   ansible-lint
@@ -19,7 +19,7 @@ attrs==26.1.0
     # via
     #   jsonschema
     #   referencing
-black==26.3.1
+black==26.5.1
     # via ansible-lint
 bracex==2.6
     # via wcmatch
@@ -27,7 +27,7 @@ cffi==2.0.0
     # via
     #   ansible-lint
     #   cryptography
-click==8.3.3
+click==8.4.0
     # via
     #   black
     #   click-help-colors
