@@ -24,7 +24,7 @@ jobs:
       KRD_ANSIBLE_DEBUG: true
       KRD_CONTAINER_RUNTIME: crio
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # 6.0.2
+      - uses: actions/checkout@9f698171ed81b15d1823a05fc7211befd50c8ae0 # 6.0.3
         with:
           persist-credentials: false
       - name: Deploy services

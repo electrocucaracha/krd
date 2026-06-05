@@ -91,7 +91,7 @@ spec:
     spec:
       containers:
         - name: litellm
-          image: ghcr.io/berriai/litellm:main-v1.86.2
+          image: ghcr.io/berriai/litellm:main-v1.87.1
           env:
             - name: DATABASE_USER
               valueFrom:
