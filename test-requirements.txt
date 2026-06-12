@@ -8,7 +8,7 @@ ansible-compat==26.3.0
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.20.5
+ansible-core==2.21.0
     # via
     #   ansible-compat
     #   ansible-lint
@@ -19,7 +19,7 @@ attrs==26.1.0
     # via
     #   jsonschema
     #   referencing
-black==26.3.1
+black==26.5.1
     # via ansible-lint
 bracex==2.6
     # via wcmatch
@@ -27,14 +27,14 @@ cffi==2.0.0
     # via
     #   ansible-lint
     #   cryptography
-click==8.3.3
+click==8.4.1
     # via
     #   black
     #   click-help-colors
     #   molecule
 click-help-colors==0.9.4
     # via molecule
-cryptography==46.0.7
+cryptography==48.0.1
     # via
     #   ansible-core
     #   ansible-lint
@@ -42,7 +42,7 @@ distro==1.9.0
     # via ansible-lint
 enrich==1.2.7
     # via molecule
-filelock==3.29.0
+filelock==3.29.3
     # via ansible-lint
 iniconfig==2.3.0
     # via pytest
@@ -57,7 +57,7 @@ jsonschema==4.26.0
     #   molecule
 jsonschema-specifications==2025.9.1
     # via jsonschema
-markdown-it-py==4.0.0
+markdown-it-py==4.2.0
     # via rich
 markupsafe==3.0.3
     # via jinja2
@@ -71,7 +71,7 @@ molecule-plugins[vagrant]==25.8.12
     # via -r test-requirements.in
 mypy-extensions==1.1.0
     # via black
-packaging==26.1
+packaging==26.2
     # via
     #   ansible-compat
     #   ansible-core
@@ -84,7 +84,7 @@ pathspec==1.0.4
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==4.9.6
+platformdirs==4.10.0
     # via black
 pluggy==1.6.0
     # via
@@ -122,7 +122,7 @@ rich==15.0.0
     # via
     #   enrich
     #   molecule
-rpds-py==0.30.0
+rpds-py==2026.5.1
     # via
     #   jsonschema
     #   referencing
