@@ -34,7 +34,7 @@ click==8.3.3
     #   molecule
 click-help-colors==0.9.4
     # via molecule
-cryptography==46.0.7
+cryptography==48.0.1
     # via
     #   ansible-core
     #   ansible-lint
