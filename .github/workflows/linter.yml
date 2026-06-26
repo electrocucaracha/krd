@@ -23,7 +23,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Go
-        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c # 6.4.0
+        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # 6.5.0
         with:
           go-version: ">=1.20.0"
       - name: Install dependencies
@@ -54,7 +54,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Run super-linter validation
-        uses: super-linter/super-linter@9e863354e3ff62e0727d37183162c4a88873df41 # 8.6.0
+        uses: super-linter/super-linter@4ce20838b8ab83717e78138c5b3a1407148e0918 # 8.7.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LINTER_RULES_PATH: /

@@ -27,7 +27,7 @@ cffi==2.0.0
     # via
     #   ansible-lint
     #   cryptography
-click==8.4.1
+click==8.4.2
     # via
     #   black
     #   click-help-colors
@@ -96,7 +96,7 @@ pygments==2.20.0
     # via
     #   pytest
     #   rich
-pytest==9.1.0
+pytest==9.1.1
     # via pytest-testinfra
 pytest-testinfra==10.2.2
     # via -r test-requirements.in
