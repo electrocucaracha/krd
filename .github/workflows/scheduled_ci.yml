@@ -16,7 +16,7 @@ on:
 jobs:
   check-dashboard-and-metrics:
     name: Check All-in-One setup in a Ubuntu Focal virtual environment
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
     env:
