@@ -1,8 +1,9 @@
+---
 #################################################################################################################
 # Define the settings for the rook-ceph cluster with common settings for a small test cluster.
 # All nodes with available raw devices will be used for the Ceph cluster. One node is sufficient
 # in this example.
----
+
 # For example, to create the cluster:
 #   kubectl create -f crds.yaml -f common.yaml -f operator.yaml
 #   kubectl create -f cluster-test.yaml
