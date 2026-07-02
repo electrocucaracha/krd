@@ -106,24 +106,25 @@ spec:
                             - rsync
                             - virtualbox-7.2
                             - vagrant
-                          bootcmd:
+                          runcmd:
                             - "sudo mkdir /opt/runner"
                             - "curl -sL https://github.com/actions/runner/releases/download/v$(params.runner-version)/actions-runner-linux-x64-$(params.runner-version).tar.gz | sudo tar -xz -C /opt/runner"
-                          runcmd:
                             - "sudo ln -s /usr/bin/python3 /usr/bin/python"
                             - "sudo /opt/runner/bin/installdependencies.sh"
                             - "sudo chown -R runner: /opt/runner"
-                            - "sudo runuser -l runner -c 'vagrant box add --provider virtualbox http://nuc10-node06/generic/ubuntu2204/metadata.json'"
-                            - "sudo runuser -l runner -c 'vagrant box add --provider virtualbox http://nuc10-node06/generic/ubuntu2404/metadata.json'"
+                            - echo "All setup complete"
+                            - sync
+                            - sleep 10
+                            - shutdown -h now
                           write_files:
                             - path: /etc/profile.d/vagrant.sh
                               content: |
                                 export VAGRANT_DEFAULT_PROVIDER=virtualbox
                           power_state:
-                            delay: now
+                            delay: "+1"
                             mode: poweroff
-                            message: Bootstrap completed
-                            timeout: 1
+                            message: Cloud-init finished, shutting down cleanly
+                            timeout: 300
                             condition: true
                           apt:
                             sources:
@@ -237,30 +238,3 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: ubuntu-runner-deployer-account
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nuc10-node06
-spec:
-  ports:
-    - name: http
-      protocol: TCP
-      port: 80
-      targetPort: 80
----
-apiVersion: discovery.k8s.io/v1
-kind: EndpointSlice
-metadata:
-  name: nuc10-node06-01
-  labels:
-    kubernetes.io/service-name: nuc10-node06
-addressType: IPv4
-ports:
-  - name: http
-    appProtocol: http
-    protocol: TCP
-    port: 80
-endpoints:
-  - addresses:
-      - "192.168.1.100"
