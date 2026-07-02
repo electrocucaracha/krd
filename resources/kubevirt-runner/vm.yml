@@ -10,17 +10,17 @@
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: ubuntu-jammy-vm
+  name: ubuntu-vm
 spec:
   dataVolumeTemplates:
     - metadata:
-        name: ubuntu-jammy-dv
+        name: ubuntu-dv
       spec:
         storage:
           volumeMode: Filesystem
         source:
           pvc:
-            name: ubuntu-img-jammy
+            name: ubuntu-img-noble
             namespace: default
   runStrategy: Manual
   template:
@@ -57,7 +57,7 @@ spec:
           pod: {}
       volumes:
         - dataVolume:
-            name: ubuntu-jammy-dv
+            name: ubuntu-dv
           name: os
         - name: cloudinitdisk
           cloudInitNoCloud:

@@ -57,15 +57,40 @@ kubectl wait --for=condition=available --timeout=10m deployment --all --all-name
 kubectl apply -f resources/ubuntu-runner-pipeline.yml
 kubectl apply -f resources/ubuntu-runner-pipelineruns.yml
 kubectl wait pipelineruns.tekton.dev/create-ubuntu-jammy-runner --for=condition=Succeeded --timeout=15m
+kubectl wait pipelineruns.tekton.dev/create-ubuntu-noble-runner --for=condition=Succeeded --timeout=15m
 kubectl delete -f resources/ubuntu-runner-pipelineruns.yml
 
-# Get VM template
+# Get VM template into default namespace
 kubectl apply -f resources/kubevirt-runner/
 
 ### Self-Hosted GitHub Actions configuration
 for repo in "${repos[@]}"; do
     KRD_ARC_GITHUB_URL="$github_url/$repo" ./krd_command.sh -a install_chart_arc
-    sleep 180 # TODO: Remove this sleep until a better approach is implemented
+    namespace="${repo//_/-}"
+    namespace="${namespace,,}"
+
+    kubectl apply -n "$namespace" -f - <<EOF
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubevirt-actions-runner
+EOF
+
+    kubectl apply -f - <<EOF
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubevirt-actions-runner-${namespace}
+subjects:
+- kind: ServiceAccount
+  name: kubevirt-actions-runner
+  namespace: ${namespace}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubevirt-actions-runner
+EOF
+
 done
 
 # Create Garbage Collectors

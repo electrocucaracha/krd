@@ -21,3 +21,18 @@ spec:
       value: 22.04
   taskRunTemplate:
     serviceAccountName: ubuntu-runner-deployer-account
+---
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: create-ubuntu-noble-runner
+spec:
+  pipelineRef:
+    name: ubuntu-runner-deployer
+  params:
+    - name: release-name
+      value: noble
+    - name: release-version
+      value: 24.04
+  taskRunTemplate:
+    serviceAccountName: ubuntu-runner-deployer-account
