@@ -14,7 +14,7 @@ storageClasses:
       reclaimPolicy: Delete
       annotations: {}
       isDefaultClass: true
-      volumeBindingMode: Immediate
-      allowVolumeExpansion: false
+      volumeBindingMode: WaitForFirstConsumer
+      allowVolumeExpansion: true
       additionalParameters: {}
       mountOptions: []
