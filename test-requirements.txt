@@ -4,7 +4,7 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible-compat==26.3.0
+ansible-compat==26.6.0
     # via
     #   ansible-lint
     #   molecule
@@ -13,7 +13,7 @@ ansible-core==2.21.1
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==26.4.0
+ansible-lint==26.6.0
     # via -r test-requirements.in
 attrs==26.1.0
     # via
@@ -21,7 +21,7 @@ attrs==26.1.0
     #   referencing
 black==26.5.1
     # via ansible-lint
-bracex==2.6
+bracex==3.0
     # via wcmatch
 cffi==2.0.0
     # via
@@ -79,7 +79,7 @@ packaging==26.2
     #   black
     #   molecule
     #   pytest
-pathspec==1.0.4
+pathspec==1.1.1
     # via
     #   ansible-lint
     #   black
@@ -122,7 +122,7 @@ rich==15.0.0
     # via
     #   enrich
     #   molecule
-rpds-py==2026.5.1
+rpds-py==2026.6.3
     # via
     #   jsonschema
     #   referencing
@@ -134,9 +134,9 @@ subprocess-tee==0.4.2
     # via
     #   ansible-compat
     #   ansible-lint
-typing-extensions==4.15.0
+typing-extensions==4.16.0
     # via referencing
-wcmatch==10.1
+wcmatch==10.2.1
     # via
     #   ansible-lint
     #   molecule
