@@ -7,10 +7,10 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-kpt_version: 0.0.2
+kpt_version: 1.0.0-beta.67
 go_version: 1.15.3
 kubespray_version: v2.31.0
-istio_version: 1.30.2
+istio_version: 1.30.3
 cfssl_version: 1.6.5
 sonobuoy_version: 0.57.5
 mitogen_version: 0.2.10
@@ -35,5 +35,5 @@ argocd_version: v3.5.0-rc2
 tekton_version: v0.80.0
 kubevirt_tekton_tasks_version: v0.26.0
 action_runner_controller_version: 0.10.1
-kagent_version: 0.10.0-beta3
+kagent_version: 0.10.0-beta10
 external_snapshotter_version: v8.6.0
