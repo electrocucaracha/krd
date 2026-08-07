@@ -23,7 +23,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Go
-        uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # 6.5.0
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # 7.0.0
         with:
           go-version: ">=1.20.0"
       - name: Install dependencies
@@ -40,7 +40,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Check broken links
-        uses: tcort/github-action-markdown-link-check@e7c7a18363c842693fadde5d41a3bd3573a7a225 # 1.1.2
+        uses: tcort/github-action-markdown-link-check@e047c5b37f24ab722bbef1a27b6fab7f96bc4068 # 1.1.3
   check-super-linter:
     name: Check syntax (super-linter)
     runs-on: ubuntu-latest
@@ -76,7 +76,7 @@ jobs:
         if: failure()
         run: |
           find ./super-linter-output/super-linter/ -name '*.json' -exec sh -c 'jq -e ".Exitval != 0" "$1" >/dev/null && printf "%s\0" "$1"' _ {} \; | xargs -0 jq -s '.' > linter-errors.json
-      - uses: actions/ai-inference@a7805884c80886efc241e94a5351df715968a0ad # 2.1.1
+      - uses: actions/ai-inference@2c43c91ae16266ca159d311430343c67a5ffa222 # 3
         id: ai-linter-analysis
         if: failure()
         with:
