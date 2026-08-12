@@ -124,8 +124,7 @@ function _vercmp {
 kubespray_version="$(get_version github_release kubernetes-sigs/kubespray)"
 sed -i "s/kubespray_version:.*/kubespray_version: v$kubespray_version/g" ./playbooks/krd-vars.yml
 sed -i "s/KRD_KUBESPRAY_VERSION                 |.*/KRD_KUBESPRAY_VERSION                 | v$kubespray_version                                        | Specifies the Kubespray version to be used during the upgrade process           |/g" README.md
-sed -i "s/KRD_KUBESPRAY_VERSION:-.* \"\$(git describe --abbrev=0 --tags)\"/KRD_KUBESPRAY_VERSION:-v$kubespray_version}\" \"\$(git describe --abbrev=0 --tags)\"/g" ./ci/check.sh
-sed -i "s/KRD_KUBESPRAY_VERSION:-.* \"\$(\$VAGRANT_CMD_SSH_INSTALLER \"cd \/opt\/kubespray; git describe --abbrev=0 --tags\")\"/KRD_KUBESPRAY_VERSION:-v$kubespray_version}\" \"\$(\$VAGRANT_CMD_SSH_INSTALLER \"cd \/opt\/kubespray; git describe --abbrev=0 --tags\")\"/g" ./ci/check.sh
+sed -i "s/KRD_KUBESPRAY_VERSION:-v[0-9.]*/KRD_KUBESPRAY_VERSION:-v$kubespray_version/g" ./ci/check.sh
 
 # Image versions
 kubespray_url="https://raw.githubusercontent.com/kubernetes-sigs/kubespray/v$kubespray_version/roles/download/defaults/main.yml"
