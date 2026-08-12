@@ -9,1124 +9,1184 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [23.0.4] - 2026-08-11
+
+### Fixed
+
+- Kubespray version replacement in check.sh was simplified to reduce maintenance overhead and risk of breakage due to surrounding syntax changes. [e34d963f](https://github.com/electrocucaracha/krd/commit/e34d963fb6eee3497c692bfed133d4a3c95c8cad)
+
+## [23.0.3] - 2026-08-11
+
+### Fixed
+
+- The default kubespray version was updated from v2.29.1 to v2.31.0 in CI checks, ensuring compatibility with newer Kubernetes versions and incorporating upstream improvements. [da8abc29](https://github.com/electrocucaracha/krd/commit/da8abc290bf59d0d05c57a180cc93d94c2d76c72)
+
+## [23.0.2] - 2026-08-11
+
+### Changed
+
+- Generated YAML manifests now have consistent indentation, aligning with YAML best practices for better readability. [c69c47ff](https://github.com/electrocucaracha/krd/commit/c69c47ff85e739a2f070aaef5572f4de7b25704c)
+
+## [23.0.1] - 2026-08-11
+
+### Fixed
+
+- The location where free memory information is printed has been changed to standard error instead of standard output. [26f48405](https://github.com/electrocucaracha/krd/commit/26f48405ba8371d7fb9b1f63362986e88992df5b)
+
+## [23.0.0] - 2026-08-11
+
+### Removed
+
+- The test environment list in tox.ini has been modified to remove an extraneous comma, ensuring compatibility and improving readability across different versions of tox. [a2b7bfea](https://github.com/electrocucaracha/krd/commit/a2b7bfeaf8b08d1d694c7e6423d09d9b9d563bdd)
+
+## [22.0.1] - 2026-08-11
+
+### Changed
+
+- The project's documentation has been updated to standardize spelling and capitalization for tool names, including "spellchecker," "EditorConfig," "Git," and "Ubuntu runner." This change improves clarity and consistency with official tool names. [8b19affe](https://github.com/electrocucaracha/krd/commit/8b19affe50fa9187f057c7ce266aedfc7966f708)
+
+## [22.0.0] - 2026-08-11
+
+### Removed
+
+- The test matrix for CI runs no longer includes the criproxy role, which was removed from the repository. [8967ff24](https://github.com/electrocucaracha/krd/commit/8967ff245a25624bcf1c6a0310c70ac70baead13)
+
+## [21.2.2] - 2026-08-11
+
+### Changed
+
+- Molecule test environments for multiple roles were updated to use the generic/ubuntu2204 Vagrant box instead of ubuntu2004, ensuring alignment with current LTS releases and improving compatibility with newer software dependencies. [4cd58bc3](https://github.com/electrocucaracha/krd/commit/4cd58bc3e1155010c1c21dbe5d5e6627468fe75e)
+
+## [21.2.1] - 2026-08-11
+
+### Fixed
+
+- The failed_when condition in the pmem role's molecule prepare step was corrected to reference the correct variable name, pmem_kind_cluster, instead of kind_cluster. [7b76fbf4](https://github.com/electrocucaracha/krd/commit/7b76fbf44de1653a0575de0863721c4472336b1e)
+
+## [21.2.0] - 2026-08-11
+
+### Added
+
+- A comprehensive changelog was added to the project, following the Keep a Changelog format and adhering to Semantic Versioning. [9e0c6404](https://github.com/electrocucaracha/krd/commit/9e0c6404a81f77c158ac98962daa9cfc1ecd7757)
+
 ## [21.1.0] - 2026-07-02
 
 ### Added
 
-- BREAKING: Enabled support for Ubuntu Noble runners by updating pipeline runs, VM templates, and associated resources to use the new image and naming convention, allowing streamlined deployment of both Jammy and Noble runners while enhancing security and flexibility for GitHub Actions integration with KubeVirt. (1b2c8e84)
+- BREAKING: Ubuntu Noble runners are introduced, updating pipeline runs, VM templates, and resources to use the new image and naming. [1b2c8e84](https://github.com/electrocucaracha/krd/commit/1b2c8e84d41cfc4cb3698fada688bad103952a6c)
 
 ## [21.0.0] - 2026-07-02
 
 ### Removed
 
-- Simplified runner provisioning by removing obsolete service definitions and consolidating initialization steps under runcmd to reduce configuration clutter and improve reliability. (733d1c99)
+- Runner setup has been streamlined, removing redundant Vagrant box additions and obsolete Service and EndpointSlice definitions for nuc10-node06 to reduce configuration clutter. [733d1c99](https://github.com/electrocucaracha/krd/commit/733d1c99849c5a999660384c17c2f224822a6777)
 
 ## [20.4.0] - 2026-07-02
 
 ### Added
 
-- Enabled flexible and reliable dynamic storage provisioning by allowing users to resize persistent volumes and deferring binding until a pod is scheduled thereby reducing failed provisioning attempts and improving placement decisions. (4d53618f)
+- Default storage class settings have been updated to improve dynamic provisioning reliability and user flexibility. [4d53618f](https://github.com/electrocucaracha/krd/commit/4d53618f835e1065418e23a61d76939a3308f921)
 
 ## [20.3.2] - 2026-07-02
 
 ### Fixed
 
-- Resolved compatibility issues for users relying on default environment configuration by reverting containerd version to 2.2.3 from the previously unstable 2.3.2, which allowed dependent components that have not yet been updated to function correctly again without requiring any migration effort. (261a6737)
+- The default containerd version was downgraded from 2.3.2 to 2.2.3 due to compatibility issues with dependent components that have not been updated for this release, restoring stability for users relying on the default environment configuration. [261a6737](https://github.com/electrocucaracha/krd/commit/261a6737ba1a2b935f7bb1299eb07a186e2f44d3)
 
 ## [20.3.1] - 2026-07-01
 
 ### Changed
 
-- Updated GitHub Actions runners to ubuntu-24.04 for improved performance and updated software packages, ensuring continued compatibility with GitHub-hosted runners and leveraging the latest available environment for CI workflows. (8148c7d3)
+- GitHub Actions runners have been updated from ubuntu-22.04 to ubuntu-24.04, which offers improved performance and updated software packages. [8148c7d3](https://github.com/electrocucaracha/krd/commit/8148c7d32d23d8724d0defd0468eeefe003c8710)
 
 ## [20.3.0] - 2026-07-01
 
 ### Added
 
-- Introduced automation for rapid and repeatable environment resets in Kubernetes, enabling efficient testing and CI purposes through streamlined volume cleanup, cluster installation, key component deployment, and self-hosted GitHub Actions runner configuration. (87d82c49)
+- A script has been added to automate the recreation of a full Kubernetes environment, including volume cleanup, cluster installation, deployment of key components, and configuration of self-hosted GitHub Actions runners. [87d82c49](https://github.com/electrocucaracha/krd/commit/87d82c49b1b3205dd8aabe0a5f9cfb82b2a7de19)
 
 ## [20.2.1] - 2026-07-01
 
 ### Changed
 
-- Upgraded dependencies and container images to latest versions, ensuring support for recent Kubernetes versions and improving reliability, security, and alignment with upstream projects, without introducing any breaking changes but requiring downstream consumers to verify compatibility with updated versions. (94ea4256)
+- Multiple GitHub Actions, Ansible Galaxy roles and collections, and various playbook and resource image versions were updated to their latest stable releases for security and compatibility improvements. [94ea4256](https://github.com/electrocucaracha/krd/commit/94ea4256939bf55746e6727ec624dcee08507eb1)
 
 ## [20.2.0] - 2026-06-10
 
 ### Added
 
-- BREAKING: Enabled pinned GitHub Actions to remain at specific versions while others are updated automatically, introducing a new array that skips auto-updating listed actions and preventing breaking changes from automatic updates unless explicitly removed. (2fc3cfff)
+- BREAKING: The version update script now supports pinned GitHub Actions, allowing certain actions to remain at specific versions while others are updated automatically. [2fc3cfff](https://github.com/electrocucaracha/krd/commit/2fc3cfff2f5f4d8f8198d0cb7ae75e85d11f734a)
 
 ## [20.1.7] - 2026-04-25
 
 ### Changed
 
-- Standardized GitHub Actions workflows to safely reference secrets within dedicated environments and optimized tool versions across lint, spell check, and update jobs. (493e278e)
+- GitHub Actions workflows were standardized across lint, spellcheck, and update processes to ensure consistent behavior. [493e278e](https://github.com/electrocucaracha/krd/commit/493e278ef9a0515b39588a0beceb875f523dd16c)
 
 ## [20.1.6] - 2026-04-25
 
 ### Changed
 
-- Updated dictionary definitions used by the spell checker bot to include Ons and exclude MKE. (aef4179e)
+- The dictionary definitions in the wordlist have been updated, removing MKE and adding Ons. [aef4179e](https://github.com/electrocucaracha/krd/commit/aef4179ebb0580b105c06c016dcab6116c26be48)
 
 ## [20.1.5] - 2026-04-25
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions to ensure compatibility with latest dependencies, requiring users to migrate if relying on previous versions of these dependencies. (92262b3c)
+- Galaxy requirements and krd versions files were updated to newer versions, including Go 1.24.0, super-linter 8.6.0, and various other dependencies like knative-serving 1.21.2 and cert-manager 1.20.1. [92262b3c](https://github.com/electrocucaracha/krd/commit/92262b3c14a95ea3ee750b5c21490b53b3d5d128)
 
 ## [20.1.4] - 2026-04-25
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions files to latest supported versions for cert-manager, knative serving, eventing, Ansible core, click, filelock, and packaging. (10e74743)
+- Galaxy requirements and krd versions files were updated to reflect new dependencies and versions, including Ansible core 2.20.5, click 8.3.3, filelock 3.29.0, packaging 26.1, rich 15.0.0, and various other package upgrades, with no breaking behavior or migration requirements mentioned in the provided changes. [10e74743](https://github.com/electrocucaracha/krd/commit/10e74743c339c8046038551c2486f312d91c0965)
 
 ## [20.1.3] - 2026-03-20
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions files to newer versions, including actions/cache from 5.0.3 to 5.0.4, actions/ai-inference from 2.0.7 to 2.0.8, dorny/paths-filter from 4.0.0 to 4.0.1, and other dependencies like argocd_version, kagent_version, and litellm image version; this may require re-running CI pipelines or updating local environments. (c6426728)
+- The galaxy requirements and krd versions files have been updated to newer versions, including actions/cache from 5.0.3 to 5.0.4, ai-inference from 2.0.7 to 2.0.8, dorny/paths-filter from 4.0.0 to 4.0.1, and other dependencies such as argocd_version, kagent_version, and litellm image version. [c6426728](https://github.com/electrocucaracha/krd/commit/c642672814b8f513d04846b28a9ed4d02b3e133b)
 
 ## [20.1.2] - 2026-03-20
 
 ### Changed
 
-- Updated galaxy requirements and krd versions files to ensure compatibility with latest tools and libraries, requiring users to update their environments to use new package versions such as ansible-lint and filelock. (9fe327b1)
+- Galaxy requirements and krd versions files were updated to reflect the latest dependencies, including upgraded images for Kubernetes and other tools, ensuring compatibility and stability in deployments. [9fe327b1](https://github.com/electrocucaracha/krd/commit/9fe327b1a54338def793e9bfe71a2d84fa84090e)
 
 ## [20.1.1] - 2026-03-20
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions files to reflect newer dependencies such as dorny/paths-filter version 4.0.0 and various package versions including istio, knative, and kube-ovn, potentially requiring migration steps from previous versions. (5a7aefd6)
+- Galaxy requirements were updated, including dependencies for Knative versions, Cert Manager, and other components, which may require users to adjust their configurations accordingly. [5a7aefd6](https://github.com/electrocucaracha/krd/commit/5a7aefd61eec0dabbc2bba3057c3b4ed28fa0fee)
 
 ## [20.1.0] - 2026-03-15
 
 ### Added
 
-- Enabled pull requests labeling for automated actions by introducing necessary permissions in the triage workflow YAML file. (befa7799)
+- The triage workflow YAML file has been updated to include the pull-requests: write permission, which allows the actions/labeler action to modify pull requests. [befa7799](https://github.com/electrocucaracha/krd/commit/befa7799640fc8a454878660e47bb288c1ce7f9a)
 
 ## [20.0.0] - 2026-03-15
 
 ### Removed
 
-- Simplified the \_installers.sh script by eliminating an unnecessary for loop that installed the Grafana Istio AddOn, allowing users to maintain their existing workflows without any modifications. (4a61bce4)
+- The shellcheck SC2043 warning was addressed by removing a single-item for loop in the _installers.sh script. [4a61bce4](https://github.com/electrocucaracha/krd/commit/4a61bce477485ed98b76e7da1cc4b33d654b2237)
 
 ## [19.4.7] - 2026-03-15
 
 ### Changed
 
-- Improved linting accuracy is now enabled for the codebase through the introduction of a .codespellrc configuration that ignores specific words during CI runs. (00f5a3ef)
+- Codespell linting errors were fixed, and a `.codespellrc` configuration file was added to ignore specific words. [00f5a3ef](https://github.com/electrocucaracha/krd/commit/00f5a3ef2921ba3f72fae82fced982f58cf2f603)
 
 ## [19.4.6] - 2026-02-27
 
 ### Changed
 
-- Upgraded various dependencies and configurations to new versions of Ansible, Kubernetes package, Kubespray, Python, and pip across multiple workflows. (f939211b)
+- Galaxy requirements were updated, including Ansible collections, Kubernetes version, and Kubespray version. [f939211b](https://github.com/electrocucaracha/krd/commit/f939211be839552865ff59f8f670ac24797d0b55)
 
 ## [19.4.5] - 2026-02-27
 
 ### Changed
 
-- Updated dependencies in galaxy requirements and krd versions files to reflect new version numbers for various dependencies without introducing breaking behavior or requiring migration steps. (b054ca5d)
+- Galaxy requirements and krd versions files were updated to reflect newer versions of various dependencies, including kpt, go, istio, argocd, and others. [b054ca5d](https://github.com/electrocucaracha/krd/commit/b054ca5defa792ffb558e8d8000c8f6dc8fce1c9)
 
 ## [19.4.4] - 2026-02-27
 
 ### Changed
 
-- Upgraded several dependencies to newer versions including super-linter 8.5.0 and community.docker 5.0.6 resulting in no breaking changes for developers or operators. (a22b147d)
+- The galaxy requirements and krd versions files have been updated to reflect newer versions of dependencies, including super-linter 8.5.0, ai-inference 2.0.6, and external snapshotter v8.5.0. [a22b147d](https://github.com/electrocucaracha/krd/commit/a22b147da04070559b6b997ddb897cc1dcda9992)
 
 ## [19.4.3] - 2026-02-27
 
 ### Changed
 
-- Updated galaxy requirements and KRD versions files to reflect newer dependency versions, necessitating users to update their configurations accordingly. (3925d75e)
+- The galaxy requirements and krd versions files have been updated to reflect new version numbers for various dependencies, including Go, Ansible, and Knative. [3925d75e](https://github.com/electrocucaracha/krd/commit/3925d75e8e0993062d92d1fe5958043c0b320f0b)
 
 ## [19.4.2] - 2026-02-27
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions files to ensure compatibility with the latest dependencies. (2ce0d2d6)
+- Galaxy requirements were updated, including krd versions files, to reflect the latest versions of required dependencies. [2ce0d2d6](https://github.com/electrocucaracha/krd/commit/2ce0d2d67de36d93eff5a56a67a4f9b93b818201)
 
 ## [19.4.1] - 2026-01-31
 
 ### Fixed
 
-- Stabilized the update schedule for distro verification to run daily at 2am instead of 1am, ensuring consistent automated checks for latest Vagrant Boxes without introducing any breaking behavior or requiring migration steps from previous schedules. (1a899c04)
+- The update schedule for distro verification has been modified to run daily at 2am instead of the previous time, which was the start of each month. [1a899c04](https://github.com/electrocucaracha/krd/commit/1a899c0488bf059675acb020e8cef6629ceb55fc)
 
 ## [19.4.0] - 2026-01-23
 
 ### Added
 
-- Enabled a Prometheus stack collection of Kubernetes manifests, Grafana dashboards, and Prometheus rules via the kube-prometheus-stack feature, introducing breaking behavior for helm upgrade commands due to the addition of a new chart with default admin credentials for Grafana. (932328da)
+- Kube-prometheus-stack was added, enabling a Prometheus stack with Grafana dashboards. [932328da](https://github.com/electrocucaracha/krd/commit/932328daed33b75a4c28639dadd0caef893b312e)
 
 ## [19.3.4] - 2026-01-23
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions files to newer dependencies, requiring re-running workflows that utilize these updated dependencies. (62bb0e7f)
+- The galaxy requirements and krd versions files were updated to reflect new dependencies and versions, including actions/checkout version 6.0.2, geerlingguy.docker role version 8.0.0, and prometheus-operator_version v0.88.0. [62bb0e7f](https://github.com/electrocucaracha/krd/commit/62bb0e7fe119dcc9ca3052858ce61071f3e89579)
 
 ## [19.3.3] - 2026-01-23
 
 ### Changed
 
-- Updated galaxy requirements and krd versions files to reflect new dependencies and versioned packages such as ansible-lint, filelock, and jsonschema, affecting various project modules including litellm image and test-requirements.txt. (59ff041c)
+- Galaxy requirements were updated in multiple files, including galaxy-requirements.yml, krd-vars.yml, and test-requirements.txt. [59ff041c](https://github.com/electrocucaracha/krd/commit/59ff041cae4fdca07915cf76228d2d2d12f2cd9e)
 
 ## [19.3.2] - 2026-01-08
 
 ### Fixed
 
-- resolved issues identified by Zizmor with the GitHub Actions workflow for linter checks updated to use the latest version of the markdown-link-check action without introducing any breaking behavior and requiring no migration steps from users. (75940e98)
+- The GitHub Actions linter workflow was updated to fix issues, specifically changing the version of the markdown link check action from 1.0.17 to 1.1.2 and adding a configuration option to suppress label creation during failed checks. [75940e98](https://github.com/electrocucaracha/krd/commit/75940e98932716ac7615e173ae78cab45fc67898)
 
 ## [19.3.1] - 2026-01-08
 
 ### Fixed
 
-- Resolved linting issues affecting GitHub Actions workflows by updating the `sh-checker` and `misspell` actions to version 0.10.0, ensuring continued CI workflow stability without breaking behavior or API changes but potentially requiring users to update action versions in their own workflows. (940b3519)
+- The linter configuration was updated to fix issues reported by Zizimor, specifically updating dependencies for the sh-checker and misspell actions in GitHub workflows. [940b3519](https://github.com/electrocucaracha/krd/commit/940b35198d4201b0a7467f6b90b8a1b22c05f517)
 
 ## [19.3.0] - 2026-01-08
 
 ### Added
 
-- Enabled expert-level troubleshooting and code suggestions in failed CI workflow runs through the integration of AI-driven analysis into the linter's diagnostic capabilities. (9aa18edb)
+- The GitHub Actions workflow for linter analysis has been updated to enable AI-powered analyzer, allowing for automated diagnosis and resolution of build failures. [9aa18edb](https://github.com/electrocucaracha/krd/commit/9aa18edb8c0620e5bb08b3572d2005a659643513)
 
 ## [19.2.1] - 2026-01-08
 
 ### Fixed
 
-- Optimized kubevirt test hardware resource utilization by reducing memory requests and switching to a smaller Alpine-based container disk image. (39b3868e)
+- Test hardware resources for Kubevirt tests were reduced to improve performance by decreasing memory requests from 64M to 256M, changing the container disk image, and disabling network interface multiqueue. [39b3868e](https://github.com/electrocucaracha/krd/commit/39b3868e0613bf5c8aafc5506e40601bbddfa0db)
 
 ## [19.2.0] - 2026-01-08
 
 ### Added
 
-- Enabled multiqueue network interfaces and switched to virtio as the default network interface model for KubeVirt runner configurations, potentially requiring adjustments in user settings due to changes in CPU model used for virtual machines. (1de1c48a)
+- Runner configuration values have been updated in the VM specification to improve performance and compatibility. [1de1c48a](https://github.com/electrocucaracha/krd/commit/1de1c48a4d6bd144d1feaf4041c7d726ef304688)
 
 ## [19.1.0] - 2026-01-08
 
 ### Added
 
-- Enabled emulation for certain CPU architectures in the kubevirt configuration during installation, dynamically applying updated feature gates to support host devices and storage volumes. (98625e5a)
+- Kubevirt configuration was improved by removing outdated instructions for enabling emulation and adding patches to enable required features, including host devices and virtio-fs storage volumes. [98625e5a](https://github.com/electrocucaracha/krd/commit/98625e5a2fa0c552d0a4ca39b58b677a00eb6dc3)
 
 ## [19.0.0] - 2026-01-02
 
 ### Removed
 
-- The dictionary definitions used by the spell checker bot have been streamlined, eliminating certain terms from its wordlist that were previously recognized as valid, which may impact users relying on these words for accurate spelling suggestions. (e7cc1295)
+- The dictionary definitions used by the spellchecker bot have been updated, removing several terms including CRI, criproxy, datasets, KVM, QCOW, qemu, runtimes, and VMs. [e7cc1295](https://github.com/electrocucaracha/krd/commit/e7cc1295b70008bbe3b0fddf26b147b7c77cd734)
 
 ## [18.2.1] - 2025-12-30
 
 ### Fixed
 
-- The GitHub Actions workflow for super-linter validation was updated to meet new requirements enabling it to function correctly and access all dependencies. (9a9151d6)
+- The GitHub Actions workflow for super-linter validation has been updated to meet new requirements, adding permissions for package reading and status writing, and increasing the fetch depth of the repository. [9a9151d6](https://github.com/electrocucaracha/krd/commit/9a9151d682af9d1bc9890d3abfde4a0df9284437)
 
 ## [18.2.0] - 2025-12-30
 
 ### Added
 
-- Enabled support for running tests on Ubuntu 24.04 by introducing the ubuntu2404 box to the Ubuntu runner pipeline, requiring users to update their pipelines accordingly. (c77185ca)
+- A new Ubuntu 2404 box was added to the system, allowing for vagrant box addition via a specific URL. [c77185ca](https://github.com/electrocucaracha/krd/commit/c77185ca7e9ef492bf5b40d169b0c7fc371a30d0)
 
 ## [18.1.1] - 2025-12-30
 
 ### Fixed
 
-- Resolves issues where tests trapping errors were unable to handle get_status output correctly by enabling the function to run on error. (9d07c3d4)
+- The `get_status` function now runs on error, allowing for better test coverage and debugging capabilities in the event of an unexpected failure. [9d07c3d4](https://github.com/electrocucaracha/krd/commit/9d07c3d4e539cab37edd769906d90a8f24fed79b)
 
 ## [18.1.0] - 2025-12-30
 
 ### Added
 
-- Improved failure messages in the Vagrant-up action now provide more detailed system information on failure, including system uptime, memory usage, disk space, and kernel logs to aid users in diagnosing and troubleshooting issues with their environment. (dcab606c)
+- Failure messages in the Vagrant-up action have been improved to provide more detailed information about system resources, including memory, disk usage, and kernel logs, when the action fails. [dcab606c](https://github.com/electrocucaracha/krd/commit/dcab606c556eba931f948d47c10d94e99c4b2255)
 
 ## [18.0.0] - 2025-12-30
 
 ### Removed
 
-- Eliminated Virtlet support from the project, which impacts users who relied on its services and configuration, requiring updates to dependent components such as criproxy and virtlet roles for a seamless transition. (a92e33eb)
+- Virtlet support has been dropped from the project, impacting users who relied on this feature for running VM workloads in Kubernetes. [a92e33eb](https://github.com/electrocucaracha/krd/commit/a92e33eb665cce2ca9d53fb857d6f58e84478170)
 
 ## [17.0.1] - 2025-12-27
 
 ### Fixed
 
-- Stabilized code quality by incorporating additional linting checks from Biome Lint and Python Ruff Format into the existing configuration. (9aa5ebd4)
+- Linter configuration was updated to ignore certain validation rules, including Biome linting and formatting checks, Python Ruff format checking, and environment variable validation. [9aa5ebd4](https://github.com/electrocucaracha/krd/commit/9aa5ebd45f05423b28c329aba3b1a489984b0246)
 
 ## [17.0.0] - 2025-12-27
 
 ### Removed
 
-- The archive rebase action is no longer available for manual triggering in GitHub workflows, allowing users to focus on other tasks without the option of an automatic pull request rebase. (7c7c376f)
+- The rebase action workflow has been removed, which previously allowed users to automatically rebase changes in their pull requests. [7c7c376f](https://github.com/electrocucaracha/krd/commit/7c7c376f4e7cace1e2fb10d6fb08713e5e54fdff)
 
 ## [16.1.3] - 2025-12-27
 
 ### Changed
 
-- Updated versions of dependencies and container images were introduced across the project, affecting ARC Garbage collector resources by changing their schedule to run every three hours instead of hourly. (357a82de)
+- Versions were updated across the project, including dependencies in galaxy-requirements.yml, playbooks/krd-vars.yml, and resources/arc-cleanup.yml. [357a82de](https://github.com/electrocucaracha/krd/commit/357a82de25ff029a4e52ce924dc3602cf4d2ab98)
 
 ## [16.1.2] - 2025-12-26
 
 ### Fixed
 
-- Storageclass configuration for runners is now optimized by default to use the topolvm-provisioner class, replacing a previously hardcoded value and affecting users who manage storage classes in their Kubernetes environment. (4eec3fd1)
+- Storageclass configuration for runners was updated to use the default storage class instead of setting it manually, simplifying chart installation. [4eec3fd1](https://github.com/electrocucaracha/krd/commit/4eec3fd170ef1dfb04db5bd9683adf79ae6a724d)
 
 ## [16.1.1] - 2025-12-23
 
 ### Fixed
 
-- Resolved the Tekton operator installation link issue by updating it to point to infra.tekton.dev from storage.googleapis.com, requiring users who install via the operator to update their configuration accordingly with no breaking changes necessary. (5cb0b25b)
+- The Tekton operator link was updated in the _installers.sh script, affecting users who install Tekton. [5cb0b25b](https://github.com/electrocucaracha/krd/commit/5cb0b25ba3782ee1734bda03d19bb7b15256e488)
 
 ## [16.1.0] - 2025-12-23
 
 ### Added
 
-- Enabled external snapshot management for Kubernetes clusters through installation of CSI Snapshotter and its dependencies via the `install_external_snapshotter` function. (5a338d39)
+- The install_external_snapshotter function was added to the _installers.sh script, allowing for the installation of CSI Snapshotter. [5a338d39](https://github.com/electrocucaracha/krd/commit/5a338d391918c0cfc32ff92d089a366167226c7d)
 
 ## [16.0.2] - 2025-12-23
 
 ### Changed
 
-- Upgraded Kubernetes version to v1.33.7, requiring updates to environment variables and configuration files, as well as modifications to the KRD_KUBE_VERSION variable in README.md and assertions in ci/check.sh. (f48bc916)
+- Kubernetes version was bumped from v1.32.8 to v1.33.7, affecting various configuration variables and scripts that interact with Kubernetes. [f48bc916](https://github.com/electrocucaracha/krd/commit/f48bc91606604adb44564d1b7880d3123d9e75ef)
 
 ## [16.0.1] - 2025-12-23
 
 ### Fixed
 
-- Optimized multinode tests by reducing CPU requirements to two cores from one core. (b1e9e804)
+- Multinode tests now use two CPUs instead of one, which may affect performance or resource allocation in these environments. [b1e9e804](https://github.com/electrocucaracha/krd/commit/b1e9e804dd995bb7750a07fa4848643abec95492)
 
 ## [16.0.0] - 2025-12-23
 
 ### Removed
 
-- Simplified instructions for obtaining the jwtSecret in the \_untested_installers.sh script to avoid confusion caused by a typo. (7ad8c963)
+- A typo in the _untested_installers.sh script was corrected, specifically in the authentication section where instructions for retrieving the jwtSecret were revised to use "Retrieve" instead of "Retrive". [7ad8c963](https://github.com/electrocucaracha/krd/commit/7ad8c9634755dfeb5bbb7b572fa6d8d03d309530)
 
 ## [15.0.2] - 2025-12-23
 
 ### Changed
 
-- Upgraded several dependencies to newer versions, including actions/cache from 4.3.0 to 5.0.1 and super-linter/super-linter from 8.3.0 to 8.3.1, without introducing any breaking changes. (3e4bd36a)
+- Galaxy requirements were updated, including Ansible core to 2.20.1, super-linter to 8.3.1, and several dependencies in test-requirements.txt, galaxy-requirements.yml, playbooks/krd-vars.yml, and other files. [3e4bd36a](https://github.com/electrocucaracha/krd/commit/3e4bd36a23a03419fd92eaaaab78e6cd4947ce3c)
 
 ## [15.0.1] - 2025-12-11
 
 ### Changed
 
-- Updated galaxy requirements and krd versions files to reflect new dependencies, including upgraded Kubernetes and Kubespray versions, requiring users to update their configurations accordingly for compatibility with the latest software releases. (9cc76249)
+- The galaxy requirements and krd versions files were updated to use newer versions of various dependencies, including Python, Kubernetes, Kubespray, and other tools. [9cc76249](https://github.com/electrocucaracha/krd/commit/9cc7624967739cc0def2340b3ddfd5ee92f0f2df)
 
 ## [15.0.0] - 2025-12-11
 
 ### Removed
 
-- Simplified the dictionary definitions used by the spell checker bot to remove outdated terms like "datasets" and "runtime", without affecting API or CLI contract or introducing any security risks. (5d8440fe)
+- The dictionary definitions used by the spellchecker bot have been updated, removing two outdated terms: "datasets" and "runtime". [5d8440fe](https://github.com/electrocucaracha/krd/commit/5d8440fe96388c8edfaf4754bdad21d7e8cff44a)
 
 ## [14.0.2] - 2025-11-19
 
 ### Changed
 
-- Upgraded molecule module to version 25.1.0 in test requirements, superseding the previous dependency on version 25.7.0 and potentially necessitating updates from users relying on this testing framework. (7e0b04be)
+- The molecule module was pinned to version 25.1.0 in test-requirements.in and test-requirements.txt, updating dependencies for ansible-compat, ansible-core, and other related packages. [7e0b04be](https://github.com/electrocucaracha/krd/commit/7e0b04be9f9774b9331b796417299f889f6fcbf8)
 
 ## [14.0.1] - 2025-11-19
 
 ### Changed
 
-- Enabled PR creation in CI workflows by persisting credentials during the process, affecting all related configurations without requiring any migration steps or introducing API changes. (0accbdf2)
+- PR creation in the update CI workflow has been fixed, which affects maintainers who rely on this process to create pull requests. [0accbdf2](https://github.com/electrocucaracha/krd/commit/0accbdf24c1f6de90375feb0136b6e35ad111e9d)
 
 ## [14.0.0] - 2025-10-09
 
 ### Removed
 
-- Eliminated the cache CI task from the Vagrant setup process which may affect users who relied on this feature to speed up their builds and does not introduce any breaking behavior requiring migration steps. (b7e49471)
+- The cache CI task for Vagrant boxes has been removed, which may cause issues if users relied on this feature to speed up their builds. [b7e49471](https://github.com/electrocucaracha/krd/commit/b7e49471debe2ffad23adafbe34192794c292ca8)
 
 ## [13.3.2] - 2025-10-09
 
 ### Changed
 
-- Updated VirtualBox to version 7.2 in the Ubuntu runner pipeline, requiring users who relied on specific features of the previous version to re-run their pipelines. (8f2f67a8)
+- VirtualBox was updated from version 7.1 to 7.2 in the Ubuntu runner pipeline configuration, which may require users to update their VirtualBox installations if they are using an older version. [8f2f67a8](https://github.com/electrocucaracha/krd/commit/8f2f67a89ae0ac217a43216e6aaa9e76510050ec)
 
 ## [13.3.1] - 2025-10-08
 
 ### Changed
 
-- Updated the local box repository to point to a specific node's URL, simplifying how the generic/ubuntu2204 box is added during deployment without affecting the API or CLI contract but introducing a new service and endpoint in the Kubernetes configuration. (329fb81c)
+- The local box repository has been updated to point to a specific machine's address, requiring users to migrate their configuration to use the new URL for adding boxes. [329fb81c](https://github.com/electrocucaracha/krd/commit/329fb81cfa460c3f318ddd283bdcc774b15a3684)
 
 ## [13.3.0] - 2025-09-14
 
 ### Added
 
-- Enabled users to rely on an updated wordlist for certain operations by introducing new words: "datasets", "runtime", and "runtimes". (fea9845e)
+- The dictionary used for wordlist filtering has been updated to include new terms, specifically "datasets" and "runtime". [fea9845e](https://github.com/electrocucaracha/krd/commit/fea9845ef7256de3439b290dbc6e284c9e95268d)
 
 ## [13.2.0] - 2025-09-14
 
 ### Added
 
-- Enabled specification of vulnerability severities during Trivy scans through the introduction of a severity filter in the trivy.yaml file, where CRITICAL and HIGH levels are enabled by default. (261fb2af)
+- Trivy vulnerability filtering was added, allowing users to specify severity levels for detection. [261fb2af](https://github.com/electrocucaracha/krd/commit/261fb2af1fed18412e1754b3be9d2a618acf08ca)
 
 ## [13.1.0] - 2025-09-14
 
 ### Added
 
-- Enabled GitHub Actions workflows to be linted correctly by persisting credentials only when necessary. (b4f569da)
+- GitHub Actions workflows were updated to persist credentials in a false state, ensuring that sensitive information is not stored unnecessarily. [b4f569da](https://github.com/electrocucaracha/krd/commit/b4f569dadb450039a513bba2f82403b74be6d15b)
 
 ## [13.0.5] - 2025-09-14
 
 ### Changed
 
-- Upgraded Kubernetes to version v1.32.8, requiring updates to default cluster configuration and CI checks for deployments relying on the KRD_KUBE_VERSION environment variable. (cbf2c5a8)
+- Kubernetes version has been bumped from v1.32.5 to v1.32.8 in multiple files, including configuration templates and assertion scripts. [cbf2c5a8](https://github.com/electrocucaracha/krd/commit/cbf2c5a88c77bc0f38b639c186f134fe5cbc9b33)
 
 ## [13.0.4] - 2025-09-04
 
 ### Changed
 
-- Updated the LLM Lite image in the litellm.yml file to reference the main-v1.76.2-nightly version from ghcr.io/berriai/litellm instead of main-v1.67.0-stable. (329ba194)
+- The LLM Lite image in the litellm.yml file has been updated to use the main-v1.76.2-nightly tag from ghcr.io/berriai/litellm, replacing the previous main-v1.67.0-stable tag. [329ba194](https://github.com/electrocucaracha/krd/commit/329ba194c634b4427552c303524df5baf68ba94d)
 
 ## [13.0.3] - 2025-09-04
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions files to newer versions including super-linter 8.1.0, geerlingguy.docker 7.5.0, ansible.posix 2.1.0, community.general 11.2.1, knative 1.19.1, prometheus-operator 0.85.0, and tekton 0.77.0 with no breaking behavior introduced. (984a5c12)
+- Galaxy requirements and krd versions files were updated to newer versions, including super-linter to 8.1.0, galaxy-requirements.yml to 7.5.0 for geerlingguy.docker and 11.2.1 for community.general, and krd-vars.yml to knative-v1.19.1 for knative and net_istio_version to vknative-v1.19.1. [984a5c12](https://github.com/electrocucaracha/krd/commit/984a5c12898efe0b32451f77e4ac5bf9326773ab)
 
 ## [13.0.2] - 2025-09-04
 
 ### Changed
 
-- Upgraded dependencies for galaxy requirements and krd versions files to newer versions, requiring users who rely on these dependencies in their pipelines and tests to update their dependencies accordingly. (423421e5)
+- Galaxy requirements and krd versions files were updated to reflect newer versions of various dependencies, including argocd, tekton, and ansible-lint. [423421e5](https://github.com/electrocucaracha/krd/commit/423421e59715b435b36248cf0522b90163c761e1)
 
 ## [13.0.1] - 2025-09-04
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions to align with latest package releases, affecting users who rely on these specific versions for their deployments. (1a1793f6)
+- Kubespray and Ansible versions have been updated in the galaxy-requirements.yml file, affecting several dependencies including Kubernetes, Knative, and Kubesphere. [1a1793f6](https://github.com/electrocucaracha/krd/commit/1a1793f64950411f34d845eaf9756d75731ee90a)
 
 ## [13.0.0] - 2025-08-12
 
 ### Removed
 
-- The obsolete terms "datasets" and "runtime" have been eliminated from the spell checker bot's wordlist to maintain relevance and effectiveness of the tool. (fe1e68e3)
+- The dictionary definitions used by the spellchecker bot have been updated, removing "datasets" and "runtime" from the list of words to be checked. [fe1e68e3](https://github.com/electrocucaracha/krd/commit/fe1e68e38173ed9d8f16566980018ed0362fe408)
 
 ## [12.0.1] - 2025-08-12
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions files to newer versions including Kubernetes Core 6.1.0, Community Docker 4.7.0, Ansible POSIX 2.1.0, Community General 11.2.0, and other dependencies which may require migration steps for users relying on previous versions. (39441963)
+- The galaxy requirements and krd versions files have been updated to new versions, which will likely break some workflows that were relying on the previous versions. [39441963](https://github.com/electrocucaracha/krd/commit/39441963a558656e61ae83684a800b89083a3735)
 
 ## [12.0.0] - 2025-08-11
 
 ### Removed
 
-- Eliminated dead external links from the documentation to maintain a clean and up-to-date user experience without introducing any breaking behavior, API contract changes, or migration requirements. (167421ca)
+- Removed dead external links from README.md, specifically removing references to KubeSphere DevOps System and Service Mesh documentation URLs that no longer exist. [167421ca](https://github.com/electrocucaracha/krd/commit/167421ca568feaf721fe061604d27a083729de1e)
 
 ## [11.2.0] - 2025-08-11
 
 ### Added
 
-- Enabled users to specify which branch to run linters on by default through the addition of a new DEFAULT_BRANCH option in GitHub Actions workflows. (d67291d1)
+- The default branch for the super-linter has been added to GitHub workflows, automatically setting it to either the current head ref or the repository's default branch name. [d67291d1](https://github.com/electrocucaracha/krd/commit/d67291d1f61c96c9caf3bc473ae954807d746601)
 
 ## [11.1.7] - 2025-07-28
 
 ### Changed
 
-- Updated dependencies to their latest available versions at the time of update, requiring users who rely on these dependencies for functionality to migrate to the new versions if they haven't already. (08f42a3b)
+- Versions were upgraded in various dependencies, including Knative, ArgoCD, Tekton, and Kubevirt, among others. [08f42a3b](https://github.com/electrocucaracha/krd/commit/08f42a3b9c1b016ec4887121219ec875c26820a4)
 
 ## [11.1.6] - 2025-07-27
 
 ### Changed
 
-- Modernized kagent deployment versions to be controlled by the kagent chart's version, requiring users who rely on hardcoded chart versions to migrate to using the `_get_version` function. (f7db95c6)
+- Kagent deployment versions are now controlled, requiring users to specify the version when installing kagent-crds and kagent. [f7db95c6](https://github.com/electrocucaracha/krd/commit/f7db95c65b536500631b1e93b3619d9fbd4e9ca0)
 
 ## [11.1.5] - 2025-07-27
 
 ### Changed
 
-- Optimized the kagent ollama agent configuration to simplify its operation and improve performance by modifying the agent's name, model configuration, and tool server with additional streamable HTTP settings including sseReadTimeout and timeout options. (db63aa79)
+- The kagent ollama agent configuration has been updated to improve its functionality. [db63aa79](https://github.com/electrocucaracha/krd/commit/db63aa7916cd4495f0a8372b17340a7ebd14d080)
 
 ## [11.1.4] - 2025-07-27
 
 ### Changed
 
-- Modernized kagent database configuration to utilize CNPG, requiring users to update their configurations and leveraging the renamed helm chart from "postgres". (ccd1b795)
+- Kagent database now uses CNPG instead of the previous setup, requiring no migration steps for users. [ccd1b795](https://github.com/electrocucaracha/krd/commit/ccd1b7951813ed6288cd0337d9fca362b1dd17b2)
 
 ## [11.1.3] - 2025-07-27
 
 ### Changed
 
-- kagent setup instructions now reference environment-specific namespaces stored in KRD_KAGENT_NAMESPACE variables instead of the default "kagent" namespace. (e1091478)
+- The setup instructions for kagent have been updated to reflect changes in namespace management, API key secret references, and tool server configurations. [e1091478](https://github.com/electrocucaracha/krd/commit/e1091478e430609cc4bc0e11252a848bd01f546f)
 
 ## [11.1.2] - 2025-07-22
 
 ### Changed
 
-- Updated knative serving configurations to reflect version 1.19.0, requiring users to update their settings accordingly. (2af5b590)
+- Knative serving version was bumped from 1.18.1 to 1.19.0, which may require migration steps for users running this component. [2af5b590](https://github.com/electrocucaracha/krd/commit/2af5b590796bfb34ccba899e4aef1f3b4ce4e8df)
 
 ## [11.1.1] - 2025-07-22
 
 ### Changed
 
-- Introduced prefixes for image tags in kubespray_images.tpl, requiring the new prefix parameter to be specified when using versions >= 2.28.0 with set_kubespray_img_version function calls and necessitating updates to existing image tags. (6e9e4114)
+- Prefix image tags were updated in Kubespray to include a version prefix, changing the format of some images from `image:version` to `image:vversion`. [6e9e4114](https://github.com/electrocucaracha/krd/commit/6e9e41145901b94116d6d205e22b1b96bb661e78)
 
 ## [11.1.0] - 2025-07-22
 
 ### Added
 
-- Enabled improved spell checking accuracy for users by updating the wordlist in the project's GitHub repository to include new words such as "datasets" and "runtime". (a7c4ef45)
+- The list of misspelled words in the project's wordlist has been updated to include "datasets" and "runtime". [a7c4ef45](https://github.com/electrocucaracha/krd/commit/a7c4ef4549e5fbf524a7432f0b15ca8f42654360)
 
 ## [11.0.5] - 2025-07-22
 
 ### Changed
 
-- The project's documentation has been modernized to ensure consistency and accuracy of information by updating job names and descriptions in workflow files and modifying environment variable settings in the readme file without introducing any breaking behavior or requiring migration steps. (d528bb43)
+- The natural language linting issues in the project's workflows and README files have been fixed, addressing potential formatting problems that could affect users. [d528bb43](https://github.com/electrocucaracha/krd/commit/d528bb439a8d879304288c98193c73d2f1af4a1b)
 
 ## [11.0.4] - 2025-07-22
 
 ### Changed
 
-- Updated various package versions including Go setup to version 5.5.0, super-linter validation to version 8.0.0, pyspelling-any to version 1.0.5, and kubernetes, cert-manager, and knative, without introducing breaking behavior or requiring migration. (0be57358)
+- CI process updated to use newer versions of dependencies, including Go, super-linter, pyspelling-any, kubernetes, cert-manager, and others. [0be57358](https://github.com/electrocucaracha/krd/commit/0be57358816abe36abbf71d176075612d707f6d7)
 
 ## [11.0.3] - 2025-07-07
 
 ### Changed
 
-- Updated indentation format value in Makefile from 2 spaces to 4 spaces, requiring users who rely on this setting for code formatting to update their customized settings accordingly. (6444f82f)
+- The identation fmt value in the Makefile was updated to use an indentation of 4 spaces instead of the default, which will affect users who rely on automatic formatting tools. [6444f82f](https://github.com/electrocucaracha/krd/commit/6444f82f9ea4d6321c2adf3a2beffd702f53c92b)
 
 ## [11.0.2] - 2025-07-05
 
 ### Changed
 
-- Modernized dictionary definitions in the spell checker bot's wordlist to uppercase, potentially requiring maintainers to update configurations and scripts that interact with the bot. (1ace4ef5)
+- The dictionary definitions in the spellchecker bot's wordlist have been updated, replacing mixed-case words with their standardized forms to improve accuracy. [1ace4ef5](https://github.com/electrocucaracha/krd/commit/1ace4ef5cc64273bfc7b6dcadcc6d28b53414980)
 
 ## [11.0.1] - 2025-07-05
 
 ### Changed
 
-- Clarified documentation for architecture and other key components to enhance overall readability and comprehension. (4b8d11cc)
+- Documentation improvements were made to the Kubernetes Reference Deployment (KRD) project, specifically in its architecture documentation. [4b8d11cc](https://github.com/electrocucaracha/krd/commit/4b8d11cc72d57aa596b89e3e11d785ee929a04d2)
 
 ## [11.0.0] - 2025-06-28
 
 ### Removed
 
-- Kyverno can now be installed independently of Gatekeeper without any issues. (fde2f94a)
+- Kyverno installation no longer depends on Gatekeeper, removing this dependency from the install process. [fde2f94a](https://github.com/electrocucaracha/krd/commit/fde2f94a25a0e4c82105bdf6ec2079285f7f5b32)
 
 ## [10.1.0] - 2025-06-26
 
 ### Added
 
-- Enabled accurate representation of relevant technologies by updating the project's GitHub repository wordlist to include Agentic, Kagent, and KRM terms. (f0ebb186)
+- The list of known words in the GitHub wordlist has been updated to include several new terms, specifically Agentic, kagent, KRM, aio, and Allocatable. [f0ebb186](https://github.com/electrocucaracha/krd/commit/f0ebb186f761bec7e84f35728e7da298ccc6bc83)
 
 ## [10.0.4] - 2025-06-26
 
 ### Changed
 
-- Clarified documentation for Kubernetes cluster deployment on bare-metal and virtual machines using Ansible, providing more transparent explanations of the POD Descriptor File concept, custom cluster definitions, supported Linux distributions, and components. (ca335091)
+- Documentation improvements were made to the KRD project, including updating the README.md file and .github/.wordlist.txt file. [ca335091](https://github.com/electrocucaracha/krd/commit/ca335091b9c1771be7d0cd274c21c1d5bba0e7a0)
 
 ## [10.0.3] - 2025-06-26
 
 ### Changed
 
-- Updated links in the README.md file to point to correct resources, improving documentation accuracy for users referencing these external resources without introducing any breaking behavior or modifying the existing API and CLI contract. (7cd181ed)
+- Dead links in the README.md file were updated to point to the correct locations, ensuring users have access to accurate information. [7cd181ed](https://github.com/electrocucaracha/krd/commit/7cd181ed98566d6119d857afff03ce311246cb74)
 
 ## [10.0.2] - 2025-06-26
 
 ### Changed
 
-- Improved accuracy in identifying Kubernetes versions is now achieved by correctly handling versions prefixed with "v". (2b1b7a8e)
+- Kube_version retrieval value was updated in multiple functions to remove the leading "v" prefix when echoing the version, affecting how users see the version number in certain cases. [2b1b7a8e](https://github.com/electrocucaracha/krd/commit/2b1b7a8e57aaa21422038d3d1e04d584d0acc13e)
 
 ## [10.0.1] - 2025-06-26
 
 ### Changed
 
-- Updated Kubernetes version to 1.32.5, requiring migration of existing clusters to the updated configuration and necessitating updates to scripts in \_commons.sh and ci/check.sh. (5ec505df)
+- Kubernetes version was updated from v1.31.4 to v1.32.5, affecting the default Kubernetes version used during upgrades and in various scripts. [5ec505df](https://github.com/electrocucaracha/krd/commit/5ec505df9da23060173f5514eed8e4ec6cd0fa48)
 
 ## [10.0.0] - 2025-06-26
 
 ### Removed
 
-- Resolved linting issues in the \_chart_installers.sh script to improve code quality for users who maintain this file without introducing any breaking behavior, API changes, or security impact, and no migration steps are required from users or maintainers. (4b68d942)
+- The removal of the `return` statement in the `install_kagent` function resolves linting issues, but also removes a temporary fix for an unimplemented feature requiring model info values. [4b68d942](https://github.com/electrocucaracha/krd/commit/4b68d942fe813b59788f848ad5ff7e04da0391b3)
 
 ## [9.0.2] - 2025-06-26
 
 ### Changed
 
-- Upgraded Kubespray version from v2.27.0 to v2.28.0 affecting various configuration variables and scripts requiring users to review their custom configurations for compatibility with the new version. (698c7cac)
+- Kubespray version was bumped from v2.27.0 to v2.28.0, requiring users to update their Kubespray configuration. [698c7cac](https://github.com/electrocucaracha/krd/commit/698c7cac93c68c264fc951058f091d99ccbebe14)
 
 ## [9.0.1] - 2025-04-30
 
 ### Changed
 
-- Enabled support for the Agentic AI KRM platform by adding it to the list of supported scenarios in the README.md file and updating installation and uninstallation procedures accordingly. (f0b26b21)
+- The kagent service has been enabled, adding an Agentic AI KRM platform to the list of supported tools in the README.md file. [f0b26b21](https://github.com/electrocucaracha/krd/commit/f0b26b21aa136dd5da0771471182f5de7411b659)
 
 ## [9.0.0] - 2025-04-28
 
 ### Removed
 
-- Eliminated the deletion of containerized data importer resources during Kubevirt uninstallation, requiring users to manually delete these resources after uninstalling. (deab1bce)
+- Kubevirt uninstallation now removes the containerized data importer, which was previously deleted separately. [deab1bce](https://github.com/electrocucaracha/krd/commit/deab1bce57d7ae8162faf099053e478ce1a6aee3)
 
 ## [8.1.1] - 2025-04-28
 
 ### Changed
 
-- Enabled OpenAI support for AI services by introducing a new environment variable to securely store the API key and modifying resource configurations accordingly. (c68941d8)
+- K8Sgpt has been updated to support OpenAI, adding a new configuration option for using the OpenAI API instead of local AI models. [c68941d8](https://github.com/electrocucaracha/krd/commit/c68941d83dd82ed832b0d3049ec406b145aa0579)
 
 ## [8.1.0] - 2025-04-28
 
 ### Added
 
-- Introduced Ollama models for continued use, modifying available model options and their associated API bases in the litellm.yml configuration file. (24d49ec4)
+- Ollama models have been added for continued use, introducing new model names, parameters, and API bases in the litellm.yml configuration file. [24d49ec4](https://github.com/electrocucaracha/krd/commit/24d49ec4f7200f2903ddab5e3d4d864f9dfa9498)
 
 ## [8.0.3] - 2025-04-28
 
 ### Changed
 
-- Optimized multi-node testing scenarios by allowing users to override the All-in-One IP address in Ansible inventory when running tests on multiple nodes and updated existing workflows with a migration step. (fbe741c7)
+- The host-installer feature was improved, allowing users to override the All-in-One IP address in Ansible Inventory when using the installer. [fbe741c7](https://github.com/electrocucaracha/krd/commit/fbe741c761b7e04a6ccdd8325a789b847725025e)
 
 ## [8.0.2] - 2025-04-25
 
 ### Changed
 
-- Enabled debug output control at the step level for Kubespray deployments through environment variables from GitHub Actions. (76806102)
+- The debug mode for Kubernetes deployments has been updated to use the ACTIONS_RUNNER_DEBUG and ACTIONS_STEP_DEBUG environment variables, allowing users to control debugging behavior through these standardized variables instead of a custom KRD_DEBUG variable. [76806102](https://github.com/electrocucaracha/krd/commit/7680610203e689a7a43e6ab24df744c6297636da)
 
 ## [8.0.1] - 2025-04-25
 
 ### Changed
 
-- Simplified usage of KRD_DEBUG by centralizing its definition, requiring users to update custom code referencing the variable to point to the new centralized location instead. (4cc994d3)
+- The KRD_DEBUG definition has been centralized by removing its explicit declaration in various workflows and scripts, instead relying on an external source to set this environment variable. [4cc994d3](https://github.com/electrocucaracha/krd/commit/4cc994d3d34fb81408781d002a60e8b7aa759f38)
 
 ## [8.0.0] - 2025-04-25
 
 ### Removed
 
-- Eliminated the unnecessary installation of arc-runner-set in self-hosted installations when the namespace does not exist without introducing any breaking changes and no migration steps are required. (569fb4d2)
+- The self-hosted installation option for the chart installer was removed, which may break existing installations that relied on this feature. [569fb4d2](https://github.com/electrocucaracha/krd/commit/569fb4d2b5e01acaf516978a760dec3b7973ec70)
 
 ## [7.6.0] - 2025-04-24
 
 ### Added
 
-- Enabled complete removal of Longhorn components during uninstallation by including patching of the deleting-confirmation-flag in the longhorn-system namespace and deletion of this namespace in the process. (9253343f)
+- Longhorn uninstallation has been fixed, allowing users to properly remove Longhorn services from their cluster without encountering issues. [9253343f](https://github.com/electrocucaracha/krd/commit/9253343f7a2d24728fb546147cf48ef904a79f08)
 
 ## [7.5.1] - 2025-04-24
 
 ### Changed
 
-- Optimized test VM memory requirements by reducing the requested amount from 128Mi to 64M and removing the label for specifying virtual machine size, which may necessitate adjustments in existing tests relying on these settings. (aee73b37)
+- Test VM memory requirements were reduced from 128Mi to 64M in the testvm.yml file, which is used for testing purposes. [aee73b37](https://github.com/electrocucaracha/krd/commit/aee73b37245cda3bef1bcec3546551f8d2f99b30)
 
 ## [7.5.0] - 2025-04-24
 
 ### Added
 
-- Enabled local network access for LiteLLM by default on Mac systems for Firefox and Chrome browsers without requiring migration steps from existing configurations. (6189409d)
+- LiteLLM local network issues were documented to improve user experience, particularly for Firefox and Chrome users on Mac systems. [6189409d](https://github.com/electrocucaracha/krd/commit/6189409d69796a3b0dde4bd784d0a3849fa0c5a0)
 
 ## [7.4.1] - 2025-04-24
 
 ### Changed
 
-- KubeVirt Runner now allows memory overcommit by default, which may break existing VMs that rely on the previous behavior and requires users to update their configurations to account for reduced memory allocation. (e8cb75f0)
+- KubeVirt Runner now allows memory overcommit by default, enabling guests to use more memory than allocated on the host. [e8cb75f0](https://github.com/electrocucaracha/krd/commit/e8cb75f07dbc54ecea5beff0aef41493f6d607f3)
 
 ## [7.4.0] - 2025-04-24
 
 ### Added
 
-- Customizable KubeVirt CPU allocation ratio is now enabled during installation allowing users to adjust the default value from 5 for more flexible resource management. (8a8b667d)
+- KubeVirt CPU allocation ratio can now be customized through the KRD_KUBEVIRT_CPU_ALLOCATION_RATIO environment variable, allowing users to fine-tune resource distribution within their clusters. [8a8b667d](https://github.com/electrocucaracha/krd/commit/8a8b667d95c04468c4be034a1dc83a335a283440)
 
 ## [7.3.1] - 2025-04-24
 
 ### Changed
 
-- Simplified virtlink tests by enabling automated setup through a single `kubectl apply` command and increasing the test timeout to 60 seconds from 1 second. (39c3ad28)
+- The virtlink tests have been improved by replacing manual YAML definitions with externalized resources, allowing for easier management of test configurations. [39c3ad28](https://github.com/electrocucaracha/krd/commit/39c3ad2830de2041b42528892f3f7edecabd13eb)
 
 ## [7.3.0] - 2025-04-24
 
 ### Added
 
-- Increased inotify resources to prevent failures on fsnotify watcher when running `kubectl logs`. (5076bd7e)
+- Increased inotify resources to prevent failures on fsnotify watcher when running `kubectl logs`. [5076bd7e](https://github.com/electrocucaracha/krd/commit/5076bd7e1ab600f54f0b34b5984682945c76eaa2)
 
 ## [7.2.1] - 2025-04-24
 
 ### Changed
 
-- The dependencies for several GitHub Actions and workflows were modernized to newer versions, requiring users to update their configurations accordingly. (ebcf7670)
+- Version updates were made across the project, affecting dependencies in GitHub Actions, Ansible roles, and Kubernetes components. [ebcf7670](https://github.com/electrocucaracha/krd/commit/ebcf767090c96174b8122e0b487b89abf494d121)
 
 ## [7.2.0] - 2025-04-23
 
 ### Added
 
-- Enabled customization of documentation validation settings through the addition of a rstcheck configuration file that includes a report level setting for users to control warning and error severity. (88811d1b)
+- A configuration file for rstcheck, a tool to check reStructuredText files, has been added to the project. [88811d1b](https://github.com/electrocucaracha/krd/commit/88811d1b52842fcebb22544272e241e054640f03)
 
 ## [7.1.1] - 2025-04-23
 
 ### Changed
 
-- Updated EditorConfig settings to optimize linter tool configurations without introducing breaking behavior or API changes. (b919b639)
+- Editorconfig linting issues were fixed by updating the .editorconfig file to include root settings, modifying the .editorconfig-checker.json configuration, and changing references in GitHub workflows and Makefile scripts to use the new checker file. [b919b639](https://github.com/electrocucaracha/krd/commit/b919b639483b0bd5fbae2db0888167c6a03b1060)
 
 ## [7.1.0] - 2025-04-23
 
 ### Added
 
-- Enabled access to large language models through the introduction of the LiteLLM service gateway provider, available via the `/litellm` API path, requiring users to migrate their setup for utilization. (5340bc89)
+- LiteLLM service has been enabled, adding a gateway LLM provider to the system. [5340bc89](https://github.com/electrocucaracha/krd/commit/5340bc890350834c585c1b13e3adefef7aff8ce7)
 
 ## [7.0.10] - 2025-04-19
 
 ### Changed
 
-- Enabled support for PostgreSQL clusters managed by the CloudNativePG operator without introducing any breaking changes or requiring migration efforts. (0f03650b)
+- The CloudNativePG operator has been enabled, adding support for PostgreSQL clusters managed by this operator to the project's test scenarios. [0f03650b](https://github.com/electrocucaracha/krd/commit/0f03650b422626bdbec8fe0875a33bde5046bf25)
 
 ## [7.0.9] - 2025-04-16
 
 ### Changed
 
-- Updated K8sGPT resources to utilize the latest version, necessitating users to migrate their configurations accordingly. (cc98ba3f)
+- K8sGPT resources were updated to fix issues, including the creation of new files for K8sGPT-ollama and the update of version numbers in existing resources. [cc98ba3f](https://github.com/electrocucaracha/krd/commit/cc98ba3f4cdfe838863d692c6f7f29d8e2ca56bc)
 
 ## [7.0.8] - 2025-04-09
 
 ### Changed
 
-- Updated linter validation to directly utilize the super-linter repository, ensuring that the latest rules are applied during validation and maintaining compatibility with existing configurations. (835c76ed)
+- The GitHub Actions workflow for linter validation has been updated to use the super-linter repository directly, switching from version 7 to 7.3.0. [835c76ed](https://github.com/electrocucaracha/krd/commit/835c76ed29f2509594790bee56dade17cde5948d)
 
 ## [7.0.7] - 2025-04-03
 
 ### Changed
 
-- Updated the galaxy collection update script to fetch versions from the latest v3 API endpoint instead of v2. (9b701550)
+- The update script for galaxy collection versions was modified to correctly retrieve the latest version from the Ansible Galaxy API, changing the API endpoint used in the process. [9b701550](https://github.com/electrocucaracha/krd/commit/9b70155085c9d76a47d40d38ca358c4b523af7cf)
 
 ## [7.0.6] - 2025-03-13
 
 ### Changed
 
-- Updated galaxy requirements and krd versions files to ensure compatibility with current software releases by reflecting the latest versions of Istio, Knative Eventing, and ArgoCD dependencies. (fe5f26b2)
+- Galaxy requirements were updated, including krd versions files, to reflect changes in dependencies such as Istio, Knative Eventing, and ArgoCD. [fe5f26b2](https://github.com/electrocucaracha/krd/commit/fe5f26b2739cb6d6caadd824867beefae5890b83)
 
 ## [7.0.5] - 2025-03-13
 
 ### Changed
 
-- Updated galaxy requirements to optimize Ansible collection and role versions, requiring re-running of galaxy-requirements.yml to apply the changes. (cda9c527)
+- Galaxy requirements were updated based on code review suggestions, affecting the versions of several Ansible collections. [cda9c527](https://github.com/electrocucaracha/krd/commit/cda9c5270b09148f8b727d7c64b0e08b8242c61b)
 
 ## [7.0.4] - 2025-03-13
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions files to new version numbers for Vagrant 4.2.2, Ansible Core 2.18.3, and other dependencies, requiring users to update their environments accordingly. (8ff25137)
+- The galaxy requirements and krd versions files were updated to reflect the latest available versions, including actions/cache from 4.2.1 to 4.2.2, ansible-core from 2.18.2 to 2.18.3, rpds-py from 0.23.0 to 0.23.1, and argocd_version from v2.14.2 to v2.14.3. [8ff25137](https://github.com/electrocucaracha/krd/commit/8ff251370c55a975515e98b050276b3f38c2540c)
 
 ## [7.0.3] - 2025-03-13
 
 ### Changed
 
-- Updated galaxy requirements and krd versions files to ensure compatibility and functionality in the system, requiring users who rely on outdated versions of tools like Knative, Istio, Prometheus Operator, and others to migrate their configurations. (5fb7837f)
+- Galaxy requirements were updated, affecting several dependencies, including krd versions files, to align with newer versions: kube-ovn upgraded from v1.13.3 to v1.13.4 and prometheus-operator from v0.80.1 to v0.81.0, among others. [5fb7837f](https://github.com/electrocucaracha/krd/commit/5fb7837fa78afb40118dc63f7a9cbaed98d1fbd6)
 
 ## [7.0.2] - 2025-02-20
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions to ensure compatibility with latest features and tools such as Kubernetes, Istio, and Prometheus Operator, requiring manual intervention for some upgrades due to version constraints affecting installation. (d164a189)
+- Galaxy requirements and krd versions files have been updated to newer versions, including galaxy-requirements.yml, playbooks/krd-vars.yml, test-requirements.txt, and resources/k8sgpt-local.yml. [d164a189](https://github.com/electrocucaracha/krd/commit/d164a189849e5a04e275cce65d4cf1034a6c9828)
 
 ## [7.0.1] - 2025-02-20
 
 ### Changed
 
-- Updated dependencies in galaxy-requirements.yml to ensure compatibility with latest Ansible collection versions, which may require users to update their environments accordingly. (42677625)
+- Galaxy requirements were updated following code review suggestions, impacting users who rely on these dependencies for their workflows. [42677625](https://github.com/electrocucaracha/krd/commit/42677625e9c6566178196f176a11eb5cc3823b44)
 
 ## [7.0.0] - 2025-02-14
 
 ### Removed
 
-- Eliminated outdated dictionary terms to improve spell checker accuracy for users. (cef7bdb8)
+- The dictionary definitions in the wordlist have been updated, removing datasets and RUNTIME from the list of words to be checked. [cef7bdb8](https://github.com/electrocucaracha/krd/commit/cef7bdb88d7382c5bab5cf05ee0354a4c6b0eef9)
 
 ## [6.1.6] - 2025-02-14
 
 ### Changed
 
-- Updated galaxy configurations to reflect the latest cryptographic library and cert manager versions, potentially requiring users to update their dependency management accordingly. (c25db738)
+- Galaxy requirements were updated, including krd versions files, to reflect the latest available versions of various dependencies. [c25db738](https://github.com/electrocucaracha/krd/commit/c25db73873793171e5a92f81d3325fa4f944b038)
 
 ## [6.1.5] - 2025-02-14
 
 ### Changed
 
-- Upgraded Ansible role versions for kubernetes.core, community.docker, ansible.posix, and community.general collections to 5.0.0, 4.3.0, 2.0.0, and 10.2.0 respectively, replacing placeholder versions previously used. (1faf382b)
+- Galaxy requirements were updated following code review suggestions, affecting several collection versions: kubernetes.core was set to 5.0.0, community.docker to 4.3.0, ansible.posix to 2.0.0, and community.general to 10.2.0. [1faf382b](https://github.com/electrocucaracha/krd/commit/1faf382b212d6993d843c17c772467f9fabaf99c)
 
 ## [6.1.4] - 2025-02-14
 
 ### Changed
 
-- Updated Galaxy requirements to reference specific versions of collections instead of placeholders for maximum attempts reached. (12ca521f)
+- Galaxy requirements were updated following code review suggestions, affecting the versions of several Ansible collections. [12ca521f](https://github.com/electrocucaracha/krd/commit/12ca521ff86f7e771757be42896a6387a0a933ea)
 
 ## [6.1.3] - 2025-02-14
 
 ### Changed
 
-- Upgraded galaxy requirements and krd versions files to ensure compatibility with the latest software releases, potentially requiring users to update customized workflows or configurations. (06efa57b)
+- Galaxy requirements and krd versions files were updated to use newer versions of various dependencies, including Python, Go, Kubernetes, and other libraries. [06efa57b](https://github.com/electrocucaracha/krd/commit/06efa57b8eead4ebb9772c7c7ff265a4c5b2753d)
 
 ## [6.1.2] - 2025-02-11
 
 ### Changed
 
-- The labeler configuration syntax was modernized to specify changed files using a new syntax that may require migration of existing configurations to maintain compatibility. (a7c145f9)
+- The labeler configuration file was updated, changing the rules for documentation, tests, CI, all-in-one, and addons directories. [a7c145f9](https://github.com/electrocucaracha/krd/commit/a7c145f983e862bade1da479aadfaa4b942f329b)
 
 ## [6.1.1] - 2025-02-05
 
 ### Changed
 
-- Disabled Kata containers integration tests in the on-demand CI workflow due to deployment issues affecting users who relied on these tests for validation. (d8ae9926)
+- Kata containers integration tests have been disabled due to deployment issues, which will prevent users from running these specific tests in the on-demand CI workflow. [d8ae9926](https://github.com/electrocucaracha/krd/commit/d8ae99262ac67596fdb26207536a9a375cffa557)
 
 ## [6.1.0] - 2025-02-05
 
 ### Added
 
-- Kubevirt runners now enable CPU host-passthrough by default allowing for more efficient virtual machine performance this change affects users who rely on precise CPU emulation and may require adjustments to their configuration. (dc120ab0)
+- Kubevirt runners now enable cpu host-passthrough by default, allowing for more efficient use of host resources. [dc120ab0](https://github.com/electrocucaracha/krd/commit/dc120ab0808285b2fee722943338cce4220182d6)
 
 ## [6.0.0] - 2025-02-05
 
 ### Removed
 
-- Simplified VBox logging in the vagrant-up action to remove unnecessary log file retrieval, resulting in improved performance without introducing breaking behavior or migration requirements and with no impact on the API or CLI contract. (a59085c1)
+- VBox logging has been reduced in the Vagrant up action, removing unnecessary log file retrieval from the process. [a59085c1](https://github.com/electrocucaracha/krd/commit/a59085c1c3473d38bfb9b9e9fc696899517434f8)
 
 ## [5.0.2] - 2025-02-05
 
 ### Changed
 
-- Optimized longhorn test timeouts to allow for longer-running tests without timing out and updated the `kubectl wait` command in the test script to include a dynamically adjustable timeout parameter. (0f0c33f3)
+- Longhorn test timeout increased from default to 5 minutes, changing the expected wait time for persistent volume claim binding in automated tests. [0f0c33f3](https://github.com/electrocucaracha/krd/commit/0f0c33f39af2369ccace568d79d9de5d66a18f79)
 
 ## [5.0.1] - 2025-02-05
 
 ### Changed
 
-- Enabled support for gvisor and youki runtimes in on-demand builds, allowing developers to test with Kata containers alongside CRI-O by default. (1fcaff6c)
+- The GitHub Actions workflow now includes gvisor and youki runtimes, enabling their use in on-demand CI jobs. [1fcaff6c](https://github.com/electrocucaracha/krd/commit/1fcaff6ce6863e1f89c9b14ab7ae4508d4b25e61)
 
 ## [5.0.0] - 2025-02-05
 
 ### Removed
 
-- Stabilized cleanup of failed virtual machine instances by introducing a new CronJob that periodically deletes them and requires migration to the new job template configuration in arc-cleanup.yml. (4e61660a)
+- Failed virtual machine instances are no longer deleted by the garbage collector, which previously removed them after 15 minutes. [4e61660a](https://github.com/electrocucaracha/krd/commit/4e61660a1eeb4052a3f5860d0aa44df7aac985cb)
 
 ## [4.4.0] - 2025-02-04
 
 ### Added
 
-- Enabled secure authentication for GitHub Actions workflows by introducing the WORKFLOW_TOKEN secret token to replace PATs with specific scopes, thus reducing exposure of sensitive authentication credentials and maintaining API and CLI contract consistency without introducing breaking behavior. (17e308e6)
+- The GitHub workflow now uses a secret token for authentication, replacing the previous PAT token. [17e308e6](https://github.com/electrocucaracha/krd/commit/17e308e6442034c9e23cf8c102a7268c4da344e2)
 
 ## [4.3.6] - 2025-02-01
 
 ### Changed
 
-- Optimized the testing process by reducing integration tests per instance through targeted workflow splitting, resulting in more efficient resource utilization and potentially requiring adjustments to existing CI/CD pipeline configurations. (81f2bbdc)
+- Integration tests are now run in batches per instance, reducing the number of tests per job. [81f2bbdc](https://github.com/electrocucaracha/krd/commit/81f2bbdcfe96d097c77b540e6ef3dbf2b3f3ae0a)
 
 ## [4.3.5] - 2025-01-24
 
 ### Changed
 
-- Optimized KataContainer test in CRI-O by disabling it due to issues with the combination of CRI-O and Kata containers affecting on-demand CI workflows for runtime environments that use CRI-O. (8df12521)
+- CRI-O's on-demand CI workflow no longer includes KataContainer tests due to an unresolved issue with CRI-O + Kata containers. [8df12521](https://github.com/electrocucaracha/krd/commit/8df1252134f20880854029bcbc7b148ca735d1b2)
 
 ## [4.3.4] - 2025-01-24
 
 ### Changed
 
-- Optimized ephemeral runner cleanup by reducing the garbage collector's frequency to run every hour instead of every 15 minutes. (0962192a)
+- The ephemeralrunners garbage collector's frequency has been reduced to run every hour instead of every 15 minutes, which may affect users who rely on timely cleanup of failed runners. [0962192a](https://github.com/electrocucaracha/krd/commit/0962192acf8708e4d9fb106a5f869cbea187bf17)
 
 ## [4.3.3] - 2025-01-24
 
 ### Changed
 
-- The runtime classes integration tests were optimized to dynamically create and delete deployments based on the available runtime classes, improving test scalability and efficiency without introducing any breaking behavior or API changes. (e5cb69db)
+- Runtime classes integration tests were refactored to use a single deployment template for all runtime classes, reducing duplication and improving maintainability. [e5cb69db](https://github.com/electrocucaracha/krd/commit/e5cb69db387d555d235845fab9127f09b96a8104)
 
 ## [4.3.2] - 2025-01-24
 
 ### Changed
 
-- Optimized CI workflows now offer users the option to run tests with Youki runtime by default, thanks to the addition of `youki-enabled` and `KRD_YOUKI_ENABLED` input parameters in the on-demand workflow. (b1505176)
+- The youki runtime has been enabled in the CI environment, allowing for its use alongside other runtimes like crio and containerd. [b1505176](https://github.com/electrocucaracha/krd/commit/b15051768685323363cbda888d199b54ef6dc7f6)
 
 ## [4.3.1] - 2025-01-24
 
 ### Changed
 
-- Optimized Istio integration tests to accurately reflect sidecar injection behavior by updating the expected log messages for successful and failed injections. (8a3f05c9)
+- Istio integration tests were updated, removing an assertion that relied on the istiod pod's logs to verify sidecar injection requests. [8a3f05c9](https://github.com/electrocucaracha/krd/commit/8a3f05c9b09d0d2c7bb37d87727990c338da19da)
 
 ## [4.3.0] - 2025-01-24
 
 ### Added
 
-- CRI-O runtime manager now disables gvisor by default when used affecting users who rely on this feature for their container runtime environment. (8042b745)
+- CRI-O runtime manager now disables gvisor by default for containerd and crio runtimes, aligning with the deprecation of Dockershim in Kubernetes 1.24 and above. [8042b745](https://github.com/electrocucaracha/krd/commit/8042b745b2add8ae62e436793a3efed5cb4abaec)
 
 ## [4.2.0] - 2025-01-24
 
 ### Added
 
-- Enabled users to easily set up log collection and distribution through the addition of a fluent logging agent installation script in the chart installers. (54f207cc)
+- Fluent logging agent has been added to the installation process, allowing for log collection, parsing, and distribution. [54f207cc](https://github.com/electrocucaracha/krd/commit/54f207cc21b11f81f5677190d4efc1862ca604b5)
 
 ## [4.1.1] - 2025-01-23
 
 ### Changed
 
-- Simplified the vagrant boxes for kubevirt runner to improve efficiency and reduce complexity in managing these boxes, requiring users who rely on them to update their setup accordingly. (aeb8907e)
+- The vagrant boxes for the kubevirt runner have been reduced, specifically removing unnecessary box additions and simplifying the installation process. [aeb8907e](https://github.com/electrocucaracha/krd/commit/aeb8907edf6134a399e34521660c503a7f1004ef)
 
 ## [4.1.0] - 2025-01-23
 
 ### Added
 
-- The image pull policy for the kubevirt runner is now enabled to always attempt to pull the latest version of the image on every run without requiring any migration steps from users. (9a5a69b0)
+- The image pull policy for the kubevirt runner has been changed to always, which means that the container will attempt to pull the latest version of the image even if it's already present on the node. [9a5a69b0](https://github.com/electrocucaracha/krd/commit/9a5a69b091914a95aefa7bd1931262bbe8ddd7df)
 
 ## [4.0.1] - 2025-01-21
 
 ### Changed
 
-- Updated the list of supported Linux distributions to include Debian Bullseye, Rocky 9, and updated versions for Ubuntu Focal, Jammy, and OpenSUSE Leap, with no breaking behavior or migration requirements. (9d428cda)
+- The list of supported Linux distributions has been updated to include Debian, RockyLinux, and remove Fedora 37 and 38. [9d428cda](https://github.com/electrocucaracha/krd/commit/9d428cda73e8162142c6177c4fa93838fc09094f)
 
 ## [4.0.0] - 2025-01-17
 
 ### Removed
 
-- Dropped support for Ubuntu Bionic to simplify configurations and dependencies, impacting Linux distros supported, vagrant setup, and molecule platform definitions, requiring users to migrate to newer Ubuntu versions. (94575275)
+- Ubuntu Bionic support has been dropped from the project, affecting Linux distro versions listed in README.md and molecule.yml files across various roles. [94575275](https://github.com/electrocucaracha/krd/commit/94575275ec26f375b499b26e99ab333fdec42ca0)
 
 ## [3.1.2] - 2025-01-17
 
 ### Changed
 
-- Updated the Ubuntu version in Scheduled CI to 22.04 without requiring any migration steps and preserving compatibility with existing jobs. (4b26f0f9)
+- The Ubuntu version in the Scheduled CI workflow has been updated to 22.04, which may break existing builds running on the previous 20.04 environment. [4b26f0f9](https://github.com/electrocucaracha/krd/commit/4b26f0f90224af509c630e1115bec92cd22626b1)
 
 ## [3.1.1] - 2025-01-15
 
 ### Changed
 
-- Stabilized removal of virtual machine instances by integrating their cleanup into the arc garbage collector's existing workflow. (e2cab980)
+- The arc garbage collector now includes removal of virtual machine instances, previously handled separately by the vmi cleaner. [e2cab980](https://github.com/electrocucaracha/krd/commit/e2cab980f73e673d0a2a2703a0b95c1d3b76b6d6)
 
 ## [3.1.0] - 2025-01-15
 
 ### Added
 
-- Namespace creation in ARC installation has been optimized to ensure consistency by converting the namespace name to lowercase and replacing underscores with hyphens. (6089d72d)
+- Namespace creation in ARC installation has been improved to handle special characters in the GitHub URL by converting underscores to hyphens and forcing lowercase, preventing potential namespace creation issues. [6089d72d](https://github.com/electrocucaracha/krd/commit/6089d72df4dfd9d9ce6aa03de876d9d62baf8ec7)
 
 ## [3.0.11] - 2025-01-10
 
 ### Changed
 
-- Modernized Ansible group names to conform to standard naming conventions, replacing "kube-master" and "kube-node" with "kube_control_plane" and "kube_node", respectively, impacting various files including Vagrantfiles, Ansible playbooks, and configuration samples. (ffdda328)
+- Ansible group names were updated, changing "kube-master" to "kube_control_plane", "kube-node" to "kube_node", and "etcd" remains unchanged. [ffdda328](https://github.com/electrocucaracha/krd/commit/ffdda328541d07764901c0c8b647abbaf80d2b27)
 
 ## [3.0.10] - 2025-01-10
 
 ### Changed
 
-- Tox installation is now properly configured in GitHub workflows for molecule tests to run successfully without any limitations. (ef136d76)
+- Tox installation was modified in GitHub actions to ensure successful molecule tests, which now requires pip install tox explicitly. [ef136d76](https://github.com/electrocucaracha/krd/commit/ef136d76ee1c828524ee492ff4f0087287d9c8db)
 
 ## [3.0.9] - 2025-01-10
 
 ### Changed
 
-- Updated containerized data importer configurations to require users to specify version v1.61.0 of the CDI, necessitating potential updates from relying on settings specific to the previous version. (db892bc2)
+- The CDI version was bumped to v1.61.0, which may break behavior if the previous version was hardcoded in playbooks. [db892bc2](https://github.com/electrocucaracha/krd/commit/db892bc2e041f55038a62a58b036e1c00a79c2b4)
 
 ## [3.0.8] - 2025-01-10
 
 ### Changed
 
-- Upgraded python test requirements to newer versions including Ansible-compat 24.10.0, Ansible-core 2.17.7, and cryptography 44.0.0 which may require migration steps for users running tests with older dependencies. (d868d40c)
+- Python test requirements were updated, upgrading several dependencies to newer versions: Ansible-compat from 24.9.1 to 24.10.0 and Ansible-core from 2.17.5 to 2.17.7 among others. [d868d40c](https://github.com/electrocucaracha/krd/commit/d868d40cf1fb001bf4f9d000a9d21b628d6f4284)
 
 ## [3.0.7] - 2025-01-10
 
 ### Changed
 
-- Upgraded metallb to v0.14.9, which may necessitate users to update their configurations if they are relying on specific features or bugfixes introduced in this new version. (d3ce9bdc)
+- Metallb version was bumped from v0.14.8 to v0.14.9, requiring no migration steps for users. [d3ce9bdc](https://github.com/electrocucaracha/krd/commit/d3ce9bdc67dc5e6a38ccf394fd873c873c64298b)
 
 ## [3.0.6] - 2025-01-10
 
 ### Changed
 
-- Updated Istio to version 1.24.2, which may require users to reapply their configurations due to potential changes in the Istio service mesh configuration. (b6121689)
+- Istio was updated from version 1.24.1 to 1.24.2 in the krd-vars.yml playbook, affecting users who rely on this configuration for their Istio setup. [b6121689](https://github.com/electrocucaracha/krd/commit/b612168998e53e8f8992c00b2e6b6033008f1248)
 
 ## [3.0.5] - 2025-01-10
 
 ### Changed
 
-- The virtink version was updated to v0.17.0, introducing new features and improvements that may require migration steps for users depending on their current setup. (934c2688)
+- Virtink version was bumped from v0.16.0 to v0.17.0, which may require migration steps for users currently depending on the previous version. [934c2688](https://github.com/electrocucaracha/krd/commit/934c2688c2105fd5ed5bc2c0a434e1c739e669d0)
 
 ## [3.0.4] - 2025-01-10
 
 ### Changed
 
-- Updated Knative versions to 1.16.1 for serving and eventing components, requiring users who rely on these components to migrate their configurations accordingly. (8a34cf5c)
+- Knative versions were updated in the configuration, bumping the version of Knative to 1.16.1 for serving and eventing components. [8a34cf5c](https://github.com/electrocucaracha/krd/commit/8a34cf5c07cb3fb437e9d16e9d4717f2727518de)
 
 ## [3.0.3] - 2025-01-10
 
 ### Changed
 
-- Updated the kubevirt task in Tekton to version v0.23.0, maintaining an unchanged API/CLI contract and requiring no migration steps from affected users who rely on this task for Kubernetes virtualization. (840b33a6)
+- The version of the Tekton tasks for Kubevirt has been updated from v0.22.0 to v0.23.0, which may require users to migrate their existing workflows if they were relying on specific features or behavior in the previous version. [840b33a6](https://github.com/electrocucaracha/krd/commit/840b33a6e588592a6fc8d94fce48d255c3e10090)
 
 ## [3.0.2] - 2025-01-10
 
 ### Changed
 
-- Improved handling of GitHub Actions in CI pipeline ensures that version updates are properly reflected in GitHub workflows. (6f227bfd)
+- The update version script has been improved, specifically the handling of GitHub actions in the `.github` directory. [6f227bfd](https://github.com/electrocucaracha/krd/commit/6f227bfd791c75e144e2cbc3603d221d90a61be9)
 
 ## [3.0.1] - 2025-01-10
 
 ### Changed
 
-- Optimized storage requirements for users relying on Vagrant boxes by increasing the available capacity from 25G to 35G without altering the CLI contract or introducing security risks. (679fdf78)
+- The Vagrant boxes cache has been added to the runner image, increasing storage from 25G to 35G. [679fdf78](https://github.com/electrocucaracha/krd/commit/679fdf787993e380268bdfccdbd55a9bfb57d0d6)
 
 ## [3.0.0] - 2025-01-10
 
 ### Removed
 
-- Eliminated legacy todo instructions from configuration files to prevent confusion and enable smoother alignment with upstream dependencies. (50d8667e)
+- Legacy TODO instructions were removed from various configuration files, including GitHub workflows and environment variables. [50d8667e](https://github.com/electrocucaracha/krd/commit/50d8667e2265d4d35c23692bb287f8b5a95c9953)
 
 ## [2.1.9] - 2025-01-10
 
 ### Changed
 
-- Updated Kube OVN to v1.13.2, which may require migration steps for users running this component due to changes in the `krd-vars.yml` file. (203269ee)
+- Kube OVN version was updated from v1.13.0 to v1.13.2, which may require migration steps for users who have customized their configurations based on the previous version. [203269ee](https://github.com/electrocucaracha/krd/commit/203269ee0c45f789c937a4bc9ebb8433aedfcb1e)
 
 ## [2.1.8] - 2025-01-10
 
 ### Changed
 
-- Updated the Prometheus operator to version v0.79.2 without introducing breaking behavior or API/CLI contract changes and no security impact is involved. (1bc0a809)
+- The Prometheus operator version was updated from v0.78.2 to v0.79.2 in the krd-vars.yml playbook, which may require migration steps for users who have customized their configuration. [1bc0a809](https://github.com/electrocucaracha/krd/commit/1bc0a8092390c64bc943ca7aa44e5245602dc40d)
 
 ## [2.1.7] - 2025-01-10
 
 ### Changed
 
-- Upgraded Kubernetes version to v1.31.4, requiring users to update their cluster configurations accordingly to reflect the new version and potentially affecting CI scripts utilizing related assertions. (fd3d95c2)
+- Kubernetes version was bumped from v1.30.4 to v1.31.4, affecting deployment scripts and tests that rely on this version. [fd3d95c2](https://github.com/electrocucaracha/krd/commit/fd3d95c21e90588ff1a4f946c21221d882584d57)
 
 ## [2.1.6] - 2025-01-10
 
 ### Changed
 
-- The kubespray version was updated to v2.27.0, requiring migration of existing deployments to the new version and incorporating the latest multus tasks from the master branch due to a merge in kubespray. (555fa2b5)
+- Kubespray version was bumped from v2.26.0 to v2.27.0, requiring users to update their configuration accordingly. [555fa2b5](https://github.com/electrocucaracha/krd/commit/555fa2b586d2fb699b6b042cd8ed31312972953e)
 
 ## [2.1.5] - 2025-01-09
 
 ### Changed
 
-- Upgraded the PMEM driver to version 2.13.0, which may require users currently relying on the older version to take migration steps due to an updated configuration schema with a new pmem_driver_registrar_version value. (9babcc3b)
+- The PMEM driver has been upgraded from v2.12.0 to v2.13.0, which may require manual intervention to update configurations that reference the older version. [9babcc3b](https://github.com/electrocucaracha/krd/commit/9babcc3b005ecc443b31b6c41b35caa2df011f58)
 
 ## [2.1.4] - 2025-01-09
 
 ### Changed
 
-- Upgraded k8sgpt to v0.3.48 in the local configuration file, requiring manual migration steps if existing code relies on specific features or behavior present in the previous version. (511d1033)
+- k8sgpt was upgraded from v0.3.46 to v0.3.48, which may require migration steps if users have customized their configuration. [511d1033](https://github.com/electrocucaracha/krd/commit/511d103305dfd8db12bb121450e701299f521a33)
 
 ## [2.1.3] - 2025-01-09
 
 ### Changed
 
-- Upgraded galaxy collections and roles versions to ensure compatibility with latest dependencies such as geerlingguy.docker, andrewrothstein.gcc-toolbox, kubernetes.core, community.docker, ansible.posix, and community.general. (1be4c679)
+- Galaxy collections and roles versions were upgraded, affecting users who rely on these dependencies for their Ansible playbooks. [1be4c679](https://github.com/electrocucaracha/krd/commit/1be4c679db1b271198904431b4f5cf821a138e8b)
 
 ## [2.1.2] - 2025-01-09
 
 ### Changed
 
-- Upgraded GH action versions across workflows to new dependencies, including actions/cache at 4.2.0 and reviewdog/action-misspell at 1.26.1, with no breaking changes affecting Vagrant setup, Go installation, or spell checking actions. (17ab3857)
+- GH action versions were upgraded, which affects users who rely on these actions for Vagrant setup, Go installation, and spell checking. [17ab3857](https://github.com/electrocucaracha/krd/commit/17ab3857cf03d2eb4ffbbbcedae012a84980a68d)
 
 ## [2.1.1] - 2025-01-09
 
 ### Changed
 
-- Upgraded NFD version to v0.17.0, which may require users to migrate their configurations if they directly referenced the previous version in their playbooks. (0180aa73)
+- The NFD version has been upgraded from v0.16.6 to v0.17.0, which may require migration steps if users have customized their configurations based on the previous version's settings. [0180aa73](https://github.com/electrocucaracha/krd/commit/0180aa73b596d119af45b6d445633c93a7cc9deb)
 
 ## [2.1.0] - 2025-01-09
 
 ### Added
 
-- Enabled automatic cleanup of ephemeral runners in the Actions system through periodic deletion of failed instances. (8f5faf4c)
+- The arc garbage collector has been enabled, which periodically cleans up ephemeral runners that have failed too many times. [8f5faf4c](https://github.com/electrocucaracha/krd/commit/8f5faf4c25a13833a473036b0f0dde7d4661a995)
 
 ## [2.0.3] - 2025-01-08
 
 ### Changed
 
-- Updated the image used for the kubevirt-actions-runner container to utilize the artifact generated by the new GitHub Container Registry URL instead of the electrocucaracha repository without introducing any breaking behavior and maintaining the existing API contract. (c9545ad6)
+- The image for the kubevirt-action-runner container has been updated to use the artifact generated by the new registry URL, specifically `ghcr.io/electrocucaracha/kubevirt-actions-runner:master`. [c9545ad6](https://github.com/electrocucaracha/krd/commit/c9545ad61edf9d2b598e2cfb2158bcdf931b4766)
 
 ## [2.0.2] - 2025-01-08
 
 ### Changed
 
-- Optimized Ubuntu runner disk size to 25G in pipeline configuration, requiring users who customized their pipelines for the original 14G storage limit to make manual adjustments for continued compatibility. (bc2b98d7)
+- The ubuntu runner disk size has been increased from 14G to 25G in the pipeline configuration, which may require users to update their existing runners to accommodate the larger storage request. [bc2b98d7](https://github.com/electrocucaracha/krd/commit/bc2b98d7db986eca279fc2f644bfb8a219c4a298)
 
 ## [2.0.1] - 2025-01-08
 
 ### Changed
 
-- Optimized the arc runner configuration to limit it to three instances by introducing the maxRunners parameter in chart values. (8c13a0c3)
+- The number of arc runners has been restricted to 3, which may break behavior for users who relied on the previous default configuration. [8c13a0c3](https://github.com/electrocucaracha/krd/commit/8c13a0c387929180b035d9ad33cace3ef0f189a1)
 
 ## [2.0.0] - 2025-01-08
 
 ### Removed
 
-- Istio installation verification is no longer performed during the install process allowing users to integrate with Istio without requiring explicit verification of its installation but may necessitate modifications to scripts that relied on this step. (768879b0)
+- Istio installation verification has been removed from the install process, which may break behavior for users who relied on this step to ensure Istio was properly installed. [768879b0](https://github.com/electrocucaracha/krd/commit/768879b04a61ef1f7cadee62ebc1532c32c2ff9a)
 
 ## [1.5.3] - 2025-01-08
 
 ### Changed
 
-- Workflows can now run on users' own virtual machines, replacing the need for GitHub's infrastructure, after self-hosted runners were enabled and several workflows updated to use vm-self-hosted labels with no breaking behavior or API changes introduced but possibly requiring migration steps. (5c8aa805)
+- Self-hosted runners have been enabled, allowing users to run workflows on their own virtual machines rather than relying on GitHub's infrastructure. [5c8aa805](https://github.com/electrocucaracha/krd/commit/5c8aa805a2f38a65888535af1a4b021ca5afd443)
 
 ## [1.5.2] - 2024-12-31
 
 ### Changed
 
-- Improved flexibility in managing dependencies between components is now enabled by allowing users to specify chart versions during installation via the Actions Runner Controller. (438fed80)
+- Chart version control was implemented, allowing users to specify chart versions when installing charts. [438fed80](https://github.com/electrocucaracha/krd/commit/438fed800c6a3ae59a3485b274b26651ad74022c)
 
 ## [1.5.1] - 2024-12-31
 
 ### Changed
 
-- Optimized the sources list for the Ubuntu runner to improve virtualbox installation by adding rsync and virtualbox-7.1 packages while removing virtualbox, introducing an API contract change with no migration steps required and maintaining the same security impact as before. (4f0084be)
+- The sources list for the Ubuntu runner was updated to fix issues with package installation. [4f0084be](https://github.com/electrocucaracha/krd/commit/4f0084be0242231390826de7dd74ed211cd8c411)
 
 ## [1.5.0] - 2024-12-18
 
 ### Added
 
-- Enabled automated tasks to run with elevated privileges through the runner's sudo passwordless account without requiring pipeline configuration changes or migration steps. (06bc4724)
+- The Ubuntu runner pipeline was modified to create a sudo passwordless account for the 'runner' user, allowing it to execute commands without prompting for a password. [06bc4724](https://github.com/electrocucaracha/krd/commit/06bc4724ef48cd5589478e17c12fe4dd661f55b2)
 
 ## [1.4.0] - 2024-12-18
 
 ### Added
 
-- Enabled specification of default provider for Vagrant through the introduction of the VAGRANT_DEFAULT_PROVIDER environment variable, which affects how virtual machines are provisioned and has been set to virtualbox by default. (93453ba2)
+- The VAGRANT_DEFAULT_PROVIDER environment variable was defined to specify the default provider for Vagrant, which affects how virtual machines are provisioned. [93453ba2](https://github.com/electrocucaracha/krd/commit/93453ba283d78b0d755ee44957215b4b7b2ef0c5)
 
 ## [1.3.0] - 2024-12-17
 
 ### Added
 
-- Enabled Python-based actions by installing necessary packages and creating a symbolic link to python3 as /usr/bin/python in the Ubuntu runner pipeline, introducing breaking behavior for pipelines relying on the default Python version. (7207b563)
+- The ubuntu runner pipeline now installs python packages, including the interpreter and development tools, to support Python-based workflows. [7207b563](https://github.com/electrocucaracha/krd/commit/7207b5632713e5a0cd18e4512f7c385100649060)
 
 ## [1.2.0] - 2024-12-17
 
 ### Added
 
-- Introduced the Git package into the Ubuntu runner pipeline, enabling users to execute commands that require Git without any breaking behavior or migration requirements. (4d52d858)
+- The Ubuntu runner pipeline now installs the Git package, which is necessary for certain workflows that rely on Git functionality. [4d52d858](https://github.com/electrocucaracha/krd/commit/4d52d8581a045d7c2c6fa48f90c347c4b11d8894)
 
 ## [1.1.1] - 2024-12-17
 
 ### Changed
 
-- Normalized the GitHub Actions runner for Kubernetes to use electrocucaracha/kubevirt-actions-runner:latest, requiring users to update their configurations and introducing new rolebindings and permissions. (002d4e79)
+- The Kubernetes runner has been updated from the `zhaofengli/kubevirt-actions-runner` image to the `electrocucaracha/kubevirt-actions-runner` image. [002d4e79](https://github.com/electrocucaracha/krd/commit/002d4e790d455324fca8c10c8393db30d566c4e1)
 
 ## [1.1.0] - 2024-12-13
 
 ### Added
 
-- Enabled automated tools to accurately spell words related to "Tekton" and "TopoLVM" by updating the GitHub repository's wordlist without introducing any breaking changes or modifying API contracts. (2cb882ed)
+- The wordlist used in GitHub actions has been updated to correct spelling issues, specifically adding the words "Tekton" and "TopoLVM". [2cb882ed](https://github.com/electrocucaracha/krd/commit/2cb882ed936bdc868a06da6220acc3b307388a1b)
 
 ## [1.0.5] - 2024-12-13
 
 ### Changed
 
-- Enabled support for distributed block storage systems through the Topolvm storage solution, affecting the default test suite and installation scripts. (ee82fd89)
+- Topolvm storage solution has been enabled, adding it to the list of supported storage operators alongside Longhorn. [ee82fd89](https://github.com/electrocucaracha/krd/commit/ee82fd8924b5c9387756ce904d2e7e365e5c0ba7)
 
 ## [1.0.4] - 2024-12-13
 
 ### Changed
 
-- Optimized gitleaks linting to prevent false positives and allow pipeline execution by relaxing specific key checks in the ubuntu-runner-pipeline configuration. (ef288648)
+- The Ubuntu runner pipeline configuration was updated to address gitleaks linting issues by allowing specific keys for the VirtualBox and Hashicorp repositories, which were previously flagged as security vulnerabilities. [ef288648](https://github.com/electrocucaracha/krd/commit/ef288648e2118c3da82ddcf16f92fbebc95a7169)
 
 ## [1.0.3] - 2024-12-13
 
 ### Changed
 
-- Updated pipeline configurations to disable specific linter rules and adjust parameter names, requiring users who rely on these pipelines to update their settings accordingly. (de280214)
+- The tekton linter configuration was updated to fix issues, including disabling the prefer-kebab-case rule and specifying external tasks for kubevirt. [de280214](https://github.com/electrocucaracha/krd/commit/de2802147eaf0f6aa65510e49a523c31fd32c7fa)
 
 ## [1.0.2] - 2024-12-13
 
 ### Changed
 
-- Volumes are now managed using volume groups defined by the -g option in node.sh instead of the mount parameter. (8817ee8a)
+- LVM implementation was enabled, changing how volumes are mounted and managed in the system. [8817ee8a](https://github.com/electrocucaracha/krd/commit/8817ee8a442093b5528a8dd38d1a12447f8d586a)
 
 ## [1.0.1] - 2024-12-13
 
 ### Changed
 
-- Enabled users to deploy arc in their own namespace instead of the default one by allowing namespace deployments for arc, which can be specified during deployment and is determined by a new variable `KRD_ARC_GITHUB_URL`. (105fd4d7)
+- Arc deployments are now namespaced, allowing for multiple instances to coexist in the same cluster. [105fd4d7](https://github.com/electrocucaracha/krd/commit/105fd4d72389de7bdd89d50ba36da5db8517dbcc)
 
 ## [1.0.0] - 2024-12-10
 
 ### Changed
 
-- Corrected the installation order for Tekton to ensure proper setup of the project and updated installation scripts are required by users who install Tekton as a result. (d8f2e8e6)
+- The installation order for Tekton has been fixed, which affects users who rely on this tool. [d8f2e8e6](https://github.com/electrocucaracha/krd/commit/d8f2e8e6a80afbffe5126215b17370112cc80e7e)
