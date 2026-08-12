@@ -53,7 +53,7 @@ if which "vm_stat"
 elsif File.exist?("/proc/zoneinfo") && File.exist?("/proc/meminfo")
   memfree = `awk -v low=$(grep low /proc/zoneinfo | awk '{k+=$2}END{print k}') '{a[$1]=$2}  END{ print a["MemFree:"]+a["Active(file):"]+a["Inactive(file):"]+a["SReclaimable:"]-(12*low);}' /proc/meminfo`
 end
-puts "Free memory(kb): #{memfree}"
+$stderr.puts "Free memory(kb): #{memfree}"
 
 debug = ENV["DEBUG"] || "true"
 qat_plugin_mode = ENV.fetch("KRD_QAT_PLUGIN_MODE", nil)
