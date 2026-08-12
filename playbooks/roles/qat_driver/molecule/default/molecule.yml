@@ -19,7 +19,7 @@ lint: |
   yamllint -c ../../../.yaml-lint.yml .
 platforms:
   - name: focal-$POSTFIX_NAME
-    box: generic/ubuntu2004
+    box: generic/ubuntu2204
     box_version: 4.3.12
     memory: 3072
     cpus: 1
