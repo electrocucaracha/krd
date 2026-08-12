@@ -61,13 +61,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Standardized GitHub Actions workflows to safely reference secrets within dedicated environments and optimized tool versions across lint, spellcheck, and update jobs. (493e278e)
+- Standardized GitHub Actions workflows to safely reference secrets within dedicated environments and optimized tool versions across lint, spell check, and update jobs. (493e278e)
 
 ## [20.1.6] - 2026-04-25
 
 ### Changed
 
-- Updated dictionary definitions used by the spellchecker bot to include Ons and exclude MKE. (aef4179e)
+- Updated dictionary definitions used by the spell checker bot to include Ons and exclude MKE. (aef4179e)
 
 ## [20.1.5] - 2026-04-25
 
@@ -109,7 +109,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Simplified the _installers.sh script by eliminating an unnecessary for loop that installed the Grafana Istio AddOn, allowing users to maintain their existing workflows without any modifications. (4a61bce4)
+- Simplified the \_installers.sh script by eliminating an unnecessary for loop that installed the Grafana Istio AddOn, allowing users to maintain their existing workflows without any modifications. (4a61bce4)
 
 ## [19.4.7] - 2026-03-15
 
@@ -181,7 +181,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Resolved linter issues affecting GitHub Actions workflows by updating the `sh-checker` and `misspell` actions to version 0.10.0, ensuring continued CI workflow stability without breaking behavior or API changes but potentially requiring users to update action versions in their own workflows. (940b3519)
+- Resolved linting issues affecting GitHub Actions workflows by updating the `sh-checker` and `misspell` actions to version 0.10.0, ensuring continued CI workflow stability without breaking behavior or API changes but potentially requiring users to update action versions in their own workflows. (940b3519)
 
 ## [19.3.0] - 2026-01-08
 
@@ -211,7 +211,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- The dictionary definitions used by the spellchecker bot have been streamlined, eliminating certain terms from its wordlist that were previously recognized as valid, which may impact users relying on these words for accurate spelling suggestions. (e7cc1295)
+- The dictionary definitions used by the spell checker bot have been streamlined, eliminating certain terms from its wordlist that were previously recognized as valid, which may impact users relying on these words for accurate spelling suggestions. (e7cc1295)
 
 ## [18.2.1] - 2025-12-30
 
@@ -295,7 +295,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Simplified instructions for obtaining the jwtSecret in the _untested_installers.sh script to avoid confusion caused by a typo. (7ad8c963)
+- Simplified instructions for obtaining the jwtSecret in the \_untested_installers.sh script to avoid confusion caused by a typo. (7ad8c963)
 
 ## [15.0.2] - 2025-12-23
 
@@ -313,7 +313,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Simplified the dictionary definitions used by the spellchecker bot to remove outdated terms like "datasets" and "runtime", without affecting API or CLI contract or introducing any security risks. (5d8440fe)
+- Simplified the dictionary definitions used by the spell checker bot to remove outdated terms like "datasets" and "runtime", without affecting API or CLI contract or introducing any security risks. (5d8440fe)
 
 ## [14.0.2] - 2025-11-19
 
@@ -397,7 +397,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- The obsolete terms "datasets" and "runtime" have been eliminated from the spellchecker bot's wordlist to maintain relevance and effectiveness of the tool. (fe1e68e3)
+- The obsolete terms "datasets" and "runtime" have been eliminated from the spell checker bot's wordlist to maintain relevance and effectiveness of the tool. (fe1e68e3)
 
 ## [12.0.1] - 2025-08-12
 
@@ -469,7 +469,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- The project's documentation has been modernized to ensure consistency and accuracy of information by updating job names and descriptions in workflow files and modifying environment variable settings in the README file without introducing any breaking behavior or requiring migration steps. (d528bb43)
+- The project's documentation has been modernized to ensure consistency and accuracy of information by updating job names and descriptions in workflow files and modifying environment variable settings in the readme file without introducing any breaking behavior or requiring migration steps. (d528bb43)
 
 ## [11.0.4] - 2025-07-22
 
@@ -481,13 +481,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated identation format value in Makefile from 2 spaces to 4 spaces, requiring users who rely on this setting for code formatting to update their customized settings accordingly. (6444f82f)
+- Updated indentation format value in Makefile from 2 spaces to 4 spaces, requiring users who rely on this setting for code formatting to update their customized settings accordingly. (6444f82f)
 
 ## [11.0.2] - 2025-07-05
 
 ### Changed
 
-- Modernized dictionary definitions in the spellchecker bot's wordlist to uppercase, potentially requiring maintainers to update configurations and scripts that interact with the bot. (1ace4ef5)
+- Modernized dictionary definitions in the spell checker bot's wordlist to uppercase, potentially requiring maintainers to update configurations and scripts that interact with the bot. (1ace4ef5)
 
 ## [11.0.1] - 2025-07-05
 
@@ -529,13 +529,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated Kubernetes version to 1.32.5, requiring migration of existing clusters to the updated configuration and necessitating updates to scripts in _commons.sh and ci/check.sh. (5ec505df)
+- Updated Kubernetes version to 1.32.5, requiring migration of existing clusters to the updated configuration and necessitating updates to scripts in \_commons.sh and ci/check.sh. (5ec505df)
 
 ## [10.0.0] - 2025-06-26
 
 ### Removed
 
-- Resolved linting issues in the _chart_installers.sh script to improve code quality for users who maintain this file without introducing any breaking behavior, API changes, or security impact, and no migration steps are required from users or maintainers. (4b68d942)
+- Resolved linting issues in the \_chart_installers.sh script to improve code quality for users who maintain this file without introducing any breaking behavior, API changes, or security impact, and no migration steps are required from users or maintainers. (4b68d942)
 
 ## [9.0.2] - 2025-06-26
 
@@ -649,7 +649,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated editorconfig settings to optimize linter tool configurations without introducing breaking behavior or API changes. (b919b639)
+- Updated EditorConfig settings to optimize linter tool configurations without introducing breaking behavior or API changes. (b919b639)
 
 ## [7.1.0] - 2025-04-23
 
@@ -721,7 +721,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Eliminated outdated dictionary terms to improve spellchecker accuracy for users. (cef7bdb8)
+- Eliminated outdated dictionary terms to improve spell checker accuracy for users. (cef7bdb8)
 
 ## [6.1.6] - 2025-02-14
 
@@ -763,7 +763,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Kubevirt runners now enable cpu host-passthrough by default allowing for more efficient virtual machine performance this change affects users who rely on precise CPU emulation and may require adjustments to their configuration. (dc120ab0)
+- Kubevirt runners now enable CPU host-passthrough by default allowing for more efficient virtual machine performance this change affects users who rely on precise CPU emulation and may require adjustments to their configuration. (dc120ab0)
 
 ## [6.0.0] - 2025-02-05
 
@@ -913,7 +913,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Upgraded metallb to v0.14.9, which may necessitate users to update their configurations if they are relying on specific features or bug fixes introduced in this new version. (d3ce9bdc)
+- Upgraded metallb to v0.14.9, which may necessitate users to update their configurations if they are relying on specific features or bugfixes introduced in this new version. (d3ce9bdc)
 
 ## [3.0.6] - 2025-01-10
 
@@ -943,7 +943,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Improved handling of GitHub actions in CI pipeline ensures that version updates are properly reflected in GitHub workflows. (6f227bfd)
+- Improved handling of GitHub Actions in CI pipeline ensures that version updates are properly reflected in GitHub workflows. (6f227bfd)
 
 ## [3.0.1] - 2025-01-10
 
@@ -955,7 +955,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Eliminated legacy TODO instructions from configuration files to prevent confusion and enable smoother alignment with upstream dependencies. (50d8667e)
+- Eliminated legacy todo instructions from configuration files to prevent confusion and enable smoother alignment with upstream dependencies. (50d8667e)
 
 ## [2.1.9] - 2025-01-10
 
@@ -1027,7 +1027,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Optimized ubuntu runner disk size to 25G in pipeline configuration, requiring users who customized their pipelines for the original 14G storage limit to make manual adjustments for continued compatibility. (bc2b98d7)
+- Optimized Ubuntu runner disk size to 25G in pipeline configuration, requiring users who customized their pipelines for the original 14G storage limit to make manual adjustments for continued compatibility. (bc2b98d7)
 
 ## [2.0.1] - 2025-01-08
 
@@ -1057,7 +1057,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Optimized the sources list for the ubuntu runner to improve virtualbox installation by adding rsync and virtualbox-7.1 packages while removing virtualbox, introducing an API contract change with no migration steps required and maintaining the same security impact as before. (4f0084be)
+- Optimized the sources list for the Ubuntu runner to improve virtualbox installation by adding rsync and virtualbox-7.1 packages while removing virtualbox, introducing an API contract change with no migration steps required and maintaining the same security impact as before. (4f0084be)
 
 ## [1.5.0] - 2024-12-18
 
@@ -1075,13 +1075,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Enabled Python-based actions by installing necessary packages and creating a symbolic link to python3 as /usr/bin/python in the ubuntu runner pipeline, introducing breaking behavior for pipelines relying on the default Python version. (7207b563)
+- Enabled Python-based actions by installing necessary packages and creating a symbolic link to python3 as /usr/bin/python in the Ubuntu runner pipeline, introducing breaking behavior for pipelines relying on the default Python version. (7207b563)
 
 ## [1.2.0] - 2024-12-17
 
 ### Added
 
-- Introduced the git package into the Ubuntu runner pipeline, enabling users to execute commands that require git without any breaking behavior or migration requirements. (4d52d858)
+- Introduced the Git package into the Ubuntu runner pipeline, enabling users to execute commands that require Git without any breaking behavior or migration requirements. (4d52d858)
 
 ## [1.1.1] - 2024-12-17
 
