@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [23.0.5] - 2026-08-11
+
+### Changed
+
+- Updated the changelog to accurately reflect recent project developments and provide users with a comprehensive history of changes without introducing any breaking behavior. [38ea7da0](https://github.com/electrocucaracha/krd/commit/38ea7da0973c7dc9afa142401a8a234839edf5e9)
+
 ## [23.0.4] - 2026-08-11
 
 ### Fixed
