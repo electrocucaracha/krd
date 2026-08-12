@@ -79,9 +79,6 @@ jobs:
             sriov_plugin:
               - *reqs
               - 'playbooks/roles/sriov_plugin/**'
-            criproxy:
-              - *reqs
-              - 'playbooks/roles/criproxy/**'
   check-molecule:
     name: Check Ansible role with Molecule tests
     needs: changes
