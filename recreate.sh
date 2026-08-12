@@ -73,22 +73,22 @@ for repo in "${repos[@]}"; do
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: kubevirt-actions-runner
+    name: kubevirt-actions-runner
 EOF
 
     kubectl apply -f - <<EOF
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: kubevirt-actions-runner-${namespace}
+    name: kubevirt-actions-runner-${namespace}
 subjects:
 - kind: ServiceAccount
-  name: kubevirt-actions-runner
-  namespace: ${namespace}
+    name: kubevirt-actions-runner
+    namespace: ${namespace}
 roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: kubevirt-actions-runner
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: kubevirt-actions-runner
 EOF
 
 done
