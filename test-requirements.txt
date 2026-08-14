@@ -4,16 +4,16 @@
 #
 #    pip-compile --output-file=test-requirements.txt test-requirements.in
 #
-ansible-compat==26.6.0
+ansible-compat==26.8.0
     # via
     #   ansible-lint
     #   molecule
-ansible-core==2.21.2
+ansible-core==2.21.3
     # via
     #   ansible-compat
     #   ansible-lint
     #   molecule
-ansible-lint==26.6.0
+ansible-lint==26.8.0
     # via -r test-requirements.in
 attrs==26.1.0
     # via
@@ -42,7 +42,7 @@ distro==1.9.0
     # via ansible-lint
 enrich==1.2.7
     # via molecule
-filelock==3.32.2
+filelock==3.32.3
     # via ansible-lint
 iniconfig==2.3.0
     # via pytest
@@ -84,7 +84,7 @@ pathspec==1.1.1
     #   ansible-lint
     #   black
     #   yamllint
-platformdirs==4.11.0
+platformdirs==4.11.3
     # via black
 pluggy==1.6.0
     # via
