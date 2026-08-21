@@ -92,7 +92,7 @@ pluggy==1.6.0
     #   pytest
 pycparser==3.0
     # via cffi
-pygments==2.20.0
+pygments==2.21.0
     # via
     #   pytest
     #   rich
@@ -136,7 +136,7 @@ subprocess-tee==0.4.2
     #   ansible-lint
 typing-extensions==4.16.0
     # via referencing
-wcmatch==11.0
+wcmatch==11.0.1
     # via
     #   ansible-lint
     #   molecule
