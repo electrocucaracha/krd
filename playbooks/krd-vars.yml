@@ -10,7 +10,7 @@
 kpt_version: 0.0.4
 go_version: 1.15.3
 kubespray_version: v2.31.0
-istio_version: 1.30.3
+istio_version: 1.30.4
 cfssl_version: 1.6.5
 sonobuoy_version: 0.57.5
 mitogen_version: 0.2.10
@@ -31,9 +31,9 @@ kubesphere_version: v4.1.3
 metallb_version: v0.16.1
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
-argocd_version: v3.5.1
+argocd_version: v3.5.2
 tekton_version: v0.81.1
 kubevirt_tekton_tasks_version: v0.26.0
 action_runner_controller_version: 0.10.1
-kagent_version: 0.10.0-rc3
+kagent_version: 0.10.0-rc4
 external_snapshotter_version: v8.6.0

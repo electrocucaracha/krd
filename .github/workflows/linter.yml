@@ -97,7 +97,7 @@ jobs:
             4. **Reflection:** If no clear fix is identifiable, summarize which parts of the log are ambiguous and what further information would be needed to proceed.
 
             Goal: Deliver an insightful and technically sound explanation that not only solves the issue but also strengthens understanding of the system's behavior and failure patterns.
-      - uses: jayqi/failed-build-issue-action@1a893bbf43ef1c2a8705e2b115cd4f0fe3c5649b # 1.2.0
+      - uses: jayqi/failed-build-issue-action@940568ce50eeef3f31a920614cefcc6102d2f930 # 1.3.0
         if: failure()
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
