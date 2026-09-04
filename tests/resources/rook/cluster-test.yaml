@@ -1,9 +1,8 @@
----
 #################################################################################################################
 # Define the settings for the rook-ceph cluster with common settings for a small test cluster.
 # All nodes with available raw devices will be used for the Ceph cluster. One node is sufficient
 # in this example.
-
+---
 # For example, to create the cluster:
 #   kubectl create -f crds.yaml -f common.yaml -f operator.yaml
 #   kubectl create -f cluster-test.yaml
@@ -18,6 +17,10 @@ spec:
   cephVersion:
     image: quay.io/ceph/ceph:v20
     allowUnsupported: true
+  security:
+    cephx:
+      csi:
+        keyType: aes # required when Kubernetes nodes don't run Linux kernel 7.0+
   mon:
     count: 1
     allowMultiplePerNode: true
@@ -28,7 +31,7 @@ spec:
     allowMultiplePerNode: true
     modules:
       - name: rook
-        enabled: true
+        enabled: false
   dashboard:
     enabled: true
   crashCollector:
@@ -48,6 +51,15 @@ spec:
       mon:
         interval: 45s
         timeout: 600s
+    muteHealthWarning:
+      AUTH_INSECURE_ROTATING_SERVICE_KEY_TYPE:
+        policy: mute
+      AUTH_INSECURE_CLIENT_KEY_TYPE:
+        policy: mute
+      AUTH_INSECURE_KEYS_ALLOWED:
+        policy: mute
+      AUTH_INSECURE_KEYS_CREATABLE:
+        policy: mute
   priorityClassNames:
     all: system-node-critical
     mgr: system-cluster-critical
