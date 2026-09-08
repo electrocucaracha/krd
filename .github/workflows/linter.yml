@@ -43,73 +43,24 @@ jobs:
         uses: tcort/github-action-markdown-link-check@e047c5b37f24ab722bbef1a27b6fab7f96bc4068 # 1.1.3
   check-super-linter:
     name: Check syntax (super-linter)
-    runs-on: ubuntu-latest
     permissions:
       contents: read
       models: read
       issues: write
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # 6.0.3
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Run super-linter validation
-        uses: super-linter/super-linter@4ce20838b8ab83717e78138c5b3a1407148e0918 # 8.7.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LINTER_RULES_PATH: /
-          VALIDATE_JSCPD: false
-          VALIDATE_SHELL_SHFMT: false
-          VALIDATE_CHECKOV: false
-          VALIDATE_BIOME_LINT: false
-          VALIDATE_BIOME_FORMAT: false
-          VALIDATE_ENV: false
-          VALIDATE_PYTHON_RUFF_FORMAT: false
-          EDITORCONFIG_FILE_NAME: .editorconfig-checker.json
-          KUBERNETES_KUBECONFORM_OPTIONS: "-ignore-missing-schemas -ignore-filename-pattern custom-rules.yml"
-          DEFAULT_BRANCH: ${{ github.head_ref || github.ref_name }}
-      - uses: GrantBirki/git-diff-action@b27608d18e6dd9b31b46ede56a93e045d3881a28 # 3.0.0
-        id: git-diff
-        if: failure()
-      - name: Get failed linter logs
-        id: get-failed-linters
-        if: failure()
-        run: |
-          find ./super-linter-output/super-linter/ -name '*.json' -exec sh -c 'jq -e ".Exitval != 0" "$1" >/dev/null && printf "%s\0" "$1"' _ {} \; | xargs -0 jq -s '.' > linter-errors.json
-      - uses: actions/ai-inference@2c43c91ae16266ca159d311430343c67a5ffa222 # 3
-        id: ai-linter-analysis
-        if: failure()
-        with:
-          model: mistral-ai/Ministral-3B
-          input: |
-            diff: ${{ steps.git-diff.outputs.raw-diff }}
-          prompt-file: ./linter-errors.json
-          system-prompt: |
-            You are an expert software engineer who specializes in diagnosing and fixing software build and runtime failures. Always provide structured reasoning and propose concrete fixes when possible.
-
-            Task: Analyze the logs of the super-linter-output/ folder from the failed `ubuntu-latest` CI workflow run. Cross-reference the errors with the code diff to determine the root cause of the failure.
-            {{ diff }}
-
-            Objectives:
-            1. **Diagnosis:** Identify patterns, anomalies, or dependencies that could explain the failure. What is the most probable root cause?
-            2. **Reasoning:** Explain why this root cause is plausible — referencing specific log lines, timestamps, or stack traces.
-            3. **Resolution:** If a fix is evident, describe your reasoning process and propose an exact code or configuration change. Present your solution as a unified diff (diff format).
-            4. **Reflection:** If no clear fix is identifiable, summarize which parts of the log are ambiguous and what further information would be needed to proceed.
-
-            Goal: Deliver an insightful and technically sound explanation that not only solves the issue but also strengthens understanding of the system's behavior and failure patterns.
-      - uses: jayqi/failed-build-issue-action@940568ce50eeef3f31a920614cefcc6102d2f930 # 1.3.0
-        if: failure()
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          title-template: "Super-linter has failed"
-          label-name: super-linter-issue
-          body-template: |
-            The linter step has failed. Please check for new major versions and update manually.
-
-            Please check the [logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for more details.
-
-            ## AI Analysis of Linter Failures
-            ${{ steps.ai-linter-analysis.outputs.response }}
+    uses: electrocucaracha/gh-workflows/.github/workflows/linter.yml@7362342ec4b465d80999556fae6bb61b3e56f010 # v7.0.8
+    with:
+      validate_overrides: |-
+        {
+          "VALIDATE_JSCPD": false,
+          "VALIDATE_SHELL_SHFMT": false,
+          "VALIDATE_CHECKOV": false,
+          "VALIDATE_BIOME_LINT": false,
+          "VALIDATE_BIOME_FORMAT": false,
+          "VALIDATE_ENV": false,
+          "VALIDATE_PYTHON_RUFF_FORMAT": false
+        }
+    secrets:
+      COPILOT_TOKEN: ${{ secrets.COPILOT_TOKEN }}
   check-tox:
     name: Check syntax (tox)
     runs-on: ubuntu-latest

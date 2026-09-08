@@ -15,26 +15,13 @@ on:
   workflow_dispatch:
 jobs:
   check-versions:
+    name: Update Managed Version Files
     permissions:
-      contents: write # for technote-space/create-pr-action to push code
-      pull-requests: write # for technote-space/create-pr-action to create a PR
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # 6.0.3
-        with:
-          persist-credentials: true
-          # Fine-grained PAT with contents:write and workflows:write scopes
-          token: ${{ secrets.WORKFLOW_TOKEN }} # zizmor: ignore[secrets-outside-env]
-      - uses: technote-space/create-pr-action@91114507cf92349bec0a9a501c2edf1635427bc5 # 2.1.4
-        with:
-          EXECUTE_COMMANDS: |
-            ./ci/update_versions.sh
-            pip install pip-tools
-            pip-compile test-requirements.in --output-file test-requirements.txt --upgrade --resolver=backtracking
-          COMMIT_MESSAGE: "Upgrade galaxy requirements and krd versions files"
-          COMMIT_NAME: "electrocucaracha bot"
-          PR_BRANCH_NAME: "versions-update-${PR_ID}"
-          PR_TITLE: "chore: update versions"
+      contents: write
+      pull-requests: write
+    uses: electrocucaracha/gh-workflows/.github/workflows/update.yml@7362342ec4b465d80999556fae6bb61b3e56f010 # v7.0.8
+    secrets:
+      WORKFLOW_TOKEN: ${{ secrets.WORKFLOW_TOKEN }}
   check-dictionary:
     runs-on: ubuntu-latest
     permissions:
