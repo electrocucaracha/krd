@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Updated the default kubespray version to v2.31.0, ensuring compatibility with newer Kubernetes versions and incorporating upstream improvements that resolve potential issues with outdated bug fixes and features. [da8abc29](https://github.com/electrocucaracha/krd/commit/da8abc290bf59d0d05c57a180cc93d94c2d76c72)
+- Updated the default kubespray version to v2.31.0, ensuring compatibility with newer Kubernetes versions and incorporating upstream improvements that resolve potential issues with outdated bugfixes and features. [da8abc29](https://github.com/electrocucaracha/krd/commit/da8abc290bf59d0d05c57a180cc93d94c2d76c72)
 
 ## [23.0.2] - 2026-08-11
 
@@ -133,13 +133,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Standardized GitHub Actions workflows across lint, spellcheck, and update jobs to ensure consistent behavior while preserving repository-specific configurations. [493e278e](https://github.com/electrocucaracha/krd/commit/493e278ef9a0515b39588a0beceb875f523dd16c)
+- Standardized GitHub Actions workflows across lint, spell check, and update jobs to ensure consistent behavior while preserving repository-specific configurations. [493e278e](https://github.com/electrocucaracha/krd/commit/493e278ef9a0515b39588a0beceb875f523dd16c)
 
 ## [20.1.6] - 2026-04-25
 
 ### Changed
 
-- Updated dictionary definitions in the spellchecker bot's wordlist to remove MKE and add Ons, potentially requiring users with custom dictionaries relying on these words to update their configurations. [aef4179e](https://github.com/electrocucaracha/krd/commit/aef4179ebb0580b105c06c016dcab6116c26be48)
+- Updated dictionary definitions in the spell checker bot's wordlist to remove MKE and add Ons, potentially requiring users with custom dictionaries relying on these words to update their configurations. [aef4179e](https://github.com/electrocucaracha/krd/commit/aef4179ebb0580b105c06c016dcab6116c26be48)
 
 ## [20.1.5] - 2026-04-25
 
@@ -283,7 +283,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- The spellchecker bot has hardened its internal wordlist by removing 15 words including CRI, criproxy, datasets, KVM, QCOW, qemu, runtimes, and VMs potentially affecting users who rely on these specific terms being recognized. [e7cc1295](https://github.com/electrocucaracha/krd/commit/e7cc1295b70008bbe3b0fddf26b147b7c77cd734)
+- The spell checker bot has hardened its internal wordlist by removing 15 words including CRI, criproxy, datasets, KVM, QCOW, qemu, runtimes, and VMs potentially affecting users who rely on these specific terms being recognized. [e7cc1295](https://github.com/electrocucaracha/krd/commit/e7cc1295b70008bbe3b0fddf26b147b7c77cd734)
 
 ## [18.2.1] - 2025-12-30
 
@@ -421,7 +421,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Enabled GitHub actions to utilize updated wordlists that include new terms such as "datasets" and "runtime", potentially requiring users to update their workflows. [fea9845e](https://github.com/electrocucaracha/krd/commit/fea9845ef7256de3439b290dbc6e284c9e95268d)
+- Enabled GitHub Actions to utilize updated wordlists that include new terms such as "datasets" and "runtime", potentially requiring users to update their workflows. [fea9845e](https://github.com/electrocucaracha/krd/commit/fea9845ef7256de3439b290dbc6e284c9e95268d)
 
 ## [13.2.0] - 2025-09-14
 
@@ -469,7 +469,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Eliminated outdated dictionary definitions for datasets and runtime from the spellchecker bot to prevent potential functionality issues if these terms are referenced elsewhere in the system. [fe1e68e3](https://github.com/electrocucaracha/krd/commit/fe1e68e38173ed9d8f16566980018ed0362fe408)
+- Eliminated outdated dictionary definitions for datasets and runtime from the spell checker bot to prevent potential functionality issues if these terms are referenced elsewhere in the system. [fe1e68e3](https://github.com/electrocucaracha/krd/commit/fe1e68e38173ed9d8f16566980018ed0362fe408)
 
 ## [12.0.1] - 2025-08-12
 
@@ -559,7 +559,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- The spellchecker bot now correctly identifies and suggests corrections for words in text due to updated dictionary definitions that resolve case sensitivity issues. [1ace4ef5](https://github.com/electrocucaracha/krd/commit/1ace4ef5cc64273bfc7b6dcadcc6d28b53414980)
+- The spell checker bot now correctly identifies and suggests corrections for words in text due to updated dictionary definitions that resolve case sensitivity issues. [1ace4ef5](https://github.com/electrocucaracha/krd/commit/1ace4ef5cc64273bfc7b6dcadcc6d28b53414980)
 
 ## [11.0.1] - 2025-07-05
 
@@ -577,7 +577,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Improved spell-checking accuracy for project tools by updating the wordlist to include Agentic, kagent, KRM, and aio terms. [f0ebb186](https://github.com/electrocucaracha/krd/commit/f0ebb186f761bec7e84f35728e7da298ccc6bc83)
+- Improved spell checking accuracy for project tools by updating the wordlist to include Agentic, kagent, KRM, and aio terms. [f0ebb186](https://github.com/electrocucaracha/krd/commit/f0ebb186f761bec7e84f35728e7da298ccc6bc83)
 
 ## [10.0.4] - 2025-06-26
 
@@ -721,7 +721,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated editorconfig linting to reference the new configuration file name, which now affects linter workflows including GitHub Actions and Makefile tasks. [b919b639](https://github.com/electrocucaracha/krd/commit/b919b639483b0bd5fbae2db0888167c6a03b1060)
+- Updated EditorConfig linting to reference the new configuration filename, which now affects linter workflows including GitHub Actions and Makefile tasks. [b919b639](https://github.com/electrocucaracha/krd/commit/b919b639483b0bd5fbae2db0888167c6a03b1060)
 
 ## [7.1.0] - 2025-04-23
 
@@ -793,7 +793,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Eliminated outdated dictionary terms from the spellchecker bot's wordlist to improve accuracy and efficiency, potentially requiring users to retrain their models if previously reliant on these specific terms. [cef7bdb8](https://github.com/electrocucaracha/krd/commit/cef7bdb88d7382c5bab5cf05ee0354a4c6b0eef9)
+- Eliminated outdated dictionary terms from the spell checker bot's wordlist to improve accuracy and efficiency, potentially requiring users to retrain their models if previously reliant on these specific terms. [cef7bdb8](https://github.com/electrocucaracha/krd/commit/cef7bdb88d7382c5bab5cf05ee0354a4c6b0eef9)
 
 ## [6.1.6] - 2025-02-14
 
@@ -835,7 +835,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Kubevirt runners now enable cpu host-passthrough by default, allowing for more flexible resource allocation. [dc120ab0](https://github.com/electrocucaracha/krd/commit/dc120ab0808285b2fee722943338cce4220182d6)
+- Kubevirt runners now enable CPU host-passthrough by default, allowing for more flexible resource allocation. [dc120ab0](https://github.com/electrocucaracha/krd/commit/dc120ab0808285b2fee722943338cce4220182d6)
 
 ## [6.0.0] - 2025-02-05
 
@@ -1027,13 +1027,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Simplified configuration files by eliminating legacy TODO instructions, reducing clutter and the risk of outdated information causing issues for maintainers without introducing breaking behavior or requiring migration steps. [50d8667e](https://github.com/electrocucaracha/krd/commit/50d8667e2265d4d35c23692bb287f8b5a95c9953)
+- Simplified configuration files by eliminating legacy todo instructions, reducing clutter and the risk of outdated information causing issues for maintainers without introducing breaking behavior or requiring migration steps. [50d8667e](https://github.com/electrocucaracha/krd/commit/50d8667e2265d4d35c23692bb287f8b5a95c9953)
 
 ## [2.1.9] - 2025-01-10
 
 ### Changed
 
-- Updated Kube OVN to v1.13.2, which may require migration steps for users running previous versions due to potential changes in minor patch release bug fixes or performance improvements. [203269ee](https://github.com/electrocucaracha/krd/commit/203269ee0c45f789c937a4bc9ebb8433aedfcb1e)
+- Updated Kube OVN to v1.13.2, which may require migration steps for users running previous versions due to potential changes in minor patch release bugfixes or performance improvements. [203269ee](https://github.com/electrocucaracha/krd/commit/203269ee0c45f789c937a4bc9ebb8433aedfcb1e)
 
 ## [2.1.8] - 2025-01-10
 
@@ -1129,7 +1129,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated the ubuntu runner's sources list to include the latest virtualbox version and modified dependencies accordingly, requiring users who utilize this runner in their pipelines to update their configurations. [4f0084be](https://github.com/electrocucaracha/krd/commit/4f0084be0242231390826de7dd74ed211cd8c411)
+- Updated the Ubuntu runner's sources list to include the latest virtualbox version and modified dependencies accordingly, requiring users who utilize this runner in their pipelines to update their configurations. [4f0084be](https://github.com/electrocucaracha/krd/commit/4f0084be0242231390826de7dd74ed211cd8c411)
 
 ## [1.5.0] - 2024-12-18
 
@@ -1153,7 +1153,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Enabled the Ubuntu runner pipeline to install and utilize the git package on each run without requiring any migration steps from users who rely on it for tasks involving Git repositories. [4d52d858](https://github.com/electrocucaracha/krd/commit/4d52d8581a045d7c2c6fa48f90c347c4b11d8894)
+- Enabled the Ubuntu runner pipeline to install and utilize the Git package on each run without requiring any migration steps from users who rely on it for tasks involving Git repositories. [4d52d858](https://github.com/electrocucaracha/krd/commit/4d52d8581a045d7c2c6fa48f90c347c4b11d8894)
 
 ## [1.1.1] - 2024-12-17
 
@@ -1165,7 +1165,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Enabled GitHub actions to recognize new terms through an updated wordlist that includes Tekton, textlint, TopoLVM, and tox, potentially affecting automated workflows relying on these terms without introducing breaking changes or migration requirements. [2cb882ed](https://github.com/electrocucaracha/krd/commit/2cb882ed936bdc868a06da6220acc3b307388a1b)
+- Enabled GitHub Actions to recognize new terms through an updated wordlist that includes Tekton, textlint, TopoLVM, and tox, potentially affecting automated workflows relying on these terms without introducing breaking changes or migration requirements. [2cb882ed](https://github.com/electrocucaracha/krd/commit/2cb882ed936bdc868a06da6220acc3b307388a1b)
 
 ## [1.0.5] - 2024-12-13
 
