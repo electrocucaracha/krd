@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # 6.0.3
         with:
           persist-credentials: false
-      - uses: reviewdog/action-misspell@d6429416b12b09b4e2768307d53bef58d172e962 # 1.27.0
+      - uses: reviewdog/action-misspell@da40ce414be6ce320a9322aa2bae10bd3b9e6ef3 # 1.29.0
         with:
           github_token: ${{ secrets.github_token }}
   check-spellcheck:
