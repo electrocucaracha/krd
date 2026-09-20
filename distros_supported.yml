@@ -20,8 +20,8 @@ ubuntu:
     name: generic/ubuntu2004
     version: "4.3.12"
   jammy:
-    name: generic/ubuntu2204
-    version: "4.3.12"
+    name: electrocucaracha-boxes/ubuntu-jammy
+    version: "22.04.5"
 opensuse:
   leap:
     name: opensuse/Leap-15.6.x86_64

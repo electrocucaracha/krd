@@ -18,9 +18,9 @@ lint: |
   PATH=${PATH}
   yamllint -c ../../../.yaml-lint.yml .
 platforms:
-  - name: focal-$POSTFIX_NAME
-    box: generic/ubuntu2204
-    box_version: 4.3.12
+  - name: ubuntu-jammy-$POSTFIX_NAME
+    box: electrocucaracha-boxes/ubuntu-jammy
+    box_version: 22.04.5
     memory: 3072
     cpus: 1
     provider_options:
