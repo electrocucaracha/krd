@@ -199,3 +199,5 @@ calico_vxlan_mode: $KRD_CALICO_VXLAN_MODE
 
 # Calico network backend: "bird", "vxlan" or "none"
 calico_network_backend: $KRD_CALICO_NETWORK_BACKEND
+
+"download_cache_dir": "/tmp/kubespray_cache"
