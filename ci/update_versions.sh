@@ -256,6 +256,11 @@ sed -i "s/default: .*/default: $(get_version github_release actions/runner)/g" r
 # Update ARC Garbage collector resources
 sed -i "s|image: alpine/k8s:.*|image: alpine/k8s:$(get_version docker_tag alpine/k8s)|g" resources/arc-cleanup.yml
 
+if ! command -v uv >/dev/null; then
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
+uv pip compile test-requirements.in -o test-requirements.txt
+
 # Update GitHub Action commit hashes
 gh_actions=$(grep -r "uses: [A-Za-z0-9_.-]*/[\_a-z\-]*@" .github/ | sed 's/@.*//' | awk -F ': ' '{ print $3 }' | sort -u)
 exceptions=('reviewdog/action-misspell' 'actions/attest-build-provenance' 'GrantBirki/git-diff-action' 'golangci/golangci-lint-action' 'actions/checkout')
