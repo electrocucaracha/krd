@@ -137,13 +137,11 @@ fi
 kubespray_defaults=$(curl -sfL "$kubespray_url" | grep -e "^[a-zA-Z].*_version: " -e "^[a-zA-Z].*image_tag: " | grep -v "{")
 set_kubespray_img_version "$kubespray_defaults" "k8s-dns-node-cache" "nodelocaldns_version"
 if _vercmp "$kubespray_version" '>=' '2.28.0'; then
-    set_kubespray_img_version "$kubespray_defaults" "controller" "ingress_nginx_version" "v"
     set_kubespray_img_version "$kubespray_defaults" "local-volume-provisioner" "local_volume_provisioner_version" "v"
     for img in cainjector controller webhook; do
         set_kubespray_img_version "$kubespray_defaults" "cert-manager-$img" "cert_manager_version" "v"
     done
 else
-    set_kubespray_img_version "$kubespray_defaults" "controller" "ingress_nginx_version"
     set_kubespray_img_version "$kubespray_defaults" "local-volume-provisioner" "local_volume_provisioner_version"
     for img in cainjector controller webhook; do
         set_kubespray_img_version "$kubespray_defaults" "cert-manager-$img" "cert_manager_version"

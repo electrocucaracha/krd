@@ -24,7 +24,7 @@ You can start with the [default configuration](config/default.yml) or explore [t
 
 | Distribution |   Version   |
 | :----------- | :---------: |
-| Ubuntu       | 20.04/22.04 |
+| Ubuntu       | 22.04/24.04 |
 | openSUSE     |    Leap     |
 | Fedora       | 37/38/39/40 |
 
@@ -152,7 +152,6 @@ KRD relies on environment variables to control behavior and customization. Below
 | KRD_CONTAINER_RUNTIME                | containerd | Specifies the Container Runtime to be used for deploying kubernetes             |
 | KRD_DASHBOARD_ENABLED                | false      | Enable/Disable [Kubernetes Dashboard][12]                                       |
 | KRD_CERT_MANAGER_ENABLED             | true       | Enable/Disable [Kubernetes Cert-Manager][10]                                    |
-| KRD_INGRESS_NGINX_ENABLED            | true       | Enable/Disable [NGINX Ingress Controller][11]                                   |
 | KRD_KATA_CONTAINERS_ENABLED          | false      | Enable/Disable [Kata Containers Runtime][13]                                    |
 | KRD_CRUN_ENABLED                     | false      | Enable/Disable [crun][18]                                                       |
 | KRD_YOUKI_ENABLED                    | false      | Enable/Disable [youki][26]                                                      |
@@ -199,7 +198,6 @@ Thanks to everyone who has contributed so far!
 [8]: playbooks/roles/qat_plugin
 [9]: playbooks/roles/sriov_plugin
 [10]: https://cert-manager.io/
-[11]: https://kubernetes.github.io/ingress-nginx/
 [12]: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
 [13]: https://katacontainers.io/
 [15]: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/

@@ -89,8 +89,8 @@ _vagrant_pull "bullseye" "debian/bullseye64"
 echo "rocky:" >>.distros_supported.yml
 _vagrant_pull "9" "community/rockylinux-9"
 echo "ubuntu:" >>.distros_supported.yml
-_vagrant_pull "focal" "generic/ubuntu2004"
 _vagrant_pull "jammy" "electrocucaracha-boxes/ubuntu-jammy"
+_vagrant_pull "noble" "electrocucaracha-boxes/ubuntu-noble"
 echo "opensuse:" >>.distros_supported.yml
 _vagrant_pull "leap" "opensuse/Leap-15.6.x86_64"
 echo "fedora:" >>.distros_supported.yml

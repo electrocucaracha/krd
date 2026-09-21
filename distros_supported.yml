@@ -16,12 +16,12 @@ rocky:
     name: community/rockylinux-9
     version: "1.0.0"
 ubuntu:
-  focal:
-    name: generic/ubuntu2004
-    version: "4.3.12"
   jammy:
     name: electrocucaracha-boxes/ubuntu-jammy
     version: "22.04.5"
+  noble:
+    name: electrocucaracha-boxes/ubuntu-noble
+    version: "24.04.4"
 opensuse:
   leap:
     name: opensuse/Leap-15.6.x86_64
