@@ -31,7 +31,7 @@ if [[ ${TEST_MULTINODE:-false} == "false" ]]; then
 - name: aio
   os:
     name: ${OS:-ubuntu}
-    release: ${RELEASE:-jammy}
+    release: ${RELEASE:-noble}
   networks:
     - name: public-net
       ip: "10.10.16.3"
@@ -94,7 +94,7 @@ else
 - name: controller
   os:
     name: ${OS:-ubuntu}
-    release: ${RELEASE:-jammy}
+    release: ${RELEASE:-noble}
   networks:
     - name: public-net
       ip: "10.10.16.3"

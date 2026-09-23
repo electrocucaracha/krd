@@ -27,7 +27,7 @@ pdf = "#{File.dirname(__FILE__)}/config/default.yml"
 pdf = "#{File.dirname(__FILE__)}/config/pdf.yml" if File.exist?("#{File.dirname(__FILE__)}/config/pdf.yml")
 nodes = YAML.load_file(pdf)
 vagrant_boxes = YAML.load_file("#{File.dirname(__FILE__)}/distros_supported.yml")
-installer_box = vagrant_boxes["ubuntu"]["jammy"]
+installer_box = vagrant_boxes["ubuntu"]["noble"]
 
 # Inventory file creation
 etchosts_dict = ""
