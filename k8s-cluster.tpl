@@ -94,9 +94,6 @@ dashboard_skip_login: true
 # Cert manager deployment
 cert_manager_enabled: $KRD_CERT_MANAGER_ENABLED
 
-# Nginx ingress controller deployment
-ingress_nginx_enabled: $KRD_INGRESS_NGINX_ENABLED
-
 # Kata Containers is an OCI runtime, where containers are run inside lightweight VMs
 kata_containers_enabled: $KRD_KATA_CONTAINERS_ENABLED
 
@@ -200,4 +197,4 @@ calico_vxlan_mode: $KRD_CALICO_VXLAN_MODE
 # Calico network backend: "bird", "vxlan" or "none"
 calico_network_backend: $KRD_CALICO_NETWORK_BACKEND
 
-"download_cache_dir": "/tmp/kubespray_cache"
+download_cache_dir: "/tmp/kubespray_cache"
