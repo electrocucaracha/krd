@@ -79,37 +79,20 @@ function _install_kubespray {
             fi
         fi
 
-        curl -fsSL http://bit.ly/install_pkg | PKG_COMMANDS_LIST="pip" bash
-        PIP_CMD="sudo -E $(command -v pip)"
-        if [[ "$(pip -V)" == *"python2"* ]] && command -v pip3; then
-            PIP_CMD="sudo -E $(command -v pip3)"
+        if ! command -v uv >/dev/null; then
+            curl -LsSf https://astral.sh/uv/install.sh | sh
+            source $HOME/.local/bin/env
         fi
+        sudo $(command -v uv) tool install --force 'ansible-core>=2.18,<2.19'
+        uv venv --python 3.12
+        source .venv/bin/activate
+        uv pip install -r requirements.txt
 
-        # This ensures that ansible is previously not installed
-        if pip show ansible; then
-            ansible_path="$(pip show ansible | grep Location | awk '{ print $2 }')/ansible"
-            $PIP_CMD uninstall ansible -y
-            sudo rm -rf "$ansible_path"
-        fi
-        if command -v pipx; then
-            for pkg in ansible-base ansible-core; do
-                if pipx list | grep -q "$pkg"; then
-                    sudo -E "$(command -v pipx)" uninstall "$pkg"
-                fi
-            done
-        fi
-
-        python_version=$(python -V | awk '{print $2}')
-        if _vercmp "$python_version" '<' "3.8"; then
-            $PIP_CMD install --no-cache-dir -r ./requirements-2.11.txt
-        else
-            $PIP_CMD install --no-cache-dir -r ./requirements.txt
-        fi
         if _vercmp "${kubespray_version#*v}" '<' "2.18"; then
             sed -i "s/mitogen_version: .*/mitogen_version: $mitogen_version/g" ./mitogen.yml
             sudo make mitogen
         else
-            $PIP_CMD install --no-cache-dir mitogen
+            uv pip install --no-cache-dir mitogen
         fi
         popd
     fi
