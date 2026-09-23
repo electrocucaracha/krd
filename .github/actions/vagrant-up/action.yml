@@ -38,9 +38,6 @@ inputs:
   cert-manager-enabled:
     description: "Enable Kubernetes Cert-Manager"
     default: false
-  ingress-enabled:
-    description: "Enable Kubernetes Ingress Controller"
-    default: false
   container-runtime:
     description: "Container Runtime"
   kata-containers-enabled:
@@ -110,7 +107,6 @@ runs:
         KRD_KUBE_VERSION: ${{ inputs.kube-version }}
         KRD_KUBESPRAY_VERSION: ${{ inputs.kubespray-version }}
         KRD_CERT_MANAGER_ENABLED: ${{ inputs.cert-manager-enabled }}
-        KRD_INGRESS_NGINX_ENABLED: ${{ inputs.ingress-enabled }}
         KRD_CONTAINER_RUNTIME: ${{ inputs.container-runtime }}
         KRD_KATA_CONTAINERS_ENABLED: ${{ inputs.kata-containers-enabled }}
         KRD_CRUN_ENABLED: ${{ inputs.crun-enabled }}
