@@ -133,7 +133,7 @@ spec:
                                 keyid: "B9F8D658297AF3EFC18D5CDFA2F683C52980AECF" #gitleaks:allow
                               hashicorp:
                                 source: "deb [arch=amd64] https://apt.releases.hashicorp.com $(params.release-name) main"
-                                keyid: "798AEC654E5C15428C8E42EEAA16FCBCA621E701" #gitleaks:allow
+                                keyid: "D55C0D1AC78A8D8126CB631CFC9CA96ACA026560" #gitleaks:allow
       runAfter:
         - pull-ubuntu-img
       taskRef:
