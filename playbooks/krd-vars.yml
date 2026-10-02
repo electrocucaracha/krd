@@ -7,11 +7,11 @@
 # which accompanies this distribution, and is available at
 # http://www.apache.org/licenses/LICENSE-2.0
 ##############################################################################
-kpt_version: 1.0.0
+kpt_version: 1.0.1
 go_version: 1.15.3
-kubespray_version: v2.31.0
-istio_version: 1.31.0
-cfssl_version: 1.6.5
+kubespray_version: v2.32.0
+istio_version: 1.31.1
+cfssl_version: 1.7.0
 sonobuoy_version: 0.57.5
 mitogen_version: 0.2.10
 # Knative versions
@@ -23,7 +23,7 @@ net_kourier_version: knative-v1.23.0
 net_istio_version: vknative-v1.23.0
 net_certmanager_version: vknative-v1.14.0
 octant_version: 0.25.1
-kube-ovn_version: v1.14.43
+kube-ovn_version: v1.16.10
 kubevirt_version: v1.9.0
 containerized_data_importer_version: v1.66.1
 virtink_version: v0.17.0
@@ -35,5 +35,5 @@ argocd_version: v3.6.0-rc1
 tekton_version: v0.81.1
 kubevirt_tekton_tasks_version: v0.26.0
 action_runner_controller_version: 0.10.1
-kagent_version: 0.10.1
+kagent_version: 1.0.0-alpha7
 external_snapshotter_version: v8.6.0

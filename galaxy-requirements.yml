@@ -17,7 +17,7 @@ roles:
   - name: andrewrothstein.kind
     version: v1.2.19
   - name: andrewrothstein.kubectl
-    version: v1.5.7
+    version: v1.5.8
 collections:
   - name: kubernetes.core
     version: 6.6.0
