@@ -75,7 +75,7 @@ ebcf
 ebd
 eBPF
 edb
-editorconfig
+EditorConfig
 ee
 ef
 efa
@@ -163,7 +163,7 @@ namespaces
 NDOTS
 Nephio
 NFD
-NGINX
+nginx
 NodeLocal
 NODELOCALDNS
 ol
@@ -219,7 +219,7 @@ svr
 Tekton
 Telco
 textlint
-TODO
+todo
 TopoLVM
 Tox
 trivy
