@@ -1,0 +1,47 @@
+---
+# SPDX-license-identifier: Apache-2.0
+##############################################################################
+# Copyright (c) 2026
+# All rights reserved. This program and the accompanying materials
+# are made available under the terms of the Apache License, Version 2.0
+# which accompanies this distribution, and is available at
+# http://www.apache.org/licenses/LICENSE-2.0
+##############################################################################
+default_install_hook_types:
+  - pre-commit
+  - prepare-commit-msg
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: check-yaml
+  - repo: https://opendev.org/openstack/bashate.git
+    rev: 2.1.1
+    hooks:
+      - id: bashate
+        # E005 file does not begin with #! or have a .sh prefix
+        # E002 and E003 shfmt emits tabs by default for shell indentation
+        # E006 check for lines longer than 79 columns
+        # E011 shfmt may split if/elif conditions across multiple lines
+        # E020 shfmt formats functions as `name()` instead of `function name`
+        # E042 local declaration hides errors
+        # E043 Arithmetic compound has inconsistent return semantics
+        args: ["-v", "-iE002,E003,E005,E006,E011,E020,E042,E043"]
+        files: .*\.sh
+        exclude: ".tox/.*"
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.49.1
+    hooks:
+      - id: markdownlint
+        files: \.(md|mdown|markdown)$
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.21.0
+    hooks:
+      - id: yamlfmt
+  - repo: https://github.com/electrocucaracha/ai-prepare-commit-msg
+    rev: v18.1.0
+    hooks:
+      - id: ai-prepare-commit
+        stages:
+          - prepare-commit-msg
