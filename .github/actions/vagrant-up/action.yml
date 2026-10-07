@@ -148,6 +148,34 @@ runs:
         echo "===== DISK ====="
         sudo df -h
         echo "===== VBOX LOGS ====="
-        tail -n 200 ~/.config/VirtualBox/VBoxSVC.log 2>/dev/null || true
+        grep -v -e "No storage device attached" -e "not currently allowed to access USB" \
+          ~/.config/VirtualBox/VBoxSVC.log 2>/dev/null | tail -n 50 || true
         echo "===== KERNEL ====="
         sudo dmesg -T | tail -n 100
+    - name: Collect VM diagnostics
+      if: failure()
+      shell: bash
+      run: |
+        mkdir -p /tmp/vm-diagnostics
+        VBoxManage list runningvms
+        for vm in $(VBoxManage list vms | awk -F'[{}]' '{print $2}'); do
+          echo "===== VM $vm ====="
+          VBoxManage showvminfo "$vm" --machinereadable | grep -E '^(name|VMState|nic1|cableconnected1|Forwarding|uart)' || true
+          VBoxManage guestproperty enumerate "$vm" 2>/dev/null || true
+          VBoxManage controlvm "$vm" screenshotpng "/tmp/vm-diagnostics/${vm}.png" 2>/dev/null || true
+          VBoxManage showvminfo "$vm" --log 0 >"/tmp/vm-diagnostics/${vm}-VBox.log" 2>/dev/null || true
+          grep -iE 'error|fail|guru|triple|VERR_|AHCI|virtio' "/tmp/vm-diagnostics/${vm}-VBox.log" | tail -n 50 || true
+        done
+        for console in ./*-console.log; do
+          [[ -f $console ]] || continue
+          echo "===== GUEST CONSOLE $console ====="
+          tail -n 200 "$console"
+          cp "$console" /tmp/vm-diagnostics/
+        done
+    - name: Upload VM diagnostics
+      if: failure()
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # 7.0.1
+      with:
+        name: vm-diagnostics-${{ github.job }}-${{ strategy.job-index }}
+        path: /tmp/vm-diagnostics
+        if-no-files-found: ignore

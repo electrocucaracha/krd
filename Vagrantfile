@@ -163,6 +163,7 @@ Vagrant.configure("2") do |config|
       nodeconfig.vm.box_version = vagrant_boxes[node["os"]["name"]][node["os"]["release"]]["version"] if vagrant_boxes[node["os"]["name"]][node["os"]["release"]].key? "version"
       nodeconfig.vm.provider "virtualbox" do |v, _override|
         v.customize ["modifyvm", :id, "--nested-hw-virt", "on"] if node["roles"].include?("kube_node")
+        v.customize ["modifyvm", :id, "--uart1", "0x3F8", "4", "--uartmode1", "file", File.expand_path("#{File.dirname(__FILE__)}/#{node['name']}-console.log")]
         if node.key? "storage_controllers"
           node["storage_controllers"].each do |storage_controller|
             # Add VirtualBox storage controllers if they weren't added before
