@@ -37,7 +37,7 @@
     - name: Install kubernetes python package
       become: true
       ansible.builtin.pip:
-        name: kubernetes==36.0.3
+        name: kubernetes==37.0.0
     - name: Load krd variables
       ansible.builtin.include_vars:
         file: ../../../../krd-vars.yml
