@@ -79,11 +79,16 @@ function _install_kubespray {
             fi
         fi
 
-        if ! command -v uv >/dev/null; then
+        if ! command -v uv >/dev/null 2>&1; then
             curl -LsSf https://astral.sh/uv/install.sh | sh
-            source $HOME/.local/bin/env
+            export PATH="$HOME/.local/bin:$PATH"
         fi
-        sudo $(command -v uv) tool install --force 'ansible-core>=2.18,<2.19'
+
+        # Ensure uv is available
+        command -v uv
+
+        sudo "$(command -v uv)" tool install --force 'ansible-core>=2.18,<2.19'
+
         uv venv --python 3.12
         source .venv/bin/activate
         uv pip install -r requirements.txt
