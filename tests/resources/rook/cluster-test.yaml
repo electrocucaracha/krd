@@ -3,6 +3,7 @@
 # Define the settings for the rook-ceph cluster with common settings for a small test cluster.
 # All nodes with available raw devices will be used for the Ceph cluster. One node is sufficient
 # in this example.
+
 # For example, to create the cluster:
 #   kubectl create -f crds.yaml -f common.yaml -f operator.yaml
 #   kubectl create -f cluster-test.yaml
@@ -11,7 +12,7 @@ apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
   name: my-cluster
-  namespace: rook-ceph # namespace:cluster
+  namespace: rook-ceph  # namespace:cluster
 spec:
   dataDirHostPath: /var/lib/csi-block
   cephVersion:
@@ -20,7 +21,7 @@ spec:
   security:
     cephx:
       csi:
-        keyType: aes # required when Kubernetes nodes don't run Linux kernel 7.0+
+        keyType: aes  # required when Kubernetes nodes don't run Linux kernel 7.0+
   mon:
     count: 1
     allowMultiplePerNode: true
@@ -36,6 +37,9 @@ spec:
     enabled: true
   crashCollector:
     disable: true
+  network:
+    connections:
+      requireMsgr2: true
   storage:
     useAllNodes: true
     useAllDevices: true
@@ -83,7 +87,7 @@ apiVersion: ceph.rook.io/v1
 kind: CephBlockPool
 metadata:
   name: builtin-mgr
-  namespace: rook-ceph # namespace:cluster
+  namespace: rook-ceph  # namespace:cluster
 spec:
   name: .mgr
   replicated:

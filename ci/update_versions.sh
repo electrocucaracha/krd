@@ -225,7 +225,29 @@ update_pip_pkg "kubernetes" "$(get_version github_release kubernetes-client/pyth
 
 # Update Kubespray Default variables
 sed -i "s/{KRD_CERT_MANAGER_VERSION:-.*/{KRD_CERT_MANAGER_VERSION:-$(get_version github_release jetstack/cert-manager)}/g" ./defaults.env
-sed -i "s/{KRD_CONTAINERD_VERSION:-.*/{KRD_CONTAINERD_VERSION:-$(get_version github_release containerd/containerd)}/g" ./defaults.env
+# Versions constrained by the pinned Kubespray release (only checksummed versions are supported)
+kubespray_raw_url="https://raw.githubusercontent.com/kubernetes-sigs/kubespray/v$kubespray_version"
+kubespray_checksums=$(curl -sfL "$kubespray_raw_url/roles/kubespray_defaults/vars/main/checksums.yml")
+function get_kubespray_latest_checksum_version {
+    awk -v var="^$1:" '$0~var{f=1;next} f&&/^[^ ]/{exit} f&&/amd64:/{a=1;next} a&&/^ +[0-9]/{sub(/:.*/,""); gsub(/ /,""); print; exit}' <<<"$kubespray_checksums"
+}
+containerd_version=$(get_kubespray_latest_checksum_version containerd_archive_checksums)
+if [[ -n $containerd_version ]]; then
+    sed -i "s/{KRD_CONTAINERD_VERSION:-.*/{KRD_CONTAINERD_VERSION:-$containerd_version}/g" ./defaults.env
+fi
+# Kubespray's default kube_version is the newest kubelet checksummed
+kube_version=$(get_kubespray_latest_checksum_version kubelet_checksums)
+if [[ -n $kube_version ]]; then
+    sed -i "s/^kube_version:.*/kube_version: $kube_version/g" ./k8s-cluster.tpl
+    sed -i "s/echo \"v[0-9]*\.[0-9]*\.[0-9]*\"/echo \"v$kube_version\"/g" ./_commons.sh
+    sed -i "s/KRD_KUBE_VERSION:-[0-9.]*/KRD_KUBE_VERSION:-$kube_version/g" ./ci/check.sh
+    sed -i "s/KRD_KUBE_VERSION                      |.*/KRD_KUBE_VERSION                      | v$kube_version                                        | Specifies the Kubernetes version to be upgraded                                 |/g" README.md
+fi
+# Ansible version range enforced by Kubespray
+ansible_range=$(curl -sfL "$kubespray_raw_url/playbooks/ansible_version.yml" | awk '/minimal_ansible_version:/{min=$2} /maximal_ansible_version:/{max=$2} END{if(min&&max) printf ">=%s,<%s", min, max}')
+if [[ -n $ansible_range ]]; then
+    sed -i "s/'ansible-core[^']*'/'ansible-core$ansible_range'/g" ./_commons.sh
+fi
 
 # Update Checkov
 wget -q -O ./resources/checkov-job.yaml https://raw.githubusercontent.com/bridgecrewio/checkov/master/kubernetes/checkov-job.yaml

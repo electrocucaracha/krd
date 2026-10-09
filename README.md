@@ -117,8 +117,8 @@ KRD relies on environment variables to control behavior and customization. Below
 | KRD_DEBUG                             | false                                          | Enables verbose execution                                                       |
 | KRD_ANSIBLE_DEBUG                     | false                                          | Enables Ansible verbose execution                                               |
 | PKG_DEBUG                             | false                                          | Enables cURL package installer verbose execution                                |
-| KRD_KUBE_VERSION                      | v1.33.7                                        | Specifies the Kubernetes version to be upgraded                                 |
-| KRD_KUBESPRAY_VERSION                 | v2.31.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
+| KRD_KUBE_VERSION                      | v1.36.4                                        | Specifies the Kubernetes version to be upgraded                                 |
+| KRD_KUBESPRAY_VERSION                 | v2.32.0                                        | Specifies the Kubespray version to be used during the upgrade process           |
 | KRD_KUBESPRAY_REPO                    | `https://github.com/kubernetes-sigs/kubespray` | Specifies the Git repository to fetch the Kubespray's source code               |
 | KRD_ENABLE_TESTS                      | false                                          | Enables the functional tests during the deployment process                      |
 | KRD_HELM_CHART                        |                                                | Specifies the Helm chart to be installed                                        |
@@ -183,9 +183,11 @@ We welcome all forms of collaboration. Please see our [CONTRIBUTING](CONTRIBUTIN
 
 Thanks to everyone who has contributed so far!
 
+<!-- markdownlint-disable MD033 -->
 <a href="https://github.com/electrocucaracha/krd/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=electrocucaracha/krd" alt="contributors" />
 </a>
+<!-- markdownlint-enable MD033 -->
 
 ![Visualization of the codebase](./codebase-structure.svg)
 

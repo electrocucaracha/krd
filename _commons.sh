@@ -37,7 +37,7 @@ function _get_kube_version {
     elif [ -n "${KRD_KUBE_VERSION-}" ]; then
         echo "v${KRD_KUBE_VERSION#v}"
     else
-        echo "v1.33.7"
+        echo "v1.36.4"
     fi
 }
 
@@ -87,7 +87,7 @@ function _install_kubespray {
         # Ensure uv is available
         command -v uv
 
-        sudo "$(command -v uv)" tool install --force 'ansible-core>=2.18,<2.19'
+        sudo "$(command -v uv)" tool install --force 'ansible-core>=2.19.0,<2.20.0'
 
         uv venv --python 3.12
         source .venv/bin/activate
