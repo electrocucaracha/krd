@@ -9,5 +9,5 @@
 formatter:
   type: basic
   include_document_start: true
-  pad_line_comments: 2
+  pad_line_comments: 1
   max_line_length: 160

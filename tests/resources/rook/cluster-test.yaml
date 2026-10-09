@@ -12,7 +12,7 @@ apiVersion: ceph.rook.io/v1
 kind: CephCluster
 metadata:
   name: my-cluster
-  namespace: rook-ceph  # namespace:cluster
+  namespace: rook-ceph # namespace:cluster
 spec:
   dataDirHostPath: /var/lib/csi-block
   cephVersion:
@@ -21,7 +21,7 @@ spec:
   security:
     cephx:
       csi:
-        keyType: aes  # required when Kubernetes nodes don't run Linux kernel 7.0+
+        keyType: aes # required when Kubernetes nodes don't run Linux kernel 7.0+
   mon:
     count: 1
     allowMultiplePerNode: true
@@ -87,7 +87,7 @@ apiVersion: ceph.rook.io/v1
 kind: CephBlockPool
 metadata:
   name: builtin-mgr
-  namespace: rook-ceph  # namespace:cluster
+  namespace: rook-ceph # namespace:cluster
 spec:
   name: .mgr
   replicated:
