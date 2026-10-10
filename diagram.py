@@ -25,7 +25,7 @@ with diagrams.Diagram(filename="krd", direction="BT"):
     with open(configuration_file, encoding="utf8") as conf:
         try:
             config_nodes = yaml.load(conf, Loader=yaml.FullLoader)
-        except IOError:
+        except OSError:
             print("File not accessible")
 
     nodes = []
