@@ -30,7 +30,7 @@ Tuning Kubernetes Calico CNI deployment
 `Calico <https://projectcalico.docs.tigera.io/>`_ is an open-source networking
 and network security solution for containers, virtual machines, and native
 host-based workloads. Calico supports a wide range of platforms, including
-Kubernetes, OpenShift, Mirantis Kubernetes Engine (MKE), OpenStack, and bare
+Kubernetes, OpenShift, Mirantis Kubernetes Engine, OpenStack, and bare
 metal environments.
 
 Calico offers three routing modes:

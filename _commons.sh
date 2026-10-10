@@ -27,6 +27,11 @@ export krd_inventory=$krd_inventory_folder/hosts.ini
 export kubespray_folder=/opt/kubespray
 export galaxy_base_path=/tmp/galaxy/
 
+if [ -f "$kubespray_folder/.venv/bin/activate" ]; then
+    # shellcheck source=/dev/null
+    source "$kubespray_folder/.venv/bin/activate"
+fi
+
 # _get_kube_version() - Get the Kubernetes version used or installed on the remote cluster
 function _get_kube_version {
     if command -v kubectl >/dev/null && kubectl version >/dev/null 2>&1; then

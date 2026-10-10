@@ -101,6 +101,7 @@ To install Kubernetes add-ons:
 ## Day-2 Operations
 
 KRD supports full lifecycle operations, including upgrades, node addition, and service removal.
+Subsequent commands reuse Kubespray's virtual environment at `/opt/kubespray/.venv` so deployment and teardown use the same Ansible dependencies.
 
 Example: Upgrade your Kubernetes cluster to version `v1.18.10` using Kubespray `v2.14.2`:
 
