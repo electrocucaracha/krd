@@ -94,7 +94,7 @@ jobs:
         with:
           persist-credentials: false
         if: matrix.environment != 'reqs'
-      - uses: ./.github/actions/molecule-test
+      - uses: $/.github/actions/molecule-test
         if: matrix.environment != 'reqs'
         with:
           tox-env: ${{ matrix.environment }}

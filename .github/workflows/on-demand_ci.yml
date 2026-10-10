@@ -65,7 +65,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: ./.github/actions/vagrant-up
+      - uses: $/.github/actions/vagrant-up
         with:
           container-runtime: ${{ matrix.runtime }}
           kata-containers-enabled: ${{ matrix.kata_containers_enabled }}

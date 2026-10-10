@@ -23,7 +23,7 @@ runs:
       with:
         requirement_files: test-requirements.txt
         custom_virtualenv_dir: .tox/molecule
-    - uses: ./.github/actions/vagrant-setup
+    - uses: $/.github/actions/vagrant-setup
     - name: Install dependencies
       shell: bash
       run: pip install tox
