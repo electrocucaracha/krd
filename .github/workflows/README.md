@@ -11,7 +11,6 @@
 | [on-demand_multus](./on-demand_multus.yml)     | Deploys a basic cluster on a Virtual environment with Multus CNI enabled     | on new commit/push on master |
 | [scheduled_ci](./scheduled_ci.yml)             | Verifies Kubernetes Dashboard operation                                      | scheduled/manual trigger     |
 | [scheduled_distros](./scheduled_distros.yml)   | Validation in all the Linux distros supported (CNI and CRI combinations)     | scheduled/manual trigger     |
-| [spell](./spell.yml)                           | Verifies spelling errors on documentation                                    | on new commit/push on master |
 | [triage](./triage.yml)                         | Applies labels on new Pull requests opened                                   | on new commit/push on master |
 | [update](./update.yml)                         | Updates python and galaxy requirements files and word list in the dict.      | scheduled/manual trigger     |
 
