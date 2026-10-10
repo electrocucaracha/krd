@@ -139,7 +139,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated dictionary definitions in the spell checker bot's wordlist to remove MKE and add Ons, potentially requiring users with custom dictionaries relying on these words to update their configurations. [aef4179e](https://github.com/electrocucaracha/krd/commit/aef4179ebb0580b105c06c016dcab6116c26be48)
+- Updated dictionary definitions in the spell checker bot's wordlist to remove MAKE and add Owns, potentially requiring users with custom dictionaries relying on these words to update their configurations. [aef4179e](https://github.com/electrocucaracha/krd/commit/aef4179ebb0580b105c06c016dcab6116c26be48)
 
 ## [20.1.5] - 2026-04-25
 
@@ -553,7 +553,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated the identation format value in the Makefile from 2 spaces to 4 spaces, which may affect users who have customized their own formatting settings and may require adjustments to maintain consistent formatting. [6444f82f](https://github.com/electrocucaracha/krd/commit/6444f82f9ea4d6321c2adf3a2beffd702f53c92b)
+- Updated the indentation format value in the Makefile from 2 spaces to 4 spaces, which may affect users who have customized their own formatting settings and may require adjustments to maintain consistent formatting. [6444f82f](https://github.com/electrocucaracha/krd/commit/6444f82f9ea4d6321c2adf3a2beffd702f53c92b)
 
 ## [11.0.2] - 2025-07-05
 
