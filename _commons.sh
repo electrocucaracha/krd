@@ -90,6 +90,7 @@ function _install_kubespray {
         sudo "$(command -v uv)" tool install --force 'ansible-core>=2.19.0,<2.20.0'
 
         uv venv --python 3.12
+        # shellcheck source=/dev/null
         source .venv/bin/activate
         uv pip install -r requirements.txt
 
