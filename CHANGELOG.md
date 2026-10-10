@@ -637,7 +637,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Introduced new Ollama models for continued use, requiring users to update their existing configurations to utilize the new model names and API bases in the Litellm configuration file with updated API base URLs at http://ollama-svr01:11434. [24d49ec4](https://github.com/electrocucaracha/krd/commit/24d49ec4f7200f2903ddab5e3d4d864f9dfa9498)
+- Introduced new Ollama models for continued use, requiring users to update their existing configurations to utilize the new model names and API bases in the Litellm configuration file with updated API base URLs at `http://ollama-svr01:11434`. [24d49ec4](https://github.com/electrocucaracha/krd/commit/24d49ec4f7200f2903ddab5e3d4d864f9dfa9498)
 
 ## [8.0.3] - 2025-04-28
 
