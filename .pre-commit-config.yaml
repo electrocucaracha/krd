@@ -31,10 +31,15 @@ repos:
         args: ["-v", "-iE002,E003,E005,E006,E011,E020,E042,E043"]
         files: .*\.sh
         exclude: ".tox/.*"
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.49.1
+  - repo: local
     hooks:
       - id: markdownlint
+        name: markdownlint
+        entry: markdownlint
+        language: node
+        # Install from npm to avoid Git dependency restrictions in newer npm.
+        additional_dependencies: [markdownlint-cli@0.49.1]
+        types: [markdown]
         files: \.(md|mdown|markdown)$
   - repo: https://github.com/google/yamlfmt
     rev: v0.21.0
