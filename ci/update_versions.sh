@@ -369,33 +369,6 @@ if ! command -v uv >/dev/null; then
 fi
 uv pip compile test-requirements.in -o test-requirements.txt
 
-# Update GitHub Action commit hashes
-gh_actions=$(grep -rhoE 'uses: [^@]+@' .github | sed -E 's/uses: ([^@]+)@/\1/' | sort -u)
-exceptions=('reviewdog/action-misspell' 'actions/attest-build-provenance' 'GrantBirki/git-diff-action' 'golangci/golangci-lint-action' 'actions/checkout' 'actions/upload-artifact')
-# Actions pinned to a specific version and excluded from auto-updates.
-# Remove an entry only once the underlying issue is confirmed resolved.
-# austenstone/copilot-cli: v3.0+ depends on actions/setup-copilot@v0 which does
-# not yet exist publicly; keep at v2.0 until that action is released.
-readonly pinned_actions=('austenstone/copilot-cli')
-for action in $gh_actions; do
-    is_pinned=false
-    for pinned in "${pinned_actions[@]}"; do
-        if [[ $action == "$pinned" ]]; then
-            is_pinned=true
-            break
-        fi
-    done
-    if [[ $is_pinned == "true" ]]; then
-        echo "Skipping auto-update for pinned action: $action"
-        continue
-    fi
-    if [[ $action == */.github/workflows/*.yml ]]; then
-        ref=$(resolve_reusable_workflow_ref "$action")
-        commit_hash=$(resolve_reusable_workflow_commit_hash "$action" "$ref")
-    elif [[ ${exceptions[*]} =~ (^|[^[:alpha:]])$action([^[:alpha:]]|$) ]]; then
-        commit_hash=$(resolve_action_commit_hash "$action" '^v?[0-9]+(\.[0-9]+)*$')
-    else
-        commit_hash=$(resolve_action_commit_hash "$action" '^[vV]?[0-9]+(\.[0-9]+)*$')
-    fi
-    grep -ElRZ "uses: $action@" .github/ | xargs -0 -L 1 sed -i -e "s|uses: $action@.*|uses: $action@$commit_hash|g"
-done
+uvx pre-commit autoupdate
+uv run --no-project --with git+https://github.com/electrocucaracha/gh-updater.git gh-updater .
+uvx --refresh zizmor --offline --min-severity low .github/ --fix=all
