@@ -104,18 +104,35 @@ spec:
                             - python3-pip
                             - python3-venv
                             - rsync
-                            - virtualbox-7.2
                             - vagrant
                           runcmd:
-                            - "sudo mkdir /opt/runner"
-                            - "curl -sL https://github.com/actions/runner/releases/download/v$(params.runner-version)/actions-runner-linux-x64-$(params.runner-version).tar.gz | sudo tar -xz -C /opt/runner"
-                            - "sudo ln -s /usr/bin/python3 /usr/bin/python"
-                            - "sudo /opt/runner/bin/installdependencies.sh"
-                            - "sudo chown -R runner: /opt/runner"
-                            - echo "All setup complete"
-                            - sync
-                            - sleep 10
-                            - shutdown -h now
+                            - - bash
+                              - -e
+                              - -o
+                              - pipefail
+                              - -c
+                              - |
+                                apt-get update
+                                apt-get install -y --no-install-recommends \
+                                    build-essential dkms "linux-headers-$(uname -r)"
+                                virtualbox_package=$(apt-cache search --names-only '^virtualbox-[0-9]+\.[0-9]+$' |
+                                    awk '{print $1}' | sort -V | tail -n 1)
+                                if [[ -z "$virtualbox_package" ]]; then
+                                    echo "No versioned VirtualBox package available for this Ubuntu release" >&2
+                                    exit 1
+                                fi
+                                echo "Installing $virtualbox_package"
+                                apt-get install -y --no-install-recommends "$virtualbox_package"
+                                /sbin/vboxconfig
+                                modprobe vboxdrv
+                                test -c /dev/vboxdrv
+                                mkdir /opt/runner
+                                curl -fsSL https://github.com/actions/runner/releases/download/v$(params.runner-version)/actions-runner-linux-x64-$(params.runner-version).tar.gz | tar -xz -C /opt/runner
+                                ln -s /usr/bin/python3 /usr/bin/python
+                                /opt/runner/bin/installdependencies.sh
+                                chown -R runner: /opt/runner
+                                touch /var/lib/cloud/instance/runner-setup-complete
+                                echo "All setup complete"
                           write_files:
                             - path: /etc/profile.d/vagrant.sh
                               content: |
@@ -125,7 +142,10 @@ spec:
                             mode: poweroff
                             message: Cloud-init finished, shutting down cleanly
                             timeout: 300
-                            condition: true
+                            condition:
+                              - test
+                              - -f
+                              - /var/lib/cloud/instance/runner-setup-complete
                           apt:
                             sources:
                               virtualbox:
@@ -140,6 +160,7 @@ spec:
         kind: Task
         name: create-vm-from-manifest
     - name: wait-for-runner-complete
+      timeout: 30m
       params:
         - name: vmiName
           value: "$(tasks.create-vm-runner-from-manifest.results.name)"
