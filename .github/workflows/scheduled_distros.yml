@@ -56,7 +56,7 @@ jobs:
           persist-credentials: false
       - name: Running Flannel CNI with ContainerD runtime
         if: ${{ always() }}
-        uses: ./.github/actions/vagrant-up
+        uses: $/.github/actions/vagrant-up
         with:
           os: ${{ matrix.os }}
           release: ${{ matrix.release }}
@@ -66,7 +66,7 @@ jobs:
           run-benchmarks: true
       - name: Running Calico CNI with ContainerD runtime
         if: ${{ always() }}
-        uses: ./.github/actions/vagrant-up
+        uses: $/.github/actions/vagrant-up
         with:
           os: ${{ matrix.os }}
           release: ${{ matrix.release }}
@@ -76,7 +76,7 @@ jobs:
           run-benchmarks: true
       - name: Running Cilium CNI with ContainerD runtime
         if: ${{ always() }}
-        uses: ./.github/actions/vagrant-up
+        uses: $/.github/actions/vagrant-up
         with:
           os: ${{ matrix.os }}
           release: ${{ matrix.release }}
@@ -86,7 +86,7 @@ jobs:
           run-benchmarks: true
       - name: Running Flannel CNI with CRI-O runtime
         if: ${{ always() }}
-        uses: ./.github/actions/vagrant-up
+        uses: $/.github/actions/vagrant-up
         with:
           os: ${{ matrix.os }}
           release: ${{ matrix.release }}
@@ -96,7 +96,7 @@ jobs:
           run-benchmarks: true
       - name: Running Calico CNI with CRI-O runtime
         if: ${{ always() }}
-        uses: ./.github/actions/vagrant-up
+        uses: $/.github/actions/vagrant-up
         with:
           os: ${{ matrix.os }}
           release: ${{ matrix.release }}
@@ -106,7 +106,7 @@ jobs:
           run-benchmarks: true
       - name: Running Cilium CNI with CRI-O runtime
         if: ${{ always() }}
-        uses: ./.github/actions/vagrant-up
+        uses: $/.github/actions/vagrant-up
         with:
           os: ${{ matrix.os }}
           release: ${{ matrix.release }}
