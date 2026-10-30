@@ -79,7 +79,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: ./.github/actions/vagrant-setup
+    - uses: $/.github/actions/vagrant-setup
     - name: Bootstrap Kubernetes Nodes
       shell: bash
       env:
