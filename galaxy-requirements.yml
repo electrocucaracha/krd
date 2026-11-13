@@ -17,7 +17,7 @@ roles:
   - name: andrewrothstein.kind
     version: v1.2.19
   - name: andrewrothstein.kubectl
-    version: v1.5.8
+    version: v1.5.9
 collections:
   - name: kubernetes.core
     version: 6.6.0
@@ -26,4 +26,4 @@ collections:
   - name: ansible.posix
     version: 2.2.2
   - name: community.general
-    version: 13.5.0
+    version: 14.0.1
