@@ -23,7 +23,7 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Go
-        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
         with:
           go-version: ">=1.20.0"
       - name: Install dependencies
@@ -47,7 +47,7 @@ jobs:
       contents: read
       models: read
       issues: write
-    uses: electrocucaracha/gh-workflows/.github/workflows/linter.yml@eaf817d527a52410bd6e85ad08a5acbd2039ae3a # v13.3.1
+    uses: electrocucaracha/gh-workflows/.github/workflows/linter.yml@71e4e96b50b203c2b8e7d680859c5c3136d8acc3 # v14.1.1
     with:
       validate_overrides: |-
         {
