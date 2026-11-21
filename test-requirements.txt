@@ -17,7 +17,7 @@ attrs==26.1.0
     #   referencing
 black==26.5.1
     # via ansible-lint
-bracex==3.0.1
+bracex==3.2.4
     # via wcmatch
 cffi==2.1.1
     # via
@@ -63,7 +63,7 @@ molecule==25.1.0
     # via
     #   -r test-requirements.in
     #   molecule-plugins
-molecule-plugins==26.7.15
+molecule-plugins[vagrant]==26.7.15
     # via -r test-requirements.in
 mypy-extensions==1.1.0
     # via black
@@ -124,15 +124,11 @@ rpds-py==0.30.0
     #   referencing
 ruamel-yaml==0.19.1
     # via ansible-lint
-ruamel-yaml-clib==0.2.15
-    # via ansible-lint
 subprocess-tee==0.4.2
     # via
     #   ansible-compat
     #   ansible-lint
-typing-extensions==4.16.0
-    # via referencing
-wcmatch==11.0.1
+wcmatch==11.2
     # via
     #   ansible-lint
     #   molecule
