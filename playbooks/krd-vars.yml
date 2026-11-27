@@ -10,8 +10,8 @@
 kpt_version: 1.0.1
 go_version: 1.15.3
 kubespray_version: v2.32.0
-istio_version: 1.31.3
-cfssl_version: 1.7.1
+istio_version: 1.32.0
+cfssl_version: 1.7.2
 sonobuoy_version: 0.57.5
 mitogen_version: 0.2.10
 # Knative versions
@@ -19,21 +19,21 @@ kn_version: knative-v1.24.0
 knative_serving_version: knative-v1.24.0
 knative_eventing_version: v0.51.0
 ## Knative Sandbox versions
-net_kourier_version: knative-v1.24.0
+net_kourier_version: knative-v1.24.1
 net_istio_version: vknative-v1.24.0
 net_certmanager_version: vknative-v1.14.0
 octant_version: 0.25.1
-kube-ovn_version: v1.16.16
-kubevirt_version: v1.9.1
+kube-ovn_version: v1.17.1
+kubevirt_version: v1.10.0
 containerized_data_importer_version: v1.66.1
 virtink_version: v0.17.0
 kubesphere_version: v4.1.3
-metallb_version: v0.16.1
+metallb_version: v0.16.2
 qat_plugin_mode: "{{ lookup('env', 'KRD_QAT_PLUGIN_MODE') | default('dpdk') }}"
 qat_plugin_version: "0.15.0"
-argocd_version: v3.6.0-rc4
-tekton_version: v0.81.2
+argocd_version: v3.6.3
+tekton_version: v0.82.0
 kubevirt_tekton_tasks_version: v0.26.0
 action_runner_controller_version: 0.10.1
-kagent_version: 1.0.0-alpha17
-external_snapshotter_version: v8.7.0
+kagent_version: 1.0.1
+external_snapshotter_version: v8.7.1
