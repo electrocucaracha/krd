@@ -17,12 +17,12 @@ roles:
   - name: andrewrothstein.kind
     version: v1.2.19
   - name: andrewrothstein.kubectl
-    version: v1.5.9
+    version: v1.5.10
 collections:
   - name: kubernetes.core
     version: 6.6.0
   - name: community.docker
-    version: 5.4.0
+    version: 5.4.1
   - name: ansible.posix
     version: 2.2.2
   - name: community.general
